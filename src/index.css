@@ -1,0 +1,96 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-base: #0d0d14;
+  --bg-card: #16161f;
+  --bg-surface: #1e1e2a;
+  --border: rgba(255,255,255,0.06);
+  --purple-500: #8b5cf6;
+  --purple-400: #a78bfa;
+  --purple-600: #7c3aed;
+  --green: #22c55e;
+  --orange: #f97316;
+  --blue: #3b82f6;
+  --red: #ef4444;
+  --yellow: #eab308;
+  --text-primary: #f8f8ff;
+  --text-secondary: #a0a0b8;
+  --text-muted: #52526a;
+  --radius: 16px;
+}
+
+@layer base {
+  body {
+    @apply bg-background-base text-text-primary antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-extrabold;
+  }
+}
+
+@layer components {
+  .nv-card {
+    @apply bg-background-card border border-white/5 rounded-[16px] p-3 md:p-5;
+  }
+
+  .nv-btn-primary {
+    @apply bg-gradient-to-r from-nuvio-purple-600 to-nuvio-purple-500 text-white rounded-[14px] font-bold min-h-[44px] px-6 py-2 transition-all duration-200 hover:-translate-y-[1px] hover:opacity-90 active:scale-95 flex items-center justify-center gap-2;
+  }
+
+  .nv-btn-secondary {
+    @apply bg-nuvio-purple-500/10 text-nuvio-purple-400 border border-nuvio-purple-500/30 rounded-[14px] font-bold min-h-[44px] px-6 py-2 transition-all duration-200 hover:-translate-y-[1px] hover:bg-nuvio-purple-500/20 active:scale-95 flex items-center justify-center gap-2;
+  }
+
+  .nv-text-sec {
+    @apply text-text-secondary;
+  }
+
+  .nv-text-muted {
+    @apply text-text-muted;
+  }
+
+  .nv-label {
+    @apply text-[10px] md:text-[11px] font-medium tracking-[0.08em] uppercase text-text-muted;
+  }
+
+  .nv-gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-nuvio-purple-400 to-nuvio-purple-600;
+  }
+
+  .animate-shimmer {
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+  }
+}
+
+@layer utilities {
+  .nv-page-transition {
+    @apply animate-in fade-in slide-in-from-bottom-1 duration-150;
+  }
+  
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .perspective-2000 {
+    perspective: 2000px;
+  }
+
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+
+  .backface-hidden {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+}
