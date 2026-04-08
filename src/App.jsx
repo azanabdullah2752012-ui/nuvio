@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 
 // Layout
 import Layout from './components/layout/Layout';
@@ -45,7 +45,7 @@ const AdminGuard = ({ children }) => {
 
 function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<LandingPage />} />
@@ -100,7 +100,7 @@ function App() {
         {/* Catch All */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
