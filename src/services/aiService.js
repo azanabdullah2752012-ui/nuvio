@@ -1,5 +1,5 @@
 const STORAGE_KEY = 'openrouter_api_key';
-const DEFAULT_MODEL = 'google/gemini-2.0-flash-exp:free';
+const DEFAULT_MODEL = 'google/gemma-2-9b-it:free';
 const DEFAULT_KEY = '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';
 
 export const aiService = {
@@ -17,7 +17,7 @@ export const aiService = {
     // System instruction for Nuvio
     const systemInstruction = {
       role: 'system',
-      content: "You are Nova, the AI tutor for the Nuvio gamified learning platform. Be encouraging, use emojis occasionally ⚡, and help students master their subjects through positive reinforcement."
+      content: "You are Nova, the AI tutor for the Nuvio gamified learning platform. Be encouraging, use emojis occasionally ⚡, and help students master their subjects through positive reinforcement. Your current version is verified as Academic Logic Engine 4.0."
     };
 
     // Format messages: ensure they are objects
@@ -27,7 +27,7 @@ export const aiService = {
     } else if (Array.isArray(messages)) {
       formattedMessages = messages.map(m => {
         if (typeof m === 'string') return { role: 'user', content: m };
-        return { role: m.role, content: m.text || m.content };
+        return { role: m.role, content: (m.text || m.content || '').toString() };
       });
     }
 
@@ -38,8 +38,8 @@ export const aiService = {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${key}`,
-          "HTTP-Referer": window.location.origin,
-          "X-Title": "Nuvio Rebuild",
+          "HTTP-Referer": "https://nuvio.edu",
+          "X-Title": "Nuvio Admin Hub",
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
@@ -53,7 +53,12 @@ export const aiService = {
       
       if (data.error) {
         console.error("OpenRouter Error Details:", data.error);
-        // Handle specific provider errors more gracefully
+        
+        // Specific handling for 'User not found' or identity errors
+        if (data.error.message?.includes('User not found') || data.error.code === 401) {
+          return "Nova's identity link is currently disconnected. Please re-enter your API key in the Admin Hub or try again in a moment! ⚡";
+        }
+        
         if (data.error.message?.includes('provider')) {
           return "Nova's brain provider is taking a nap. Let's try again in a few seconds! ⚡";
         }

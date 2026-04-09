@@ -12,7 +12,25 @@ export const authService = {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
     // Dispatch event for UI and guards to sync
     window.dispatchEvent(new CustomEvent('nuvio_auth_change', { detail: updated }));
+    window.dispatchEvent(new CustomEvent('nuvio_stats_update', { detail: updated }));
     return updated;
+  },
+
+  toggleGodMode: () => {
+    const user = authService.me();
+    if (!user) return;
+    const newState = !user.god_mode;
+    return authService.updateMe({ god_mode: newState });
+  },
+
+  injectWealth: () => {
+    const user = authService.me();
+    if (!user) return;
+    return authService.updateMe({ 
+      era_tokens: (user.era_tokens || 0) + 1000000,
+      xp: (user.xp || 0) + 50000,
+      level: 20
+    });
   },
 
   login: (email, password) => {

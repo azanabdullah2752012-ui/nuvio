@@ -43,6 +43,29 @@ export const peerService = {
     return updated;
   },
 
+  updatePeer: (id, updates) => {
+    const peers = peerService.getPeers();
+    const updated = peers.map(p => p.id === id ? { ...p, ...updates } : p);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    return updated;
+  },
+
+  createPeer: (data) => {
+    const peers = peerService.getPeers();
+    const newPeer = {
+      id: `p-${Date.now()}`,
+      full_name: data.full_name || 'New Rival',
+      level: data.level || 1,
+      xp: data.xp || 0,
+      avatar_emoji: data.avatar_emoji || '👤',
+      streak: data.streak || 0,
+      lastOnline: 'Just now'
+    };
+    const updated = [...peers, newPeer];
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    return updated;
+  },
+
   resetPeers: () => {
     localStorage.removeItem(STORAGE_KEY);
     return peerService.initializePeers();
