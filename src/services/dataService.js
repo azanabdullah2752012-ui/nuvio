@@ -1,45 +1,90 @@
-const STORAGE_PREFIX = 'nuvio_entity_';
+import { supabase } from '../lib/supabase';
+import { authService } from './authService';
 
 export const dataService = {
-  list: (entityName) => {
-    const data = localStorage.getItem(STORAGE_PREFIX + entityName);
-    return data ? JSON.parse(data) : [];
+  list: async (entityName) => {
+    const user = authService.me();
+    if (!user) return [];
+
+    try {
+      const { data, error } = await supabase
+        .from(entityName)
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error(`Supabase Error [list ${entityName}]:`, error.message);
+        return [];
+      }
+      return data || [];
+    } catch (err) {
+      console.error(`Fetch Error [list ${entityName}]:`, err);
+      return [];
+    }
   },
 
-  get: (entityName, id) => {
-    const list = dataService.list(entityName);
-    return list.find(item => item.id === id);
+  get: async (entityName, id) => {
+    const { data, error } = await supabase
+      .from(entityName)
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (error) return null;
+    return data;
   },
 
-  create: (entityName, data) => {
-    const list = dataService.list(entityName);
+  create: async (entityName, data) => {
+    const user = authService.me();
+    if (!user) throw new Error("Authentication required for cloud storage.");
+
     const newItem = {
-      id: Math.random().toString(36).substr(2, 9),
-      createdAt: new Date().toISOString(),
-      ...data
+      ...data,
+      user_id: user.id || '00000000-0000-0000-0000-000000000000' // Using simulated ID or real Auth ID
     };
-    list.push(newItem);
-    localStorage.setItem(STORAGE_PREFIX + entityName, JSON.stringify(list));
-    return newItem;
+
+    const { data: insertedData, error } = await supabase
+      .from(entityName)
+      .insert([newItem])
+      .select()
+      .single();
+
+    if (error) {
+      console.error(`Supabase Error [create ${entityName}]:`, error.message);
+      throw error;
+    }
+    return insertedData;
   },
 
-  update: (entityName, id, data) => {
-    const list = dataService.list(entityName);
-    const index = list.findIndex(item => item.id === id);
-    if (index === -1) return null;
-    list[index] = { ...list[index], ...data, updatedAt: new Date().toISOString() };
-    localStorage.setItem(STORAGE_PREFIX + entityName, JSON.stringify(list));
-    return list[index];
+  update: async (entityName, id, data) => {
+    const { data: updatedData, error } = await supabase
+      .from(entityName)
+      .update(data)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return updatedData;
   },
 
-  delete: (entityName, id) => {
-    const list = dataService.list(entityName);
-    const filtered = list.filter(item => item.id !== id);
-    localStorage.setItem(STORAGE_PREFIX + entityName, JSON.stringify(filtered));
+  delete: async (entityName, id) => {
+    const { error } = await supabase
+      .from(entityName)
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
   },
 
-  filter: (entityName, predicate) => {
-    const list = dataService.list(entityName);
-    return list.filter(predicate);
+  // Helper for batch filtering
+  filter: async (entityName, column, value) => {
+    const { data, error } = await supabase
+      .from(entityName)
+      .select('*')
+      .eq(column, value);
+
+    if (error) return [];
+    return data || [];
   }
 };

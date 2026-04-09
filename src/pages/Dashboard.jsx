@@ -12,6 +12,8 @@ import { dataService } from '../services/dataService';
 const Dashboard = () => {
   const [user, setUser] = useState(authService.me());
   const [activity, setActivity] = useState([]);
+  const [counts, setCounts] = useState({ tasks: 0, decks: 0 });
+  const [loading, setLoading] = useState(true);
   const [nextMilestone, setNextMilestone] = useState({ label: 'Level 2', remaining: 100 });
 
   useEffect(() => {
@@ -22,25 +24,43 @@ const Dashboard = () => {
     };
     
     window.addEventListener('nuvio_stats_update', handleUpdate);
-    
-    // Realization: Load Actual Activity
-    const history = xpService.getHistory().slice(-5).reverse();
-    setActivity(history);
-    calculateMilestone(user?.xp || 0, user?.level || 1);
+    fetchDashboardData();
 
     return () => window.removeEventListener('nuvio_stats_update', handleUpdate);
   }, []);
+
+  const fetchDashboardData = async () => {
+    setLoading(true);
+    try {
+      const [tasks, decks] = await Promise.all([
+        dataService.list('tasks'),
+        dataService.list('decks')
+      ]);
+      setCounts({
+        tasks: tasks.filter(t => !t.completed).length,
+        decks: decks.length
+      });
+      
+      const history = xpService.getHistory().slice(-5).reverse();
+      setActivity(history);
+      calculateMilestone(user?.xp || 0, user?.level || 1);
+    } catch (err) {
+      console.error("Dashboard cloud sync failed:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const calculateMilestone = (xp, level) => {
     const nextXp = xpService.getNextLevelXp(level);
     setNextMilestone({
       label: `Level ${level + 1}`,
-      remaining: nextXp - xp
+      remaining: nextXp - (xp || 0)
     });
   };
 
-  const tasksCount = dataService.list('tasks').filter(t => !t.completed).length;
-  const decksCount = dataService.list('decks').length;
+  const tasksCount = counts.tasks;
+  const decksCount = counts.decks;
 
   return (
     <div className="space-y-10 pb-20 nv-page-transition">

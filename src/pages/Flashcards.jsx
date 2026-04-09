@@ -12,6 +12,7 @@ import { xpService } from '../services/xpService';
 
 const Flashcards = () => {
   const [decks, setDecks] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [view, setView] = useState('library'); // library, study, create
   const [selectedDeck, setSelectedDeck] = useState(null);
   const [currentCardIdx, setCurrentCardIdx] = useState(0);
@@ -22,25 +23,28 @@ const Flashcards = () => {
   const [newDeck, setNewDeck] = useState({ title: '', subject: 'General', cards: [{ front: '', back: '' }] });
 
   useEffect(() => {
-    const list = dataService.list('decks');
-    const isInitialized = localStorage.getItem('nuvio_flashcards_init');
-
-    if (list.length === 0 && !isInitialized) {
-      const initial = [
-        { id: 'd1', title: 'Calculus Basics', subject: 'Math', cards: [{ front: 'What is a derivative?', back: 'The rate of change of a function with respect to a variable.' }] },
-        { id: 'd2', title: 'Biology: Cells', subject: 'Science', cards: [{ front: 'Powerhouse of the cell?', back: 'Mitochondria' }] }
-      ];
-      initial.forEach(d => dataService.create('decks', d));
-      localStorage.setItem('nuvio_flashcards_init', 'true');
-      setDecks(initial);
-    } else {
-      setDecks(list);
-    }
+    fetchDecks();
   }, []);
 
-  const deleteDeck = (id) => {
-    dataService.delete('decks', id);
-    setDecks(decks.filter(d => d.id !== id));
+  const fetchDecks = async () => {
+    setLoading(true);
+    try {
+      const list = await dataService.list('decks');
+      setDecks(list);
+    } catch (err) {
+      console.error("Cloud deck sync failed:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deleteDeck = async (id) => {
+    try {
+      await dataService.delete('decks', id);
+      setDecks(decks.filter(d => d.id !== id));
+    } catch (err) {
+      console.error("Cloud delete failed:", err);
+    }
   };
 
   const startStudy = (deck) => {
@@ -66,15 +70,22 @@ const Flashcards = () => {
     }
   };
 
-  const saveNewDeck = () => {
+  const saveNewDeck = async () => {
     if (!newDeck.title || newDeck.cards.some(c => !c.front || !c.back)) {
       alert("Please fill in all fields!");
       return;
     }
-    const created = dataService.create('decks', { ...newDeck, id: Date.now().toString() });
-    setDecks([...decks, created]);
-    setView('library');
-    setNewDeck({ title: '', subject: 'General', cards: [{ front: '', back: '' }] });
+    setLoading(true);
+    try {
+      const created = await dataService.create('decks', newDeck);
+      setDecks([...decks, created]);
+      setView('library');
+      setNewDeck({ title: '', subject: 'General', cards: [{ front: '', back: '' }] });
+    } catch (err) {
+      console.error("Cloud save failed:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (view === 'library') {

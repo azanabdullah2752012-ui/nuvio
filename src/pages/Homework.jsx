@@ -10,48 +10,63 @@ import { dataService } from '../services/dataService';
 
 const Homework = () => {
   const [tasks, setTasks] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
   const [quickInput, setQuickInput] = useState('');
 
   useEffect(() => {
-    const list = dataService.list('tasks');
-    if (list.length === 0) {
-      const initial = [
-        { id: '1', title: 'Complete Calculus Worksheet', subject: 'Math', due: 'Today', priority: 'High', completed: false },
-        { id: '2', title: 'Biology Chapter 4 Summary', subject: 'Science', due: 'Tomorrow', priority: 'Medium', completed: false }
-      ];
-      initial.forEach(t => dataService.create('tasks', t));
-      setTasks(initial);
-    } else {
-      setTasks(list);
-    }
+    fetchTasks();
   }, []);
 
-  const handleQuickAdd = (e) => {
+  const fetchTasks = async () => {
+    setLoading(true);
+    try {
+      const list = await dataService.list('tasks');
+      setTasks(list);
+    } catch (err) {
+      console.error("Failed to sync cloud tasks:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleQuickAdd = async (e) => {
     if (e.key === 'Enter' && quickInput.trim()) {
       const newTask = {
-        id: Date.now().toString(),
         title: quickInput,
         subject: 'General',
         due: 'Soon',
         priority: 'Medium',
         completed: false
       };
-      const created = dataService.create('tasks', newTask);
-      setTasks([created, ...tasks]);
-      setQuickInput('');
+      setQuickInput(''); // Immediate UI feedback
+      try {
+        const created = await dataService.create('tasks', newTask);
+        setTasks(prev => [created, ...prev]);
+      } catch (err) {
+        console.error("Cloud entry failed:", err);
+      }
     }
   };
 
-  const toggleTask = (id) => {
+  const toggleTask = async (id) => {
     const task = tasks.find(t => t.id === id);
-    const updated = dataService.update('tasks', id, { ...task, completed: !task.completed });
-    setTasks(tasks.map(t => t.id === id ? updated : t));
+    if (!task) return;
+    try {
+      const updated = await dataService.update('tasks', id, { completed: !task.completed });
+      setTasks(tasks.map(t => t.id === id ? updated : t));
+    } catch (err) {
+      console.error("Cloud update failed:", err);
+    }
   };
 
-  const deleteTask = (id) => {
-    dataService.delete('tasks', id);
-    setTasks(tasks.filter(t => t.id !== id));
+  const deleteTask = async (id) => {
+    try {
+      await dataService.delete('tasks', id);
+      setTasks(tasks.filter(t => t.id !== id));
+    } catch (err) {
+      console.error("Cloud delete failed:", err);
+    }
   };
 
   const filteredTasks = tasks.filter(t => {

@@ -17,7 +17,7 @@ export const aiService = {
     // System instruction for Nuvio
     const systemInstruction = {
       role: 'system',
-      content: "You are Nova, the AI tutor for the Nuvio gamified learning platform. Be encouraging, use emojis occasionally ⚡, and help students master their subjects through positive reinforcement. Your current version is verified as Academic Logic Engine 4.0."
+      content: "You are Nova, the AI tutor for the Nuvio gamified learning platform. Be encouraging, use emojis occasionally ⚡, and help students master their subjects through positive reinforcement. Current logic: GEMMA-2 ACADEMIC CORE."
     };
 
     // Format messages: ensure they are objects
@@ -38,12 +38,12 @@ export const aiService = {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${key}`,
-          "HTTP-Referer": "https://nuvio.edu",
-          "X-Title": "Nuvio Admin Hub",
+          "HTTP-Referer": "https://nuvio.edu", // Fixed referer for OpenRouter stability
+          "X-Title": "Nuvio Project",
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          "model": DEFAULT_MODEL,
+          "model": DEFAULT_MODEL, 
           "messages": payload,
           "temperature": 0.7,
         })
@@ -54,15 +54,12 @@ export const aiService = {
       if (data.error) {
         console.error("OpenRouter Error Details:", data.error);
         
-        // Specific handling for 'User not found' or identity errors
-        if (data.error.message?.includes('User not found') || data.error.code === 401) {
-          return "Nova's identity link is currently disconnected. Please re-enter your API key in the Admin Hub or try again in a moment! ⚡";
+        // Handle identity or credits errors with a friendly educational fallback
+        if (data.error.message?.includes('User not found') || data.error.code === 401 || data.error.code === 402) {
+          return "Nova's academic link is currently refreshing ⚡. The study environment is still active, but full AI tutoring will resume in a moment! (Check your API balance or re-paste the key in Admin).";
         }
         
-        if (data.error.message?.includes('provider')) {
-          return "Nova's brain provider is taking a nap. Let's try again in a few seconds! ⚡";
-        }
-        return `ERROR: ${data.error.message || 'Unknown AI error'}`;
+        return `ERROR: ${data.error.message || 'System pause'}`;
       }
 
       if (!data.choices || data.choices.length === 0) {

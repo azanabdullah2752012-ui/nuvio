@@ -13,6 +13,7 @@ import { xpService } from '../services/xpService';
 import { peerService } from '../services/peerService';
 import { notificationService } from '../services/notificationService';
 import { aiService } from '../services/aiService';
+import { supabase } from '../lib/supabase';
 
 const Admin = () => {
   const [user, setUser] = useState(authService.me());
@@ -35,17 +36,24 @@ const Admin = () => {
     refreshStats();
   }, [user]);
 
-  const refreshStats = () => {
-    const p = peerService.getPeers();
-    setPeers(p);
-    const totalPeerXp = p.reduce((sum, p) => sum + p.xp, 0);
+  const refreshStats = async () => {
+    // In global cloud mode, we fetch totals from Supabase tables
+    const taskCount = (await dataService.list('tasks')).length;
+    const deckCount = (await dataService.list('decks')).length;
+    const statsUser = authService.me();
+    
+    // For peers, we fetch from the dedicated peers table
+    const { data: p, error } = await supabase.from('peers').select('*');
+    if (p) setPeers(p);
+    
+    const totalPeerXp = (p || []).reduce((sum, p) => sum + p.xp, 0);
     const counts = {
-      tasks: dataService.list('tasks').length + (p.length * 3),
-      decks: dataService.list('decks').length + (p.length * 2),
-      groups: dataService.list('my_groups').length + 12,
-      xp: (user?.xp ?? 0) + totalPeerXp,
-      tokens: (user?.era_tokens ?? 0) + (totalPeerXp / 10),
-      peerCount: p.length
+      tasks: taskCount + ((p?.length || 0) * 3),
+      decks: deckCount + ((p?.length || 0) * 2),
+      groups: 12, // Static for now
+      xp: (statsUser?.xp ?? 0) + totalPeerXp,
+      tokens: (statsUser?.era_tokens ?? 0) + (totalPeerXp / 10),
+      peerCount: (p?.length || 0)
     };
     setEntityCounts(counts);
   };
