@@ -57,19 +57,25 @@ export const aiService = {
         // --- LOCAL STUDY INTELLIGENCE (OFFLINE MODE) ---
         const msg = formattedMessages[formattedMessages.length - 1]?.content?.toLowerCase() || '';
         
-        // 1. GREETINGS
+        // 1. IDENTITY & GREETINGS
+        if (msg.includes('who are you') || msg.includes('what are you') || msg.includes('identity')) {
+          return "I am Nova, your high-fidelity academic companion. I am currently in 'Heuristic Mode' while my cloud paths refresh ⚡, but I possess full protocols to help you optimize your study roadmap! What are we conquering today?";
+        }
         if (msg.includes('hi') || msg.includes('hello') || msg.includes('hey')) {
           return "Hello! I'm Nova. My cloud link is performing a scheduled refresh ⚡, but I'm ready to help you crush your goals! What are we studying today?";
         }
 
         // 2. ACADEMIC SUBJECTS
+        if (msg.includes('ww1') || msg.includes('world war') || msg.includes('history') || msg.includes('war')) {
+          return "History is a complex web of cause and effect! 🏛️ While I re-sync my global archives, remember: World War I was triggered by a chain of alliances after the assassination in Sarajevo. I recommend studying your History Memory Cubes for the full timeline!";
+        }
         if (msg.includes('math') || msg.includes('calc') || msg.includes('algebra')) {
           return "Math is all about patterns! 📐 While I re-sync with the global brain, remember: focus on the fundamental steps. What specific math problem are you tackling?";
         }
         if (msg.includes('science') || msg.includes('bio') || msg.includes('chem')) {
           return "Scientific thinking is essential! 🧪 I'm currently in local-mode, but I recommend checking your Biology Memory Cubes for immediate active recall!";
         }
-        if (msg.includes('history') || msg.includes('essay') || msg.includes('english')) {
+        if (msg.includes('essay') || msg.includes('english')) {
           return "Deep analysis is your superpower today! ✍️ I'm currently refreshing my neural paths, but I encourage you to use the 'Essay Forge' tool in the StudyVerse!";
         }
 

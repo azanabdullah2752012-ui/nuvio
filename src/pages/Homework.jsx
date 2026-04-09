@@ -24,7 +24,7 @@ const Homework = () => {
       const list = await dataService.list('tasks');
       setTasks(list);
     } catch (err) {
-      console.error("Failed to sync cloud tasks:", err);
+      console.error("Cloud task sync failed:", err);
     } finally {
       setLoading(false);
     }

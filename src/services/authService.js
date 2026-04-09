@@ -108,11 +108,11 @@ export const authService = {
         email: accountData?.email || 'azanabdullah2752012@gmail.com',
         full_name: accountData?.name || 'Azan Abdullah',
         avatar_emoji: accountData?.avatar || '🛡️',
-        level: accountData?.role === 'admin' ? 99 : 1,
-        xp: accountData?.role === 'admin' ? 999999 : 0,
-        era_tokens: accountData?.role === 'admin' ? 999999 : 500,
-        streak: accountData?.role === 'admin' ? 365 : 1,
-        role: accountData?.role || 'admin',
+        level: 1, // Production Mode: Everyone starts at 1
+        xp: 0,
+        era_tokens: 500, // Starter tokens
+        streak: 1,
+        role: accountData?.role || 'admin', // Kept for your specific admin account
         onboarding_completed: true,
         joined_date: new Date().toISOString()
       };
