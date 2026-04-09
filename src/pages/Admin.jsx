@@ -60,11 +60,9 @@ const Admin = () => {
 
   const tabs = [
     { id: 'overview', name: 'Overview', icon: BarChart3 },
-    { id: 'architect', name: 'Social Architect', icon: Users },
     { id: 'broadcast', name: 'Comms', icon: MessageSquare },
     { id: 'governance', name: 'Governance', icon: ShieldAlert },
-    { id: 'aicore', name: 'AI Core', icon: BrainCircuit },
-    { id: 'temporal', name: 'Temporal', icon: Clock }
+    { id: 'aicore', name: 'AI Core', icon: BrainCircuit }
   ];
 
   return (

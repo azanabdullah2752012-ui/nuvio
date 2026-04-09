@@ -16,21 +16,19 @@ const navSections = [
     ]
   },
   {
-    label: "Study Tools",
+    label: "Study Arsenal",
     items: [
-      { name: "Flashcards", path: "/flashcards", icon: BookOpen },
+      { name: "Flashcards", path: "/flashcards", icon: BookMarked },
       { name: "Homework", path: "/homework", icon: ListChecks },
       { name: "Calendar", path: "/calendar", icon: Calendar },
       { name: "Focus Timer", path: "/focus-timer", icon: Timer },
       { name: "Knowledge Map", path: "/knowledge-map", icon: Map },
-      { name: "Study Sites", path: "/study-sites", icon: Globe },
     ]
   },
   {
-    label: "Study Verse",
+    label: "Study Verse Hub",
     items: [
-      { name: "Game Hub", path: "/studyverse", icon: Gamepad2 },
-      { name: "Study Battles", path: "/studyverse", icon: Sword },
+      { name: "Verse Portal", path: "/study-verse", icon: Gamepad2 },
       { name: "Boss Raid", path: "/boss-raid", icon: Skull },
     ]
   },
@@ -38,23 +36,22 @@ const navSections = [
     label: "AI Suite",
     items: [
       { name: "Nova AI", path: "/nova-ai", icon: Sparkles },
-      { name: "AI Hub", path: "/ai-hub", icon: Sparkles },
+      { name: "AI Hub", path: "/ai-hub", icon: History },
       { name: "Essay Forge", path: "/essay-forge", icon: PenTool },
     ]
   },
   {
-    label: "Social & Progression",
+    label: "Social Hub",
     items: [
       { name: "Groups", path: "/learning-groups", icon: Users },
       { name: "Leaderboard", path: "/leaderboard", icon: Trophy },
-      { name: "Classmates", path: "/classmates", icon: Users },
       { name: "Messages", path: "/messages", icon: MessageCircle },
     ]
   },
   {
-    label: "Rewards",
+    label: "Resources & Rewards",
     items: [
-      { name: "Quests", path: "/quests", icon: GraduationCap },
+      { name: "Study Sites", path: "/study-sites", icon: Globe },
       { name: "Achievements", path: "/achievements", icon: Award },
       { name: "Shop", path: "/shop", icon: ShoppingBag },
       { name: "Analytics", path: "/analytics", icon: BarChart3 },

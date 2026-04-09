@@ -12,24 +12,26 @@ import Onboarding from './pages/Onboarding';
 import Dashboard from './pages/Dashboard';
 import Flashcards from './pages/Flashcards';
 import Homework from './pages/Homework';
-import StudyVerse from './pages/StudyVerse';
 import AIChat from './pages/AIChat';
 import AIHub from './pages/AIHub';
 import Profile from './pages/Profile';
-import Messages from './pages/Messages';
-import LearningGroups from './pages/LearningGroups';
 import Leaderboard from './pages/Leaderboard';
-import Calendar from './pages/Calendar';
-import Shop from './pages/Shop';
-import BossRaid from './pages/BossRaid';
-import Classmates from './pages/Classmates';
 import EssayForge from './pages/EssayForge';
+import Admin from './pages/Admin';
+
+// Restored Functional Pages
+import Calendar from './pages/Calendar';
+import FocusTimer from './pages/FocusTimer';
+import KnowledgeMap from './pages/KnowledgeMap';
+import BossRaid from './pages/BossRaid';
+import LearningGroups from './pages/LearningGroups';
+import Messages from './pages/Messages';
+import Shop from './pages/Shop';
 import Achievements from './pages/Achievements';
 import Analytics from './pages/Analytics';
-import KnowledgeMap from './pages/KnowledgeMap';
+import StudyVerse from './pages/StudyVerse';
 import StudySites from './pages/StudySites';
-import FocusTimer from './pages/FocusTimer';
-import Admin from './pages/Admin';
+
 import { authService } from './services/authService';
 
 // Robust Route Guard for Admin
@@ -61,31 +63,28 @@ function App() {
           <Route path="/calendar" element={<Calendar />} />
           <Route path="/focus-timer" element={<FocusTimer />} />
           <Route path="/knowledge-map" element={<KnowledgeMap />} />
-          <Route path="/study-sites" element={<StudySites />} />
           
-          {/* Games */}
-          <Route path="/studyverse" element={<StudyVerse />} />
-          <Route path="/boss-raid" element={<BossRaid />} />
-          <Route path="/raid" element={<Navigate to="/boss-raid" replace />} />
-          
-          {/* Social */}
-          <Route path="/learning-groups" element={<LearningGroups />} />
-          <Route path="/leaderboard" element={<Leaderboard />} />
-          <Route path="/messages" element={<Messages />} />
-          <Route path="/classmates" element={<Classmates />} />
-          
-          {/* AI */}
+          {/* AI Suite */}
           <Route path="/nova-ai" element={<AIChat />} />
           <Route path="/ai-chat" element={<Navigate to="/nova-ai" replace />} />
           <Route path="/ai-hub" element={<AIHub />} />
           <Route path="/essay-forge" element={<EssayForge />} />
           
-          {/* Progress */}
+          {/* Study Verse */}
+          <Route path="/boss-raid" element={<BossRaid />} />
+          
+          {/* Social Hub */}
+          <Route path="/learning-groups" element={<LearningGroups />} />
+          <Route path="/leaderboard" element={<Leaderboard />} />
+          <Route path="/messages" element={<Messages />} />
+          
+          {/* Rewards & Analytics */}
           <Route path="/achievements" element={<Achievements />} />
-          <Route path="/quests" element={<Navigate to="/dashboard" replace />} />
           <Route path="/shop" element={<Shop />} />
           <Route path="/analytics" element={<Analytics />} />
-          
+          <Route path="/study-verse" element={<StudyVerse />} />
+          <Route path="/study-sites" element={<StudySites />} />
+
           {/* Account */}
           <Route path="/profile" element={<Profile />} />
           

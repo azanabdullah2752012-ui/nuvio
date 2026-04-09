@@ -74,7 +74,6 @@ const Dashboard = () => {
             <Coins className="w-5 h-5 text-nuvio-yellow" />
             <span className="text-xl font-black text-white tabular-nums">{user?.era_tokens?.toLocaleString()}</span>
           </div>
-          <button className="nv-btn-primary px-8 h-14 uppercase tracking-widest text-xs">New Quest</button>
         </div>
       </header>
 
@@ -123,19 +122,16 @@ const Dashboard = () => {
                       <p className="text-[10px] text-text-muted font-bold uppercase tracking-widest">{nextMilestone.remaining.toLocaleString()} XP to {nextMilestone.label}</p>
                    </div>
                 </div>
-                <div className="h-4 w-full bg-white/5 rounded-full overflow-hidden border border-white/5">
-                   <motion.div 
-                     initial={{ width: 0 }}
-                     animate={{ width: `${Math.min(100, (user?.xp / xpService.getNextLevelXp(user?.level)) * 100)}%` }}
-                     className="h-full bg-gradient-to-r from-nuvio-purple-500 to-nuvio-blue"
-                   />
+                  <div className="h-4 w-full bg-white/5 rounded-full overflow-hidden border border-white/5">
+                    <motion.div 
+                      initial={{ width: 0 }}
+                      animate={{ width: `${Math.min(100, ((user?.xp || 0) / xpService.getNextLevelXp(user?.level || 1)) * 100)}%` }}
+                      className="h-full bg-gradient-to-r from-nuvio-purple-500 to-nuvio-blue"
+                    />
+                  </div>
                 </div>
               </div>
-              <button className="nv-btn-secondary px-8 h-14 gap-2 text-xs uppercase group">
-                 Expand Analytics <ArrowUpRight className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-              </button>
             </div>
-          </div>
 
           {/* Real Activity Feed */}
           <div className="nv-card p-0 border-white/5 overflow-hidden">
