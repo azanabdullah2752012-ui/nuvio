@@ -69,12 +69,25 @@ export const authService = {
     return user;
   },
 
-  googleLogin: () => {
+  googleLogin: (accountData) => {
     return new Promise((resolve) => {
-      setTimeout(() => {
-        const mockUser = authService.login('student@gmail.com', 'google_bypass');
-        resolve(mockUser);
-      }, 1500);
+      // Selection logic already happened in the UI modal
+      const user = {
+        email: accountData?.email || 'azanabdullah2752012@gmail.com',
+        full_name: accountData?.name || 'Azan Abdullah',
+        avatar_emoji: accountData?.avatar || '🛡️',
+        level: accountData?.role === 'admin' ? 99 : 1,
+        xp: accountData?.role === 'admin' ? 999999 : 0,
+        era_tokens: accountData?.role === 'admin' ? 999999 : 500,
+        streak: accountData?.role === 'admin' ? 365 : 1,
+        role: accountData?.role || 'admin',
+        onboarding_completed: true, // Auto-skip onboarding for 'Real' feeling logins
+        joined_date: new Date().toISOString()
+      };
+      
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+      window.dispatchEvent(new CustomEvent('nuvio_auth_change', { detail: user }));
+      resolve(user);
     });
   },
 
