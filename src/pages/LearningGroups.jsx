@@ -13,6 +13,7 @@ const LearningGroups = () => {
   const [groups, setGroups] = useState([]);
   const [myGroups, setMyGroups] = useState([]);
   const [showApplyModal, setShowApplyModal] = useState(false);
+  const user = authService.me();
 
   useEffect(() => {
     const allGroups = [
@@ -124,10 +125,20 @@ const LearningGroups = () => {
             <p className="text-sm text-text-secondary leading-relaxed max-w-xl font-bold opacity-70">Unlock exclusive 1-on-1 sessions with Verified Sages by reaching Level 20 or joining an Elite Group.</p>
           </div>
           <button 
-            onClick={() => setShowApplyModal(true)}
-            className="nv-btn-primary px-12 h-16 shadow-2xl shadow-nuvio-purple-500/20 uppercase tracking-widest text-xs"
+            onClick={() => {
+              if (user?.level < 20 && !user?.god_mode) {
+                alert("DENIED: Absolute authority or Level 20 status required for Elite Tutoring.");
+              } else {
+                setShowApplyModal(true);
+              }
+            }}
+            className={`px-12 h-16 shadow-2xl uppercase tracking-widest text-xs rounded-2xl font-black transition-all ${
+              (user?.level >= 20 || user?.god_mode) 
+                ? 'bg-nuvio-purple-500 text-white hover:bg-nuvio-purple-600 shadow-nuvio-purple-500/20' 
+                : 'bg-white/5 text-text-muted border border-white/10 cursor-not-allowed'
+            }`}
           >
-            Apply Now
+            {user?.god_mode ? 'Divine Entry' : 'Apply Now'}
           </button>
         </div>
       </div>

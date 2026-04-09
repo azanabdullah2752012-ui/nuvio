@@ -31,10 +31,10 @@ const Shop = () => {
   ];
 
   const handleScratch = () => {
-    if (tokens < 100 || isScratching) return;
+    if (tokens < 100 && !user?.god_mode || isScratching) return;
     
     setIsScratching(true);
-    const updatedUser = authService.updateMe({ era_tokens: tokens - 100 });
+    const updatedUser = authService.updateMe({ era_tokens: user?.god_mode ? tokens : tokens - 100 });
     setUser(updatedUser);
 
     setTimeout(() => {
@@ -66,7 +66,7 @@ const Shop = () => {
   };
 
   const buyItem = (item) => {
-    if (tokens < item.price) return;
+    if (tokens < item.price && !user?.god_mode) return;
     const inventory = user.inventory || [];
     if (inventory.includes(item.id)) {
       alert("You already own this!");
@@ -74,7 +74,7 @@ const Shop = () => {
     }
     
     authService.updateMe({ 
-      era_tokens: tokens - item.price,
+      era_tokens: user?.god_mode ? tokens : tokens - item.price,
       inventory: [...inventory, item.id]
     });
     alert(`Success! Unlocked ${item.name}`);
@@ -90,9 +90,14 @@ const Shop = () => {
           </h1>
           <p className="text-text-muted font-bold uppercase text-[10px] tracking-widest mt-1">Enhance your profile & protect your progress</p>
         </div>
-        <div className="flex items-center gap-3 bg-nuvio-yellow/10 border border-nuvio-yellow/20 px-8 py-4 rounded-3xl">
+        <div className="flex items-center gap-3 bg-nuvio-yellow/10 border border-nuvio-yellow/20 px-8 py-4 rounded-3xl relative">
           <Coins className="w-6 h-6 text-nuvio-yellow fill-nuvio-yellow/50" />
           <span className="text-3xl font-black text-nuvio-yellow tabular-nums">{tokens.toLocaleString()}</span>
+          {user?.god_mode && (
+            <div className="absolute -top-3 -right-3 bg-nuvio-red text-white text-[8px] font-black px-2 py-1 rounded-full animate-bounce shadow-lg shadow-nuvio-red/20">
+              GOD MODE
+            </div>
+          )}
         </div>
       </div>
 
@@ -197,7 +202,7 @@ const Shop = () => {
                       disabled={tokens < item.price}
                       className="nv-btn-primary px-8 h-10 text-[10px] uppercase rounded-xl disabled:opacity-30"
                     >
-                      Unlock
+                      {user?.god_mode ? 'Acquire' : 'Unlock'}
                     </button>
                   )}
                 </div>
