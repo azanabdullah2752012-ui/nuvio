@@ -173,7 +173,11 @@ const Dashboard = () => {
                  <Sparkles className="w-5 h-5 text-nuvio-purple-400" /> Nova Insight
               </h3>
               <p className="text-sm text-text-secondary leading-relaxed font-medium">
-                You're <span className="text-white font-bold">3 sessions away</span> from your weekly goal. Focusing on <span className="text-nuvio-purple-300 font-bold">Science</span> flashcards today would optimize your retention curves.
+                {counts.tasks > 0 ? (
+                  <>You have <span className="text-white font-bold">{counts.tasks} pending quests</span> in your roadmap. Completing these would provide a <span className="text-nuvio-purple-300 font-bold">critical XP boost</span> for your current rank.</>
+                ) : (
+                  <>Your roadmap is clear. Switching focus to your <span className="text-white font-bold">{counts.decks} memory decks</span> would optimize your long-term retention curves.</>
+                )}
               </p>
               <button className="w-full nv-btn-primary py-4 text-[10px] uppercase tracking-widest">Acknowledge Quest</button>
            </div>
