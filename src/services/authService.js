@@ -8,27 +8,71 @@ export const authService = {
     return data ? JSON.parse(data) : null;
   },
 
+  getSession: async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    return session;
+  },
+
+  seedUserData: async (userId) => {
+    console.log("ACTIVATE NEURAL SEEDING PROTOCOL...");
+    
+    // 1. Initial Homework Tasks
+    const starterTasks = [
+      { user_id: userId, title: 'Explore Neural Hub', subject: 'Nuvio', due: 'Today', priority: 'High', completed: false },
+      { user_id: userId, title: 'First Focus Session', subject: 'Meta', due: 'Soon', priority: 'Medium', completed: false }
+    ];
+
+    // 2. Starter Flashcard Decks
+    const starterDecks = [
+      { 
+        user_id: userId, 
+        title: 'Cognitive Science 101', 
+        subject: 'Neural', 
+        cards: [
+          { front: 'What is neuroplasticity?', back: 'The brain\'s ability to reorganize itself by forming new neural connections.' },
+          { front: 'Defined "Flow State"?', back: 'A mental state of operation in which a person performing an activity is fully immersed.' }
+        ]
+      }
+    ];
+
+    try {
+      await Promise.all([
+        supabase.from('tasks').insert(starterTasks),
+        supabase.from('decks').insert(starterDecks)
+      ]);
+      console.log("SEEDING COMPLETE. NEURAL CLOUD POPULATED.");
+    } catch (err) {
+      console.error("Seeding interference detected:", err);
+    }
+  },
+
   syncProfile: async (user) => {
     if (!user) return;
     try {
-      // In a real OAuth flow, we'd use auth.uid()
-      // For this high-fidelity simulation, we use the email as a unique key for the profile
-      const { data, error } = await supabase
+      const { data: existing } = await supabase
         .from('profiles')
-        .upsert({
-          id: user.id || '00000000-0000-0000-0000-000000000000', // Placeholder for simulation
-          email: user.email,
-          full_name: user.full_name,
-          avatar_emoji: user.avatar_emoji,
-          level: user.level,
-          xp: user.xp,
-          era_tokens: user.era_tokens,
-          role: user.role,
-          god_mode: user.god_mode,
-          onboarding_completed: user.onboarding_completed
-        }, { onConflict: 'email' });
+        .select('*')
+        .eq('id', user.id)
+        .single();
 
-      if (error) console.warn("Supabase Sync Warning:", error.message);
+      if (!existing) {
+        // New User: Create profile and seed data
+        const { error } = await supabase
+          .from('profiles')
+          .insert({
+            id: user.id,
+            email: user.email,
+            full_name: user.user_metadata?.full_name || 'Neural Student',
+            avatar_emoji: '⚡',
+            level: 1,
+            xp: 0,
+            era_tokens: 500,
+            role: 'student',
+            onboarding_completed: true
+          });
+        
+        if (!error) await authService.seedUserData(user.id);
+      }
     } catch (err) {
       console.error("Supabase Profile Sync Error:", err);
     }
@@ -65,68 +109,40 @@ export const authService = {
     });
   },
 
-  login: (email, password) => {
-    let user;
-    if (password === '1qaz') {
-      user = {
-        email: email || 'admin@nuvio.edu',
-        full_name: 'System Admin',
-        avatar_emoji: '🛡️',
-        level: 99,
-        xp: 999999,
-        era_tokens: 999999,
-        streak: 365,
-        role: 'admin',
-        onboarding_completed: true,
-        joined_date: new Date().toISOString()
-      };
-    } else {
-      user = {
-        email: email || 'student@nuvio.edu',
-        full_name: 'Learner',
-        avatar_emoji: '⚡',
-        level: 1,
-        xp: 0,
-        weekly_xp: 0,
-        era_tokens: 500,
-        streak: 1,
-        role: 'student',
-        onboarding_completed: false,
-        joined_date: new Date().toISOString()
-      };
-    }
-    
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
-    authService.syncProfile(user); // Sync to Cloud
-    window.dispatchEvent(new CustomEvent('nuvio_auth_change', { detail: user }));
-    return user;
-  },
-
-  googleLogin: (accountData) => {
-    return new Promise((resolve) => {
-      const user = {
-        email: accountData?.email || 'azanabdullah2752012@gmail.com',
-        full_name: accountData?.name || 'Azan Abdullah',
-        avatar_emoji: accountData?.avatar || '🛡️',
-        level: 1, // Production Mode: Everyone starts at 1
-        xp: 0,
-        era_tokens: 500, // Starter tokens
-        streak: 1,
-        role: accountData?.role || 'admin', // Kept for your specific admin account
-        onboarding_completed: true,
-        joined_date: new Date().toISOString()
-      };
-      
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
-      authService.syncProfile(user); // Sync to Cloud
-      window.dispatchEvent(new CustomEvent('nuvio_auth_change', { detail: user }));
-      resolve(user);
+  login: async (email, password) => {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password
     });
+    if (error) throw error;
+    
+    // Fetch profile
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', data.user.id)
+      .single();
+      
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(profile || data.user));
+    window.dispatchEvent(new CustomEvent('nuvio_auth_change', { detail: profile || data.user }));
+    return profile || data.user;
   },
 
-  logout: () => {
+  signInWithGoogle: async () => {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin + '/nuvio/'
+      }
+    });
+    if (error) throw error;
+    return data;
+  },
+
+  logout: async () => {
+    await supabase.auth.signOut();
     localStorage.removeItem(STORAGE_KEY);
     window.dispatchEvent(new CustomEvent('nuvio_auth_change', { detail: null }));
-    window.location.href = '/';
+    window.location.href = '/nuvio/';
   }
 };

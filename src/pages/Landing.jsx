@@ -14,7 +14,6 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { authService } from '../services/authService';
 import GoogleAuthButton from '../components/auth/GoogleAuthButton';
-import GoogleSelector from '../components/auth/GoogleSelector';
 
 const Landing = () => {
   const [loading, setLoading] = useState(false);
@@ -22,24 +21,12 @@ const Landing = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [showGoogleSelector, setShowGoogleSelector] = useState(false);
-  const navigate = useNavigate();
-
-  const handleGoogleSelect = async (account) => {
+  const handleGoogleSignIn = async () => {
     setLoading(true);
-    setShowGoogleSelector(false); // Close selector
     try {
-      const user = await authService.googleLogin(account);
-      if (user.role === 'admin') {
-        navigate('/admin');
-      } else if (user.onboarding_completed) {
-        navigate('/dashboard');
-      } else {
-        navigate('/onboarding');
-      }
+      await authService.signInWithGoogle();
     } catch (err) {
       console.error(err);
-    } finally {
       setLoading(false);
     }
   };
@@ -128,7 +115,7 @@ const Landing = () => {
           className="flex flex-col sm:flex-row items-center gap-4 w-full max-w-md"
         >
           <GoogleAuthButton 
-            onClick={() => setShowGoogleSelector(true)}
+            onClick={handleGoogleSignIn}
             disabled={loading}
           />
         </motion.div>
@@ -143,12 +130,6 @@ const Landing = () => {
           <span className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-nuvio-green" /> 100% free beta</span>
         </motion.div>
 
-        {/* Real Identity Modal */}
-        <GoogleSelector 
-          isOpen={showGoogleSelector}
-          onClose={() => setShowGoogleSelector(false)}
-          onSelect={handleGoogleSelect}
-        />
       </main>
 
       {/* Login Modal */}

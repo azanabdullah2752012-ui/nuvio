@@ -33,6 +33,41 @@ import StudyVerse from './pages/StudyVerse';
 import StudySites from './pages/StudySites';
 
 import { authService } from './services/authService';
+import { supabase } from './lib/supabase';
+
+// Real-time Identity Hub
+const AuthListener = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  React.useEffect(() => {
+    // 1. Check current session on load
+    authService.getSession().then(session => {
+      if (session?.user) {
+        authService.syncProfile(session.user);
+      }
+    });
+
+    // 2. Listen for Auth Changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' && session?.user) {
+        await authService.syncProfile(session.user);
+        
+        // Only redirect if on landing page
+        if (location.pathname === '/') {
+          navigate('/dashboard');
+        }
+      } else if (event === 'SIGNED_OUT') {
+        localStorage.removeItem('nuvio_user');
+        navigate('/');
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate, location.pathname]);
+
+  return null;
+};
 
 // Robust Route Guard for Admin
 const AdminGuard = ({ children }) => {
@@ -48,6 +83,7 @@ const AdminGuard = ({ children }) => {
 function App() {
   return (
     <HashRouter>
+      <AuthListener />
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<LandingPage />} />
