@@ -66,17 +66,17 @@ export const aiService = {
         }
 
         // 2. ACADEMIC SUBJECTS
-        if (msg.includes('ww1') || msg.includes('world war') || msg.includes('history') || msg.includes('war')) {
-          return "History is a complex web of cause and effect! 🏛️ While I re-sync my global archives, remember: World War I was triggered by a chain of alliances after the assassination in Sarajevo. I recommend studying your History Memory Cubes for the full timeline!";
+        if (msg.includes('ww1') || msg.includes('ww2') || msg.includes('wwii') || msg.includes('world war') || msg.includes('history') || msg.includes('war')) {
+          return "History is a complex web of cause and effect! 🏛️ While I re-sync my global archives, remember: World War II (1939-1945) was a global conflict that reshaped the modern world. I recommend studying your History Memory Cubes for the full timeline and major battles!";
         }
-        if (msg.includes('math') || msg.includes('calc') || msg.includes('algebra')) {
-          return "Math is all about patterns! 📐 While I re-sync with the global brain, remember: focus on the fundamental steps. What specific math problem are you tackling?";
+        if (msg.includes('math') || msg.includes('calc') || msg.includes('algebra') || msg.includes('trig') || msg.includes('geometry')) {
+          return "Math is all about patterns and logic! 📐 While I re-sync with the global brain, remember: focus on the fundamental steps of your equations. What specific math problem are you tackling?";
         }
-        if (msg.includes('science') || msg.includes('bio') || msg.includes('chem')) {
-          return "Scientific thinking is essential! 🧪 I'm currently in local-mode, but I recommend checking your Biology Memory Cubes for immediate active recall!";
+        if (msg.includes('science') || msg.includes('bio') || msg.includes('chem') || msg.includes('physics')) {
+          return "Scientific thinking is essential for discovery! 🧪 I'm currently in local-mode, but I recommend checking your Science Memory Cubes for immediate active recall on these complex systems!";
         }
-        if (msg.includes('essay') || msg.includes('english')) {
-          return "Deep analysis is your superpower today! ✍️ I'm currently refreshing my neural paths, but I encourage you to use the 'Essay Forge' tool in the StudyVerse!";
+        if (msg.includes('essay') || msg.includes('english') || msg.includes('lit') || msg.includes('write')) {
+          return "Deep analysis and clear expression are your superpowers! ✍️ I'm currently refreshing my neural paths, but I encourage you to use the 'Essay Forge' tool to structure your arguments!";
         }
 
         // 3. ROADMAP / TASKS
