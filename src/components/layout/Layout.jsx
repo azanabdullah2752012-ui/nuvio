@@ -3,6 +3,7 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import UniversalHeader from './UniversalHeader';
 import SideDrawer from './SideDrawer';
 import { authService } from '../../services/authService';
+import { supabase } from '../../lib/supabase';
 import NovaFAB from '../ai/NovaFAB';
 
 const Layout = () => {
@@ -12,49 +13,62 @@ const Layout = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Neural Identity Sync
+  const isAuthPage = ['/', '/landing', '/onboarding'].includes(location.pathname);
+
   useEffect(() => {
     let mounted = true;
 
-    const checkAuth = async () => {
-      // 1. Check local buffer first
-      let currentUser = authService.me();
-      
-      // 2. If empty, check the real cloud session (The Handshake)
-      if (!currentUser) {
+    const init = async () => {
+      // Step 1: Check local buffer (instant)
+      let profile = authService.me();
+
+      // Step 2: If no local buffer, ask Supabase directly
+      if (!profile) {
         const session = await authService.getSession();
         if (session?.user) {
+          // We have a live session — sync it and get the profile
           await authService.syncProfile(session.user);
-          currentUser = authService.me();
+          profile = authService.me();
         }
       }
 
       if (!mounted) return;
 
-      // 3. Clinical Redirection Logic
-      const isAuthPage = ['/', '/landing', '/onboarding'].includes(location.pathname);
-      
-      if (!currentUser && !isAuthPage) {
-        navigate('/');
-      } else {
-        setUser(currentUser);
+      if (profile) {
+        setUser(profile);
+        // If we're on the landing page, send to dashboard
+        if (isAuthPage) {
+          navigate('/dashboard', { replace: true });
+        }
+      } else if (!isAuthPage) {
+        // No session anywhere — send to landing
+        navigate('/', { replace: true });
       }
+
       setLoading(false);
     };
 
-    checkAuth();
+    init();
 
-    // Sync Auth & Stats Events
-    const handleUpdate = (e) => setUser(e.detail);
+    // Listen for sign-out
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT') {
+        localStorage.removeItem('nuvio_user');
+        if (mounted) navigate('/', { replace: true });
+      }
+    });
+
+    const handleUpdate = (e) => { if (mounted) setUser(e.detail); };
     window.addEventListener('nuvio_stats_update', handleUpdate);
     window.addEventListener('nuvio_auth_change', handleUpdate);
-    
+
     return () => {
       mounted = false;
+      subscription.unsubscribe();
       window.removeEventListener('nuvio_stats_update', handleUpdate);
       window.removeEventListener('nuvio_auth_change', handleUpdate);
     };
-  }, [location.pathname, navigate]);
+  }, []);  // Run ONCE on mount only
 
   // Hide UI on certain pages
   const hideUI = ['/', '/landing', '/onboarding'].includes(location.pathname);
