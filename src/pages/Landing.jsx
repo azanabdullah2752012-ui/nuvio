@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Sparkles, 
@@ -21,6 +21,19 @@ const Landing = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate();
+
+  // Check if returning from Google OAuth
+  useEffect(() => {
+    const checkLiveSession = async () => {
+      const session = await authService.getSession();
+      if (session?.user) {
+        await authService.syncProfile(session.user);
+        navigate('/dashboard', { replace: true });
+      }
+    };
+    checkLiveSession();
+  }, []);
 
   const handleGoogleSignIn = async () => {
     setLoading(true);
