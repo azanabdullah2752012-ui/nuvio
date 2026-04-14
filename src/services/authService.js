@@ -57,22 +57,33 @@ export const authService = {
 
       if (!existing) {
         // New User: Create profile and seed data
-        const { error } = await supabase
-          .from('profiles')
-          .insert({
-            id: user.id,
-            email: user.email,
-            full_name: user.user_metadata?.full_name || 'Neural Student',
-            avatar_emoji: '⚡',
-            level: 1,
-            xp: 0,
-            era_tokens: 500,
-            role: 'student',
-            onboarding_completed: true
-          });
+        const newProfile = {
+          id: user.id,
+          email: user.email,
+          full_name: user.user_metadata?.full_name || 'Neural Student',
+          avatar_emoji: '⚡',
+          level: 1,
+          xp: 0,
+          era_tokens: 500,
+          role: 'student',
+          onboarding_completed: true
+        };
+
+        const { error } = await supabase.from('profiles').insert(newProfile);
         
-        if (!error) await authService.seedUserData(user.id);
+        if (!error) {
+          await authService.seedUserData(user.id);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(newProfile));
+        }
+      } else {
+        // Existing User: Sync local storage
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(existing));
       }
+      
+      // Dispatch update event
+      window.dispatchEvent(new CustomEvent('nuvio_stats_update', { 
+        detail: JSON.parse(localStorage.getItem(STORAGE_KEY)) 
+      }));
     } catch (err) {
       console.error("Supabase Profile Sync Error:", err);
     }
