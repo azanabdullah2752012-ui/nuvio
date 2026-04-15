@@ -66,7 +66,7 @@ export const authService = {
           level: 1,
           xp: 0,
           era_tokens: 500,
-          role: 'student',
+          role: ADMIN_EMAILS.includes(user.email) ? 'admin' : 'student',
           onboarding_completed: true
         };
 
@@ -78,6 +78,11 @@ export const authService = {
         }
       } else {
         // Existing User: Sync local storage
+        // Force admin role if in admin list but role is student
+        if (ADMIN_EMAILS.includes(existing.email) && existing.role !== 'admin') {
+          existing.role = 'admin';
+          await supabase.from('profiles').update({ role: 'admin' }).eq('id', existing.id);
+        }
         localStorage.setItem(STORAGE_KEY, JSON.stringify(existing));
       }
       
