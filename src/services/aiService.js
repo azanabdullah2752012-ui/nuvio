@@ -6,15 +6,17 @@ const STORAGE_KEYS = {
 
 const DEFAULT_KEYS = {
   openrouter: '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',
-  groq: '', // User will need to provide this in Admin
-  gemini: '' // User will need to provide this in Admin
+  groq: '',
+  gemini: ''
 };
 
 const MODELS = {
-  reasoning: "deepseek/deepseek-r1:free",
-  academic: "meta-llama/llama-3.3-70b-instruct",
-  synthesis: "google/gemini-2.0-flash-lite-preview-02-05:free"
+  reasoning: "deepseek/deepseek-r1:free",       // OpenRouter
+  academic: "llama-3.3-70b-versatile",            // Groq direct
+  synthesis: "google/gemini-2.0-flash-lite-preview-02-05:free" // OpenRouter
 };
+
+const NOVA_SYSTEM = "You are Nova, the AI academic companion for Nuvio — a gamified study platform. You are encouraging, sharp, and use emojis like ⚡🧠🎯. Help students understand concepts clearly, create study plans, quiz them, and explain difficult topics with simple language and real examples.";
 
 export const aiService = {
   setKey: (provider, key) => {
@@ -28,76 +30,94 @@ export const aiService = {
   chat: async (messages) => {
     const orKey = aiService.getKey('openrouter');
     const groqKey = aiService.getKey('groq');
-    
-    // Format messages
-    let formattedMessages = [];
+
+    // Normalize messages to {role, content}
+    let formatted = [];
     if (typeof messages === 'string') {
-      formattedMessages = [{ role: 'user', content: messages }];
+      formatted = [{ role: 'user', content: messages }];
     } else {
-      formattedMessages = messages.map(m => ({
-        role: m.role || 'user',
+      formatted = messages.map(m => ({
+        role: m.role === 'assistant' ? 'assistant' : 'user',
         content: m.content || m.text || ''
       }));
     }
 
-    const lastMsg = formattedMessages[formattedMessages.length - 1].content.toLowerCase();
-    
-    // NEURAL ROUTER
-    let selectedModel = MODELS.synthesis;
-    let provider = 'openrouter';
+    const lastMsg = formatted[formatted.length - 1].content.toLowerCase();
+    const payload = [{ role: 'system', content: NOVA_SYSTEM }, ...formatted];
 
-    if (lastMsg.includes('solve') || lastMsg.includes('math') || lastMsg.includes('calc') || lastMsg.includes('code') || lastMsg.includes('why')) {
-      selectedModel = MODELS.reasoning;
-    } else if ((lastMsg.includes('explain') || lastMsg.includes('history') || lastMsg.includes('essay')) && groqKey) {
-      selectedModel = MODELS.academic;
-      // If we have a groq key, we could use Groq directly, but for now we'll route through OpenRouter 
-      // as it's the unified bridge in this architecture unless the user asks for direct Groq calls.
-    }
+    // Route: use Groq directly if key available and academic query
+    const isAcademic = lastMsg.includes('explain') || lastMsg.includes('history') || 
+                       lastMsg.includes('essay') || lastMsg.includes('quiz') ||
+                       lastMsg.includes('study') || lastMsg.includes('french') ||
+                       lastMsg.includes('science') || lastMsg.includes('math');
 
-    const systemInstruction = {
-      role: 'system',
-      content: "You are Nova, the Triple-Core AI tutor for Nuvio. You combine the speed of Llama 3.3, the reasoning of DeepSeek R1, and the stability of Gemini. Be encouraging, use emojis ⚡, and help students master their subjects through high-precision feedback."
-    };
-
-    const payload = [systemInstruction, ...formattedMessages];
-
-    try {
-      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${orKey}`,
-          "HTTP-Referer": "https://nuvio.edu",
-          "X-Title": "Nuvio Project",
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          "model": selectedModel,
-          "messages": payload,
-          "temperature": 0.6,
-        })
-      });
-
-      const data = await response.json();
-      
-      if (data.error || !data.choices || data.choices.length === 0) {
-        console.error("Neural Core Error:", data.error);
-        return aiService.localHeuristic(lastMsg);
+    if (groqKey && isAcademic) {
+      try {
+        const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${groqKey}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: MODELS.academic,
+            messages: payload,
+            temperature: 0.7,
+            max_tokens: 1024
+          })
+        });
+        const data = await res.json();
+        if (data.choices?.[0]?.message?.content) {
+          return data.choices[0].message.content;
+        }
+      } catch (e) {
+        console.warn('Groq failed, falling back to OpenRouter', e);
       }
-
-      return data.choices[0].message.content;
-    } catch (error) {
-      console.error("AI Fetch Error:", error);
-      return aiService.localHeuristic(lastMsg);
     }
+
+    // Default: OpenRouter (DeepSeek R1 for reasoning, Gemini synthesis otherwise)
+    if (orKey) {
+      const model = (lastMsg.includes('solve') || lastMsg.includes('calc') || 
+                     lastMsg.includes('code') || lastMsg.includes('why'))
+        ? MODELS.reasoning : MODELS.synthesis;
+      try {
+        const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${orKey}`,
+            'HTTP-Referer': 'https://azanabdullah2752012-ui.github.io/nuvio/',
+            'X-Title': 'Nuvio AI',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ model, messages: payload, temperature: 0.6 })
+        });
+        const data = await res.json();
+        if (data.choices?.[0]?.message?.content) {
+          return data.choices[0].message.content;
+        }
+        console.error('OpenRouter error:', data.error);
+      } catch (e) {
+        console.error('OpenRouter fetch failed:', e);
+      }
+    }
+
+    // Final fallback
+    return aiService.localHeuristic(lastMsg);
   },
 
   localHeuristic: (msg) => {
-    if (msg.includes('who are you') || msg.includes('what are you')) {
-      return "I am Nova, your Triple-Core academic companion. Currently operating on 'Local Heuristics' while my neural links refresh ⚡. I combine Llama, DeepSeek, and Gemini protocols for your study success!";
-    }
-    if (msg.includes('ww2') || msg.includes('history')) {
-      return "History protocols active! 🏛️ Remember: World War II (1939-1945) was the most widespread war in history. Check your History Memory Cubes for the full data set!";
-    }
-    return "Nova's neural link is currently refreshing ⚡. The study environment is still active! I'm in 'Heuristic Mode'—what are we conquering today?";
+    if (msg.includes('who are you') || msg.includes('what are you'))
+      return "I'm Nova ⚡ — your AI study companion on Nuvio! I tutor you through subjects, quiz you, and help you level up academically. My full neural core needs API keys from the Admin Hub to unlock — but I can still help with basics right now!";
+    if (msg.includes('french') || msg.includes('verb'))
+      return "🇫🇷 French verbs! Let's go. Regular -ER verbs (like 'parler'): je parle, tu parles, il/elle parle, nous parlons, vous parlez, ils/elles parlent. Want me to quiz you? Try typing: 'Quiz me on irregular French verbs!'";
+    if (msg.includes('photosynthesis'))
+      return "🌿 Photosynthesis: Plants convert sunlight + CO₂ + water → glucose + oxygen. The equation: 6CO₂ + 6H₂O + light → C₆H₁₂O₆ + 6O₂. It happens in the chloroplasts. Want a deeper breakdown of the light vs dark reactions?";
+    if (msg.includes('study') || msg.includes('schedule') || msg.includes('plan'))
+      return "📅 Study plan activated! For best retention: 25-min focused sessions (Pomodoro) → 5-min break. Review new material within 24 hours. Use Nuvio's Focus Timer + Flashcards for maximum XP gains! 🎯";
+    if (msg.includes('quiz'))
+      return "🧠 Quiz mode! Ask me something like 'Quiz me on the French Revolution' or 'Test me on quadratic equations' and I'll fire questions at you!";
+    if (msg.includes('hello') || msg.includes('hi'))
+      return "Hey there! ⚡ I'm Nova, your Nuvio AI tutor. Ask me to explain a topic, quiz you, create a study plan, or help with an essay. What are we conquering today?";
+    return "Nova here ⚡. My full intelligence needs API keys via the Admin Hub — but I'm ready to help with study topics, quizzes, and subject explanations in local mode. What subject are we tackling?";
   }
 };

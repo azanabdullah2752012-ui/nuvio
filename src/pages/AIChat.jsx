@@ -148,7 +148,7 @@ const AIChat = () => {
           </button>
         </div>
         <p className="text-[9px] text-center text-text-muted font-black uppercase tracking-[0.2em] opacity-50">
-          Powered by Gemma 4 31B · Verified Academic Logic
+          Powered by DeepSeek R1 · Llama 3.3 · Gemini Flash · Triple Neural Core
         </p>
       </div>
     </div>
