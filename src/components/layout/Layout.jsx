@@ -26,9 +26,20 @@ const Layout = () => {
       if (!profile) {
         const session = await authService.getSession();
         if (session?.user) {
-          // We have a live session — sync it and get the profile
           await authService.syncProfile(session.user);
           profile = authService.me();
+
+          // Fallback: build profile from session if Supabase table fails
+          if (!profile) {
+            profile = {
+              id: session.user.id,
+              email: session.user.email,
+              full_name: session.user.user_metadata?.full_name || 'Neural Student',
+              avatar_emoji: '⚡',
+              level: 1, xp: 0, era_tokens: 500, role: 'student'
+            };
+            localStorage.setItem('nuvio_user', JSON.stringify(profile));
+          }
         }
       }
 
@@ -36,12 +47,9 @@ const Layout = () => {
 
       if (profile) {
         setUser(profile);
-        // If we're on the landing page, send to dashboard
-        if (isAuthPage) {
-          navigate('/dashboard', { replace: true });
-        }
+        // Already on a protected route — just show it
       } else if (!isAuthPage) {
-        // No session anywhere — send to landing
+        // Truly no session anywhere — send to landing
         navigate('/', { replace: true });
       }
 

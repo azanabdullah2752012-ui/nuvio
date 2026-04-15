@@ -29,6 +29,19 @@ const Landing = () => {
       const session = await authService.getSession();
       if (session?.user) {
         await authService.syncProfile(session.user);
+
+        // Guarantee a profile exists even if Supabase table fails
+        if (!authService.me()) {
+          const fallback = {
+            id: session.user.id,
+            email: session.user.email,
+            full_name: session.user.user_metadata?.full_name || 'Neural Student',
+            avatar_emoji: '⚡',
+            level: 1, xp: 0, era_tokens: 500, role: 'student'
+          };
+          localStorage.setItem('nuvio_user', JSON.stringify(fallback));
+        }
+
         navigate('/dashboard', { replace: true });
       }
     };
