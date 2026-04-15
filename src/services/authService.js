@@ -1,6 +1,7 @@
 import { supabase } from '../lib/supabase';
 
 const STORAGE_KEY = 'nuvio_user';
+const ADMIN_EMAILS = ['azanabdullah27.5.2012@gmail.com'];
 
 export const authService = {
   me: () => {
