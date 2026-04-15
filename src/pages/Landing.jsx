@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { authService } from '../services/authService';
+import { supabase } from '../lib/supabase';
 import GoogleAuthButton from '../components/auth/GoogleAuthButton';
 
 const Landing = () => {
@@ -23,29 +24,43 @@ const Landing = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  // Check if returning from Google OAuth
   useEffect(() => {
-    const checkLiveSession = async () => {
-      const session = await authService.getSession();
-      if (session?.user) {
-        await authService.syncProfile(session.user);
+    const saveAndRedirect = async (user) => {
+      // Sync profile (best-effort)
+      await authService.syncProfile(user);
 
-        // Guarantee a profile exists even if Supabase table fails
-        if (!authService.me()) {
-          const fallback = {
-            id: session.user.id,
-            email: session.user.email,
-            full_name: session.user.user_metadata?.full_name || 'Neural Student',
-            avatar_emoji: '⚡',
-            level: 1, xp: 0, era_tokens: 500, role: 'student'
-          };
-          localStorage.setItem('nuvio_user', JSON.stringify(fallback));
-        }
-
-        navigate('/dashboard', { replace: true });
+      // Guarantee localStorage is populated
+      if (!authService.me()) {
+        localStorage.setItem('nuvio_user', JSON.stringify({
+          id: user.id,
+          email: user.email,
+          full_name: user.user_metadata?.full_name || 'Neural Student',
+          avatar_emoji: '⚡',
+          level: 1, xp: 0, era_tokens: 500, role: 'student'
+        }));
       }
+
+      // Hard redirect — fully reinitializes the app, zero race conditions
+      window.location.replace(
+        window.location.origin + '/nuvio/#/dashboard'
+      );
     };
-    checkLiveSession();
+
+    // Listen for OAuth callback completing
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (event === 'SIGNED_IN' && session?.user) {
+          await saveAndRedirect(session.user);
+        }
+      }
+    );
+
+    // Also check if session already exists (returning user)
+    authService.getSession().then(session => {
+      if (session?.user) saveAndRedirect(session.user);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const handleGoogleSignIn = async () => {

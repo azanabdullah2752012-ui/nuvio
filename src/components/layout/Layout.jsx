@@ -3,7 +3,6 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import UniversalHeader from './UniversalHeader';
 import SideDrawer from './SideDrawer';
 import { authService } from '../../services/authService';
-import { supabase } from '../../lib/supabase';
 import NovaFAB from '../ai/NovaFAB';
 
 const Layout = () => {
@@ -58,21 +57,12 @@ const Layout = () => {
 
     init();
 
-    // Listen for sign-out
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_OUT') {
-        localStorage.removeItem('nuvio_user');
-        if (mounted) navigate('/', { replace: true });
-      }
-    });
-
     const handleUpdate = (e) => { if (mounted) setUser(e.detail); };
     window.addEventListener('nuvio_stats_update', handleUpdate);
     window.addEventListener('nuvio_auth_change', handleUpdate);
 
     return () => {
       mounted = false;
-      subscription.unsubscribe();
       window.removeEventListener('nuvio_stats_update', handleUpdate);
       window.removeEventListener('nuvio_auth_change', handleUpdate);
     };
