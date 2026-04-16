@@ -49,6 +49,8 @@ export const authService = {
 
   syncProfile: async (user) => {
     if (!user) return;
+    console.log("NEURAL IDENTITY SYNC INITIATED FOR:", user.email);
+    
     try {
       const { data: existing } = await supabase
         .from('profiles')
@@ -56,8 +58,11 @@ export const authService = {
         .eq('id', user.id)
         .single();
 
+      const userEmail = (user.email || '').toLowerCase();
+      const isAdminEmail = ADMIN_EMAILS.some(e => e.toLowerCase() === userEmail);
+
       if (!existing) {
-        // New User: Create profile and seed data
+        console.log("CREATING NEW NEURAL IDENTITY... ADMIN STATUS:", isAdminEmail);
         const newProfile = {
           id: user.id,
           email: user.email,
@@ -66,7 +71,7 @@ export const authService = {
           level: 1,
           xp: 0,
           era_tokens: 500,
-          role: ADMIN_EMAILS.includes(user.email) ? 'admin' : 'student',
+          role: isAdminEmail ? 'admin' : 'student',
           onboarding_completed: true
         };
 
@@ -77,9 +82,10 @@ export const authService = {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(newProfile));
         }
       } else {
-        // Existing User: Sync local storage
+        console.log("SYNCING EXISTING IDENTITY... CURRENT ROLE:", existing.role, "TARGET ADMIN:", isAdminEmail);
         // Force admin role if in admin list (check against live auth email)
-        if (ADMIN_EMAILS.includes(user.email) && existing.role !== 'admin') {
+        if (isAdminEmail && existing.role !== 'admin') {
+          console.log("ELEVATING PRIVILEGES TO ADMIN...");
           existing.role = 'admin';
           await supabase.from('profiles').update({ role: 'admin' }).eq('id', existing.id);
         }
