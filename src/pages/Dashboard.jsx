@@ -67,7 +67,10 @@ const Dashboard = () => {
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
           <h1 className="text-4xl font-black text-white uppercase tracking-tighter">Command Center</h1>
-          <p className="text-text-secondary font-medium mt-1">Ready for your next session, <span className="text-nuvio-purple-400 font-black">{user?.full_name}</span>?</p>
+          <p className="text-text-secondary font-medium mt-1">
+            Ready for your next session, <span className="text-nuvio-purple-400 font-black">{user?.full_name}</span>?
+            {user?.role !== 'admin' && <span className="ml-2 text-[8px] opacity-40 lowercase">({user?.email})</span>}
+          </p>
         </div>
         <div className="flex items-center gap-4">
           <div className="bg-white/5 border border-white/10 px-6 py-3 rounded-2xl flex items-center gap-3">

