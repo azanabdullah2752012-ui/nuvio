@@ -44,48 +44,44 @@ export const xpService = {
   },
 
   awardXp: async (amount, reason) => {
+    if (amount <= 0) return null;
     const user = authService.me();
     if (!user) return null;
 
-    const newXp = (user.xp || 0) + amount;
-    const newLevel = xpService.getLevel(newXp);
-    const leveledUp = newLevel > (user.level || 1);
-    
     const category = reason.toLowerCase().includes('quiz') || reason.toLowerCase().includes('bingo') || reason.toLowerCase().includes('ludo') || reason.toLowerCase().includes('uno') ? 'game' : 
                      reason.toLowerCase().includes('streak') ? 'streak' : 
                      reason.toLowerCase().includes('task') || reason.toLowerCase().includes('planner') ? 'task' : 'social';
 
-    const tokensEarned = Math.floor(amount / 10);
-
-    // 1. Sync Profile (Xp, Level, Tokens)
-    const updatedUser = await authService.updateMe({
-      xp: newXp,
-      level: newLevel,
-      weekly_xp: (user.weekly_xp || 0) + amount,
-      era_tokens: (user.era_tokens || 0) + tokensEarned
-    });
-
-    // 2. Persistent XP Log Entry
     try {
-      await supabase.from('xp_logs').insert([{
-        user_id: user.id,
-        amount,
-        reason,
-        category
-      }]);
-    } catch (e) {
-      console.error("Failed to log XP entry:", e);
+      // 🚀 ATOMIC SYNC: One call to handle Profile + Logs + Level Calculation
+      const { data, error } = await supabase.rpc('rpc_award_xp', {
+        amount_to_add: amount,
+        award_reason: reason,
+        award_category: category
+      });
+
+      if (error || !data.success) throw error || new Error(data.message);
+
+      const updatedUser = data.profile;
+      const leveledUp = data.leveled_up;
+
+      // 1. Sync Local State
+      localStorage.setItem('nuvio_user', JSON.stringify(updatedUser));
+      
+      // 2. Emit events for UI
+      window.dispatchEvent(new CustomEvent('nuvio_stats_update', { detail: updatedUser }));
+      
+      if (leveledUp) {
+        window.dispatchEvent(new CustomEvent('nuvio_notification', { 
+          detail: { title: "Neural Ascension", message: `Reached Level ${updatedUser.level}!`, type: 'success' } 
+        }));
+      }
+
+      return { updatedUser, leveledUp, amount, reason };
+    } catch (err) {
+      console.error("NEURAL XP SYNC FAILURE:", err);
+      return null;
     }
-
-    // 3. Emit local event for UI snappiness
-    window.dispatchEvent(new CustomEvent('nuvio_stats_update', { detail: updatedUser }));
-
-    // 4. Peer Sync
-    import('./peerService').then(({ peerService }) => {
-      peerService.syncPeers(newXp);
-    });
-
-    return { updatedUser, leveledUp, amount, reason };
   },
 
   getTotalXp: () => {

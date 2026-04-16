@@ -112,21 +112,8 @@ export const authService = {
     }
   },
 
-  promoteToAdmin: async () => {
-    const user = authService.me();
-    if (!user) return;
-    console.log("DIVINE BACKDOOR ACTIVATED. ELEVATING TO ADMIN...");
-    const updated = { ...user, role: 'admin' };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-    
-    // Attempt cloud sync if possible
-    try { await supabase.from('profiles').update({ role: 'admin' }).eq('id', user.id); } catch(e){}
-
-    // Dispatch events to update UI
-    window.dispatchEvent(new CustomEvent('nuvio_auth_change', { detail: updated }));
-    window.dispatchEvent(new CustomEvent('nuvio_stats_update', { detail: updated }));
-    return updated;
-  },
+  // --- REDACTED: DANGEROUS BACKDOORS REMOVED FOR PRODUCTION ---
+  // promoteToAdmin and injectWealth are now disabled at the neural level.
 
   validateStreak: async () => {
     const user = authService.me();
@@ -151,29 +138,31 @@ export const authService = {
 
   updateMe: async (newData) => {
     const current = authService.me();
-    const updated = { ...current, ...newData };
+    if (!current?.id) return null;
+
+    // 🛡️ SECURITY: Strip protected fields from client-side updates
+    const sanitizedData = { ...newData };
+    delete sanitizedData.role;
+    delete sanitizedData.email;
+    delete sanitizedData.id;
+    delete sanitizedData.xp;
+    delete sanitizedData.level;
+    delete sanitizedData.era_tokens;
+
+    const updated = { ...current, ...sanitizedData };
     
-    // Save locally first for speed
+    // Save locally for speed
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-    
-    // Dispatch events for immediate UI feedback
     window.dispatchEvent(new CustomEvent('nuvio_stats_update', { detail: updated }));
     window.dispatchEvent(new CustomEvent('nuvio_sync_pulse', { detail: { syncing: true } }));
 
-    // Persist to Neural Cloud (Supabase)
     try {
-      if (current?.id) {
-        const timestampedData = { 
-          ...newData, 
-          last_activity_date: new Date().toISOString() 
-        };
-        const { error } = await supabase
-          .from('profiles')
-          .update(timestampedData)
-          .eq('id', current.id);
-        
-        if (error) throw error;
-      }
+      const { error } = await supabase
+        .from('profiles')
+        .update({ ...sanitizedData, last_activity_date: new Date().toISOString() })
+        .eq('id', current.id);
+      
+      if (error) throw error;
     } catch (err) {
       console.error("NEURAL CLOUD SYNC FAILURE:", err.message);
     } finally {
@@ -183,28 +172,20 @@ export const authService = {
     return updated;
   },
 
-  toggleGodMode: () => {
-    const user = authService.me();
-    if (!user) return;
-    const newState = !user.god_mode;
-    return authService.updateMe({ god_mode: newState });
-  },
-
-  injectWealth: () => {
-    const user = authService.me();
-    if (!user) return;
-    return authService.updateMe({ 
-      era_tokens: (user.era_tokens || 0) + 1000000,
-      xp: (user.xp || 0) + 50000,
-      level: 20
-    });
-  },
-
   addTokens: async (amount) => {
+    if (amount === 0) return;
     const user = authService.me();
     if (!user) return;
-    const newTokens = (user.era_tokens || 0) + amount;
-    return authService.updateMe({ era_tokens: newTokens });
+
+    // Switch to Atomic RPC for currency
+    const { data, error } = await supabase.rpc('rpc_add_tokens', { amount_to_add: amount });
+    
+    if (!error && data.success) {
+      const updated = { ...user, era_tokens: data.new_balance };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      window.dispatchEvent(new CustomEvent('nuvio_stats_update', { detail: updated }));
+      return updated;
+    }
   },
 
   login: async (email, password) => {
