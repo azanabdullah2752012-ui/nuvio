@@ -205,14 +205,14 @@ const StudyVerse = () => {
         <aside className="hidden lg:flex flex-col w-[350px] gap-8">
            <div className="nv-card !bg-nuvio-purple-500 !text-black !shadow-[8px_8px_0_#000]">
               <div className="flex items-center gap-3">
-                 <Command className="w-8 h-8" />
-                 <h2 className="text-2xl font-black tracking-tighter uppercase">StudyVerse Hub</h2>
+                 <Gamepad2 className="w-8 h-8" />
+                 <h2 className="text-2xl font-black tracking-tighter uppercase">Study Arcade</h2>
               </div>
            </div>
 
            {/* Subject Switcher */}
            <div className="nv-card space-y-4">
-              <div className="nv-label tracking-widest text-[#F7F4EF60]">Mission Sector</div>
+              <div className="nv-label tracking-widest text-[#F7F4EF60]">Subject Area</div>
               <div className="grid grid-cols-1 gap-3">
                  {['Math', 'Science', 'Social'].map(s => (
                    <button 
@@ -226,11 +226,11 @@ const StudyVerse = () => {
               </div>
            </div>
 
-           {/* Turn Indicator */}
-           <div className="nv-card !bg-nuvio-red">
-              <div className="flex items-center justify-between text-black">
-                 <div className="space-y-1">
-                    <div className="text-[10px] font-black uppercase tracking-widest opacity-70">Current Impulse</div>
+            {/* Turn Indicator */}
+            <div className="nv-card !bg-nuvio-yellow !text-black border-black border-4 shadow-nb-small">
+               <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                     <div className="text-[10px] font-black uppercase tracking-widest opacity-70">Active Player</div>
                     <div className="text-lg font-black uppercase tracking-tighter leading-none">{players[turn].name}</div>
                  </div>
                  <div className="w-12 h-12 bg-black flex items-center justify-center text-2xl">{players[turn].icon}</div>
@@ -303,7 +303,7 @@ const StudyVerse = () => {
                       const pool = QUESTION_BANK[activeSubject];
                       setActiveQuiz(pool[Math.floor(Math.random() * pool.length)]);
                       setShowQuiz(true);
-                      window.quiz_callback = callback; // Temporary callback handler
+                      window.quiz_callback = callback;
                     }}
                     onNextTurn={nextTurn}
                  />
@@ -354,7 +354,7 @@ const StudyVerse = () => {
                        className="nv-card !bg-[#2ed573] !text-black w-full max-w-2xl border-4 !shadow-[20px_20px_0_#000]"
                      >
                         <div className="flex justify-between items-start mb-10">
-                           <div className="bg-black text-white px-4 py-1 text-[10px] font-black uppercase tracking-widest">Quiz Intercept</div>
+                           <div className="bg-black text-white px-4 py-1 text-[10px] font-black uppercase tracking-widest">Focus Check</div>
                            <div className="text-2xl font-black">Subject: {activeSubject}</div>
                         </div>
                         <h2 className="text-3xl font-black mb-12 border-b-4 border-black pb-8">{activeQuiz.q}</h2>

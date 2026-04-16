@@ -11,7 +11,41 @@ const TriviaBingo = ({ players, turn, onLog, activeSubject, onNextTurn }) => {
 
   useEffect(() => {
     generateNewPrompt();
-  }, [turn, activeSubject]);
+    
+    // --- BOT LOGIC (Solo Mode) ---
+    const isBot = players[turn]?.isBot;
+    if (isBot && !winner) {
+      const timer = setTimeout(() => {
+        handleBotDecision();
+      }, 3000); // Bingo takes longer to "scan"
+      return () => clearTimeout(timer);
+    }
+  }, [turn, activeSubject, winner]);
+
+  const handleBotDecision = () => {
+    const board = boards[turn];
+    const correctAns = currentPrompt.options[currentPrompt.a].toLowerCase();
+    
+    // 1. Find the tile that matches the prompt
+    const matchIdx = board.findIndex(tile => {
+      const tileVal = tile.toLowerCase();
+      return correctAns.includes(tileVal) || tileVal.includes(correctAns.slice(0, 3));
+    });
+    
+    if (matchIdx !== -1 && !lockedTiles[turn].includes(matchIdx)) {
+      // 2. 75% chance to "see" it
+      if (Math.random() < 0.75) {
+        handleTileClick(matchIdx);
+      } else {
+        onLog(`${players[turn].name} is still scanning the matrix...`, 'sys');
+        onNextTurn();
+      }
+    } else {
+      // No match on board, skip
+      onLog(`${players[turn].name} found no matching concept nodes.`, 'sys');
+      onNextTurn();
+    }
+  };
 
   function generateBoard() {
     const concepts = ["Atom", "Cell", "Energy", "DNA", "Force", "Gravity", "Light", "Heat", "Acid", "Base", "Element", "Matter", "Solid", "Liquid", "Gas", "Molecules", "Plasma", "Neutron", "Proton", "Electron", "Bond", "Reaction", "Mass", "Volume", "Density"];
