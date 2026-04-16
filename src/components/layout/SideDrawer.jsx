@@ -23,7 +23,7 @@ const navSections = [
     label: "Study Arsenal",
     items: [
       { name: "Flashcards", path: "/flashcards", icon: BookMarked },
-      { name: "Homework", path: "/homework", icon: ListChecks },
+      { name: "Mission Control", path: "/homework", icon: ListChecks },
       { name: "Calendar", path: "/calendar", icon: Calendar },
       { name: "Focus Timer", path: "/focus-timer", icon: Timer },
       { name: "Knowledge Map", path: "/knowledge-map", icon: Map },

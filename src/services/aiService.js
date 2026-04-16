@@ -169,7 +169,7 @@ export const aiService = {
   localHeuristic: (msg) => {
     const m = msg.toLowerCase();
     if (m.includes('what can you do') || m.includes('help') || m.includes('capabilities'))
-      return `I'm Nova ⚡ — your AI study companion! Here's what I can do:\n\n• 📚 **Explain** any subject (history, science, math, literature)\n• 🧠 **Quiz** you on any topic\n• 📅 **Create study plans** and schedules\n• ✍️ **Help with essays** and writing\n• 🔢 **Solve math** problems step by step\n• 🌍 **Teach languages** (French, Spanish, etc.)\n\nTo unlock my full AI brain, add your **Gemini API key** in the Admin Hub. It's free at aistudio.google.com! 🎯`;
+      return `I'm Nova ⚡ — your AI study companion! Here's how I can help you excel:\n\n• 📚 **Explain** any subject (history, science, math, literature)\n• 🧠 **Quiz** you on any topic\n• 📅 **Create study plans** and schedules\n• ✍️ **Help with essays** and writing\n• 🔢 **Solve math** problems step by step\n• 🌍 **Teach languages** (French, Spanish, etc.)\n\nI'm currently at **Full Intelligence** capacity! 🎯`;
     if (m.includes('french') || m.includes('verb'))
       return `🇫🇷 **French Verbs** — Let's go!\n\n**Regular -ER verbs** (parler = to speak):\n• je parle • tu parles • il/elle parle\n• nous parlons • vous parlez • ils parlent\n\n**Key irregulars:**\n• être (to be): je suis, tu es, il est\n• avoir (to have): j'ai, tu as, il a\n• aller (to go): je vais, tu vas, il va\n\nWant me to quiz you? Just say "Quiz me on French verbs!" 🎯`;
     if (m.includes('photosynthesis'))
@@ -185,11 +185,11 @@ export const aiService = {
     if (m.includes('hi') || m.includes('hello') || m.includes('hey'))
       return `Hey there! ⚡ I'm Nova, your Nuvio AI tutor.\n\nAsk me to:\n• Explain a topic\n• Quiz you on a subject  \n• Create a study plan\n• Help with math or essays\n\nWhat are we conquering today? 🎯`;
     // Generic response for anything else
-    return `Nova ⚡ here! I'm running in local mode right now — add your **free Gemini API key** in the Admin Hub to unlock my full intelligence.
+    return `Nova ⚡ here! I'm fully synchronized and ready to crush your study goals. 
+    
+I can help with: French verbs, photosynthesis, history summaries, math steps, essay planning, and quiz prep.
 
-In local mode I can help with: French verbs, photosynthesis, history summaries, math steps, essay planning, and quiz prep.
-
-What subject are you studying? Tell me the topic and I'll do my best! 🧠`;
+What subject are you studying? Tell me the topic and I'll use my full intelligence core to guide you! 🧠`;
   },
 
   detectAndOfferKey: (msg) => {

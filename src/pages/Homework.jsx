@@ -12,6 +12,15 @@ import { xpService } from '../services/xpService';
 import { notificationService } from '../services/notificationService';
 import { rewardService } from '../services/rewardService';
 
+const QUICK_MISSIONS = [
+  { id: 'math', title: 'Math Prime Set', icon: Target, color: 'bg-nuvio-blue', subject: 'Mathematics' },
+  { id: 'science', title: 'Science Synapse', icon: Zap, color: 'bg-nuvio-green', subject: 'Science' },
+  { id: 'essay', title: 'Deep Draft', icon: ScrollText, color: 'bg-nuvio-purple-500', subject: 'Humanities' },
+  { id: 'vocab', title: 'Linguistic Drill', icon: Brain, color: 'bg-nuvio-cyan', subject: 'Languages' },
+  { id: 'reading', title: 'Sector Scan', icon: Layers, color: 'bg-nuvio-yellow', subject: 'Literature' },
+  { id: 'quiz', title: 'Neural Test', icon: Rocket, color: 'bg-nuvio-red', subject: 'Exams' }
+];
+
 const Homework = () => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -34,12 +43,12 @@ const Homework = () => {
     }
   };
 
-  const handleQuestForge = async (titleOverride = null) => {
+  const handleQuestForge = async (titleOverride = null, subjectOverride = 'General Sector') => {
     const title = titleOverride || quickInput;
     if (title.trim()) {
       const newQuest = {
         title: title,
-        subject: 'General Sector',
+        subject: subjectOverride,
         priority: 'Standard',
         completed: false
       };
@@ -121,7 +130,7 @@ const Homework = () => {
             <span className="text-sm font-black text-black uppercase tracking-widest">Active Missions</span>
           </div>
           <h1 className="text-6xl md:text-8xl font-black text-white uppercase tracking-tighter leading-none text-shadow-nb">
-            Study <br /> Planner
+            Mission <br /> Control
           </h1>
           <p className="text-lg font-bold text-nuvio-cyan uppercase tracking-widest pt-2">
             [ Sector Clear: {(tasks.filter(t => t.completed).length / (tasks.length || 1) * 100).toFixed(0)}% ]
@@ -144,14 +153,39 @@ const Homework = () => {
         </div>
       </header>
 
-      {/* Input Section */}
-      <div className="relative max-w-4xl">
-        <div className="nv-card bg-nuvio-purple-500 p-2 !shadow-[12px_12px_0_#000] !border-4">
-          <div className="flex flex-col md:flex-row items-center gap-4 bg-black p-6">
-            <Plus className="w-10 h-10 text-nuvio-purple-400" />
+      {/* Zero-Typing: Quick Mission Grid */}
+      <div className="space-y-6">
+        <div className="flex items-center gap-3">
+          <Zap className="w-5 h-5 text-nuvio-yellow" />
+          <h3 className="text-xs font-black text-white uppercase tracking-[0.3em]">Rapid Deployment Grid</h3>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+          {QUICK_MISSIONS.map(mission => (
+            <button 
+              key={mission.id}
+              onClick={() => handleQuestForge(mission.title, mission.subject)}
+              className="group relative flex flex-col items-center justify-center gap-4 p-6 bg-black border-[3px] border-black hover:border-white transition-all hover:bg-white/5 active:scale-95 shadow-nb-small"
+            >
+              <div className={`w-12 h-12 rounded-2xl ${mission.color} flex items-center justify-center shadow-[4px_4px_0_#000] border-2 border-black group-hover:scale-110 transition-transform`}>
+                <mission.icon className="w-6 h-6 text-black" />
+              </div>
+              <span className="text-[9px] font-black text-white uppercase tracking-widest text-center">{mission.title}</span>
+              <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <Plus className="w-3 h-3 text-nuvio-cyan" />
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Input Section (Secondary Mode) */}
+      <div className="relative max-w-4xl opacity-60 hover:opacity-100 transition-opacity">
+        <div className="nv-card bg-black/40 p-2 !shadow-[8px_8px_0_#000] !border-4">
+          <div className="flex flex-col md:flex-row items-center gap-4 bg-black p-4">
+            <Plus className="w-8 h-8 text-nuvio-purple-400" />
             <input 
-              className="flex-1 bg-transparent text-2xl font-black text-white outline-none placeholder:text-white/20 uppercase"
-              placeholder="What's the goal?"
+              className="flex-1 bg-transparent text-lg font-black text-white outline-none placeholder:text-white/20 uppercase"
+              placeholder="Or forge unique objective..."
               value={quickInput}
               onChange={(e) => setQuickInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleQuestForge()}
@@ -160,8 +194,8 @@ const Homework = () => {
               onClick={handleMagicSuggest}
               className="p-4 bg-nuvio-cyan hover:bg-white text-black rounded-xl transition-all hover:scale-110 active:scale-90 flex items-center gap-2 group"
             >
-              <Sparkles className="w-6 h-6 animate-pulse" />
-              <span className="text-[10px] font-black uppercase hidden lg:block">Auto-Focus</span>
+              <Brain className="w-6 h-6 animate-pulse" />
+              <span className="text-[10px] font-black uppercase hidden lg:block">Auto-Suggest</span>
             </button>
           </div>
         </div>
