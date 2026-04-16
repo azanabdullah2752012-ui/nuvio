@@ -8,7 +8,7 @@
   --bg-base: #0d0d14;
   --bg-card: #16161f;
   --bg-surface: #1e1e2a;
-  --border: rgba(255,255,255,0.06);
+  --border: rgba(255, 255, 255, 0.06);
   --purple-500: #8b5cf6;
   --purple-400: #a78bfa;
   --purple-600: #7c3aed;
@@ -17,7 +17,7 @@
   --blue: #3b82f6;
   --red: #ef4444;
   --yellow: #eab308;
-  --text-primary: #f8f8ff;
+  --text-primary: #000000;
   --text-secondary: #a0a0b8;
   --text-muted: #52526a;
   --radius: 16px;
@@ -31,7 +31,12 @@
     line-height: 1.5;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-extrabold;
   }
 }
@@ -66,17 +71,9 @@
   }
 
   .animate-shimmer {
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.03), transparent);
     background-size: 200% 100%;
     animation: shimmer 2s infinite;
-  }
-
-  .nv-input {
-    @apply w-full bg-white/5 border border-white/10 rounded-[16px] px-5 py-3.5 text-white transition-all outline-none placeholder:text-text-muted placeholder:font-bold placeholder:uppercase placeholder:text-[10px] placeholder:tracking-widest focus:border-nuvio-purple-500 focus:bg-white/[0.08] shadow-inner;
-  }
-
-  .nv-select {
-    @apply w-full bg-[#1c1c27] border border-white/10 rounded-[16px] px-5 py-3.5 text-white transition-all outline-none focus:border-nuvio-purple-500 shadow-inner appearance-none cursor-pointer;
   }
 }
 
@@ -84,7 +81,7 @@
   .nv-page-transition {
     @apply animate-in fade-in slide-in-from-bottom-1 duration-150;
   }
-  
+
   .safe-bottom {
     padding-bottom: env(safe-area-inset-bottom);
   }
