@@ -128,6 +128,27 @@ export const authService = {
     return updated;
   },
 
+  validateStreak: async () => {
+    const user = authService.me();
+    if (!user || !user.last_activity_date) return;
+
+    const last = new Date(user.last_activity_date);
+    const now = new Date();
+    const diffHours = (now - last) / (1000 * 60 * 60);
+
+    if (diffHours > 48) {
+      // Streak Lost (Tier 1: Loss Aversion)
+      console.log("NEURAL STREAK TERMINATED. RESETTING TO 1.");
+      await authService.updateMe({ streak: 1 });
+      return { status: 'reset', lostDays: Math.floor(diffHours / 24) };
+    } else if (diffHours > 24 && now.getDate() !== last.getDate()) {
+      // New Day, increment streak
+      await authService.updateMe({ streak: (user.streak || 0) + 1 });
+      return { status: 'increment' };
+    }
+    return { status: 'active' };
+  },
+
   updateMe: async (newData) => {
     const current = authService.me();
     const updated = { ...current, ...newData };
@@ -142,13 +163,16 @@ export const authService = {
     // Persist to Neural Cloud (Supabase)
     try {
       if (current?.id) {
+        const timestampedData = { 
+          ...newData, 
+          last_activity_date: new Date().toISOString() 
+        };
         const { error } = await supabase
           .from('profiles')
-          .update(newData)
+          .update(timestampedData)
           .eq('id', current.id);
         
         if (error) throw error;
-        console.log("NEURAL PERSISTENCE SUCCESSFUL.");
       }
     } catch (err) {
       console.error("NEURAL CLOUD SYNC FAILURE:", err.message);

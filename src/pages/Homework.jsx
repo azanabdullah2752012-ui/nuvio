@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { dataService } from '../services/dataService';
 import { xpService } from '../services/xpService';
 import { notificationService } from '../services/notificationService';
+import { rewardService } from '../services/rewardService';
 
 const Homework = () => {
   const [tasks, setTasks] = useState([]);
@@ -62,6 +63,9 @@ const Homework = () => {
       if (isCompleting) {
         xpService.awardXp(50, `Objective Accomplished: ${task.title}`);
         notificationService.send("Objective Complete", "+50 XP Synchronized.", "success");
+        
+        // Tier 2: Variable Reward (Neural Drop)
+        rewardService.triggerNeuralDrop();
       }
     } catch (err) {
       console.error("Update failed:", err);

@@ -32,6 +32,7 @@ import Analytics from './pages/Analytics';
 import StudyVerse from './pages/StudyVerse';
 import StudySites from './pages/StudySites';
 import TriviaGame from './pages/TriviaGame';
+import NeuralComms from './components/NeuralComms';
 
 import { authService } from './services/authService';
 import { supabase } from './lib/supabase';
@@ -46,6 +47,44 @@ const AdminGuard = ({ children }) => {
   }
 
   return children;
+};
+
+const RetentionEngine = ({ children }) => {
+  const location = useLocation();
+  
+  React.useEffect(() => {
+    const runValidation = async () => {
+      const user = authService.me();
+      if (!user) return;
+
+      const result = await authService.validateStreak();
+      if (result.status === 'reset') {
+        window.dispatchEvent(new CustomEvent('nuvio_neural_nudge', {
+          detail: {
+            title: "Streak Terminated",
+            message: `Neural Link was cold for too long. Reset to 1 Day.`,
+            type: 'streak'
+          }
+        }));
+      } else if (result.status === 'increment') {
+        window.dispatchEvent(new CustomEvent('nuvio_neural_nudge', {
+          detail: {
+            title: "Neural Synergy",
+            message: `Day ${user.streak + 1} synchronized. Keep the burn!`,
+            type: 'streak'
+          }
+        }));
+      }
+    };
+    runValidation();
+  }, [location.pathname]);
+
+  return (
+    <>
+      {children}
+      <NeuralComms />
+    </>
+  );
 };
 
 function App() {
@@ -107,4 +146,10 @@ function App() {
   );
 }
 
-export default App;
+const GlobalApp = () => (
+  <RetentionEngine>
+    <App />
+  </RetentionEngine>
+);
+
+export default GlobalApp;

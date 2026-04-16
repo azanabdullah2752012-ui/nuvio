@@ -5,9 +5,18 @@ import {
   Clock, Star, Sparkles, Coins
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
 import { xpService } from '../services/xpService';
 import { dataService } from '../services/dataService';
+import { rewardService } from '../services/rewardService';
+
+const PEERS = [
+  { name: 'Leo Vance', action: 'completed Quantum Physics quiz', time: '2m ago' },
+  { name: 'Maya Chen', action: 'unlocked "Deep Thinker" badge', time: '5m ago' },
+  { name: 'Sam Rivers', action: 'started a new memory deck', time: '12m ago' },
+  { name: 'Dr. Bloom', action: 'reached Level 43', time: '22m ago' }
+];
 
 const Dashboard = () => {
   const [user, setUser] = useState(authService.me());
@@ -15,6 +24,7 @@ const Dashboard = () => {
   const [counts, setCounts] = useState({ tasks: 0, decks: 0 });
   const [loading, setLoading] = useState(true);
   const [nextMilestone, setNextMilestone] = useState({ label: 'Level 2', remaining: 100 });
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Sync with global state
@@ -84,22 +94,25 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {[
           { label: 'Total XP', val: user?.xp?.toLocaleString(), icon: Zap, color: 'text-nuvio-yellow', bg: 'bg-nuvio-yellow/10' },
-          { label: 'Daily Streak', val: `${user?.streak || 1} Days`, icon: Flame, color: 'text-nuvio-orange', bg: 'bg-nuvio-orange/10' },
-          { label: 'Pending Tasks', val: tasksCount, icon: Target, color: 'text-nuvio-purple-400', bg: 'bg-nuvio-purple-400/10' },
-          { label: 'Memory Decks', val: decksCount, icon: BookOpen, color: 'text-nuvio-blue', bg: 'bg-nuvio-blue/10' },
+          { label: 'Neural Streak', val: `${user?.streak || 1} Days`, icon: Flame, color: 'text-nuvio-red', bg: 'bg-nuvio-red/10', burning: true },
+          { label: 'Unfinished Loops', val: tasksCount, icon: Target, color: 'text-nuvio-purple-400', bg: 'bg-nuvio-purple-400/10' },
+          { label: 'Memory Matrix', val: decksCount, icon: BookOpen, color: 'text-nuvio-blue', bg: 'bg-nuvio-blue/10' },
         ].map((stat, i) => (
           <motion.div 
             key={i}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.05 }}
-            className={`nv-card p-8 border-white/5 flex flex-col justify-between group hover:border-${stat.color.split('-')[1]}/30 transition-all`}
+            className={`nv-card p-8 border-white/5 flex flex-col justify-between group transition-all relative overflow-hidden ${stat.burning ? 'border-nuvio-red/40 shadow-[0_0_20px_rgba(255,50,50,0.1)]' : ''}`}
           >
+            {stat.burning && (
+              <div className="absolute -top-10 -right-10 w-32 h-32 bg-nuvio-red/10 blur-3xl animate-pulse" />
+            )}
             <div className="flex justify-between items-start">
-               <div className={`p-3 rounded-xl ${stat.bg}`}>
+               <div className={`p-3 rounded-xl ${stat.bg} ${stat.burning ? 'animate-bounce' : ''}`}>
                  <stat.icon className={`w-6 h-6 ${stat.color}`} />
                </div>
-               <span className="text-[10px] font-black text-text-muted uppercase tracking-widest opacity-50">Active</span>
+               {stat.burning && <span className="text-[10px] font-black text-nuvio-red uppercase tracking-widest animate-pulse">Critical</span>}
             </div>
             <div className="mt-8">
                <div className="text-3xl font-black text-white tracking-tight">{stat.val}</div>
@@ -169,41 +182,47 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* AI Recommendations */}
+        {/* Peer Neural Feed (Tier 2: Social Proof) */}
         <div className="space-y-6">
-           <div className="nv-card bg-nuvio-purple-500/10 border-nuvio-purple-500/20 p-8 space-y-6">
-              <h3 className="text-lg font-black text-white uppercase tracking-tight flex items-center gap-2">
-                 <Sparkles className="w-5 h-5 text-nuvio-purple-400" /> Nova Insight
-              </h3>
-              <p className="text-sm text-text-secondary leading-relaxed font-medium">
-                {counts.tasks > 0 ? (
-                  <>You have <span className="text-white font-bold">{counts.tasks} pending quests</span> in your roadmap. Completing these would provide a <span className="text-nuvio-purple-300 font-bold">critical XP boost</span> for your current rank.</>
-                ) : (
-                  <>Your roadmap is clear. Switching focus to your <span className="text-white font-bold">{counts.decks} memory decks</span> would optimize your long-term retention curves.</>
-                )}
-              </p>
-              <button className="w-full nv-btn-primary py-4 text-[10px] uppercase tracking-widest">Acknowledge Quest</button>
-           </div>
-           
-           {/* Sidebar small stats */}
-           <div className="nv-card p-8 border-white/5 space-y-8">
-              <h4 className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] border-b border-white/5 pb-4">Global Network</h4>
-              <div className="space-y-6">
-                 <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                       <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-nuvio-blue"><Trophy className="w-4 h-4" /></div>
-                       <span className="text-xs font-black text-white uppercase">Rank</span>
-                    </div>
-                    <span className="text-xs font-black text-nuvio-blue">#12 / 20</span>
-                 </div>
-                 <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                       <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-nuvio-green"><Clock className="w-4 h-4" /></div>
-                       <span className="text-xs font-black text-white uppercase">Study Time</span>
-                    </div>
-                    <span className="text-xs font-black text-nuvio-green">14.2h</span>
+           <div className="nv-card !bg-black border-2 border-white/5 p-8 space-y-6 overflow-hidden relative">
+              <div className="flex items-center justify-between mb-2">
+                 <h3 className="text-[10px] font-black text-text-muted uppercase tracking-[0.3em]">Social Matrix</h3>
+                 <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-nuvio-green animate-ping" />
+                    <span className="text-[9px] font-black text-nuvio-green uppercase tracking-widest">1,204 Active</span>
                  </div>
               </div>
+              <div className="space-y-6">
+                 {PEERS.map((peer, i) => (
+                    <div key={i} className="flex gap-4 items-start border-l-2 border-white/5 pl-4 py-1 hover:border-nuvio-cyan transition-colors">
+                       <div className="flex-1">
+                          <div className="text-xs font-black text-white uppercase">{peer.name}</div>
+                          <div className="text-[10px] text-text-muted font-bold capitalize">{peer.action}</div>
+                       </div>
+                       <div className="text-[9px] text-white/20 font-black">{peer.time}</div>
+                    </div>
+                 ))}
+              </div>
+              <div className="pt-4 border-t border-white/5 text-center">
+                 <button className="text-[9px] font-black text-nuvio-cyan uppercase tracking-widest hover:underline">Connect to Cluster</button>
+              </div>
+           </div>
+           
+           {/* Tier 3: Interactive Tool Invitation */}
+           <div className="nv-card bg-nuvio-purple-500/10 border-nuvio-purple-500/20 p-8 space-y-4">
+              <div className="w-10 h-10 rounded-xl bg-nuvio-purple-500 flex items-center justify-center text-black">
+                <Sparkles className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-black text-white uppercase tracking-tight">Zeigarnik Optimization</h3>
+              <p className="text-xs text-text-secondary leading-relaxed font-medium">
+                Nova detected <span className="text-white">{tasksCount} incomplete loops</span>. Closing these nodes will decrease cognitive load and trigger a <span className="text-nuvio-purple-300">Reward Burst</span>.
+              </p>
+              <button 
+                onClick={() => navigate('/homework')}
+                className="w-full nv-btn-primary py-4 text-[10px] uppercase tracking-widest"
+              >
+                Execute Loop Closure
+              </button>
            </div>
         </div>
       </div>
