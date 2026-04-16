@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useOutletContext, useNavigate } from 'react-router-dom';
 import { 
   User, Settings, Award, BarChart3, 
   Share2, Shield, Bell, Moon, Sun, 
@@ -12,6 +12,7 @@ import { aiService } from '../services/aiService';
 
 const Profile = () => {
   const { user, setUser } = useOutletContext();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('Stats');
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({ 
@@ -173,25 +174,24 @@ const Profile = () => {
               exit={{ opacity: 0, y: -10 }}
               className="space-y-4"
             >
-              {/* AI Key Card */}
-              <div className="nv-card border-nuvio-purple-500/30 bg-nuvio-purple-500/5 p-6 mb-6">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-nuvio-purple-500/20 flex items-center justify-center">
-                    <Key className="w-5 h-5 text-nuvio-purple-400" />
+              {/* AI Key Card (Redirect to Admin) */}
+              <div className="nv-card border-nuvio-purple-500/30 bg-nuvio-purple-500/5 p-8 mb-6 group">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                  <div className="flex items-center gap-6">
+                    <div className="w-14 h-14 rounded-2xl bg-nuvio-purple-500 flex items-center justify-center shadow-lg shadow-nuvio-purple-500/20">
+                      <Key className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-black text-text-primary uppercase tracking-tight">Neural Configuration</h3>
+                      <p className="text-xs text-text-muted font-bold uppercase tracking-widest mt-1">Manage Gemini, OpenRouter & Groq Integrations</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-bold text-text-primary">OpenRouter API Key</h3>
-                    <p className="text-xs text-text-muted">Enter your key to enable real Nova AI capabilities.</p>
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <input 
-                    type="password" 
-                    defaultValue={aiService.getKey() || ''}
-                    placeholder="sk-or-v1-..."
-                    className="flex-1 bg-background-base border border-border rounded-xl px-4 py-2 text-xs focus:ring-1 ring-nuvio-purple-500 outline-none"
-                    onBlur={(e) => aiService.setKey(e.target.value)}
-                  />
+                  <button 
+                    onClick={() => navigate('/admin')}
+                    className="px-8 py-4 bg-nuvio-purple-500 hover:bg-white text-white hover:text-nuvio-purple-600 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-nb-small active:scale-95 whitespace-nowrap"
+                  >
+                    Go to Admin Hub
+                  </button>
                 </div>
               </div>
 
