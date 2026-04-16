@@ -1,0 +1,2 @@
+-- ADD KNOWLEDGE POINTS (KP) TO PROFILES
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS knowledge_points integer DEFAULT 0;

@@ -128,17 +128,34 @@ export const authService = {
     return updated;
   },
 
-  updateMe: (newData) => {
+  updateMe: async (newData) => {
     const current = authService.me();
     const updated = { ...current, ...newData };
+    
+    // Save locally first for speed
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
     
-    // Cloud Sync
-    authService.syncProfile(updated);
-
-    // Dispatch events
-    window.dispatchEvent(new CustomEvent('nuvio_auth_change', { detail: updated }));
+    // Dispatch events for immediate UI feedback
     window.dispatchEvent(new CustomEvent('nuvio_stats_update', { detail: updated }));
+    window.dispatchEvent(new CustomEvent('nuvio_sync_pulse', { detail: { syncing: true } }));
+
+    // Persist to Neural Cloud (Supabase)
+    try {
+      if (current?.id) {
+        const { error } = await supabase
+          .from('profiles')
+          .update(newData)
+          .eq('id', current.id);
+        
+        if (error) throw error;
+        console.log("NEURAL PERSISTENCE SUCCESSFUL.");
+      }
+    } catch (err) {
+      console.error("NEURAL CLOUD SYNC FAILURE:", err.message);
+    } finally {
+      window.dispatchEvent(new CustomEvent('nuvio_sync_pulse', { detail: { syncing: false } }));
+    }
+
     return updated;
   },
 

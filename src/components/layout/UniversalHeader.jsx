@@ -11,7 +11,16 @@ const UniversalHeader = ({ onMenuClick, user }) => {
   const [unreadCount, setUnreadCount] = useState(0);
   const [logoClicks, setLogoClicks] = useState(0);
   const [lastClickTime, setLastClickTime] = useState(0);
+  const [isSyncing, setIsSyncing] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleSyncPulse = (e) => {
+      setIsSyncing(e.detail.syncing);
+    };
+    window.addEventListener('nuvio_sync_pulse', handleSyncPulse);
+    return () => window.removeEventListener('nuvio_sync_pulse', handleSyncPulse);
+  }, []);
 
   useEffect(() => {
     const loadNotifications = () => {
@@ -67,6 +76,12 @@ const UniversalHeader = ({ onMenuClick, user }) => {
           <div className="flex items-center gap-1 cursor-pointer select-none" onClick={handleLogoClick}>
             <span className="text-xl font-black nv-gradient-text tracking-tighter">⚡ NUVIO</span>
           </div>
+          {isSyncing && (
+            <div className="flex items-center gap-2 bg-nuvio-cyan text-black px-3 py-1 border-2 border-black font-black text-[9px] uppercase tracking-widest leading-none shadow-[2px_2px_0_#000]">
+              <div className="w-2 h-2 rounded-full bg-black animate-pulse" />
+              Neural Sync
+            </div>
+          )}
         </div>
 
         <div className="flex items-center gap-2 md:gap-4">

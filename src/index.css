@@ -1,101 +1,150 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lexend:wght@300;400;500;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --bg-base: #0d0d14;
-  --bg-card: #16161f;
-  --bg-surface: #1e1e2a;
-  --border: rgba(255, 255, 255, 0.06);
-  --purple-500: #8b5cf6;
-  --purple-400: #a78bfa;
-  --purple-600: #7c3aed;
-  --green: #22c55e;
-  --orange: #f97316;
-  --blue: #3b82f6;
-  --red: #ef4444;
-  --yellow: #eab308;
-  --text-primary: #000000;
-  --text-secondary: #a0a0b8;
+  /* Neubrutalist Command Deck Palette */
+  --bg-base: #101114;
+  --bg-card: #121418;
+  --bg-surface: #1a1c22;
+  
+  --text-primary: #F7F4EF;
+  --text-secondary: #C9C4BC;
   --text-muted: #52526a;
-  --radius: 16px;
+  
+  --nuvio-red: #ff4757;
+  --nuvio-green: #2ed573;
+  --nuvio-blue: #1e90ff;
+  --nuvio-yellow: #ffa502;
+  --nuvio-cyan: #58f4ff;
+  --nuvio-purple-500: #8258ff;
+  
+  /* Neubrutalist Design System */
+  --border-width: 3px;
+  --border-color: #000000;
+  --nb-shadow: 10px 10px 0 #000000;
+  --nb-shadow-small: 5px 5px 0 #000000;
+  --nb-shadow-hover: 14px 14px 0 #000000;
+  
+  --radius-nb: 4px; /* More angular for neubrutalism */
 }
 
 @layer base {
   body {
-    @apply bg-background-base text-text-primary antialiased;
-    font-family: 'Inter', system-ui, sans-serif;
-    font-size: 15px;
-    line-height: 1.5;
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    @apply antialiased overflow-x-hidden;
+    font-family: 'Lexend', sans-serif;
+    font-size: 16px;
   }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    @apply font-extrabold;
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Space Grotesk', sans-serif;
+    @apply font-black uppercase tracking-tight;
   }
 }
 
 @layer components {
+  /* Neubrutalist Containers */
   .nv-card {
-    @apply bg-background-card border border-white/5 rounded-[16px] p-3 md:p-5;
+    background-color: var(--bg-card);
+    border: var(--border-width) solid var(--border-color);
+    box-shadow: var(--nb-shadow);
+    border-radius: var(--radius-nb);
+    @apply p-6 transition-all;
   }
 
+  .nv-card:hover {
+    transform: translate(-4px, -4px);
+    box-shadow: var(--nb-shadow-hover);
+  }
+
+  /* Neubrutalist Buttons */
   .nv-btn-primary {
-    @apply bg-gradient-to-r from-nuvio-purple-600 to-nuvio-purple-500 text-white rounded-[14px] font-bold min-h-[44px] px-6 py-2 transition-all duration-200 hover:-translate-y-[1px] hover:opacity-90 active:scale-95 flex items-center justify-center gap-2;
+    background-color: var(--nuvio-purple-500);
+    border: var(--border-width) solid var(--border-color);
+    box-shadow: var(--nb-shadow-small);
+    color: #000;
+    @apply px-8 py-4 font-black uppercase tracking-widest text-sm transition-all flex items-center justify-center gap-3 rounded-[4px];
+  }
+
+  .nv-btn-primary:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 8px 8px 0 #000;
+    background-color: var(--nuvio-cyan);
+  }
+
+  .nv-btn-primary:active {
+    transform: translate(2px, 2px);
+    box-shadow: 0 0 0 #000;
   }
 
   .nv-btn-secondary {
-    @apply bg-nuvio-purple-500/10 text-nuvio-purple-400 border border-nuvio-purple-500/30 rounded-[14px] font-bold min-h-[44px] px-6 py-2 transition-all duration-200 hover:-translate-y-[1px] hover:bg-nuvio-purple-500/20 active:scale-95 flex items-center justify-center gap-2;
+    background-color: var(--bg-surface);
+    border: var(--border-width) solid var(--border-color);
+    box-shadow: var(--nb-shadow-small);
+    color: var(--text-primary);
+    @apply px-8 py-4 font-black uppercase tracking-widest text-sm transition-all flex items-center justify-center gap-3 rounded-[4px];
   }
 
-  .nv-text-sec {
-    @apply text-text-secondary;
+  .nv-btn-secondary:hover {
+    background-color: var(--bg-card);
+    transform: translate(-2px, -2px);
+    box-shadow: 8px 8px 0 #000;
   }
 
-  .nv-text-muted {
-    @apply text-text-muted;
+  /* Neubrutalist Inputs */
+  .nv-input {
+    background-color: #ffffff10;
+    border: var(--border-width) solid var(--border-color);
+    color: var(--text-primary);
+    font-family: 'Lexend', sans-serif;
+    @apply w-full px-6 py-4 outline-none transition-all placeholder:text-text-muted rounded-[4px];
+  }
+
+  .nv-input:focus {
+    background-color: #ffffff15;
+    box-shadow: var(--nb-shadow-small);
+    transform: translate(-2px, -2px);
   }
 
   .nv-label {
-    @apply text-[10px] md:text-[11px] font-medium tracking-[0.08em] uppercase text-text-muted;
+    @apply block text-[12px] font-black uppercase tracking-[0.2em] text-text-secondary mb-3;
   }
 
-  .nv-gradient-text {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-nuvio-purple-400 to-nuvio-purple-600;
-  }
-
-  .animate-shimmer {
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.03), transparent);
-    background-size: 200% 100%;
-    animation: shimmer 2s infinite;
+  /* Neubrutalist Badges */
+  .nv-badge {
+    border: 2px solid #000;
+    box-shadow: 3px 3px 0 #000;
+    @apply px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-sm;
   }
 }
 
 @layer utilities {
+  .text-shadow-nb {
+    text-shadow: 2px 2px 0 #000;
+  }
+  
   .nv-page-transition {
-    @apply animate-in fade-in slide-in-from-bottom-1 duration-150;
+    @apply animate-in fade-in zoom-in-95 duration-200;
   }
 
-  .safe-bottom {
-    padding-bottom: env(safe-area-inset-bottom);
-  }
+  .perspective-2000 { perspective: 2000px; }
+}
 
-  .perspective-2000 {
-    perspective: 2000px;
-  }
-
-  .preserve-3d {
-    transform-style: preserve-3d;
-  }
-
-  .backface-hidden {
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
-  }
+/* Custom Scrollbar for Neubrutalist Style */
+::-webkit-scrollbar {
+  width: 12px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-base);
+}
+::-webkit-scrollbar-thumb {
+  background: #000;
+  border: 3px solid var(--bg-base);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--nuvio-purple-500);
 }

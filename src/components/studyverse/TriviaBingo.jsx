@@ -1,29 +1,64 @@
 import React, { useState, useEffect } from 'react';
+import { Target, Zap, Trophy, HelpCircle, LayoutGrid, CheckCircle2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HelpCircle, Trophy, Zap, RefreshCw, X } from 'lucide-react';
-import { xpService } from '../../services/xpService';
+import { gameService } from '../../services/gameService';
 
-const TriviaBingo = ({ onWin, onClose }) => {
-  const [board, setBoard] = useState([]);
-  const [selectedCell, setSelectedCell] = useState(null);
-  const [showQuiz, setShowQuiz] = useState(false);
-  const [currentQuiz, setCurrentQuiz] = useState(null);
-  const [won, setWon] = useState(false);
+const TriviaBingo = ({ players, turn, onLog, activeSubject, onNextTurn }) => {
+  const [boards, setBoards] = useState(players.map(() => generateBoard()));
+  const [currentPrompt, setCurrentPrompt] = useState(null);
+  const [lockedTiles, setLockedTiles] = useState(players.map(() => []));
+  const [winner, setWinner] = useState(null);
 
   useEffect(() => {
-    // Generate 5x5 board
-    const subjects = ['Math', 'Science', 'History', 'Art', 'Geo'];
-    const newBoard = Array.from({ length: 25 }, (_, i) => ({
-      id: i,
-      subject: subjects[i % 5],
-      marked: i === 12, // Free space in middle
-      isFree: i === 12
-    }));
-    setBoard(newBoard);
-  }, []);
+    generateNewPrompt();
+  }, [turn, activeSubject]);
 
-  const checkWin = (currentBoard) => {
-    const lines = [
+  function generateBoard() {
+    const concepts = ["Atom", "Cell", "Energy", "DNA", "Force", "Gravity", "Light", "Heat", "Acid", "Base", "Element", "Matter", "Solid", "Liquid", "Gas", "Molecules", "Plasma", "Neutron", "Proton", "Electron", "Bond", "Reaction", "Mass", "Volume", "Density"];
+    // Shuffle
+    return concepts.sort(() => Math.random() - 0.5);
+  }
+
+  function generateNewPrompt() {
+    const subjectPool = gameService.QUESTION_BANK[activeSubject] || gameService.QUESTION_BANK.Science;
+    const q = subjectPool[Math.floor(Math.random() * subjectPool.length)];
+    setCurrentPrompt(q);
+  }
+
+  const handleTileClick = (tileIdx) => {
+    if (winner) return;
+
+    const tileVal = boards[turn][tileIdx];
+    const isAlreadyLocked = lockedTiles[turn].includes(tileIdx);
+    
+    if (isAlreadyLocked) return;
+
+    // Use Nova AI to verify if the clicked tile answers the prompt
+    // For the demo, we check if the tile value is part of the correct option text or vice versa
+    const correctAns = currentPrompt.options[currentPrompt.a].toLowerCase();
+    const isCorrect = correctAns.includes(tileVal.toLowerCase()) || tileVal.toLowerCase().includes(correctAns.slice(0, 3));
+
+    if (isCorrect) {
+      onLog(`${players[turn].name} locked the glow: ${tileVal}`, 'success');
+      const newLocked = [...lockedTiles];
+      newLocked[turn].push(tileIdx);
+      setLockedTiles(newLocked);
+      
+      if (checkWin(newLocked[turn])) {
+        setWinner(players[turn]);
+        onLog(`${players[turn].name} achieved NEURAL BINGO! +500 XP.`, 'success');
+        gameService.awardPlayer(turn, 500, "Trivia Bingo Victory");
+      } else {
+        onNextTurn();
+      }
+    } else {
+      onLog(`Heuristic mismatch. Node remains offline.`, 'error');
+      onNextTurn();
+    }
+  };
+
+  const checkWin = (indices) => {
+    const winPatterns = [
       // Rows
       [0,1,2,3,4], [5,6,7,8,9], [10,11,12,13,14], [15,16,17,18,19], [20,21,22,23,24],
       // Cols
@@ -31,124 +66,84 @@ const TriviaBingo = ({ onWin, onClose }) => {
       // Diagonals
       [0,6,12,18,24], [4,8,12,16,20]
     ];
-    
-    return lines.some(line => line.every(idx => currentBoard[idx].marked));
-  };
-
-  const handleCellClick = (cell) => {
-    if (cell.marked) return;
-    setSelectedCell(cell);
-    setCurrentQuiz({
-      q: `Identify the correct property of ${cell.subject}.`,
-      options: ['Option A', 'Option B', 'Correct Answer', 'Option D'],
-      a: 'Correct Answer'
-    });
-    setShowQuiz(true);
-  };
-
-  const handleAnswer = (opt) => {
-    setShowQuiz(false);
-    if (opt === currentQuiz.a) {
-      const newBoard = board.map(c => c.id === selectedCell.id ? { ...c, marked: true } : c);
-      setBoard(newBoard);
-      if (checkWin(newBoard)) {
-        setWon(true);
-        xpService.awardXp(500, 'Trivia Bingo Victory');
-      } else {
-        xpService.awardXp(20, 'Square Marked');
-      }
-    }
+    return winPatterns.some(pattern => pattern.every(idx => indices.includes(idx)));
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-background-base/90 backdrop-blur-md">
-      <div className="w-full max-w-4xl flex flex-col items-center gap-8 relative">
-        <button onClick={onClose} className="absolute -top-12 right-0 p-2 text-text-muted hover:text-white transition-colors">
-          <X className="w-8 h-8" />
-        </button>
-
-        <div className="text-center space-y-2">
-          <h2 className="text-4xl font-black text-white uppercase tracking-tighter">Trivia Bingo</h2>
-          <p className="text-text-secondary text-sm font-bold uppercase tracking-widest">Connect 5 squares to win 500 XP</p>
-        </div>
-
-        <div className="grid grid-cols-5 gap-3 w-full max-w-2xl aspect-square">
-          {board.map((cell) => (
-            <motion.button
-              key={cell.id}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => handleCellClick(cell)}
-              className={`
-                aspect-square rounded-xl border-2 flex flex-col items-center justify-center p-2 transition-all group
-                ${cell.marked 
-                  ? 'bg-nuvio-purple-500 border-nuvio-purple-400 shadow-lg shadow-nuvio-purple-500/20' 
-                  : 'bg-white/5 border-white/5 hover:border-nuvio-purple-500/30'}
-              `}
-            >
-              {cell.isFree ? (
-                <Star className="w-8 h-8 text-white animate-pulse" />
-              ) : cell.marked ? (
-                <Zap className="w-6 h-6 text-white" />
-              ) : (
-                <div className="text-center">
-                  <div className="text-[10px] font-black text-text-muted uppercase mb-1 group-hover:text-nuvio-purple-400">{cell.subject}</div>
-                  <HelpCircle className="w-5 h-5 text-text-muted opacity-30 mx-auto" />
-                </div>
-              )}
-            </motion.button>
-          ))}
-        </div>
-
-        {/* Quiz Overlay */}
-        <AnimatePresence>
-          {showQuiz && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="absolute inset-0 z-[60] flex items-center justify-center p-6">
-               <div className="absolute inset-0 bg-background-base/80" />
-               <motion.div 
-                 initial={{ scale: 0.9, y: 20 }} 
-                 animate={{ scale: 1, y: 0 }}
-                 className="nv-card w-full max-w-md p-10 space-y-8 relative z-10 border-nuvio-purple-500/30"
-               >
-                 <div className="text-center space-y-4">
-                   <div className="w-16 h-16 bg-nuvio-purple-500/10 rounded-2xl mx-auto flex items-center justify-center">
-                     <HelpCircle className="w-8 h-8 text-nuvio-purple-400" />
-                   </div>
-                   <h3 className="text-xl font-black text-white uppercase">{currentQuiz.q}</h3>
-                 </div>
-                 <div className="grid grid-cols-1 gap-3">
-                   {currentQuiz.options.map(opt => (
-                     <button 
-                       key={opt} 
-                       onClick={() => handleAnswer(opt)}
-                       className="w-full nv-btn-secondary py-4 text-xs font-black uppercase tracking-widest hover:bg-nuvio-purple-500/10 hover:border-nuvio-purple-500/30"
-                     >
-                       {opt}
-                     </button>
-                   ))}
-                 </div>
-               </motion.div>
-            </motion.div>
-          )}
-
-          {won && (
-            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute inset-0 z-[70] flex items-center justify-center">
-               <div className="nv-card p-12 text-center space-y-6 bg-nuvio-purple-500 shadow-[0_0_50px_rgba(139,92,246,0.5)]">
-                 <Trophy className="w-20 h-20 text-nuvio-yellow mx-auto" />
-                 <div>
-                   <h2 className="text-4xl font-black text-white uppercase">Bingo!</h2>
-                   <p className="text-white/80 font-bold">+500 XP Earned</p>
-                 </div>
-                 <button onClick={onWin} className="nv-btn-secondary bg-white text-black py-4 px-10">Claim & Exit</button>
-               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+    <div className="w-full h-full flex flex-col items-center gap-10 py-6 nv-page-transition overflow-hidden">
+      
+      {/* Current Prompt Panel */}
+      <div className="w-full max-w-2xl nv-card !bg-black border-4 !border-nuvio-blue shadow-nb flex items-center gap-8 p-8 relative overflow-hidden">
+         <div className="absolute top-0 left-0 w-2 h-full bg-nuvio-blue" />
+         <div className="w-16 h-16 bg-nuvio-blue/10 rounded-2xl flex items-center justify-center text-nuvio-blue animate-pulse">
+            <HelpCircle className="w-10 h-10" />
+         </div>
+         <div className="flex-1 space-y-2">
+            <div className="text-[10px] font-black text-nuvio-blue uppercase tracking-widest">Active Host Prompt</div>
+            <h2 className="text-2xl font-black text-white uppercase tracking-tight leading-tight">
+               {currentPrompt?.q || "Initializing..."}
+            </h2>
+         </div>
       </div>
+
+      {/* 5x5 Grid */}
+      <div className="grid grid-cols-5 gap-3 p-4 bg-black border-4 border-black relative">
+         {boards[turn].map((tile, idx) => {
+           const isLocked = lockedTiles[turn].includes(idx);
+           return (
+              <motion.button 
+                key={idx}
+                whileHover={!isLocked ? { scale: 1.1, zIndex: 10 } : {}}
+                whileTap={!isLocked ? { scale: 0.9 } : {}}
+                onClick={() => handleTileClick(idx)}
+                className={`
+                   w-24 h-24 sm:w-28 sm:h-28 border-4 border-black transition-all flex items-center justify-center p-3 text-center
+                   ${isLocked ? 'bg-nuvio-green text-black font-black shadow-[0_0_30px_rgba(46,213,115,0.4)]' : 'bg-[#121418] text-white/40 hover:text-white hover:bg-[#1a1c22]'}
+                `}
+              >
+                 <span className={`text-[11px] font-black uppercase tracking-tight leading-none ${isLocked ? 'text-black' : ''}`}>
+                    {tile}
+                 </span>
+              </motion.button>
+           );
+         })}
+      </div>
+
+      {/* Player Stats Bar */}
+      <div className="flex gap-6">
+         {players.map((p, i) => (
+            <div key={i} className={`px-4 py-2 border-2 border-black flex items-center gap-3 ${turn === i ? 'bg-white text-black shadow-nb-small' : 'bg-black/40 opacity-40'}`}>
+               <span className="text-sm">{p.icon}</span>
+               <span className="text-[10px] font-black uppercase">{lockedTiles[i].length} nodes</span>
+            </div>
+         ))}
+      </div>
+
+      {/* Winner Overlay */}
+      <AnimatePresence>
+        {winner && (
+           <motion.div 
+             initial={{ opacity: 0, scale: 0.5 }}
+             animate={{ opacity: 1, scale: 1 }}
+             className="absolute inset-0 bg-black/90 z-[100] flex flex-col items-center justify-center space-y-8"
+           >
+              <div className="w-32 h-32 bg-nuvio-yellow rounded-full flex items-center justify-center text-6xl shadow-[0_0_100px_rgba(255,165,2,0.5)]">
+                 <Trophy className="w-16 h-16 text-black" />
+              </div>
+              <h1 className="text-6xl font-black text-white uppercase tracking-tighter">BINGO SECURED</h1>
+              <div className="text-3xl font-black text-nuvio-yellow uppercase tracking-widest">{winner.name} Wins</div>
+              <button 
+                onClick={() => window.location.reload()}
+                className="nv-btn-primary h-20 px-12 text-sm"
+              >
+                Reboot Matrix
+              </button>
+           </motion.div>
+        )}
+      </AnimatePresence>
+
     </div>
   );
 };
-
-const Star = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>;
 
 export default TriviaBingo;

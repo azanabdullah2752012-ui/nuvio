@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { 
   CheckCircle2, Circle, Plus, 
-  ChevronRight, Calendar, AlertCircle,
-  Clock, Tag, Trash2, ArrowUpRight,
-  LayoutGrid, Sparkles, Zap, ShieldCheck,
-  Target, Rocket, ScrollText
+  Trash2, Zap, ShieldCheck,
+  Target, Rocket, ScrollText,
+  AlertCircle, ArrowUpRight, Filter,
+  Layers, Brain, Trophy
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { dataService } from '../services/dataService';
@@ -41,13 +41,13 @@ const Homework = () => {
         priority: 'Standard',
         completed: false
       };
-      setQuickInput(''); // Immediate UI feedback
+      setQuickInput('');
       try {
         const created = await dataService.create('tasks', newQuest);
         setTasks(prev => [created, ...prev]);
-        notificationService.send("Quest Forged", `"${newQuest.title}" added to your roadmap.`, "info");
+        notificationService.send("Objective Locked", `"${newQuest.title}" added to command deck.`, "info");
       } catch (err) {
-        console.error("Cloud Forge failed:", err);
+        console.error("Forge failed:", err);
       }
     }
   };
@@ -55,20 +55,16 @@ const Homework = () => {
   const toggleQuest = async (id) => {
     const task = tasks.find(t => t.id === id);
     if (!task) return;
-    
     const isCompleting = !task.completed;
-    
     try {
       const updated = await dataService.update('tasks', id, { completed: isCompleting });
       setTasks(tasks.map(t => t.id === id ? updated : t));
-      
       if (isCompleting) {
-        const xpAmount = task.priority === 'Critical' ? 100 : 50;
-        xpService.awardXp(xpAmount, `Completed Quest: ${task.title}`);
-        notificationService.send("Quest Complete", `Verified! +${xpAmount} XP Synchronized.`, "success");
+        xpService.awardXp(50, `Objective Accomplished: ${task.title}`);
+        notificationService.send("Objective Complete", "+50 XP Synchronized.", "success");
       }
     } catch (err) {
-      console.error("Cloud update failed:", err);
+      console.error("Update failed:", err);
     }
   };
 
@@ -76,9 +72,9 @@ const Homework = () => {
     try {
       await dataService.delete('tasks', id);
       setTasks(tasks.filter(t => t.id !== id));
-      notificationService.send("Mission Aborted", "Quest removed from timeline.", "info");
+      notificationService.send("Link Terminated", "Objective purged from memory.", "info");
     } catch (err) {
-      console.error("Cloud purge failed:", err);
+      console.error("Purge failed:", err);
     }
   };
 
@@ -88,143 +84,118 @@ const Homework = () => {
     return true;
   });
 
-  const getPriorityColor = (p) => {
-    switch (p) {
-      case 'Critical': return 'text-nuvio-red border-nuvio-red/30 bg-nuvio-red/10';
-      case 'High': return 'text-nuvio-orange border-nuvio-orange/30 bg-nuvio-orange/10';
-      default: return 'text-nuvio-purple-400 border-nuvio-purple-500/20 bg-nuvio-purple-500/10';
-    }
-  };
-
   return (
-    <div className="space-y-12 pb-32 nv-page-transition">
-      {/* Header */}
-      <header className="flex flex-col md:flex-row md:items-center justify-between gap-8 bg-white/[0.02] p-10 rounded-[40px] border border-white/5 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-nuvio-purple-500/5 blur-[120px] pointer-events-none" />
-        <div>
-          <h1 className="text-5xl font-black text-white uppercase tracking-tighter flex items-center gap-4">
-            <ScrollText className="w-12 h-12 text-nuvio-purple-400" />
-            Quest Log
+    <div className="space-y-12 pb-32 nv-page-transition px-4 sm:px-8 max-w-7xl mx-auto">
+      {/* Header Section */}
+      <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-10 border-b-[6px] border-black pb-12">
+        <div className="space-y-4">
+          <div className="inline-flex items-center gap-4 bg-nuvio-blue border-[3px] border-black shadow-[6px_6px_0_#000] px-6 py-2">
+            <ScrollText className="w-8 h-8 text-black" />
+            <span className="text-sm font-black text-black uppercase tracking-widest">Active Missions</span>
+          </div>
+          <h1 className="text-6xl md:text-8xl font-black text-white uppercase tracking-tighter leading-none text-shadow-nb">
+            Quest <br /> Deck
           </h1>
-          <p className="text-[10px] text-text-muted font-black uppercase tracking-[0.3em] mt-2 flex items-center gap-2">
-            <div className="w-1.5 h-1.5 rounded-full bg-nuvio-green animate-pulse" />
-            Active Missions: {tasks.filter(t => !t.completed).length}
+          <p className="text-lg font-bold text-nuvio-cyan uppercase tracking-widest pt-2">
+            [ Sector Clear: {(tasks.filter(t => t.completed).length / (tasks.length || 1) * 100).toFixed(0)}% ]
           </p>
         </div>
-        
-        <div className="flex bg-background-dark/50 p-1.5 rounded-2xl border border-white/5 backdrop-blur-md">
-           {['pending', 'completed', 'all'].map(t => (
-             <button 
-               key={t}
-               onClick={() => setFilter(t)}
-               className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all ${filter === t ? 'bg-nuvio-purple-500 text-white shadow-xl shadow-nuvio-purple-500/20' : 'text-text-muted hover:text-white'}`}
-             >
-               {t}
-             </button>
-           ))}
+
+        <div className="flex flex-wrap gap-4">
+          {['pending', 'completed', 'all'].map(t => (
+            <button 
+              key={t}
+              onClick={() => setFilter(t)}
+              className={`
+                px-8 py-4 text-xs font-black uppercase tracking-[0.2em] border-[3px] border-black transition-all
+                ${filter === t ? 'bg-nuvio-purple-500 translate-x-[-4px] translate-y-[-4px] shadow-[8px_8px_0_#000] text-black' : 'bg-white/5 text-text-muted hover:bg-white/10'}
+              `}
+            >
+              {t}
+            </button>
+          ))}
         </div>
       </header>
 
-      {/* Quick Forge */}
-      <div className="relative group max-w-4xl mx-auto">
-        <div className="absolute inset-0 bg-nuvio-purple-500/10 blur-3xl opacity-0 group-focus-within:opacity-100 transition-opacity pointer-events-none" />
-        <div className="relative nv-card p-2 border-white/10 shadow-2xl bg-[#0d0d12]/80 backdrop-blur-xl">
-           <div className="flex items-center gap-6 px-8 h-20">
-              <Zap className="w-8 h-8 text-nuvio-purple-400 animate-pulse" />
-              <input 
-                 className="flex-1 bg-transparent text-xl font-black text-white outline-none placeholder:text-text-muted placeholder:font-black placeholder:uppercase placeholder:text-[10px] placeholder:tracking-[0.3em]"
-                 placeholder="Forge New Quest: Identify mission and press Enter..."
-                 value={quickInput}
-                 onChange={(e) => setQuickInput(e.target.value)}
-                 onKeyDown={handleQuestForge}
-              />
-              <div className="hidden lg:flex items-center gap-3 px-4 py-2 bg-white/5 border border-white/5 rounded-xl text-[9px] font-black text-text-muted uppercase tracking-[0.2em]">
-                 <span className="text-nuvio-purple-400">[Enter]</span> to Archive
-              </div>
-           </div>
+      {/* Input Section */}
+      <div className="relative max-w-4xl">
+        <div className="nv-card bg-nuvio-cyan p-2 !shadow-[12px_12px_0_#000] !border-4">
+          <div className="flex flex-col md:flex-row items-center gap-4 bg-black p-6">
+            <Plus className="w-10 h-10 text-nuvio-cyan" />
+            <input 
+              className="flex-1 bg-transparent text-2xl font-black text-white outline-none placeholder:text-white/20 uppercase"
+              placeholder="Input New Objective..."
+              value={quickInput}
+              onChange={(e) => setQuickInput(e.target.value)}
+              onKeyDown={handleQuestForge}
+            />
+            <div className="hidden md:block px-4 py-2 border-2 border-nuvio-cyan/30 rounded text-[10px] font-black text-nuvio-cyan uppercase tracking-widest">
+              Press [Enter] to Forge
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Mission List */}
-      <div className="space-y-6 max-w-5xl mx-auto">
+      {/* Grid List */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <AnimatePresence mode="popLayout">
           {filteredTasks.length === 0 ? (
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="text-center py-32 bg-white/[0.01] rounded-[40px] border-2 border-dashed border-white/5"
-            >
-               <Target className="w-20 h-20 text-text-muted mx-auto mb-6 opacity-20" />
-               <h3 className="text-2xl font-black text-text-muted uppercase tracking-tighter">No Active Objectives</h3>
-               <p className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mt-2">All sectors identified as clear</p>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="md:col-span-2 py-32 border-4 border-dashed border-black/50 text-center rounded-xl bg-black/20">
+              <ShieldCheck className="w-20 h-20 text-text-muted mx-auto mb-6 opacity-20" />
+              <h3 className="text-4xl font-black text-text-muted uppercase tracking-tighter">Sector Static</h3>
+              <p className="text-xs font-bold text-text-muted uppercase tracking-widest mt-2">All objectives archived or missing</p>
             </motion.div>
           ) : (
             filteredTasks.map((task, idx) => (
               <motion.div 
                 layout
-                initial={{ opacity: 0, x: -30 }}
-                animate={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ delay: idx * 0.05 }}
                 key={task.id}
-                className={`nv-card p-10 flex flex-col md:flex-row items-center gap-10 group relative border-white/5 transition-all overflow-hidden ${task.completed ? 'opacity-40 grayscale-[0.5]' : 'hover:border-nuvio-purple-500/30 hover:bg-white/[0.02]'}`}
+                className={`
+                  nv-card flex flex-col justify-between h-full bg-[#181a20] !border-[3px] group
+                  ${task.completed ? '!bg-nuvio-green/5 opacity-60 grayscale' : 'hover:!bg-[#1c1f26]'}
+                `}
               >
-                {/* Status Indicator */}
-                <button 
-                  onClick={() => toggleQuest(task.id)}
-                  className={`relative w-16 h-16 rounded-[24px] flex items-center justify-center transition-all ${
-                    task.completed 
-                      ? 'bg-nuvio-green shadow-[0_0_20px_rgba(34,197,94,0.3)]' 
-                      : 'bg-white/5 border-2 border-white/10 text-text-muted hover:border-nuvio-purple-500 group-hover:scale-110'
-                  }`}
-                >
-                  {task.completed ? (
-                    <ShieldCheck className="w-8 h-8 text-white" />
-                  ) : (
-                    <Circle className="w-8 h-8 group-hover:text-nuvio-purple-400 transition-colors" />
-                  )}
-                  {task.completed && (
-                    <motion.div 
-                      layoutId={`spark-${task.id}`}
-                      className="absolute inset-0 bg-nuvio-green/20 blur-xl rounded-full" 
-                    />
-                  )}
-                </button>
-
-                <div className="flex-1 text-center md:text-left space-y-4">
-                  <div className="flex flex-col md:flex-row md:items-center gap-4">
-                    <h3 className={`text-2xl font-black text-white uppercase tracking-tight transition-all ${task.completed ? 'line-through decoration-nuvio-green decoration-4 opacity-50' : ''}`}>
-                      {task.title}
-                    </h3>
-                    <div className={`inline-flex px-4 py-1.5 rounded-full border text-[9px] font-black uppercase tracking-widest ${getPriorityColor(task.priority)}`}>
-                      {task.priority || 'Standard'}
-                    </div>
+                <div className="flex justify-between items-start mb-10">
+                  <div className={`p-4 border-[3px] border-black shadow-[4px_4px_0_#000] ${task.completed ? 'bg-nuvio-green' : 'bg-nuvio-purple-500'}`}>
+                    <Target className={`w-8 h-8 ${task.completed ? 'text-black' : 'text-black'}`} />
                   </div>
-                  
-                  <div className="flex items-center justify-center md:justify-start gap-8">
-                     <div className="flex items-center gap-2.5">
-                       <div className="w-8 h-8 rounded-xl bg-nuvio-purple-500/10 flex items-center justify-center text-nuvio-purple-400">
-                         <Rocket className="w-4 h-4" />
-                       </div>
-                       <span className="text-[10px] font-black text-text-muted uppercase tracking-widest">{task.subject || 'General Sector'}</span>
-                     </div>
-                     <div className="flex items-center gap-2.5">
-                       <Clock className="w-4 h-4 text-text-muted" />
-                       <span className="text-[10px] font-bold text-text-muted uppercase tracking-[0.2em]">Target: Soon</span>
-                     </div>
+                  <div className="flex gap-3">
+                    <button 
+                      onClick={() => deleteQuest(task.id)}
+                      className="p-3 bg-white/5 border-[2px] border-black hover:bg-nuvio-red hover:text-black transition-all shadow-[4px_4px_0_#000] opacity-0 group-hover:opacity-100"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                    <button 
+                      onClick={() => toggleQuest(task.id)}
+                      className={`
+                        p-3 border-[2px] border-black transition-all shadow-[4px_4px_0_#000]
+                        ${task.completed ? 'bg-nuvio-green text-black' : 'bg-white/10 text-white hover:bg-nuvio-green hover:text-black'}
+                      `}
+                    >
+                      <CheckCircle2 className="w-6 h-6" />
+                    </button>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4 absolute top-6 right-8 md:relative md:top-0 md:right-0 opacity-0 group-hover:opacity-100 transition-all">
-                   <button 
-                     onClick={() => deleteQuest(task.id)}
-                     className="p-4 bg-white/5 rounded-2xl text-text-muted hover:text-nuvio-red hover:bg-nuvio-red/10 transition-all border border-white/5"
-                   >
-                     <Trash2 className="w-6 h-6" />
-                   </button>
-                   <button className="nv-btn-secondary h-16 w-16 p-0 bg-white/5 border-white/10 group/btn">
-                     <ArrowUpRight className="w-8 h-8 group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
-                   </button>
+                <div className="space-y-4">
+                  <div className="text-[10px] font-black text-nuvio-cyan uppercase tracking-[0.3em]">Neural Protocol {idx + 1}</div>
+                  <h3 className={`text-3xl font-black text-white uppercase leading-tight ${task.completed ? 'line-through decoration-[#000]' : ''}`}>
+                    {task.title}
+                  </h3>
+                </div>
+
+                <div className="mt-12 pt-8 border-t-[3px] border-black flex items-center justify-between">
+                   <div className="flex items-center gap-4">
+                      <div className="w-8 h-8 rounded-full bg-nuvio-blue border-2 border-black" />
+                      <span className="text-[10px] font-black text-text-secondary uppercase tracking-widest">{task.subject || 'General'} Sector</span>
+                   </div>
+                   <div className="px-3 py-1 bg-black text-white text-[9px] font-black uppercase tracking-widest border border-white/10">
+                      XP +50
+                   </div>
                 </div>
               </motion.div>
             ))
@@ -232,23 +203,18 @@ const Homework = () => {
         </AnimatePresence>
       </div>
 
-      {/* Persistence Stats */}
-      <footer className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-         {[
-           { label: 'Completion Rate', val: `${Math.round((tasks.filter(t => t.completed).length / (tasks.length || 1)) * 100)}%`, icon: Sparkles, color: 'text-nuvio-purple-400' },
-           { label: 'Synchronized XP', val: `+${tasks.filter(t => t.completed).length * 50}`, icon: Zap, color: 'text-nuvio-yellow' },
-           { label: 'Quest Efficiency', val: 'Exemplary', icon: ShieldCheck, color: 'text-nuvio-green' },
-         ].map((stat, i) => (
-           <div key={i} className="nv-card p-8 border-white/5 flex items-center gap-6 group hover:border-white/10 transition-all">
-              <div className={`p-4 rounded-2xl bg-white/5 ${stat.color} group-hover:scale-110 transition-transform`}>
-                <stat.icon className="w-6 h-6" />
-              </div>
-              <div>
-                 <div className="text-[10px] font-black text-text-muted uppercase tracking-widest leading-none mb-1">{stat.label}</div>
-                 <div className="text-xl font-black text-white uppercase tracking-tight">{stat.val}</div>
-              </div>
-           </div>
-         ))}
+      {/* Analytics Footer */}
+      <footer className="grid grid-cols-1 sm:grid-cols-3 gap-8 pt-12">
+        {[
+          { label: 'Neural Accuracy', val: 'Exemplary', color: 'text-nuvio-cyan' },
+          { label: 'Knowledge Points', val: tasks.filter(t => t.completed).length * 10, color: 'text-nuvio-yellow' },
+          { label: 'Timeline Logic', val: 'Verified', color: 'text-nuvio-green' }
+        ].map((stat, i) => (
+          <div key={i} className="bg-black/40 border-[3px] border-black p-8 rounded-sm">
+            <div className="text-[10px] font-black text-text-muted uppercase tracking-[0.4em] mb-2">{stat.label}</div>
+            <div className={`text-3xl font-black ${stat.color} uppercase tracking-tighter`}>{stat.val}</div>
+          </div>
+        ))}
       </footer>
     </div>
   );

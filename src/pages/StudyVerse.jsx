@@ -1,166 +1,333 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Gamepad2, Sword, Map, Trophy, 
   Sparkles, ChevronRight, Zap, Target,
-  Cpu, Rocket, Brain, Flame
+  Cpu, Rocket, Brain, Flame, Users,
+  Layers, Dice5, History, LayoutGrid,
+  Command, Box, Coins, Shield
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { xpService } from '../services/xpService';
+import { notificationService } from '../services/notificationService';
+import { gameService } from '../services/gameService';
+
+// --- GAME COMPONENTS ---
+import EduLudo from '../components/studyverse/EduLudo';
+import SubjectUno from '../components/studyverse/SubjectUno';
+import TriviaBingo from '../components/studyverse/TriviaBingo';
+
+// --- QUESTION BANK ---
+const QUESTION_BANK = gameService.QUESTION_BANK;
+
+// --- MULTIPLAYER SETUP ---
+const INITIAL_PLAYERS = [
+  { id: 1, name: "Ace Scholar", color: "#8258ff", kp: 0, xp: 0, pos: 0, icon: "🛡️" },
+  { id: 2, name: "Green Comet", color: "#2ed573", kp: 0, xp: 0, pos: 0, icon: "☄️" },
+  { id: 3, name: "Blue Circuit", color: "#1e90ff", kp: 0, xp: 0, pos: 0, icon: "🤖" },
+  { id: 4, name: "Amber Nova", color: "#ffa502", kp: 0, xp: 0, pos: 0, icon: "🌟" }
+];
 
 const StudyVerse = () => {
-  const games = [
-    { 
-      id: 'neural-trivia', 
-      name: 'Neural Trivia', 
-      icon: Brain, 
-      color: 'from-nuvio-purple-400 to-nuvio-purple-600', 
-      tag: 'NEW',
-      desc: 'Test your knowledge limits in a fast-paced MCQ gauntlet powered by Nova AI.',
-      stats: 'AI-Generated Content',
-      path: '/trivia-game',
-      active: true,
-      image: 'https://images.unsplash.com/photo-1614728263952-84ea206f99b6?q=80&w=1000&auto=format&fit=crop'
-    },
-    { 
-      id: 'boss-raid', 
-      name: 'World Boss Raid', 
-      icon: Sword, 
-      color: 'from-nuvio-red to-orange-600', 
-      tag: 'LIVE EVENT',
-      desc: 'Join the global cluster to defeat the Procrastination Dragon. High-stakes rewards.',
-      stats: 'Massive Multiplayer',
-      path: '/boss-raid',
-      active: true,
-      image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=1000&auto=format&fit=crop'
-    },
-    { 
-      id: 'leaderboard', 
-      name: 'Elite Rankings', 
-      icon: Trophy, 
-      color: 'from-nuvio-yellow to-orange-400', 
-      tag: 'RANKED',
-      desc: 'Compare your academic firepower against the elite top 1% of the StudyVerse.',
-      stats: 'Global Sync',
-      path: '/leaderboard',
-      active: true,
-      image: 'https://images.unsplash.com/photo-1552820728-8b83bb6b773f?q=80&w=1000&auto=format&fit=crop'
+  const [currentTab, setCurrentTab] = useState('Monopoly');
+  const [activeSubject, setActiveSubject] = useState('Science');
+  const [players, setPlayers] = useState(INITIAL_PLAYERS);
+  const [turn, setTurn] = useState(0); // Player index
+  const [activity, setActivity] = useState([{ t: 'System sequence initialized.', type: 'sys' }]);
+  const [showQuiz, setShowQuiz] = useState(false);
+  const [activeQuiz, setActiveQuiz] = useState(null);
+  const [dice, setDice] = useState(1);
+
+  // --- ENGINE LOGIC ---
+  const addLog = (text, type = 'sys') => {
+    setActivity(prev => [{ t: text, type, time: new Date().toLocaleTimeString() }, ...prev].slice(0, 10));
+  };
+
+  const nextTurn = () => {
+    setTurn(prev => (prev + 1) % 4);
+  };
+
+  const handleRoll = () => {
+    if (showQuiz) return;
+    const roll = Math.floor(Math.random() * 6) + 1;
+    setDice(roll);
+    addLog(`${players[turn].name} rolled a ${roll}.`, 'game');
+    
+    // Simulate board move
+    const newPos = (players[turn].pos + roll) % 20;
+    const newPlayers = [...players];
+    newPlayers[turn].pos = newPos;
+    setPlayers(newPlayers);
+
+    // Trigger Quiz Intercept
+    const subjectPool = QUESTION_BANK[activeSubject];
+    const quiz = subjectPool[Math.floor(Math.random() * subjectPool.length)];
+    setActiveQuiz(quiz);
+    setShowQuiz(true);
+  };
+
+  const submitQuiz = async (idx) => {
+    const isCorrect = idx === activeQuiz.a;
+    setShowQuiz(false);
+    
+    if (isCorrect) {
+      addLog(`${players[turn].name} passed the Quiz Intercept.`, 'success');
+      const newPlayers = [...players];
+      newPlayers[turn].kp += 50;
+      newPlayers[turn].xp += 20;
+      setPlayers(newPlayers);
+      
+      // If it's the main player (P1), sync to Cloud
+      if (turn === 0) {
+        const user = authService.me();
+        await authService.updateMe({
+          xp: (user.xp || 0) + 20,
+          knowledge_points: (user.knowledge_points || 0) + 50,
+          era_tokens: (user.era_tokens || 0) + 10
+        });
+      }
+      
+      notificationService.send("Node Secured", "KP +50 awarded.", "success");
+      if (window.quiz_callback) window.quiz_callback(true);
+    } else {
+      addLog(`${players[turn].name} failed neural verification.`, 'error');
+      notificationService.send("Logic Error", "Movement penalized.", "error");
+      if (window.quiz_callback) window.quiz_callback(false);
     }
-  ];
+    
+    window.quiz_callback = null;
+    if (currentTab === 'Monopoly') nextTurn();
+  };
+
+  // --- SUB-COMPONENTS: BOARD RENDER ---
+  const renderBoard = () => {
+    const tiles = Array.from({ length: 20 });
+    return (
+      <div className="relative w-full aspect-square border-4 border-black bg-black p-2 grid grid-cols-6 grid-rows-6 gap-2">
+        {tiles.map((_, i) => {
+          // Manual geometry for Monopoly perimeter
+          let row, col;
+          if (i < 6) { row = 0; col = i; }
+          else if (i < 10) { row = i - 5; col = 5; }
+          else if (i < 16) { row = 5; col = 15 - i; }
+          else { row = 20 - i; col = 0; }
+
+          const occupants = players.filter(p => p.pos === i);
+
+          return (
+            <div 
+              key={i} 
+              style={{ gridRow: row + 1, gridColumn: col + 1 }}
+              className={`border-[3px] border-black flex items-center justify-center relative transition-all ${i % 5 === 0 ? 'bg-nuvio-red' : 'bg-white/10'}`}
+            >
+              <span className="text-[10px] font-black text-black/20 absolute top-1 left-1">0{i}</span>
+              <div className="flex -space-x-2">
+                {occupants.map(p => (
+                  <motion.div 
+                    layoutId={`player-${p.id}`}
+                    key={p.id} 
+                    className="w-8 h-8 rounded-sm border-2 border-black flex items-center justify-center text-xs shadow-nb-small"
+                    style={{ backgroundColor: p.color }}
+                  >
+                    {p.icon}
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+        {/* Center Arena */}
+        <div className="col-start-2 col-end-6 row-start-2 row-end-6 bg-[#16181d] border-4 border-black flex flex-col items-center justify-center text-center p-8">
+           <div className="text-[10px] font-black text-nuvio-purple-400 uppercase tracking-[0.4em] mb-4">Central Matrix</div>
+           <h2 className="text-4xl font-black text-white uppercase tracking-tighter">Monopoly</h2>
+           <div className="mt-8 flex items-center gap-6">
+              <div className="w-20 h-20 border-4 border-black bg-white flex items-center justify-center text-5xl font-black text-black shadow-nb">
+                 {dice}
+              </div>
+              <button 
+                onClick={handleRoll}
+                className="nv-btn-primary !bg-nuvio-yellow h-20 px-10 group"
+              >
+                Roll <Dice5 className="w-8 h-8 group-hover:rotate-180 transition-transform" />
+              </button>
+           </div>
+        </div>
+      </div>
+    );
+  };
 
   return (
-    <div className="space-y-16 pb-32 nv-page-transition">
-      <header className="text-center space-y-8 relative py-12">
-        <div className="absolute inset-0 bg-nuvio-purple-500/10 blur-[120px] rounded-full pointer-events-none" />
-        <motion.div 
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          className="inline-flex items-center gap-4 p-6 bg-white/[0.02] border border-white/5 rounded-[40px] shadow-2xl backdrop-blur-xl relative z-10"
-        >
-          <div className="w-16 h-16 bg-nuvio-purple-500 rounded-full flex items-center justify-center text-white shadow-xl shadow-nuvio-purple-500/20">
-            <Gamepad2 className="w-10 h-10" />
-          </div>
-          <div className="text-left pr-4">
-             <h1 className="text-4xl font-black text-white uppercase tracking-tighter leading-none">Arcade Sector</h1>
-             <p className="text-[10px] text-text-muted font-black uppercase tracking-[0.3em] mt-1">Nuvio StudyVerse 2.0</p>
-          </div>
-        </motion.div>
+    <div className="flex min-h-screen bg-bg-base text-text-primary nv-page-transition p-4 md:p-8">
+      <div className="flex w-full gap-8">
         
-        <p className="max-w-xl mx-auto text-text-secondary font-medium text-lg leading-relaxed relative z-10">
-          Neural-linked educational simulations. Convert your concentrated academic energy into global rankings and XP.
-        </p>
-      </header>
+        {/* SIDEBAR (30%) */}
+        <aside className="hidden lg:flex flex-col w-[350px] gap-8">
+           <div className="nv-card !bg-nuvio-purple-500 !text-black !shadow-[8px_8px_0_#000]">
+              <div className="flex items-center gap-3">
+                 <Command className="w-8 h-8" />
+                 <h2 className="text-2xl font-black tracking-tighter uppercase">StudyVerse Hub</h2>
+              </div>
+           </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 max-w-7xl mx-auto px-4">
-        {games.map((game, i) => (
-          <motion.div
-            key={game.id}
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.1 }}
-            onClick={() => { if(game.active) window.location.hash = game.path }}
-            className={`
-              nv-card p-0 border-white/5 bg-[#12121e] hover:bg-[#161625] transition-all cursor-pointer group relative overflow-hidden flex flex-col h-[550px] shadow-2xl
-              ${!game.active && 'opacity-50 grayscale cursor-not-allowed'}
-            `}
-          >
-            {/* Game Poster Image */}
-            <div className="h-[45%] w-full relative overflow-hidden">
-               <div className="absolute inset-0 bg-gradient-to-t from-[#12121e] to-transparent z-10" />
-               <img 
-                 src={game.image} 
-                 alt={game.name}
-                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-60"
-               />
-               <div className={`absolute top-6 left-6 px-4 py-2 rounded-xl text-[10px] font-black text-white uppercase tracking-widest z-20 bg-gradient-to-r ${game.color} shadow-lg shadow-black/20`}>
-                 {game.tag}
-               </div>
-            </div>
+           {/* Subject Switcher */}
+           <div className="nv-card space-y-4">
+              <div className="nv-label tracking-widest text-[#F7F4EF60]">Mission Sector</div>
+              <div className="grid grid-cols-1 gap-3">
+                 {['Math', 'Science', 'Social'].map(s => (
+                   <button 
+                    key={s}
+                    onClick={() => setActiveSubject(s)}
+                    className={`px-6 py-3 border-[3px] border-black text-left font-black uppercase tracking-widest text-xs transition-all ${activeSubject === s ? 'bg-nuvio-cyan text-black shadow-nb-small' : 'bg-white/5 opacity-50'}`}
+                   >
+                     {s} Module
+                   </button>
+                 ))}
+              </div>
+           </div>
 
-            <div className="p-10 flex flex-col justify-between flex-1 relative z-20 -mt-10">
-               <div className="space-y-6">
-                  <div className={`w-16 h-16 rounded-[24px] bg-gradient-to-br ${game.color} flex items-center justify-center text-white shadow-2xl shadow-indigo-500/10`}>
-                    <game.icon className="w-8 h-8" />
-                  </div>
-                  <div>
-                    <h3 className="text-4xl font-black text-white uppercase tracking-tighter leading-none group-hover:text-nuvio-purple-400 transition-colors uppercase">{game.name}</h3>
-                    <p className="text-sm text-text-muted mt-4 leading-relaxed font-bold uppercase tracking-wide h-12 overflow-hidden text-ellipsis">
-                      {game.desc}
-                    </p>
-                  </div>
-               </div>
+           {/* Turn Indicator */}
+           <div className="nv-card !bg-nuvio-red">
+              <div className="flex items-center justify-between text-black">
+                 <div className="space-y-1">
+                    <div className="text-[10px] font-black uppercase tracking-widest opacity-70">Current Impulse</div>
+                    <div className="text-lg font-black uppercase tracking-tighter leading-none">{players[turn].name}</div>
+                 </div>
+                 <div className="w-12 h-12 bg-black flex items-center justify-center text-2xl">{players[turn].icon}</div>
+              </div>
+           </div>
 
-               <div className="flex items-center justify-between border-t border-white/5 pt-8">
-                  <div className="flex flex-col">
-                    <span className="text-[9px] font-black text-text-muted uppercase tracking-[0.2em] mb-1">Status Report</span>
-                    <div className="text-xs font-black text-white uppercase flex items-center gap-2">
-                       <div className="w-2 h-2 rounded-full bg-nuvio-green animate-pulse" />
-                       {game.stats}
-                    </div>
-                  </div>
-                  <div className={`w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-gradient-to-r group-hover:${game.color} group-hover:text-white transition-all shadow-xl`}>
-                    <ChevronRight className="w-7 h-7" />
-                  </div>
-               </div>
-            </div>
+           {/* Player Grid */}
+           <div className="nv-card space-y-6">
+              <div className="flex items-center gap-2 nv-label"><Users className="w-4 h-4" /> Live Leaderboard</div>
+              <div className="space-y-3">
+                 {players.map(p => (
+                   <div key={p.id} className="flex items-center justify-between p-3 border-2 border-black bg-black/20">
+                      <div className="flex items-center gap-3">
+                         <div className="w-8 h-8 flex items-center justify-center border-2 border-black" style={{ backgroundColor: p.color }}>{p.icon}</div>
+                         <span className="text-[11px] font-black uppercase tracking-tight">{p.name}</span>
+                      </div>
+                      <div className="text-[10px] font-bold text-nuvio-cyan">KP {p.kp}</div>
+                   </div>
+                 ))}
+              </div>
+           </div>
 
-            {/* Glowing Accent */}
-            <div className={`absolute -bottom-10 -right-10 w-40 h-40 bg-gradient-to-r ${game.color} blur-[100px] opacity-10 group-hover:opacity-20 transition-opacity`} />
-          </motion.div>
-        ))}
+           {/* Activity Feed */}
+           <div className="nv-card flex-1 space-y-4 overflow-hidden">
+              <div className="flex items-center gap-2 nv-label"><History className="w-4 h-4" /> Activity Feed</div>
+              <div className="space-y-3 font-mono text-[10px] uppercase overflow-y-auto max-h-[200px] pr-2 scrollbar-none">
+                 {activity.map((a, i) => (
+                   <div key={i} className={`p-2 border-l-4 ${a.type === 'error' ? 'border-nuvio-red bg-nuvio-red/5' : a.type === 'success' ? 'border-nuvio-green bg-nuvio-green/5' : 'border-nuvio-blue bg-white/5'}`}>
+                      <span className="text-text-muted mr-2">{a.time}</span>
+                      <span className={a.type === 'success' ? 'text-nuvio-green' : a.type === 'error' ? 'text-nuvio-red' : 'text-white'}>{a.t}</span>
+                   </div>
+                 ))}
+              </div>
+           </div>
+        </aside>
+
+        {/* WORKSPACE (Stage) */}
+        <main className="flex-1 flex flex-col gap-8">
+           {/* Topbar Tabs */}
+           <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-none">
+              {['Monopoly', 'Edu Ludo', 'Subject Uno', 'Trivia Bingo'].map(tab => (
+                <button 
+                  key={tab}
+                  onClick={() => setCurrentTab(tab)}
+                  className={`flex-none px-8 py-5 border-[3px] border-black font-black uppercase tracking-widest text-[11px] transition-all ${currentTab === tab ? 'bg-white text-black shadow-nb translate-y-[-4px]' : 'bg-black text-text-muted'}`}
+                >
+                  {tab}
+                </button>
+              ))}
+           </div>
+
+           {/* The Stage */}
+           <div className="flex-1 bg-[#121418] border-[3px] border-black shadow-nb flex items-center justify-center p-8 overflow-hidden relative">
+              {currentTab === 'Monopoly' ? renderBoard() : 
+               currentTab === 'Edu Ludo' ? (
+                 <EduLudo 
+                    players={players} 
+                    turn={turn} 
+                    activeSubject={activeSubject}
+                    onLog={addLog}
+                    onQuiz={({ difficulty, callback }) => {
+                      const pool = QUESTION_BANK[activeSubject];
+                      setActiveQuiz(pool[Math.floor(Math.random() * pool.length)]);
+                      setShowQuiz(true);
+                      window.quiz_callback = callback; // Temporary callback handler
+                    }}
+                    onNextTurn={nextTurn}
+                 />
+               ) : 
+               currentTab === 'Subject Uno' ? (
+                 <SubjectUno 
+                    players={players} 
+                    turn={turn} 
+                    activeSubject={activeSubject}
+                    onLog={addLog}
+                    onQuiz={({ difficulty, callback }) => {
+                      const pool = QUESTION_BANK[activeSubject];
+                      setActiveQuiz(pool[Math.floor(Math.random() * pool.length)]);
+                      setShowQuiz(true);
+                      window.quiz_callback = callback;
+                    }}
+                    onNextTurn={nextTurn}
+                 />
+               ) : 
+               currentTab === 'Trivia Bingo' ? (
+                 <TriviaBingo 
+                    players={players} 
+                    turn={turn} 
+                    activeSubject={activeSubject}
+                    onLog={addLog}
+                    onNextTurn={nextTurn}
+                 />
+               ) : (
+                <div className="flex flex-col items-center justify-center opacity-30 space-y-6">
+                   <LayoutGrid className="w-32 h-32" />
+                   <h2 className="text-4xl font-black uppercase tracking-tighter">Module Offline</h2>
+                   <p className="text-[10px] font-black uppercase tracking-[0.4em]">Initialize {currentTab} in Beta</p>
+                </div>
+              )}
+
+              {/* Quiz Overlay */}
+              <AnimatePresence>
+                 {showQuiz && (
+                   <motion.div 
+                     initial={{ opacity: 0 }}
+                     animate={{ opacity: 1 }}
+                     exit={{ opacity: 0 }}
+                     className="absolute inset-0 bg-black/95 z-50 flex items-center justify-center p-8 sm:p-20"
+                   >
+                     <motion.div 
+                       initial={{ scale: 0.9, rotate: -2 }}
+                       animate={{ scale: 1, rotate: 0 }}
+                       className="nv-card !bg-[#2ed573] !text-black w-full max-w-2xl border-4 !shadow-[20px_20px_0_#000]"
+                     >
+                        <div className="flex justify-between items-start mb-10">
+                           <div className="bg-black text-white px-4 py-1 text-[10px] font-black uppercase tracking-widest">Quiz Intercept</div>
+                           <div className="text-2xl font-black">Subject: {activeSubject}</div>
+                        </div>
+                        <h2 className="text-3xl font-black mb-12 border-b-4 border-black pb-8">{activeQuiz.q}</h2>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                           {activeQuiz.options.map((opt, i) => (
+                             <button
+                               key={i}
+                               onClick={() => submitQuiz(i)}
+                               className="p-6 bg-black text-white text-left font-bold uppercase tracking-wide border-2 border-black hover:bg-[#101114] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000]"
+                             >
+                                <span className="text-nuvio-cyan mr-3">[{i + 1}]</span> {opt}
+                             </button>
+                           ))}
+                        </div>
+                     </motion.div>
+                   </motion.div>
+                 )}
+              </AnimatePresence>
+           </div>
+        </main>
       </div>
-
-      {/* Global Status Footer */}
-      <footer className="max-w-5xl mx-auto bg-white/[0.01] border border-white/5 p-10 rounded-[40px] flex flex-col md:flex-row items-center justify-around gap-12 relative overflow-hidden">
-         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-nuvio-purple-500 via-nuvio-blue to-nuvio-purple-500" />
-         
-         <div className="text-center md:text-left space-y-2">
-            <div className="text-[10px] font-black text-nuvio-purple-400 uppercase tracking-[0.4em]">Global Network</div>
-            <div className="text-2xl font-black text-white uppercase">4.2k active nodes</div>
-         </div>
-
-         <div className="flex items-center gap-10">
-            <div className="flex flex-col items-center">
-               <Zap className="w-6 h-6 text-nuvio-yellow mb-2" />
-               <span className="text-[9px] font-black text-text-muted uppercase">Turbo Active</span>
-            </div>
-            <div className="w-px h-12 bg-white/5" />
-            <div className="flex flex-col items-center">
-               <Flame className="w-6 h-6 text-nuvio-orange mb-2" />
-               <span className="text-[9px] font-black text-text-muted uppercase">Hot Streak</span>
-            </div>
-            <div className="w-px h-12 bg-white/5" />
-            <div className="flex flex-col items-center">
-               <ShieldCheck className="w-6 h-6 text-nuvio-green mb-2" />
-               <span className="text-[9px] font-black text-text-muted uppercase">Verified Hub</span>
-            </div>
-         </div>
-      </footer>
     </div>
   );
 };
-
-// Internal icon hack for simplicity
-const ShieldCheck = (props) => (
-  <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>
-);
 
 export default StudyVerse;
