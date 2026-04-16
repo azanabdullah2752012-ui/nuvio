@@ -31,6 +31,7 @@ import Achievements from './pages/Achievements';
 import Analytics from './pages/Analytics';
 import StudyVerse from './pages/StudyVerse';
 import StudySites from './pages/StudySites';
+import TriviaGame from './pages/TriviaGame';
 
 import { authService } from './services/authService';
 import { supabase } from './lib/supabase';
@@ -85,6 +86,7 @@ function App() {
           <Route path="/shop" element={<Shop />} />
           <Route path="/analytics" element={<Analytics />} />
           <Route path="/study-verse" element={<StudyVerse />} />
+          <Route path="/trivia-game" element={<TriviaGame />} />
           <Route path="/study-sites" element={<StudySites />} />
 
           {/* Account */}
