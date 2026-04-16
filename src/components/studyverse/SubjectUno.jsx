@@ -94,7 +94,7 @@ const SubjectUno = ({ players, turn, onLog, onQuiz, activeSubject, onNextTurn })
 
     if (newHands[turn].length === 0) {
       onLog(`${players[turn].name} ACHIEVED SEMANTIC UNITY! +300 XP.`, 'success');
-      gameService.awardPlayer(turn, 300, "Subject Uno Victory");
+      gameService.awardPlayer(turn, 300, "Subject Uno Victory", "uno");
     }
     onNextTurn();
   };

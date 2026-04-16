@@ -1,7 +1,7 @@
-// CENTRAL STUDYVERSE GAME SERVICE
 import { notificationService } from './notificationService';
 import { xpService } from './xpService';
 import { authService } from './authService';
+import { supabase } from '../lib/supabase';
 
 export const gameService = {
   QUESTION_BANK: {
@@ -25,16 +25,32 @@ export const gameService = {
     ]
   },
 
-  awardPlayer: async (playerIdx, amount, reason) => {
+  awardPlayer: async (playerIdx, amount, reason, gameType = 'arcade') => {
     // Only persist if it's Player 1 (Logged-in User)
     if (playerIdx === 0) {
       const user = authService.me();
-      await authService.updateMe({
-        xp: (user.xp || 0) + amount,
-        knowledge_points: (user.knowledge_points || 0) + (amount * 2.5),
-        era_tokens: (user.era_tokens || 0) + Math.floor(amount / 5)
-      });
-      notificationService.send("Neural Gain", `+${amount} XP Synchronized to cloud.`, "success");
+      
+      try {
+        // Atomic Sync
+        await Promise.all([
+          authService.updateMe({
+            knowledge_points: (user.knowledge_points || 0) + (amount * 2.5),
+            era_tokens: (user.era_tokens || 0) + Math.floor(amount / 5)
+          }),
+          xpService.awardXp(amount, reason),
+          supabase.from('game_matches').insert([{
+            user_id: user.id,
+            game_type: gameType,
+            result: 'win',
+            kp_earned: Math.floor(amount * 2.5),
+            xp_earned: amount
+          }])
+        ]);
+        
+        notificationService.send("Neural Gain", `+${amount} XP Synchronized to cloud.`, "success");
+      } catch (err) {
+        console.error("StudyVerse Sync failure:", err);
+      }
     }
   }
 };

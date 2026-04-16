@@ -26,10 +26,16 @@ const Onboarding = () => {
         });
       }
     } else {
+      const starterXp = formData.pack === 'math' ? 500 : 500; // Simplified for now
+      const starterTokens = 1500;
+      
       authService.updateMe({
         full_name: formData.name,
         avatar_emoji: formData.avatar,
-        onboarding_completed: true
+        onboarding_completed: true,
+        era_tokens: starterTokens,
+        xp: starterXp,
+        streak: 1
       });
       navigate('/dashboard');
     }

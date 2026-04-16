@@ -4,6 +4,7 @@ import { notificationService } from '../../services/notificationService';
 import NotificationPanel from './NotificationPanel';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../../services/authService';
+import { supabase } from '../../lib/supabase';
 
 const UniversalHeader = ({ onMenuClick, user }) => {
   const [isNotifyOpen, setIsNotifyOpen] = useState(false);
@@ -12,6 +13,7 @@ const UniversalHeader = ({ onMenuClick, user }) => {
   const [logoClicks, setLogoClicks] = useState(0);
   const [lastClickTime, setLastClickTime] = useState(0);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [unreadMessages, setUnreadMessages] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,9 +32,20 @@ const UniversalHeader = ({ onMenuClick, user }) => {
     };
 
     loadNotifications();
+    fetchUnreadMessages();
     window.addEventListener('nuvio_notification', loadNotifications);
     return () => window.removeEventListener('nuvio_notification', loadNotifications);
   }, []);
+
+  const fetchUnreadMessages = async () => {
+    if (!user?.id) return;
+    const { count } = await supabase
+      .from('messages')
+      .select('id', { count: 'exact', head: true })
+      .eq('recipient_id', user.id)
+      .eq('is_read', false);
+    setUnreadMessages(count || 0);
+  };
 
   const handleMarkRead = (id) => {
     notificationService.markRead(id);
@@ -86,19 +99,23 @@ const UniversalHeader = ({ onMenuClick, user }) => {
 
         <div className="flex items-center gap-2 md:gap-4">
           {/* XP Boost Timer */}
-          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-nuvio-orange/10 border border-nuvio-orange/20 rounded-full">
-            <Zap className="w-4 h-4 text-nuvio-orange fill-nuvio-orange" />
-            <span className="text-xs font-bold text-nuvio-orange">2X XP 14:20</span>
-          </div>
+          {user?.xp_multiplier > 1 && (
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-nuvio-orange/10 border border-nuvio-orange/20 rounded-full">
+              <Zap className="w-4 h-4 text-nuvio-orange fill-nuvio-orange" />
+              <span className="text-xs font-bold text-nuvio-orange">{user.xp_multiplier}X XP Active</span>
+            </div>
+          )}
 
           <button 
             onClick={() => navigate('/messages')}
             className="relative p-2 hover:bg-white/5 rounded-full transition-colors"
           >
             <MessageSquare className="w-5 h-5 text-text-secondary" />
-            <span className="absolute top-1 right-1 w-4 h-4 bg-nuvio-red text-[10px] font-bold text-white flex items-center justify-center rounded-full border-2 border-background-base">
-              3
-            </span>
+            {unreadMessages > 0 && (
+              <span className="absolute top-1 right-1 w-4 h-4 bg-nuvio-red text-[10px] font-bold text-white flex items-center justify-center rounded-full border-2 border-background-base">
+                {unreadMessages}
+              </span>
+            )}
           </button>
 
           <button 
