@@ -12,42 +12,61 @@ import { notificationService } from '../services/notificationService';
 const LearningGroups = () => {
   const [peers, setPeers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(0);
+  const PAGE_SIZE = 9;
 
   useEffect(() => {
-    fetchPeers();
+    fetchPeers(0);
   }, []);
 
-  const fetchPeers = async () => {
-    setLoading(true);
-    // 1. Fetch all available groups (clusters)
+  const fetchPeers = async (pageNum = 0) => {
+    if (pageNum === 0) setLoading(true);
+    else setLoadingMore(true);
+
+    const from = pageNum * PAGE_SIZE;
+    const to = from + PAGE_SIZE - 1;
+
+    // 1. Fetch sharded cluster list with performance range
     const { data: clusters } = await supabase
       .from('groups')
       .select('*')
-      .order('member_count', { ascending: false });
+      .order('member_count', { ascending: false })
+      .range(from, to);
     
-    // 2. Fetch my memberships
-    const { data: myMemberships } = await supabase
-      .from('group_memberships')
-      .select('group_id')
-      .eq('user_id', authService.me().id);
-
-    const joinedIds = new Set(myMemberships?.map(m => m.group_id) || []);
+    // 2. Fetch my memberships (initial sync only)
+    let joinedIds = new Set();
+    if (pageNum === 0) {
+      const { data: myMemberships } = await supabase
+        .from('group_memberships')
+        .select('group_id')
+        .eq('user_id', authService.me().id);
+      joinedIds = new Set(myMemberships?.map(m => m.group_id) || []);
+    }
 
     if (clusters && clusters.length > 0) {
-      setPeers(clusters.map(c => ({
+      const newPeers = clusters.map(c => ({
         ...c,
-        joined: joinedIds.has(c.id)
-      })));
-    } else {
-      // Fallback: If no groups exist, show active individual nodes (profiles)
+        joined: pageNum === 0 ? joinedIds.has(c.id) : false
+      }));
+      
+      setPeers(prev => pageNum === 0 ? newPeers : [...prev, ...newPeers]);
+      setHasMore(clusters.length === PAGE_SIZE);
+      setPage(pageNum);
+    } else if (pageNum === 0) {
+      // Fallback: Individual Nodes
       const { data: profiles } = await supabase
         .from('profiles')
         .select('*')
         .neq('id', authService.me().id)
         .limit(10);
       setPeers(profiles || []);
+      setHasMore(false);
     }
+    
     setLoading(false);
+    setLoadingMore(false);
   };
 
   const joinGroup = async (groupId) => {
@@ -58,7 +77,7 @@ const LearningGroups = () => {
         group_id: groupId
       }]);
       notificationService.send("Cluster Sync", "Neural link established with group.", "success");
-      fetchPeers(); // Refresh
+      fetchPeers(0); // Full refresh
     } catch (e) {
       console.error("Join failed:", e);
     }
@@ -113,14 +132,30 @@ const LearningGroups = () => {
                     <div className="px-3 py-1.5 bg-white/5 rounded-lg border border-white/10 text-[9px] font-black text-white uppercase tracking-tighter">Math</div>
                  </div>
 
-                 <button className="w-full py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[10px] font-black text-white uppercase tracking-[0.2em] transition-all">
-                    Initiate Duo Study
+                 <button 
+                   onClick={() => !peer.joined && joinGroup(peer.id)}
+                   disabled={peer.joined}
+                   className={`w-full py-3 ${peer.joined ? 'bg-nuvio-green/20 text-nuvio-green' : 'bg-white/5 hover:bg-white/10'} border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all`}
+                 >
+                    {peer.joined ? 'Cluster Linked' : 'Initiate Duo Study'}
                  </button>
               </div>
             </motion.div>
           ))}
         </AnimatePresence>
       </div>
+
+      {hasMore && !loading && (
+        <div className="flex justify-center pt-10">
+          <button 
+            onClick={() => fetchPeers(page + 1)}
+            disabled={loadingMore}
+            className="nv-btn-primary px-12 py-4 bg-white/5 border-white/10 hover:bg-white/10 text-xs tracking-[0.3em]"
+          >
+            {loadingMore ? 'Syncing...' : 'Expand Neural Matrix'}
+          </button>
+        </div>
+      )}
 
       {loading && (
         <div className="py-20 text-center animate-pulse">

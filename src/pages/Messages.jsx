@@ -11,16 +11,26 @@ const Messages = () => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
   const [user, setUser] = useState(authService.me());
   const messagesEndRef = useRef(null);
+  const scrollContainerRef = useRef(null);
+
+  const GLOBAL_CLUSTER_ID = '00000000-0000-0000-0000-000000000000';
 
   useEffect(() => {
     fetchMessages();
 
-    // REAL-TIME SUBSCRIPTION
+    // 🚀 SHARDED SUBSCRIPTION: Filter by Global Cluster ID to reduce packet churn
     const channel = supabase
-      .channel('public:messages')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
+      .channel(`cluster:${GLOBAL_CLUSTER_ID}`)
+      .on('postgres_changes', { 
+        event: 'INSERT', 
+        schema: 'public', 
+        table: 'messages',
+        filter: `recipient_id=eq.${GLOBAL_CLUSTER_ID}` 
+      }, payload => {
         setMessages(prev => [...prev, payload.new]);
       })
       .subscribe();
@@ -34,14 +44,46 @@ const Messages = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const fetchMessages = async () => {
-    const { data } = await supabase
+  const fetchMessages = async (cursor = null) => {
+    if (cursor) setLoadingMore(true);
+    else setLoading(true);
+
+    let query = supabase
       .from('messages')
       .select('*')
-      .order('created_at', { ascending: true })
-      .limit(50);
-    if (data) setMessages(data);
+      .eq('recipient_id', GLOBAL_CLUSTER_ID)
+      .order('created_at', { ascending: false })
+      .limit(30);
+
+    if (cursor) {
+      query = query.lt('created_at', cursor);
+    }
+
+    const { data } = await query;
+
+    if (data) {
+      const sorted = [...data].reverse();
+      if (cursor) {
+        setMessages(prev => [...sorted, ...prev]);
+        setHasMore(data.length === 30);
+      } else {
+        setMessages(sorted);
+        setHasMore(data.length === 30);
+        setTimeout(() => messagesEndRef.current?.scrollIntoView(), 100);
+      }
+    }
+    
     setLoading(false);
+    setLoadingMore(false);
+  };
+
+  const handleScroll = (e) => {
+    if (e.target.scrollTop === 0 && hasMore && !loadingMore) {
+      const oldestMessage = messages[0];
+      if (oldestMessage) {
+        fetchMessages(oldestMessage.created_at);
+      }
+    }
   };
 
   const handleSendMessage = async (e) => {
@@ -82,7 +124,16 @@ const Messages = () => {
       </div>
 
       {/* Message Feed */}
-      <div className="flex-1 overflow-y-auto p-8 space-y-6 bg-background-base/30">
+      <div 
+        ref={scrollContainerRef}
+        onScroll={handleScroll}
+        className="flex-1 overflow-y-auto p-8 space-y-6 bg-background-base/30"
+      >
+        {loadingMore && (
+          <div className="text-center py-2 text-[9px] font-black text-nuvio-purple-400 uppercase tracking-widest animate-pulse">
+            Syncing earlier logs...
+          </div>
+        )}
         <AnimatePresence initial={false}>
           {messages.map((msg, i) => {
             const isMe = msg.user_id === user.id;
