@@ -20,25 +20,27 @@ const Layout = () => {
     const init = async () => {
       // Step 1: Check local buffer (instant)
       let profile = authService.me();
+      const session = await authService.getSession();
+      
+      if (session?.user) {
+        // ALWAYS sync to verify role updates or recover from DB wipe
+        await authService.syncProfile(session.user);
+        profile = authService.me();
 
-      // Step 2: If no local buffer, ask Supabase directly
-      if (!profile) {
-        const session = await authService.getSession();
-        if (session?.user) {
-          await authService.syncProfile(session.user);
-          profile = authService.me();
-
-          // Fallback: build profile from session if Supabase table fails
-          if (!profile) {
-            profile = {
-              id: session.user.id,
-              email: session.user.email,
-              full_name: session.user.user_metadata?.full_name || 'Neural Student',
-              avatar_emoji: '⚡',
-              level: 1, xp: 0, era_tokens: 500, role: 'student'
-            };
-            localStorage.setItem('nuvio_user', JSON.stringify(profile));
-          }
+        // Fallback: build profile from session if Supabase table fails
+        if (!profile) {
+          const isAdmin = ['azanabdullah27.5.2012@gmail.com'].includes(session.user.email);
+          profile = {
+            id: session.user.id,
+            email: session.user.email,
+            full_name: session.user.user_metadata?.full_name || 'Neural Student',
+            avatar_emoji: '⚡',
+            level: 1, 
+            xp: 0, 
+            era_tokens: 500, 
+            role: isAdmin ? 'admin' : 'student'
+          };
+          localStorage.setItem('nuvio_user', JSON.stringify(profile));
         }
       }
 

@@ -78,8 +78,8 @@ export const authService = {
         }
       } else {
         // Existing User: Sync local storage
-        // Force admin role if in admin list but role is student
-        if (ADMIN_EMAILS.includes(existing.email) && existing.role !== 'admin') {
+        // Force admin role if in admin list (check against live auth email)
+        if (ADMIN_EMAILS.includes(user.email) && existing.role !== 'admin') {
           existing.role = 'admin';
           await supabase.from('profiles').update({ role: 'admin' }).eq('id', existing.id);
         }
