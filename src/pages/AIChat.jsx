@@ -13,6 +13,7 @@ const AIChat = () => {
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [detectedKey, setDetectedKey] = useState(null);
   const scrollRef = useRef(null);
 
   useEffect(() => {
@@ -29,6 +30,13 @@ const AIChat = () => {
     setMessages(prev => [...prev, userMsg]);
     setInput('');
     setIsTyping(true);
+    setDetectedKey(null); // Reset detection on new message
+
+    // Proactively check for keys in the user's message
+    const keyMatch = aiService.detectAndOfferKey(textToSend);
+    if (keyMatch) {
+      setDetectedKey(keyMatch);
+    }
 
     try {
       // Pass the whole message history to the AI for context
@@ -110,6 +118,39 @@ const AIChat = () => {
 
       {/* Input Area */}
       <div className="space-y-4">
+        {/* Smart Key Detection Invitation */}
+        <AnimatePresence>
+          {detectedKey && (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 10 }}
+              className="nv-card !bg-nuvio-purple-600 border-none p-6 flex flex-col md:flex-row items-center justify-between gap-4 mb-4"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center text-2xl">⚡</div>
+                <div>
+                  <h4 className="text-sm font-black text-white uppercase tracking-tight">Intelligence Pattern Detected</h4>
+                  <p className="text-[10px] text-nuvio-purple-100 font-bold uppercase tracking-widest leading-relaxed">I found a {detectedKey.provider} key in your message. Commit it now to unlock my full brain?</p>
+                </div>
+              </div>
+              <div className="flex gap-3 w-full md:w-auto">
+                <button 
+                  onClick={() => {
+                    aiService.setKey(detectedKey.provider, detectedKey.key);
+                    setDetectedKey(null);
+                    setMessages(prev => [...prev, { role: 'assistant', text: "Neural link established! 🧠⚡ I can now access my full intelligence core. What's our next objective?" }]);
+                  }}
+                  className="flex-1 md:flex-initial px-6 py-3 bg-white text-nuvio-purple-600 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-nuvio-cyan hover:text-black transition-all shadow-lg"
+                >
+                  Commit to Neural Path
+                </button>
+                <button onClick={() => setDetectedKey(null)} className="px-4 py-3 bg-black/20 text-white rounded-xl text-[10px] uppercase font-black">Later</button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {messages.length === 1 && (
           <div className="flex flex-wrap gap-2">
             {suggestions.map(s => (
