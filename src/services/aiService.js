@@ -5,16 +5,17 @@ const STORAGE_KEYS = {
 };
 
 const DEFAULT_KEYS = {
-  openrouter: '',
+  openrouter: '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',
   groq: '',
   gemini: ''
 };
 
 // Free OpenRouter models
+// High-performance free models via OpenRouter
 const MODELS = {
-  reasoning: 'nvidia/nemotron-super-49b-v1:free',   // Best for complex reasoning & math
-  academic:  'qwen/qwen3-235b-a22b:free',            // Best for explanations & essays
-  synthesis: 'google/gemma-3-27b-it:free'            // General purpose & summaries
+  reasoning: 'nvidia/nemotron-3-super-120b-a12b:free',   // Epic reasoning scale
+  academic:  'qwen/qwen3-next-80b-a3b-instruct:free',    // Depth & instruction following
+  synthesis: 'google/gemma-4-26b-a4b-it:free'            // Fast synthesis & summaries
 };
 
 const NOVA_SYSTEM = `You are Nova, the AI academic companion for Nuvio — a gamified study platform. 

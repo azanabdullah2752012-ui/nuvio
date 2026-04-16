@@ -70,6 +70,14 @@
     background-size: 200% 100%;
     animation: shimmer 2s infinite;
   }
+
+  .nv-input {
+    @apply w-full bg-white/5 border border-white/10 rounded-[16px] px-5 py-3.5 text-white transition-all outline-none placeholder:text-text-muted placeholder:font-bold placeholder:uppercase placeholder:text-[10px] placeholder:tracking-widest focus:border-nuvio-purple-500 focus:bg-white/[0.08] shadow-inner;
+  }
+
+  .nv-select {
+    @apply w-full bg-[#1c1c27] border border-white/10 rounded-[16px] px-5 py-3.5 text-white transition-all outline-none focus:border-nuvio-purple-500 shadow-inner appearance-none cursor-pointer;
+  }
 }
 
 @layer utilities {
