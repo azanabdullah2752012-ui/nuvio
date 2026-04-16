@@ -34,10 +34,11 @@ const Homework = () => {
     }
   };
 
-  const handleQuestForge = async (e) => {
-    if (e.key === 'Enter' && quickInput.trim()) {
+  const handleQuestForge = async (titleOverride = null) => {
+    const title = titleOverride || quickInput;
+    if (title.trim()) {
       const newQuest = {
-        title: quickInput,
+        title: title,
         subject: 'General Sector',
         priority: 'Standard',
         completed: false
@@ -46,11 +47,33 @@ const Homework = () => {
       try {
         const created = await dataService.create('tasks', newQuest);
         setTasks(prev => [created, ...prev]);
-        notificationService.send("Objective Locked", `"${newQuest.title}" added to command deck.`, "info");
+        notificationService.send("Objective Locked", `"${title}" added to study list.`, "info");
+        
+        // Interaction: Trigger particles from the input area
+        window.dispatchEvent(new CustomEvent('nuvio_stats_update', { detail: { last_gain: 1 } }));
       } catch (err) {
         console.error("Forge failed:", err);
       }
     }
+  };
+
+  const handleMagicSuggest = () => {
+    const suggestions = [
+      "Review Science Flashcards",
+      "Draft Essay Outline",
+      "Solve 10 Math Problems",
+      "Read History Chapter 4",
+      "Practice Vocabulary",
+      "Summarize Social Notes"
+    ];
+    const pick = suggestions[Math.floor(Math.random() * suggestions.length)];
+    handleQuestForge(pick);
+  };
+
+  const emitReaction = (emoji, e) => {
+    const x = e.clientX;
+    const y = e.clientY;
+    window.dispatchEvent(new CustomEvent('nuvio_particle_bonus', { detail: { emoji, x, y, type: 'reaction' } }));
   };
 
   const toggleQuest = async (id) => {
@@ -98,7 +121,7 @@ const Homework = () => {
             <span className="text-sm font-black text-black uppercase tracking-widest">Active Missions</span>
           </div>
           <h1 className="text-6xl md:text-8xl font-black text-white uppercase tracking-tighter leading-none text-shadow-nb">
-            Quest <br /> Deck
+            Study <br /> Planner
           </h1>
           <p className="text-lg font-bold text-nuvio-cyan uppercase tracking-widest pt-2">
             [ Sector Clear: {(tasks.filter(t => t.completed).length / (tasks.length || 1) * 100).toFixed(0)}% ]
@@ -123,19 +146,23 @@ const Homework = () => {
 
       {/* Input Section */}
       <div className="relative max-w-4xl">
-        <div className="nv-card bg-nuvio-cyan p-2 !shadow-[12px_12px_0_#000] !border-4">
+        <div className="nv-card bg-nuvio-purple-500 p-2 !shadow-[12px_12px_0_#000] !border-4">
           <div className="flex flex-col md:flex-row items-center gap-4 bg-black p-6">
-            <Plus className="w-10 h-10 text-nuvio-cyan" />
+            <Plus className="w-10 h-10 text-nuvio-purple-400" />
             <input 
               className="flex-1 bg-transparent text-2xl font-black text-white outline-none placeholder:text-white/20 uppercase"
-              placeholder="Input New Objective..."
+              placeholder="What's the goal?"
               value={quickInput}
               onChange={(e) => setQuickInput(e.target.value)}
-              onKeyDown={handleQuestForge}
+              onKeyDown={(e) => e.key === 'Enter' && handleQuestForge()}
             />
-            <div className="hidden md:block px-4 py-2 border-2 border-nuvio-cyan/30 rounded text-[10px] font-black text-nuvio-cyan uppercase tracking-widest">
-              Press [Enter] to Forge
-            </div>
+            <button 
+              onClick={handleMagicSuggest}
+              className="p-4 bg-nuvio-cyan hover:bg-white text-black rounded-xl transition-all hover:scale-110 active:scale-90 flex items-center gap-2 group"
+            >
+              <Sparkles className="w-6 h-6 animate-pulse" />
+              <span className="text-[10px] font-black uppercase hidden lg:block">Auto-Focus</span>
+            </button>
           </div>
         </div>
       </div>
@@ -185,11 +212,26 @@ const Homework = () => {
                   </div>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-4 relative">
                   <div className="text-[10px] font-black text-nuvio-cyan uppercase tracking-[0.3em]">Neural Protocol {idx + 1}</div>
                   <h3 className={`text-3xl font-black text-white uppercase leading-tight ${task.completed ? 'line-through decoration-[#000]' : ''}`}>
                     {task.title}
                   </h3>
+                  
+                  {/* Reaction System */}
+                  {!task.completed && (
+                    <div className="absolute -right-4 top-0 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2 bg-black border border-white/10 p-2 rounded-xl z-10 shadow-nb-small">
+                       {['🔥', '💡', '🚀', '🎯'].map(emoji => (
+                         <button 
+                           key={emoji}
+                           onClick={(e) => emitReaction(emoji, e)}
+                           className="hover:scale-150 transition-transform text-lg"
+                         >
+                           {emoji}
+                         </button>
+                       ))}
+                    </div>
+                  )}
                 </div>
 
                 <div className="mt-12 pt-8 border-t-[3px] border-black flex items-center justify-between">

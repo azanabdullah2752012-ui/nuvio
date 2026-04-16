@@ -6,6 +6,7 @@ const LEVEL_THRESHOLDS = [
 ];
 
 const HISTORY_KEY = 'nuvio_xp_history';
+const BREAKDOWN_KEY = 'nuvio_xp_breakdown';
 
 export const xpService = {
   getLevel: (xp) => {
@@ -54,11 +55,20 @@ export const xpService = {
     history.push({
       id: Math.random().toString(36).substr(2, 9),
       amount,
-      reason,
+      reason, // This is now used as category: 'game', 'streak', 'task', 'social'
       timestamp: new Date().toISOString(),
       balance: newXp
     });
     localStorage.setItem(HISTORY_KEY, JSON.stringify(history.slice(-100)));
+
+    // Update Breakdown
+    const breakdown = xpService.getBreakdown();
+    const category = reason.toLowerCase().includes('quiz') || reason.toLowerCase().includes('bingo') || reason.toLowerCase().includes('ludo') || reason.toLowerCase().includes('uno') ? 'game' : 
+                     reason.toLowerCase().includes('streak') ? 'streak' : 
+                     reason.toLowerCase().includes('task') || reason.toLowerCase().includes('planner') ? 'task' : 'social';
+    
+    breakdown[category] = (breakdown[category] || 0) + amount;
+    localStorage.setItem(BREAKDOWN_KEY, JSON.stringify(breakdown));
 
     // Emit event for UI components to refresh
     window.dispatchEvent(new CustomEvent('nuvio_stats_update', { detail: updatedUser }));
@@ -73,5 +83,10 @@ export const xpService = {
 
   getTotalXp: () => {
     return authService.me()?.xp || 0;
+  },
+
+  getBreakdown: () => {
+    const data = localStorage.getItem(BREAKDOWN_KEY);
+    return data ? JSON.parse(data) : { game: 0, streak: 0, task: 0, social: 0 };
   }
 };

@@ -68,24 +68,27 @@ const StudyVerse = () => {
       const newPlayers = [...players];
       newPlayers[turn].pos = newPos;
       setPlayers(newPlayers);
-      addLog(`${players[turn].name} rolled ${roll}.`, 'game');
+      addLog(`${players[turn].name} rolled ${roll} and engaged Sector ${newPos}.`, 'game');
 
       // 2. Simulated Quiz Result (80% Success Rate)
       setTimeout(() => {
         const success = Math.random() < 0.8;
         if (success) {
-          addLog(`${players[turn].name} solved the Focus Query.`, 'success');
+          addLog(`${players[turn].name} synchronized the Focus Node.`, 'success');
           newPlayers[turn].kp += 50;
           setPlayers(newPlayers);
+          
+          // Trigger ambient particles for bot wins too
+          window.dispatchEvent(new CustomEvent('nuvio_stats_update', { detail: { last_gain: 1 } }));
         } else {
-          addLog(`${players[turn].name} missed the focus node.`, 'error');
+          addLog(`${players[turn].name} failed neural verification.`, 'error');
         }
         
         setIsBotThinking(false);
         // Only Monopoly uses main loop turn logic, others handle locally
         if (currentTab === 'Monopoly') nextTurn(); 
       }, 1000);
-    }, 1500);
+    }, 1000); // Faster roll logic
   };
 
   const handleRoll = () => {
@@ -214,15 +217,23 @@ const StudyVerse = () => {
            <div className="nv-card space-y-4">
               <div className="nv-label tracking-widest text-[#F7F4EF60]">Subject Area</div>
               <div className="grid grid-cols-1 gap-3">
-                 {['Math', 'Science', 'Social'].map(s => (
-                   <button 
-                    key={s}
-                    onClick={() => setActiveSubject(s)}
-                    className={`px-6 py-3 border-[3px] border-black text-left font-black uppercase tracking-widest text-xs transition-all ${activeSubject === s ? 'bg-nuvio-cyan text-black shadow-nb-small' : 'bg-white/5 opacity-50'}`}
-                   >
-                     {s} Module
-                   </button>
-                 ))}
+                 {['Math', 'Science', 'Social'].map(s => {
+                    // Logic: Pulse if it's the "suggested" subject (random for demo or based on logic)
+                    const isNeglected = (s === 'Social' && activeSubject !== 'Social'); 
+                    return (
+                      <button 
+                        key={s}
+                        onClick={() => setActiveSubject(s)}
+                        className={`
+                          px-6 py-3 border-[3px] border-black text-left font-black uppercase tracking-widest text-xs transition-all 
+                          ${activeSubject === s ? 'bg-nuvio-cyan text-black shadow-nb-small' : 'bg-white/5 opacity-50'}
+                          ${isNeglected ? 'nv-pulse-attention' : ''}
+                        `}
+                      >
+                        {s} Module
+                      </button>
+                    );
+                 })}
               </div>
            </div>
 

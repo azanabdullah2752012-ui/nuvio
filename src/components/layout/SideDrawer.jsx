@@ -7,6 +7,10 @@ import {
   History, BarChart3, ListChecks, Award, BookMarked, UserCircle
 } from 'lucide-react';
 
+import { xpService } from '../../services/xpService';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+
 const navSections = [
   {
     label: "Main",
@@ -60,6 +64,9 @@ const navSections = [
 ];
 
 const SideDrawer = ({ isOpen, onClose, user }) => {
+  const [showBreakdown, setShowBreakdown] = React.useState(false);
+  const navigate = useNavigate();
+
   return (
     <>
       {/* Overlay */}
@@ -78,25 +85,58 @@ const SideDrawer = ({ isOpen, onClose, user }) => {
       `}>
         {/* User Card */}
         <div className="p-4 border-b border-border">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-12 h-12 rounded-full bg-nuvio-purple-500 flex items-center justify-center text-2xl border-2 border-white/10">
+          <div 
+            onClick={() => window.dispatchEvent(new CustomEvent('nuvio_open_profile', { detail: { user } }))}
+            className="flex items-center gap-4 mb-4 cursor-pointer hover:translate-x-1 transition-transform group"
+          >
+            <div className="w-12 h-12 rounded-full bg-nuvio-purple-500 flex items-center justify-center text-2xl border-2 border-white/10 group-hover:border-nuvio-cyan ring-0 group-hover:ring-4 ring-nuvio-purple-500/20 transition-all">
               {user?.avatar_emoji || '⚡'}
             </div>
             <div>
-              <div className="font-bold text-text-primary leading-tight">{user?.full_name || 'Student'}</div>
+              <div className="font-bold text-text-primary leading-tight group-hover:text-nuvio-cyan transition-colors">{user?.full_name || 'Student'}</div>
               <div className="text-xs text-nuvio-purple-400 font-bold">Level {user?.level || 1}</div>
             </div>
           </div>
-          <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-nuvio-purple-500 rounded-full" 
-              style={{ width: '45%' }} 
-            />
+          
+          <div 
+            className="nv-interactive space-y-2"
+            onClick={() => setShowBreakdown(!showBreakdown)}
+          >
+            <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-nuvio-purple-500 rounded-full transition-all duration-1000" 
+                style={{ width: `${Math.min(100, ((user?.xp || 0) % 1000) / 10)}%` }} 
+              />
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-[10px] text-text-muted font-black uppercase tracking-widest">{(user?.xp || 0)} XP Total</span>
+              <span className="text-[10px] text-nuvio-purple-400 font-bold uppercase tracking-widest">🔥 {user?.streak || 1} day streak</span>
+            </div>
           </div>
-          <div className="flex justify-between mt-1">
-            <span className="text-[10px] text-text-muted font-bold">450 / 1000 XP</span>
-            <span className="text-[10px] text-nuvio-purple-400 font-bold">🔥 {user?.streak || 1} day streak</span>
-          </div>
+
+          <AnimatePresence>
+            {showBreakdown && (
+              <motion.div 
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                className="mt-4 pt-4 border-t border-white/5 space-y-3 overflow-hidden"
+              >
+                <div className="text-[9px] font-black text-nuvio-cyan uppercase tracking-[0.3em] mb-2">Focus Distribution</div>
+                {Object.entries(xpService.getBreakdown()).map(([key, val]) => (
+                   <div key={key} className="flex flex-col gap-1">
+                      <div className="flex justify-between text-[8px] font-black uppercase text-text-muted">
+                         <span>{key}</span>
+                         <span>{val} XP</span>
+                      </div>
+                      <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                         <div className="h-full bg-nuvio-cyan" style={{ width: `${Math.min(100, (val / (user?.xp || 1)) * 100)}%` }} />
+                      </div>
+                   </div>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* Navigation */}

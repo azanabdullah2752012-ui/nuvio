@@ -33,6 +33,7 @@ import StudyVerse from './pages/StudyVerse';
 import StudySites from './pages/StudySites';
 import TriviaGame from './pages/TriviaGame';
 import NeuralComms from './components/NeuralComms';
+import InteractionSystem from './components/InteractionSystem';
 
 import { authService } from './services/authService';
 import { supabase } from './lib/supabase';
@@ -90,6 +91,7 @@ const RetentionEngine = ({ children }) => {
 function App() {
   return (
     <HashRouter>
+      <InteractionSystem />
       <RetentionEngine>
         <Routes>
           {/* Public Routes */}

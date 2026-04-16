@@ -24,6 +24,8 @@ const Dashboard = () => {
   const [counts, setCounts] = useState({ tasks: 0, decks: 0 });
   const [loading, setLoading] = useState(true);
   const [nextMilestone, setNextMilestone] = useState({ label: 'Level 2', remaining: 100 });
+  const [holdProgress, setHoldProgress] = useState(0);
+  const [isHolding, setIsHolding] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -67,6 +69,38 @@ const Dashboard = () => {
       label: `Level ${level + 1}`,
       remaining: nextXp - (xp || 0)
     });
+  };
+
+  // --- HOLD SYSTEM LOGIC ---
+  useEffect(() => {
+    let interval;
+    if (isHolding) {
+      interval = setInterval(() => {
+        setHoldProgress(prev => {
+          if (prev >= 100) {
+            handleHoldComplete();
+            return 0;
+          }
+          return prev + 2;
+        });
+      }, 20);
+    } else {
+      setHoldProgress(0);
+    }
+    return () => clearInterval(interval);
+  }, [isHolding]);
+
+  const handleHoldComplete = () => {
+    setIsHolding(false);
+    notificationService.send("Neural Surge", "Tasks synchronized. Gained +10 Focus Energy.", "success");
+    xpService.awardXp(10, 'Daily Ritual');
+    navigate('/homework');
+  };
+
+  const emitReaction = (emoji, e) => {
+    const x = e.clientX;
+    const y = e.clientY;
+    window.dispatchEvent(new CustomEvent('nuvio_particle_bonus', { detail: { emoji, x, y, type: 'reaction' } }));
   };
 
   const tasksCount = counts.tasks;
@@ -193,15 +227,34 @@ const Dashboard = () => {
                  </div>
               </div>
               <div className="space-y-6">
-                 {PEERS.map((peer, i) => (
-                    <div key={i} className="flex gap-4 items-start border-l-2 border-white/5 pl-4 py-1 hover:border-nuvio-cyan transition-colors">
-                       <div className="flex-1">
-                          <div className="text-xs font-black text-white uppercase">{peer.name}</div>
-                          <div className="text-[10px] text-text-muted font-bold capitalize">{peer.action}</div>
-                       </div>
-                       <div className="text-[9px] text-white/20 font-black">{peer.time}</div>
-                    </div>
-                 ))}
+-                 {PEERS.map((peer, i) => (
+-                    <div key={i} className="flex gap-4 items-start border-l-2 border-white/5 pl-4 py-1 hover:border-nuvio-cyan transition-colors">
+-                       <div className="flex-1">
+-                          <div className="text-xs font-black text-white uppercase">{peer.name}</div>
+-                          <div className="text-[10px] text-text-muted font-bold capitalize">{peer.action}</div>
+-                       </div>
+-                       <div className="text-[9px] text-white/20 font-black">{peer.time}</div>
+-                    </div>
+-                 ))}
++                 {PEERS.map((peer, i) => (
++                    <div 
++                      key={i} 
++                      className="group/peer flex gap-4 items-start border-l-2 border-white/5 pl-4 py-3 hover:border-nuvio-cyan transition-all relative cursor-pointer"
++                    >
++                       <div className="flex-1">
++                          <div className="text-xs font-black text-white uppercase group-hover/peer:text-nuvio-cyan transition-colors">{peer.name}</div>
++                          <div className="text-[10px] text-text-muted font-bold capitalize">{peer.action}</div>
++                       </div>
++                       <div className="text-[9px] text-white/20 font-black">{peer.time}</div>
++                       
++                       {/* Quick Reaction Modal on Hover */}
++                       <div className="absolute right-0 top-0 opacity-0 group-hover/peer:opacity-100 transition-opacity flex gap-1 bg-black border border-white/10 p-1 rounded-lg">
++                          {['🔥', '🚀', '💯'].map(e => (
++                            <button key={e} onClick={(ev) => emitReaction(e, ev)} className="hover:scale-125 transition-transform">{e}</button>
++                          ))}
++                       </div>
++                    </div>
++                 ))}
               </div>
               <div className="pt-4 border-t border-white/5 text-center">
                  <button className="text-[9px] font-black text-nuvio-cyan uppercase tracking-widest hover:underline">Connect to Cluster</button>
@@ -217,12 +270,27 @@ const Dashboard = () => {
               <p className="text-xs text-text-secondary leading-relaxed font-medium">
                 You have <span className="text-white">{tasksCount} pending tasks</span>. Finishing these will help you stay organized and earn a <span className="text-nuvio-purple-300">Reward Boost</span>.
               </p>
-              <button 
-                onClick={() => navigate('/homework')}
-                className="w-full nv-btn-primary py-4 text-[10px] uppercase tracking-widest"
-              >
-                View My Tasks
-              </button>
+-              <button 
+-                onClick={() => navigate('/homework')}
+-                className="w-full nv-btn-primary py-4 text-[10px] uppercase tracking-widest"
+-              >
+-                View My Tasks
+-              </button>
++              <div className="relative pt-4">
++                <button 
++                  onMouseDown={() => setIsHolding(true)}
++                  onMouseUp={() => setIsHolding(false)}
++                  onMouseLeave={() => setIsHolding(false)}
++                  style={{ '--progress': `${holdProgress}%` }}
++                  className={`w-full nv-btn-primary py-5 text-[10px] uppercase tracking-[0.3em] font-black relative overflow-hidden transition-all active:scale-95 ${isHolding ? 'brightness-125' : ''}`}
++                >
++                  <div className="absolute inset-0 bg-white/10 origin-left transition-transform duration-75" style={{ transform: `scaleX(${holdProgress / 100})` }} />
++                  <span className="relative z-10">{isHolding ? 'Focusing...' : 'Hold to Sync Tasks'}</span>
++                </button>
++                <div className="flex justify-center mt-2">
++                   <div className="text-[8px] font-black text-text-muted uppercase tracking-widest">Ritual Status: {holdProgress}% Authorized</div>
++                </div>
++              </div>
            </div>
         </div>
       </div>

@@ -17,7 +17,7 @@ const TriviaBingo = ({ players, turn, onLog, activeSubject, onNextTurn }) => {
     if (isBot && !winner) {
       const timer = setTimeout(() => {
         handleBotDecision();
-      }, 3000); // Bingo takes longer to "scan"
+      }, 1500); // Faster bot transitions
       return () => clearTimeout(timer);
     }
   }, [turn, activeSubject, winner]);
@@ -48,9 +48,20 @@ const TriviaBingo = ({ players, turn, onLog, activeSubject, onNextTurn }) => {
   };
 
   function generateBoard() {
-    const concepts = ["Atom", "Cell", "Energy", "DNA", "Force", "Gravity", "Light", "Heat", "Acid", "Base", "Element", "Matter", "Solid", "Liquid", "Gas", "Molecules", "Plasma", "Neutron", "Proton", "Electron", "Bond", "Reaction", "Mass", "Volume", "Density"];
-    // Shuffle
-    return concepts.sort(() => Math.random() - 0.5);
+    const subjectPool = gameService.QUESTION_BANK[activeSubject] || gameService.QUESTION_BANK.Science;
+    // Map options and specific keywords into board tiles
+    const concepts = subjectPool.flatMap(q => {
+      const correct = q.options[q.a];
+      return [correct, ...q.options.filter(o => o !== correct).slice(0, 1)];
+    });
+    
+    // Fill up to 25 tiles with interesting academic terms if pool is small
+    const fallback = ["Atom", "Cell", "Gravity", "Link", "Data", "Node", "Flux", "Core"];
+    while (concepts.length < 25) {
+      concepts.push(fallback[Math.floor(Math.random() * fallback.length)]);
+    }
+
+    return concepts.sort(() => Math.random() - 0.5).slice(0, 25);
   }
 
   function generateNewPrompt() {
