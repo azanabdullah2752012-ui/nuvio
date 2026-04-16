@@ -12,10 +12,11 @@ const DEFAULT_KEYS = {
 
 // Free OpenRouter models
 // High-performance free models via OpenRouter
+// High-performance free models via OpenRouter
 const MODELS = {
   reasoning: 'nvidia/nemotron-3-super-120b-a12b:free',   // Epic reasoning scale
-  academic:  'qwen/qwen3-next-80b-a3b-instruct:free',    // Depth & instruction following
-  synthesis: 'google/gemma-4-26b-a4b-it:free'            // Fast synthesis & summaries
+  academic:  'qwen/qwen-turbo',    // Depth & instruction following (updated to turbo for speed)
+  synthesis: 'google/gemma-2-9b-it:free'            // Fast synthesis & summaries
 };
 
 const NOVA_SYSTEM = `You are Nova, the AI academic companion for Nuvio — a gamified study platform. 
@@ -25,15 +26,22 @@ Keep answers concise but complete. Use bullet points for lists.`;
 
 export const aiService = {
   setKey: (provider, key) => {
+    if (!STORAGE_KEYS[provider]) {
+      console.error(`Invalid provider: ${provider}`);
+      return;
+    }
     localStorage.setItem(STORAGE_KEYS[provider], key);
+    window.dispatchEvent(new CustomEvent('nuvio_ai_key_updated', { detail: { provider } }));
   },
 
   getKey: (provider) => {
-    return localStorage.getItem(STORAGE_KEYS[provider]) || DEFAULT_KEYS[provider];
+    return localStorage.getItem(STORAGE_KEYS[provider]) || DEFAULT_KEYS[provider] || '';
   },
 
   hasAnyKey: () => {
-    return !!(aiService.getKey('gemini') || aiService.getKey('groq') || aiService.getKey('openrouter'));
+    return !!(localStorage.getItem(STORAGE_KEYS.gemini) || 
+              localStorage.getItem(STORAGE_KEYS.groq) || 
+              localStorage.getItem(STORAGE_KEYS.openrouter));
   },
 
   chat: async (messages) => {
@@ -54,26 +62,30 @@ export const aiService = {
 
     // 1. Try Gemini Direct API (fastest, user likely has key)
     const geminiKey = aiService.getKey('gemini');
-    if (geminiKey) {
+    if (geminiKey && geminiKey.startsWith('AIza')) {
       try {
         const res = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=${geminiKey}`,
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`,
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               system_instruction: { parts: [{ text: NOVA_SYSTEM }] },
               contents: formatted,
-              generationConfig: { temperature: 0.7, maxOutputTokens: 1024 }
+              generationConfig: { temperature: 0.7, maxOutputTokens: 2048 }
             })
           }
         );
         const data = await res.json();
         const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
         if (text) return text;
-        console.warn('Gemini response empty:', data);
+        
+        if (data.error) {
+           console.error('Gemini API Error:', data.error.message);
+           if (data.error.status === 'UNAUTHENTICATED') return "ERROR: The Gemini API key provided is invalid or expired. Please check your Admin Hub settings. 🔌";
+        }
       } catch (e) {
-        console.warn('Gemini failed:', e);
+        console.warn('Gemini fetch failed:', e);
       }
     }
 
@@ -173,7 +185,20 @@ export const aiService = {
     if (m.includes('hi') || m.includes('hello') || m.includes('hey'))
       return `Hey there! ⚡ I'm Nova, your Nuvio AI tutor.\n\nAsk me to:\n• Explain a topic\n• Quiz you on a subject  \n• Create a study plan\n• Help with math or essays\n\nWhat are we conquering today? 🎯`;
     // Generic response for anything else
-    return `Nova ⚡ here! I'm running in local mode right now — add your **free Gemini API key** in the Admin Hub to unlock my full intelligence.\n\nIn local mode I can help with: French verbs, photosynthesis, history summaries, math steps, essay planning, and quiz prep.\n\nWhat subject are you studying? Tell me the topic and I'll do my best! 🧠`;
+    return `Nova ⚡ here! I'm running in local mode right now — add your **free Gemini API key** in the Admin Hub to unlock my full intelligence.
+
+In local mode I can help with: French verbs, photosynthesis, history summaries, math steps, essay planning, and quiz prep.
+
+What subject are you studying? Tell me the topic and I'll do my best! 🧠`;
+  },
+
+  detectAndOfferKey: (msg) => {
+    const text = msg.trim();
+    // Patterns
+    if (text.startsWith('AIza') && text.length > 30) return { provider: 'gemini', key: text };
+    if (text.startsWith('sk-or-v1-') && text.length > 50) return { provider: 'openrouter', key: text };
+    if (text.startsWith('gsk_') && text.length > 40) return { provider: 'groq', key: text };
+    return null;
   }
 };
 

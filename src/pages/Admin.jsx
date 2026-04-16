@@ -38,6 +38,13 @@ const Admin = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [editingStudent, setEditingStudent] = useState(null);
   const [isRefreshingUsers, setIsRefreshingUsers] = useState(false);
+  
+  // State for Keys
+  const [keys, setKeys] = useState({
+    gemini: aiService.getKey('gemini'),
+    openrouter: aiService.getKey('openrouter'),
+    groq: aiService.getKey('groq')
+  });
 
   useEffect(() => {
     refreshStats();
@@ -487,20 +494,63 @@ const Admin = () => {
           )}
 
           {activeTab === 'aicore' && (
-            <div className="nv-card p-10 space-y-8 border-white/5">
-              <h3 className="text-2xl font-black text-white uppercase tracking-tight">AI Central Intelligence Core</h3>
-              <div className="space-y-6">
-                <div className="p-6 bg-nuvio-purple-500/5 border border-nuvio-purple-500/20 rounded-2xl">
-                   <p className="text-xs text-nuvio-purple-300 font-bold uppercase tracking-widest mb-4">Master System Prompt (Nova's Soul)</p>
-                   <textarea 
-                      className="w-full bg-black/20 border border-white/5 rounded-xl p-6 text-nuvio-purple-200 text-sm font-mono h-64 outline-none focus:border-nuvio-purple-500/50"
-                      value={systemPrompt}
-                      onChange={e => setSystemPrompt(e.target.value)}
-                   />
+            <div className="space-y-8">
+              <div className="nv-card p-10 space-y-8 border-white/5">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-2xl font-black text-white uppercase tracking-tight">Neural Key Management</h3>
+                  <div className="flex items-center gap-2 px-4 py-2 bg-nuvio-green/10 border border-nuvio-green/20 rounded-xl">
+                    <Activity className="w-4 h-4 text-nuvio-green" />
+                    <span className="text-[10px] font-black text-nuvio-green uppercase tracking-widest">Neural Link: {aiService.hasAnyKey() ? 'Active' : 'Offline'}</span>
+                  </div>
                 </div>
-                <div className="flex gap-4">
-                   <button className="nv-btn-primary flex-1 h-14 uppercase tracking-widest text-[10px]">Update Neural Paths</button>
-                   <button className="nv-btn-secondary px-10 h-14 uppercase tracking-widest text-[10px]">Reset to Default</button>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {[
+                    { id: 'gemini', name: 'Gemini (Direct)', placeholder: 'AIza...', icon: Zap, color: 'text-nuvio-yellow' },
+                    { id: 'openrouter', name: 'OpenRouter', placeholder: 'sk-or-v1-...', icon: Globe, color: 'text-nuvio-blue' },
+                    { id: 'groq', name: 'Groq (Llama)', placeholder: 'gsk_...', icon: Target, color: 'text-nuvio-orange' }
+                  ].map(provider => (
+                    <div key={provider.id} className="space-y-4 p-6 bg-white/5 rounded-2xl border border-white/10 group hover:border-nuvio-purple-500/30 transition-all">
+                      <div className="flex items-center gap-3">
+                        <provider.icon className={`w-5 h-5 ${provider.color}`} />
+                        <h4 className="text-xs font-black text-white uppercase tracking-widest">{provider.name}</h4>
+                      </div>
+                      <input 
+                        type="password"
+                        placeholder={provider.placeholder}
+                        value={keys[provider.id]}
+                        onChange={e => setKeys(prev => ({ ...prev, [provider.id]: e.target.value }))}
+                        className="w-full bg-black/20 border border-white/5 rounded-xl p-4 text-white text-xs outline-none focus:border-nuvio-purple-500/50 font-mono"
+                      />
+                      <button 
+                        onClick={() => {
+                          aiService.setKey(provider.id, keys[provider.id]);
+                          notificationService.send("Key Updated", `${provider.name} integration synchronized.`, "success");
+                        }}
+                        className="w-full py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[9px] font-black text-text-muted uppercase tracking-widest transition-all"
+                      >
+                        Sync Provider
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="nv-card p-10 space-y-8 border-white/5">
+                <h3 className="text-2xl font-black text-white uppercase tracking-tight">AI Behavior Protocols</h3>
+                <div className="space-y-6">
+                  <div className="p-6 bg-nuvio-purple-500/5 border border-nuvio-purple-500/20 rounded-2xl">
+                     <p className="text-xs text-nuvio-purple-300 font-bold uppercase tracking-widest mb-4">Master System Prompt (Nova's Soul)</p>
+                     <textarea 
+                        className="w-full bg-black/20 border border-white/5 rounded-xl p-6 text-nuvio-purple-200 text-sm font-mono h-64 outline-none focus:border-nuvio-purple-500/50"
+                        value={systemPrompt}
+                        onChange={e => setSystemPrompt(e.target.value)}
+                     />
+                  </div>
+                  <div className="flex gap-4">
+                     <button className="nv-btn-primary flex-1 h-14 uppercase tracking-widest text-[10px]">Commit Neural Changes</button>
+                     <button className="nv-btn-secondary px-10 h-14 uppercase tracking-widest text-[10px]">Reset Logic</button>
+                  </div>
                 </div>
               </div>
             </div>
