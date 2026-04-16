@@ -152,10 +152,13 @@ export const authService = {
   },
 
   signInWithGoogle: async () => {
+    // Dynamically calculate redirect to maintain path structure in both local and live envs
+    const redirectUrl = window.location.origin + window.location.pathname;
+    
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: window.location.origin + '/nuvio/'
+        redirectTo: redirectUrl
       }
     });
     if (error) throw error;

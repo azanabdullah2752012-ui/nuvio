@@ -26,39 +26,48 @@ const Landing = () => {
 
   useEffect(() => {
     const saveAndRedirect = async (user) => {
+      if (!user) return;
+      console.log("NEURAL SESSION DETECTED. SYNCING...");
+
       // Sync profile (best-effort)
       await authService.syncProfile(user);
 
-      // Guarantee localStorage is populated
-      if (!authService.me()) {
-        localStorage.setItem('nuvio_user', JSON.stringify({
-          id: user.id,
-          email: user.email,
-          full_name: user.user_metadata?.full_name || 'Neural Student',
-          avatar_emoji: '⚡',
-          level: 1, xp: 0, era_tokens: 500, role: 'student'
-        }));
-      }
+      // Final check/promotion logic (redundant but safe)
+      const isAdmin = ['azanabdullah27.5.2012@gmail.com'].includes(user.email?.toLowerCase());
+      
+      // Force local storage population
+      const profile = {
+        ...(authService.me() || {}),
+        id: user.id,
+        email: user.email,
+        full_name: user.user_metadata?.full_name || 'Neural Student',
+        role: isAdmin ? 'admin' : (authService.me()?.role || 'student')
+      };
+      
+      localStorage.setItem('nuvio_user', JSON.stringify(profile));
 
-      // Hard redirect — fully reinitializes the app, zero race conditions
-      window.location.replace(
-        window.location.origin + '/nuvio/#/dashboard'
-      );
+      // Hard redirect — ensure we hit the right path for HashRouter
+      const target = isAdmin ? '/#/admin' : '/#/dashboard';
+      window.location.href = window.location.origin + window.location.pathname + target;
     };
 
-    // Listen for OAuth callback completing
+    // 1. Check for session in URL hash (Supabase OAuth)
+    const handleHashCallback = async () => {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (session?.user) {
+        await saveAndRedirect(session.user);
+      }
+    };
+    handleHashCallback();
+
+    // 2. Listen for Auth State Changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        if (event === 'SIGNED_IN' && session?.user) {
+        if ((event === 'SIGNED_IN' || event === 'USER_UPDATED') && session?.user) {
           await saveAndRedirect(session.user);
         }
       }
     );
-
-    // Also check if session already exists (returning user)
-    authService.getSession().then(session => {
-      if (session?.user) saveAndRedirect(session.user);
-    });
 
     return () => subscription.unsubscribe();
   }, []);
