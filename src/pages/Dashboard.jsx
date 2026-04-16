@@ -76,9 +76,9 @@ const Dashboard = () => {
     <div className="space-y-10 pb-20 nv-page-transition">
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h1 className="text-4xl font-black text-white uppercase tracking-tighter">Command Center</h1>
+          <h1 className="text-4xl font-black text-white uppercase tracking-tighter">My Dashboard</h1>
           <p className="text-text-secondary font-medium mt-1">
-            Ready for your next session, <span className="text-nuvio-purple-400 font-black">{user?.full_name}</span>?
+            Welcome back, <span className="text-nuvio-purple-400 font-black">{user?.full_name}</span>. What are we focusing on today?
             {user?.role !== 'admin' && <span className="ml-2 text-[8px] opacity-40 lowercase">({user?.email})</span>}
           </p>
         </div>
@@ -94,10 +94,10 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {[
           { label: 'Total XP', val: user?.xp?.toLocaleString(), icon: Zap, color: 'text-nuvio-yellow', bg: 'bg-nuvio-yellow/10' },
-          { label: 'Neural Streak', val: `${user?.streak || 1} Days`, icon: Flame, color: 'text-nuvio-red', bg: 'bg-nuvio-red/10', burning: true },
-          { label: 'Unfinished Loops', val: tasksCount, icon: Target, color: 'text-nuvio-purple-400', bg: 'bg-nuvio-purple-400/10' },
-          { label: 'Memory Matrix', val: decksCount, icon: BookOpen, color: 'text-nuvio-blue', bg: 'bg-nuvio-blue/10' },
-        ].map((stat, i) => (
+          { label: 'Focus Streak', val: `${user?.streak || 1} Days`, icon: Flame, color: 'text-nuvio-orange', bg: 'bg-nuvio-orange/10', burning: true },
+          { label: 'Active Tasks', val: tasksCount, icon: Target, color: 'text-nuvio-purple-400', bg: 'bg-nuvio-purple-400/10' },
+          { label: 'Memory Decks', val: decksCount, icon: BookOpen, color: 'text-nuvio-blue', bg: 'bg-nuvio-blue/10' },
+      ].map((stat, i) => (
           <motion.div 
             key={i}
             initial={{ opacity: 0, y: 10 }}
@@ -153,12 +153,12 @@ const Dashboard = () => {
           <div className="nv-card p-0 border-white/5 overflow-hidden">
              <div className="p-8 bg-white/[0.02] border-b border-white/5 flex justify-between items-center">
                 <h3 className="text-sm font-black text-white uppercase tracking-widest flex items-center gap-3">
-                  <Star className="w-4 h-4 text-nuvio-purple-400" /> Recent Training Session
+                  <Star className="w-4 h-4 text-nuvio-purple-400" /> Recent Activity
                 </h3>
              </div>
              <div className="divide-y divide-white/5">
                 {activity.length === 0 ? (
-                  <div className="p-12 text-center text-text-muted font-bold uppercase text-[10px] tracking-widest opacity-50 italic">No recent transmission detected...</div>
+                  <div className="p-12 text-center text-text-muted font-bold uppercase text-[10px] tracking-widest opacity-50 italic">No activity recorded yet...</div>
                 ) : (
                   activity.map((item) => (
                     <div key={item.id} className="p-6 px-10 flex items-center justify-between hover:bg-white/[0.01] transition-all group">
@@ -213,15 +213,15 @@ const Dashboard = () => {
               <div className="w-10 h-10 rounded-xl bg-nuvio-purple-500 flex items-center justify-center text-black">
                 <Sparkles className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-black text-white uppercase tracking-tight">Zeigarnik Optimization</h3>
+              <h3 className="text-lg font-black text-white uppercase tracking-tight">Focus Guide</h3>
               <p className="text-xs text-text-secondary leading-relaxed font-medium">
-                Nova detected <span className="text-white">{tasksCount} incomplete loops</span>. Closing these nodes will decrease cognitive load and trigger a <span className="text-nuvio-purple-300">Reward Burst</span>.
+                You have <span className="text-white">{tasksCount} pending tasks</span>. Finishing these will help you stay organized and earn a <span className="text-nuvio-purple-300">Reward Boost</span>.
               </p>
               <button 
                 onClick={() => navigate('/homework')}
                 className="w-full nv-btn-primary py-4 text-[10px] uppercase tracking-widest"
               >
-                Execute Loop Closure
+                View My Tasks
               </button>
            </div>
         </div>
