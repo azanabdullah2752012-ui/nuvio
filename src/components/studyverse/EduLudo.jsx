@@ -8,6 +8,17 @@ const EduLudo = ({ players, turn, onLog, onQuiz, activeSubject, onNextTurn, onUp
   const [dice, setDice] = useState(1);
   const [isRolling, setIsRolling] = useState(false);
 
+  // --- BOT LOGIC (Solo Mode) ---
+  useEffect(() => {
+    const isBot = players[turn]?.isBot;
+    if (isBot && !isRolling) {
+      const timer = setTimeout(() => {
+        handleRoll();
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [turn, players]);
+
   // Ludo Track Logic
   // 0-31: Perimeter track. Home launch targets specific indices.
   const TRACK_LENGTH = 32;

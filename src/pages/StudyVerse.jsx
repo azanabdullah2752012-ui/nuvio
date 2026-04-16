@@ -21,10 +21,10 @@ const QUESTION_BANK = gameService.QUESTION_BANK;
 
 // --- MULTIPLAYER SETUP ---
 const INITIAL_PLAYERS = [
-  { id: 1, name: "Ace Scholar", color: "#8258ff", kp: 0, xp: 0, pos: 0, icon: "🛡️" },
-  { id: 2, name: "Green Comet", color: "#2ed573", kp: 0, xp: 0, pos: 0, icon: "☄️" },
-  { id: 3, name: "Blue Circuit", color: "#1e90ff", kp: 0, xp: 0, pos: 0, icon: "🤖" },
-  { id: 4, name: "Amber Nova", color: "#ffa502", kp: 0, xp: 0, pos: 0, icon: "🌟" }
+  { id: 1, name: "You (Scholar)", color: "#8258ff", kp: 0, xp: 0, pos: 0, icon: "⚡", isBot: false },
+  { id: 2, name: "Leo Vance", color: "#2ed573", kp: 0, xp: 0, pos: 0, icon: "☄️", isBot: true },
+  { id: 3, name: "Maya Chen", color: "#1e90ff", kp: 0, xp: 0, pos: 0, icon: "🦄", isBot: true },
+  { id: 4, name: "Sam Rivers", color: "#ffa502", kp: 0, xp: 0, pos: 0, icon: "🌟", isBot: true }
 ];
 
 const StudyVerse = () => {
@@ -33,9 +33,11 @@ const StudyVerse = () => {
   const [players, setPlayers] = useState(INITIAL_PLAYERS);
   const [turn, setTurn] = useState(0); // Player index
   const [activity, setActivity] = useState([{ t: 'System sequence initialized.', type: 'sys' }]);
+  const [isSolo, setIsSolo] = useState(true);
   const [showQuiz, setShowQuiz] = useState(false);
   const [activeQuiz, setActiveQuiz] = useState(null);
   const [dice, setDice] = useState(1);
+  const [isBotThinking, setIsBotThinking] = useState(false);
 
   // --- ENGINE LOGIC ---
   const addLog = (text, type = 'sys') => {
@@ -44,6 +46,46 @@ const StudyVerse = () => {
 
   const nextTurn = () => {
     setTurn(prev => (prev + 1) % 4);
+  };
+
+  // --- AI SENTINEL ENGINE ---
+  useEffect(() => {
+    const activePlayer = players[turn];
+    if (isSolo && activePlayer.isBot && !showQuiz && !isBotThinking) {
+      triggerBotSequence();
+    }
+  }, [turn, isSolo, showQuiz, isBotThinking]);
+
+  const triggerBotSequence = () => {
+    setIsBotThinking(true);
+    addLog(`${players[turn].name} is analyzing tiles...`, 'sys');
+    
+    // 1. Roll Move
+    setTimeout(() => {
+      const roll = Math.floor(Math.random() * 6) + 1;
+      setDice(roll);
+      const newPos = (players[turn].pos + roll) % 20;
+      const newPlayers = [...players];
+      newPlayers[turn].pos = newPos;
+      setPlayers(newPlayers);
+      addLog(`${players[turn].name} rolled ${roll}.`, 'game');
+
+      // 2. Simulated Quiz Result (80% Success Rate)
+      setTimeout(() => {
+        const success = Math.random() < 0.8;
+        if (success) {
+          addLog(`${players[turn].name} solved the Focus Query.`, 'success');
+          newPlayers[turn].kp += 50;
+          setPlayers(newPlayers);
+        } else {
+          addLog(`${players[turn].name} missed the focus node.`, 'error');
+        }
+        
+        setIsBotThinking(false);
+        // Only Monopoly uses main loop turn logic, others handle locally
+        if (currentTab === 'Monopoly') nextTurn(); 
+      }, 1000);
+    }, 1500);
   };
 
   const handleRoll = () => {
@@ -197,16 +239,24 @@ const StudyVerse = () => {
 
            {/* Player Grid */}
            <div className="nv-card space-y-6">
-              <div className="flex items-center gap-2 nv-label"><Users className="w-4 h-4" /> Live Leaderboard</div>
+              <div className="flex items-center justify-between nv-label">
+                 <div className="flex items-center gap-2"><Users className="w-4 h-4" /> Live Leaderboard</div>
+                 <button 
+                  onClick={() => setIsSolo(!isSolo)}
+                  className={`text-[9px] px-2 py-0.5 border border-black font-black uppercase tracking-widest transition-all ${isSolo ? 'bg-nuvio-cyan text-black' : 'bg-white/5 opacity-50'}`}
+                 >
+                   {isSolo ? 'Solo Mode' : 'Group Mode'}
+                 </button>
+              </div>
               <div className="space-y-3">
                  {players.map(p => (
-                   <div key={p.id} className="flex items-center justify-between p-3 border-2 border-black bg-black/20">
-                      <div className="flex items-center gap-3">
-                         <div className="w-8 h-8 flex items-center justify-center border-2 border-black" style={{ backgroundColor: p.color }}>{p.icon}</div>
-                         <span className="text-[11px] font-black uppercase tracking-tight">{p.name}</span>
-                      </div>
-                      <div className="text-[10px] font-bold text-nuvio-cyan">KP {p.kp}</div>
-                   </div>
+                    <div key={p.id} className={`flex items-center justify-between p-3 border-2 border-black ${turn === players.indexOf(p) ? 'bg-nuvio-purple-500/20 border-nuvio-purple-500 shadow-[4px_4px_0_#000]' : 'bg-black/20 opacity-70'}`}>
+                       <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 flex items-center justify-center border-2 border-black" style={{ backgroundColor: p.color }}>{p.icon}</div>
+                          <span className="text-[11px] font-black uppercase tracking-tight">{p.name} {p.isBot && isSolo && "(AI)"}</span>
+                       </div>
+                       <div className="text-[10px] font-bold text-nuvio-cyan">KP {p.kp}</div>
+                    </div>
                  ))}
               </div>
            </div>
