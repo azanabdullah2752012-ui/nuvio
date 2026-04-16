@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Users, UserPlus, Zap, 
-  Search, Shield, Star, Sparkles
+  Search, Shield, Star, Sparkles,
+  Link2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import { authService } from '../services/authService';
+import { notificationService } from '../services/notificationService';
 
 const LearningGroups = () => {
   const [peers, setPeers] = useState([]);
@@ -16,21 +18,50 @@ const LearningGroups = () => {
   }, []);
 
   const fetchPeers = async () => {
-    // 1. Fetch real cloud peers (excluding current user)
-    const { data } = await supabase
-      .from('profiles')
+    setLoading(true);
+    // 1. Fetch all available groups (clusters)
+    const { data: clusters } = await supabase
+      .from('groups')
       .select('*')
-      .neq('id', authService.me().id)
-      .order('level', { ascending: false });
+      .order('member_count', { ascending: false });
     
-    // 2. Fallback to peer seed data if necessary
-    if (data && data.length > 0) {
-      setPeers(data);
+    // 2. Fetch my memberships
+    const { data: myMemberships } = await supabase
+      .from('group_memberships')
+      .select('group_id')
+      .eq('user_id', authService.me().id);
+
+    const joinedIds = new Set(myMemberships?.map(m => m.group_id) || []);
+
+    if (clusters && clusters.length > 0) {
+      setPeers(clusters.map(c => ({
+        ...c,
+        joined: joinedIds.has(c.id)
+      })));
     } else {
-      const { data: seedPeers } = await supabase.from('peers').select('*');
-      if (seedPeers) setPeers(seedPeers);
+      // Fallback: If no groups exist, show active individual nodes (profiles)
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('*')
+        .neq('id', authService.me().id)
+        .limit(10);
+      setPeers(profiles || []);
     }
     setLoading(false);
+  };
+
+  const joinGroup = async (groupId) => {
+    const user = authService.me();
+    try {
+      await supabase.from('group_memberships').insert([{
+        user_id: user.id,
+        group_id: groupId
+      }]);
+      notificationService.send("Cluster Sync", "Neural link established with group.", "success");
+      fetchPeers(); // Refresh
+    } catch (e) {
+      console.error("Join failed:", e);
+    }
   };
 
   return (
@@ -39,9 +70,9 @@ const LearningGroups = () => {
         <div>
           <h1 className="text-4xl font-black text-white flex items-center gap-3 uppercase tracking-tighter">
             <Users className="w-10 h-10 text-nuvio-blue" />
-            Social clusters
+            Social Clusters
           </h1>
-          <p className="text-text-secondary font-medium mt-1">Real-time sync with active academy students in your sector.</p>
+          <p className="text-text-secondary font-medium mt-1">Real-time sync with global academic collectives.</p>
         </div>
         <button className="nv-btn-primary px-8 gap-3 bg-nuvio-blue hover:bg-nuvio-blue/80 shadow-xl shadow-nuvio-blue/20">
            <UserPlus className="w-5 h-5" /> Join Cluster

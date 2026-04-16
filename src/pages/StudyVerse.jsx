@@ -124,11 +124,22 @@ const StudyVerse = () => {
       // If it's the main player (P1), sync to Cloud
       if (turn === 0) {
         const user = authService.me();
-        await authService.updateMe({
-          xp: (user.xp || 0) + 20,
-          knowledge_points: (user.knowledge_points || 0) + 50,
-          era_tokens: (user.era_tokens || 0) + 10
-        });
+        
+        // Atomic Production Sync
+        Promise.all([
+          authService.updateMe({
+            knowledge_points: (user.knowledge_points || 0) + 50,
+            era_tokens: (user.era_tokens || 0) + 10
+          }),
+          xpService.awardXp(20, `StudyVerse Monopoly: Node Secured`),
+          supabase.from('game_matches').insert([{
+             user_id: user.id,
+             game_type: 'monopoly',
+             result: 'move',
+             kp_earned: 50,
+             xp_earned: 20
+          }])
+        ]).catch(e => console.error("Neural Matrix Sync Error:", e));
       }
       
       notificationService.send("Node Secured", "KP +50 awarded.", "success");
@@ -344,9 +355,9 @@ const StudyVerse = () => {
                  />
                ) : (
                 <div className="flex flex-col items-center justify-center opacity-30 space-y-6">
-                   <LayoutGrid className="w-32 h-32" />
-                   <h2 className="text-4xl font-black uppercase tracking-tighter">Module Offline</h2>
-                   <p className="text-[10px] font-black uppercase tracking-[0.4em]">Initialize {currentTab} in Beta</p>
+                   <Layers className="w-32 h-32" />
+                   <h2 className="text-4xl font-black uppercase tracking-tighter">System Initializing</h2>
+                   <p className="text-[10px] font-black uppercase tracking-[0.4em]">Allocating Neural Capacity for {currentTab}</p>
                 </div>
               )}
 

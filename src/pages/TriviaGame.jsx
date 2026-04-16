@@ -102,7 +102,20 @@ const TriviaGame = () => {
       } else {
         setGameState('results');
         const finalXp = score * 2;
-        xpService.awardXp(finalXp, `Neural Trivia Mastery: ${subject || 'General'}`);
+        const finalKp = score;
+
+        // Atomic Backend Sync
+        Promise.all([
+          xpService.awardXp(finalXp, `Neural Trivia Mastery: ${subject || 'General'}`),
+          supabase.from('game_matches').insert([{
+            user_id: user.id,
+            game_type: 'trivia',
+            result: score > 30 ? 'win' : 'completed',
+            kp_earned: finalKp,
+            xp_earned: finalXp
+          }])
+        ]).catch(e => console.error("Neural Sync Error:", e));
+
         notificationService.send("Session Complete", `Gained +${finalXp} XP across neural nodes.`, "success");
       }
     }, 2000);

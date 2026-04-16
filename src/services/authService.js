@@ -200,6 +200,13 @@ export const authService = {
     });
   },
 
+  addTokens: async (amount) => {
+    const user = authService.me();
+    if (!user) return;
+    const newTokens = (user.era_tokens || 0) + amount;
+    return authService.updateMe({ era_tokens: newTokens });
+  },
+
   login: async (email, password) => {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,

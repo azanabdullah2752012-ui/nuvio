@@ -9,18 +9,13 @@ import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
 import { xpService } from '../services/xpService';
 import { dataService } from '../services/dataService';
-import { rewardService } from '../services/rewardService';
-
-const PEERS = [
-  { name: 'Leo Vance', action: 'completed Quantum Physics quiz', time: '2m ago' },
-  { name: 'Maya Chen', action: 'unlocked "Deep Thinker" badge', time: '5m ago' },
-  { name: 'Sam Rivers', action: 'started a new memory deck', time: '12m ago' },
-  { name: 'Dr. Bloom', action: 'reached Level 43', time: '22m ago' }
-];
+import { notificationService } from '../services/notificationService';
+import { supabase } from '../lib/supabase';
 
 const Dashboard = () => {
   const [user, setUser] = useState(authService.me());
   const [activity, setActivity] = useState([]);
+  const [peers, setPeers] = useState([]);
   const [counts, setCounts] = useState({ tasks: 0, decks: 0 });
   const [loading, setLoading] = useState(true);
   const [nextMilestone, setNextMilestone] = useState({ label: 'Level 2', remaining: 100 });
@@ -44,18 +39,29 @@ const Dashboard = () => {
   const fetchDashboardData = async () => {
     setLoading(true);
     try {
-      const [tasks, decks] = await Promise.all([
+      const currentUser = authService.me();
+      const [tasks, decks, topPeers, history] = await Promise.all([
         dataService.list('tasks'),
-        dataService.list('decks')
+        dataService.list('decks'),
+        supabase.from('profiles').select('full_name, level, xp').neq('id', currentUser.id).order('level', { ascending: false }).limit(4),
+        xpService.getHistory()
       ]);
+
       setCounts({
         tasks: tasks.filter(t => !t.completed).length,
         decks: decks.length
       });
       
-      const history = xpService.getHistory().slice(-5).reverse();
-      setActivity(history);
-      calculateMilestone(user?.xp || 0, user?.level || 1);
+      if (topPeers.data) {
+        setPeers(topPeers.data.map(p => ({
+          name: p.full_name,
+          action: `reached Level ${p.level}`,
+          time: 'Active'
+        })));
+      }
+
+      setActivity((history || []).slice(0, 5));
+      calculateMilestone(currentUser?.xp || 0, currentUser?.level || 1);
     } catch (err) {
       console.error("Dashboard cloud sync failed:", err);
     } finally {
@@ -113,7 +119,6 @@ const Dashboard = () => {
           <h1 className="text-4xl font-black text-white uppercase tracking-tighter">My Dashboard</h1>
           <p className="text-text-secondary font-medium mt-1">
             Welcome back, <span className="text-nuvio-purple-400 font-black">{user?.full_name}</span>. What are we focusing on today?
-            {user?.role !== 'admin' && <span className="ml-2 text-[8px] opacity-40 lowercase">({user?.email})</span>}
           </p>
         </div>
         <div className="flex items-center gap-4">
@@ -128,10 +133,10 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {[
           { label: 'Total XP', val: user?.xp?.toLocaleString(), icon: Zap, color: 'text-nuvio-yellow', bg: 'bg-nuvio-yellow/10' },
-          { label: 'Focus Streak', val: `${user?.streak || 1} Days`, icon: Flame, color: 'text-nuvio-orange', bg: 'bg-nuvio-orange/10', burning: true },
+          { label: 'Focus Streak', val: `${user?.streak || 1} Days`, icon: Flame, color: 'text-nuvio-orange', bg: 'bg-nuvio-orange/10', burning: (user?.streak > 3) },
           { label: 'Active Tasks', val: tasksCount, icon: Target, color: 'text-nuvio-purple-400', bg: 'bg-nuvio-purple-400/10' },
           { label: 'Memory Decks', val: decksCount, icon: BookOpen, color: 'text-nuvio-blue', bg: 'bg-nuvio-blue/10' },
-      ].map((stat, i) => (
+        ].map((stat, i) => (
           <motion.div 
             key={i}
             initial={{ opacity: 0, y: 10 }}
@@ -139,9 +144,6 @@ const Dashboard = () => {
             transition={{ delay: i * 0.05 }}
             className={`nv-card p-8 border-white/5 flex flex-col justify-between group transition-all relative overflow-hidden ${stat.burning ? 'border-nuvio-red/40 shadow-[0_0_20px_rgba(255,50,50,0.1)]' : ''}`}
           >
-            {stat.burning && (
-              <div className="absolute -top-10 -right-10 w-32 h-32 bg-nuvio-red/10 blur-3xl animate-pulse" />
-            )}
             <div className="flex justify-between items-start">
                <div className={`p-3 rounded-xl ${stat.bg} ${stat.burning ? 'animate-bounce' : ''}`}>
                  <stat.icon className={`w-6 h-6 ${stat.color}`} />
@@ -157,7 +159,6 @@ const Dashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Main Progression */}
         <div className="lg:col-span-2 space-y-6">
           <div className="nv-card p-10 border-white/5 bg-white/[0.02] relative overflow-hidden group">
             <div className="absolute top-0 right-0 w-64 h-64 bg-nuvio-purple-500/5 blur-[100px] pointer-events-none" />
@@ -183,7 +184,6 @@ const Dashboard = () => {
               </div>
             </div>
 
-          {/* Real Activity Feed */}
           <div className="nv-card p-0 border-white/5 overflow-hidden">
              <div className="p-8 bg-white/[0.02] border-b border-white/5 flex justify-between items-center">
                 <h3 className="text-sm font-black text-white uppercase tracking-widest flex items-center gap-3">
@@ -202,7 +202,7 @@ const Dashboard = () => {
                           </div>
                           <div>
                              <div className="font-black text-white uppercase tracking-tight text-sm">{item.reason}</div>
-                             <div className="text-[9px] text-text-muted font-bold uppercase tracking-widest mt-0.5">{new Date(item.timestamp).toLocaleTimeString()}</div>
+                             <div className="text-[9px] text-text-muted font-bold uppercase tracking-widest mt-0.5">{new Date(item.created_at).toLocaleTimeString()}</div>
                           </div>
                        </div>
                        <div className="flex items-center gap-3">
@@ -216,81 +216,62 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Peer Neural Feed (Tier 2: Social Proof) */}
         <div className="space-y-6">
            <div className="nv-card !bg-black border-2 border-white/5 p-8 space-y-6 overflow-hidden relative">
               <div className="flex items-center justify-between mb-2">
                  <h3 className="text-[10px] font-black text-text-muted uppercase tracking-[0.3em]">Social Matrix</h3>
                  <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-nuvio-green animate-ping" />
-                    <span className="text-[9px] font-black text-nuvio-green uppercase tracking-widest">1,204 Active</span>
+                    <span className="text-[9px] font-black text-nuvio-green uppercase tracking-widest">Global Sync</span>
                  </div>
               </div>
               <div className="space-y-6">
--                 {PEERS.map((peer, i) => (
--                    <div key={i} className="flex gap-4 items-start border-l-2 border-white/5 pl-4 py-1 hover:border-nuvio-cyan transition-colors">
--                       <div className="flex-1">
--                          <div className="text-xs font-black text-white uppercase">{peer.name}</div>
--                          <div className="text-[10px] text-text-muted font-bold capitalize">{peer.action}</div>
--                       </div>
--                       <div className="text-[9px] text-white/20 font-black">{peer.time}</div>
--                    </div>
--                 ))}
-+                 {PEERS.map((peer, i) => (
-+                    <div 
-+                      key={i} 
-+                      className="group/peer flex gap-4 items-start border-l-2 border-white/5 pl-4 py-3 hover:border-nuvio-cyan transition-all relative cursor-pointer"
-+                    >
-+                       <div className="flex-1">
-+                          <div className="text-xs font-black text-white uppercase group-hover/peer:text-nuvio-cyan transition-colors">{peer.name}</div>
-+                          <div className="text-[10px] text-text-muted font-bold capitalize">{peer.action}</div>
-+                       </div>
-+                       <div className="text-[9px] text-white/20 font-black">{peer.time}</div>
-+                       
-+                       {/* Quick Reaction Modal on Hover */}
-+                       <div className="absolute right-0 top-0 opacity-0 group-hover/peer:opacity-100 transition-opacity flex gap-1 bg-black border border-white/10 p-1 rounded-lg">
-+                          {['🔥', '🚀', '💯'].map(e => (
-+                            <button key={e} onClick={(ev) => emitReaction(e, ev)} className="hover:scale-125 transition-transform">{e}</button>
-+                          ))}
-+                       </div>
-+                    </div>
-+                 ))}
-              </div>
-              <div className="pt-4 border-t border-white/5 text-center">
-                 <button className="text-[9px] font-black text-nuvio-cyan uppercase tracking-widest hover:underline">Connect to Cluster</button>
+                 {peers.map((peer, i) => (
+                    <div 
+                      key={i} 
+                      className="group/peer flex gap-4 items-start border-l-2 border-white/5 pl-4 py-3 hover:border-nuvio-cyan transition-all relative cursor-pointer"
+                    >
+                       <div className="flex-1">
+                          <div className="text-xs font-black text-white uppercase group-hover/peer:text-nuvio-cyan transition-colors">{peer.name}</div>
+                          <div className="text-[10px] text-text-muted font-bold capitalize">{peer.action}</div>
+                       </div>
+                       <div className="text-[9px] text-white/20 font-black">{peer.time}</div>
+                       
+                       <div className="absolute right-0 top-0 opacity-0 group-hover/peer:opacity-100 transition-opacity flex gap-1 bg-black border border-white/10 p-1 rounded-lg">
+                          {['🔥', '🚀', '💯'].map(e => (
+                            <button key={e} onClick={(ev) => emitReaction(e, ev)} className="hover:scale-125 transition-transform">{e}</button>
+                          ))}
+                       </div>
+                    </div>
+                 ))}
+                 {peers.length === 0 && (
+                    <div className="py-10 text-center text-[10px] font-black text-text-muted uppercase tracking-widest opacity-30 italic">Searching for scholars...</div>
+                 )}
               </div>
            </div>
            
-           {/* Tier 3: Interactive Tool Invitation */}
            <div className="nv-card bg-nuvio-purple-500/10 border-nuvio-purple-500/20 p-8 space-y-4">
               <div className="w-10 h-10 rounded-xl bg-nuvio-purple-500 flex items-center justify-center text-black">
                 <Sparkles className="w-6 h-6" />
               </div>
               <h3 className="text-lg font-black text-white uppercase tracking-tight">Focus Guide</h3>
               <p className="text-xs text-text-secondary leading-relaxed font-medium">
-                You have <span className="text-white">{tasksCount} pending tasks</span>. Finishing these will help you stay organized and earn a <span className="text-nuvio-purple-300">Reward Boost</span>.
+                Sync your latest academic rituals. finishing tasks will help you earn a <span className="text-nuvio-purple-300">Reward Boost</span>.
               </p>
--              <button 
--                onClick={() => navigate('/homework')}
--                className="w-full nv-btn-primary py-4 text-[10px] uppercase tracking-widest"
--              >
--                View My Tasks
--              </button>
-+              <div className="relative pt-4">
-+                <button 
-+                  onMouseDown={() => setIsHolding(true)}
-+                  onMouseUp={() => setIsHolding(false)}
-+                  onMouseLeave={() => setIsHolding(false)}
-+                  style={{ '--progress': `${holdProgress}%` }}
-+                  className={`w-full nv-btn-primary py-5 text-[10px] uppercase tracking-[0.3em] font-black relative overflow-hidden transition-all active:scale-95 ${isHolding ? 'brightness-125' : ''}`}
-+                >
-+                  <div className="absolute inset-0 bg-white/10 origin-left transition-transform duration-75" style={{ transform: `scaleX(${holdProgress / 100})` }} />
-+                  <span className="relative z-10">{isHolding ? 'Focusing...' : 'Hold to Sync Tasks'}</span>
-+                </button>
-+                <div className="flex justify-center mt-2">
-+                   <div className="text-[8px] font-black text-text-muted uppercase tracking-widest">Ritual Status: {holdProgress}% Authorized</div>
-+                </div>
-+              </div>
+              <div className="relative pt-4">
+                <button 
+                  onMouseDown={() => setIsHolding(true)}
+                  onMouseUp={() => setIsHolding(false)}
+                  onMouseLeave={() => setIsHolding(false)}
+                  className={`w-full nv-btn-primary py-5 text-[10px] uppercase tracking-[0.3em] font-black relative overflow-hidden transition-all active:scale-95 ${isHolding ? 'brightness-125' : ''}`}
+                >
+                  <div className="absolute inset-0 bg-white/10 origin-left transition-transform duration-75" style={{ transform: `scaleX(${holdProgress / 100})` }} />
+                  <span className="relative z-10">{isHolding ? 'Focusing...' : 'Hold to Sync Tasks'}</span>
+                </button>
+                <div className="flex justify-center mt-2">
+                   <div className="text-[8px] font-black text-text-muted uppercase tracking-widest">Ritual Status: {holdProgress}% Authorized</div>
+                </div>
+              </div>
            </div>
         </div>
       </div>

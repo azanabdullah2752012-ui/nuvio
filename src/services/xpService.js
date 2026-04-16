@@ -1,3 +1,4 @@
+import { supabase } from '../lib/supabase';
 import { authService } from './authService';
 
 const LEVEL_THRESHOLDS = [
@@ -27,12 +28,22 @@ export const xpService = {
     return LEVEL_THRESHOLDS[19] + (level - 19) * 15000;
   },
 
-  getHistory: () => {
-    const data = localStorage.getItem(HISTORY_KEY);
-    return data ? JSON.parse(data) : [];
+  getHistory: async () => {
+    const user = authService.me();
+    if (!user) return [];
+    
+    const { data, error } = await supabase
+      .from('xp_logs')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(50);
+      
+    if (error) return [];
+    return data;
   },
 
-  awardXp: (amount, reason) => {
+  awardXp: async (amount, reason) => {
     const user = authService.me();
     if (!user) return null;
 
@@ -40,40 +51,36 @@ export const xpService = {
     const newLevel = xpService.getLevel(newXp);
     const leveledUp = newLevel > (user.level || 1);
     
-    // Tokens: 1 Token per 10 XP
+    const category = reason.toLowerCase().includes('quiz') || reason.toLowerCase().includes('bingo') || reason.toLowerCase().includes('ludo') || reason.toLowerCase().includes('uno') ? 'game' : 
+                     reason.toLowerCase().includes('streak') ? 'streak' : 
+                     reason.toLowerCase().includes('task') || reason.toLowerCase().includes('planner') ? 'task' : 'social';
+
     const tokensEarned = Math.floor(amount / 10);
 
-    const updatedUser = authService.updateMe({
+    // 1. Sync Profile (Xp, Level, Tokens)
+    const updatedUser = await authService.updateMe({
       xp: newXp,
       level: newLevel,
       weekly_xp: (user.weekly_xp || 0) + amount,
       era_tokens: (user.era_tokens || 0) + tokensEarned
     });
 
-    // Save history
-    const history = xpService.getHistory();
-    history.push({
-      id: Math.random().toString(36).substr(2, 9),
-      amount,
-      reason, // This is now used as category: 'game', 'streak', 'task', 'social'
-      timestamp: new Date().toISOString(),
-      balance: newXp
-    });
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(history.slice(-100)));
+    // 2. Persistent XP Log Entry
+    try {
+      await supabase.from('xp_logs').insert([{
+        user_id: user.id,
+        amount,
+        reason,
+        category
+      }]);
+    } catch (e) {
+      console.error("Failed to log XP entry:", e);
+    }
 
-    // Update Breakdown
-    const breakdown = xpService.getBreakdown();
-    const category = reason.toLowerCase().includes('quiz') || reason.toLowerCase().includes('bingo') || reason.toLowerCase().includes('ludo') || reason.toLowerCase().includes('uno') ? 'game' : 
-                     reason.toLowerCase().includes('streak') ? 'streak' : 
-                     reason.toLowerCase().includes('task') || reason.toLowerCase().includes('planner') ? 'task' : 'social';
-    
-    breakdown[category] = (breakdown[category] || 0) + amount;
-    localStorage.setItem(BREAKDOWN_KEY, JSON.stringify(breakdown));
-
-    // Emit event for UI components to refresh
+    // 3. Emit local event for UI snappiness
     window.dispatchEvent(new CustomEvent('nuvio_stats_update', { detail: updatedUser }));
 
-    // Realization: Sync Peers
+    // 4. Peer Sync
     import('./peerService').then(({ peerService }) => {
       peerService.syncPeers(newXp);
     });
@@ -85,8 +92,20 @@ export const xpService = {
     return authService.me()?.xp || 0;
   },
 
-  getBreakdown: () => {
-    const data = localStorage.getItem(BREAKDOWN_KEY);
-    return data ? JSON.parse(data) : { game: 0, streak: 0, task: 0, social: 0 };
+  getBreakdown: async () => {
+    const user = authService.me();
+    if (!user) return { game: 0, streak: 0, task: 0, social: 0 };
+
+    const { data, error } = await supabase
+      .from('xp_logs')
+      .select('amount, category')
+      .eq('user_id', user.id);
+
+    if (error) return { game: 0, streak: 0, task: 0, social: 0 };
+
+    return data.reduce((acc, curr) => {
+       acc[curr.category] = (acc[curr.category] || 0) + curr.amount;
+       return acc;
+    }, { game: 0, streak: 0, task: 0, social: 0 });
   }
 };

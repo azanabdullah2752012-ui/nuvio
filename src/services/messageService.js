@@ -1,32 +1,84 @@
-const STORAGE_KEY = 'nuvio_messages';
+import { supabase } from '../lib/supabase';
+import { authService } from './authService';
 
 export const messageService = {
-  listContacts: () => {
-    return [
-      { id: 'c1', name: 'Nova Bot 🤖', avatar: '🤖', lastMsg: 'Ready for a quick quiz?', time: '2m ago', unread: 1 },
-      { id: 'c2', name: 'Alex Johnson', avatar: '🦊', lastMsg: 'Check out the new Study Monopoly board!', time: '1h ago', unread: 2 },
-      { id: 'c3', name: 'Professor Oak', avatar: '👨‍🏫', lastMsg: 'Your essay was impressive.', time: 'Yesterday', unread: 0 },
-    ];
+  listContacts: async () => {
+    const user = authService.me();
+    if (!user) return [];
+
+    // Real world app would have a 'contacts' table or unique recipient_ids from messages
+    // For this tier, we fetch the 10 most recently interacted profiles
+    const { data: recentMsgs } = await supabase
+      .from('messages')
+      .select('sender_id, recipient_id')
+      .or(`sender_id.eq.${user.id},recipient_id.eq.${user.id}`)
+      .order('created_at', { ascending: false })
+      .limit(20);
+
+    const contactIds = [...new Set(recentMsgs?.flatMap(m => [m.sender_id, m.recipient_id]) || [])]
+      .filter(id => id !== user.id);
+
+    if (contactIds.length === 0) {
+      // Return a set of system/onboarding contacts if none exist
+      return [
+        { id: 'system', name: 'Nova Bot 🤖', avatar: '🤖', lastMsg: 'I am hardcoded for logic help.', time: 'Always', unread: 0 },
+      ];
+    }
+
+    const { data: contacts } = await supabase
+      .from('profiles')
+      .select('id, full_name, avatar_emoji')
+      .in('id', contactIds);
+
+    return (contacts || []).map(c => ({
+      id: c.id,
+      name: c.full_name,
+      avatar: c.avatar_emoji,
+      lastMsg: 'Open channel...',
+      time: 'Recent',
+      unread: 0
+    }));
   },
 
-  getChat: (contactId) => {
-    const data = localStorage.getItem(`${STORAGE_KEY}_${contactId}`);
-    return data ? JSON.parse(data) : [
-      { id: 'm1', from: contactId, text: 'Hey! Ready to crush today\'s goals?', time: '9:00 AM' },
-      { id: 'm2', from: 'me', text: 'Absolutely! Just finished the Math assignment.', time: '9:05 AM' },
-    ];
+  getChat: async (contactId) => {
+    const user = authService.me();
+    if (!user) return [];
+
+    const { data, error } = await supabase
+      .from('messages')
+      .select('*')
+      .or(`and(sender_id.eq.${user.id},recipient_id.eq.${contactId}),and(sender_id.eq.${contactId},recipient_id.eq.${user.id})`)
+      .order('created_at', { ascending: true });
+
+    if (error) return [];
+    return data.map(m => ({
+      id: m.id,
+      from: m.sender_id === user.id ? 'me' : m.sender_id,
+      text: m.content,
+      time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    }));
   },
 
-  sendMessage: (contactId, text) => {
-    const chat = messageService.getChat(contactId);
-    const newMessage = {
-      id: Math.random().toString(36).substr(2, 9),
+  sendMessage: async (contactId, text) => {
+    const user = authService.me();
+    if (!user) return null;
+
+    const { data, error } = await supabase
+      .from('messages')
+      .insert([{
+        sender_id: user.id,
+        recipient_id: contactId,
+        content: text
+      }])
+      .select()
+      .single();
+
+    if (error) throw error;
+    return {
+      id: data.id,
       from: 'me',
-      text,
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      text: data.content,
+      time: new Date(data.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
-    const updated = [...chat, newMessage];
-    localStorage.setItem(`${STORAGE_KEY}_${contactId}`, JSON.stringify(updated));
-    return newMessage;
   }
 };

@@ -19,8 +19,8 @@ const Messages = () => {
 
     // REAL-TIME SUBSCRIPTION
     const channel = supabase
-      .channel('public:group_messages')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'group_messages' }, payload => {
+      .channel('public:messages')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
         setMessages(prev => [...prev, payload.new]);
       })
       .subscribe();
@@ -36,9 +36,9 @@ const Messages = () => {
 
   const fetchMessages = async () => {
     const { data } = await supabase
-      .from('group_messages')
+      .from('messages')
       .select('*')
-      .order('timestamp', { ascending: true })
+      .order('created_at', { ascending: true })
       .limit(50);
     if (data) setMessages(data);
     setLoading(false);
@@ -49,11 +49,12 @@ const Messages = () => {
     if (!newMessage.trim()) return;
 
     const msg = {
-      user_id: user.id,
+      sender_id: user.id,
+      recipient_id: '00000000-0000-0000-0000-000000000000', // System Broadcast
       content: newMessage,
     };
 
-    const { error } = await supabase.from('group_messages').insert([msg]);
+    const { error } = await supabase.from('messages').insert([msg]);
     if (!error) setNewMessage('');
   };
 
@@ -100,7 +101,7 @@ const Messages = () => {
                 `}>
                   <p className="text-sm font-medium leading-relaxed">{msg.content}</p>
                   <div className={`text-[8px] font-black uppercase mt-2 opacity-50 ${isMe ? 'text-white' : 'text-text-muted'}`}>
-                    {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </div>
                 </div>
               </motion.div>
