@@ -90,66 +90,62 @@ const RetentionEngine = ({ children }) => {
 function App() {
   return (
     <HashRouter>
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/onboarding" element={<Onboarding />} />
+      <RetentionEngine>
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/onboarding" element={<Onboarding />} />
 
-        {/* Private Routes (Wrapped in Layout) */}
-        <Route element={<Layout />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          
-          {/* Study Tools */}
-          <Route path="/flashcards" element={<Flashcards />} />
-          <Route path="/homework" element={<Homework />} />
-          <Route path="/calendar" element={<Calendar />} />
-          <Route path="/focus-timer" element={<FocusTimer />} />
-          <Route path="/knowledge-map" element={<KnowledgeMap />} />
-          
-          {/* AI Suite */}
-          <Route path="/nova-ai" element={<AIChat />} />
-          <Route path="/ai-chat" element={<Navigate to="/nova-ai" replace />} />
-          <Route path="/ai-hub" element={<AIHub />} />
-          <Route path="/essay-forge" element={<EssayForge />} />
-          
-          {/* Study Verse */}
-          <Route path="/boss-raid" element={<BossRaid />} />
-          
-          {/* Social Hub */}
-          <Route path="/learning-groups" element={<LearningGroups />} />
-          <Route path="/leaderboard" element={<Leaderboard />} />
-          <Route path="/messages" element={<Messages />} />
-          
-          {/* Rewards & Analytics */}
-          <Route path="/achievements" element={<Achievements />} />
-          <Route path="/shop" element={<Shop />} />
-          <Route path="/analytics" element={<Analytics />} />
-          <Route path="/study-verse" element={<StudyVerse />} />
-          <Route path="/trivia-game" element={<TriviaGame />} />
-          <Route path="/study-sites" element={<StudySites />} />
+          {/* Private Routes (Wrapped in Layout) */}
+          <Route element={<Layout />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            
+            {/* Study Tools */}
+            <Route path="/flashcards" element={<Flashcards />} />
+            <Route path="/homework" element={<Homework />} />
+            <Route path="/calendar" element={<Calendar />} />
+            <Route path="/focus-timer" element={<FocusTimer />} />
+            <Route path="/knowledge-map" element={<KnowledgeMap />} />
+            
+            {/* AI Suite */}
+            <Route path="/nova-ai" element={<AIChat />} />
+            <Route path="/ai-chat" element={<Navigate to="/nova-ai" replace />} />
+            <Route path="/ai-hub" element={<AIHub />} />
+            <Route path="/essay-forge" element={<EssayForge />} />
+            
+            {/* Study Verse */}
+            <Route path="/boss-raid" element={<BossRaid />} />
+            
+            {/* Social Hub */}
+            <Route path="/learning-groups" element={<LearningGroups />} />
+            <Route path="/leaderboard" element={<Leaderboard />} />
+            <Route path="/messages" element={<Messages />} />
+            
+            {/* Rewards & Analytics */}
+            <Route path="/achievements" element={<Achievements />} />
+            <Route path="/shop" element={<Shop />} />
+            <Route path="/analytics" element={<Analytics />} />
+            <Route path="/study-verse" element={<StudyVerse />} />
+            <Route path="/trivia-game" element={<TriviaGame />} />
+            <Route path="/study-sites" element={<StudySites />} />
 
-          {/* Account */}
-          <Route path="/profile" element={<Profile />} />
-          
-          {/* Admin */}
-          <Route path="/admin" element={
-            <AdminGuard>
-              <Admin />
-            </AdminGuard>
-          } />
-        </Route>
+            {/* Account */}
+            <Route path="/profile" element={<Profile />} />
+            
+            {/* Admin */}
+            <Route path="/admin" element={
+              <AdminGuard>
+                <Admin />
+              </AdminGuard>
+            } />
+          </Route>
 
-        {/* Catch All */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+          {/* Catch All */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </RetentionEngine>
     </HashRouter>
   );
 }
 
-const GlobalApp = () => (
-  <RetentionEngine>
-    <App />
-  </RetentionEngine>
-);
-
-export default GlobalApp;
+export default App;
