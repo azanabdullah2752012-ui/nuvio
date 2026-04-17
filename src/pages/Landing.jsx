@@ -25,51 +25,8 @@ const Landing = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const saveAndRedirect = async (user) => {
-      if (!user) return;
-      console.log("NEURAL SESSION DETECTED. SYNCING...");
-
-      // Sync profile (best-effort)
-      await authService.syncProfile(user);
-
-      // Final check/promotion logic (redundant but safe)
-      const isAdmin = ['azanabdullah27.5.2012@gmail.com'].includes(user.email?.toLowerCase());
-      
-      // Force local storage population
-      const profile = {
-        ...(authService.me() || {}),
-        id: user.id,
-        email: user.email,
-        full_name: user.user_metadata?.full_name || 'Neural Student',
-        role: isAdmin ? 'admin' : (authService.me()?.role || 'student')
-      };
-      
-      localStorage.setItem('nuvio_user', JSON.stringify(profile));
-
-      // Hard redirect — ensure we hit the right path for HashRouter
-      const target = isAdmin ? '/#/admin' : '/#/dashboard';
-      window.location.href = window.location.origin + window.location.pathname + target;
-    };
-
-    // 1. Check for session in URL hash (Supabase OAuth)
-    const handleHashCallback = async () => {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      if (session?.user) {
-        await saveAndRedirect(session.user);
-      }
-    };
-    handleHashCallback();
-
-    // 2. Listen for Auth State Changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if ((event === 'SIGNED_IN' || event === 'USER_UPDATED') && session?.user) {
-          await saveAndRedirect(session.user);
-        }
-      }
-    );
-
-    return () => subscription.unsubscribe();
+    // Session detection moved to global AuthOrchestrator in App.jsx
+    // This hook is now reserved for page-specific lifecycle events
   }, []);
 
   const handleGoogleSignIn = async () => {

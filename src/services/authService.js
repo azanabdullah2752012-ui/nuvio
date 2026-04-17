@@ -208,13 +208,19 @@ export const authService = {
   },
 
   signInWithGoogle: async () => {
-    // Dynamically calculate redirect to maintain path structure in both local and live envs
-    const redirectUrl = window.location.origin + window.location.pathname;
+    // Sanitize redirect URL: ensure it's just the base origin + path without trailing slashes or hash
+    const baseUrl = window.location.origin + window.location.pathname.replace(/\/$/, "");
     
+    console.log("INITIATING GOOGLE AUTH REDIRECT TO:", baseUrl);
+
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: redirectUrl
+        redirectTo: baseUrl,
+        queryParams: {
+          prompt: 'select_account',
+          access_type: 'offline'
+        }
       }
     });
     if (error) throw error;
@@ -225,6 +231,7 @@ export const authService = {
     await supabase.auth.signOut();
     localStorage.removeItem(STORAGE_KEY);
     window.dispatchEvent(new CustomEvent('nuvio_auth_change', { detail: null }));
-    window.location.href = '/nuvio/';
+    // Hard refresh to clear state
+    window.location.href = window.location.origin + window.location.pathname;
   }
 };
