@@ -9,6 +9,7 @@ const EconomyVault = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [stats, setStats] = useState({
+    total_users: 0,
     total_tokens: 0,
     total_xp: 0,
     avg_balance: 0
@@ -25,12 +26,14 @@ const EconomyVault = () => {
     
     if (configData) setConfigs(configData);
     if (profileStats) {
+      const totalUsers = profileStats.length;
       const tokens = profileStats.reduce((sum, p) => sum + (p.era_tokens || 0), 0);
       const xp = profileStats.reduce((sum, p) => sum + (p.xp || 0), 0);
       setStats({
+        total_users: totalUsers,
         total_tokens: tokens,
         total_xp: xp,
-        avg_balance: Math.floor(tokens / profileStats.length)
+        avg_balance: totalUsers > 0 ? Math.floor(tokens / totalUsers) : 0
       });
     }
     setLoading(false);

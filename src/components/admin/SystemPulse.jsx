@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Activity, Zap, MessageSquare, TrendingUp, AlertCircle, Clock } from 'lucide-react';
+import { Activity, Zap, MessageSquare, TrendingUp, AlertCircle, Clock, Users } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../../lib/supabase';
 
 const SystemPulse = () => {
   const [stats, setStats] = useState({
     active_users: 0,
+    total_users: 0,
     msgs_per_min: 0,
     xp_per_min: 0,
     timestamp: new Date().toISOString()
@@ -22,9 +23,19 @@ const SystemPulse = () => {
   const fetchStats = async () => {
     try {
       const { data, error } = await supabase.rpc('rpc_get_admin_stats');
+      
+      // Fetch Total Population count directly from profiles
+      const { count: totalCount } = await supabase
+        .from('profiles')
+        .select('*', { count: 'exact', head: true });
+
       if (data) {
-        setStats(data);
-        setHistory(prev => [...prev.slice(-19), data]); // Keep last 20 samples
+        const enhancedStats = {
+          ...data,
+          total_users: totalCount || 0
+        };
+        setStats(enhancedStats);
+        setHistory(prev => [...prev.slice(-19), enhancedStats]); // Keep last 20 samples
         setLoading(false);
       }
     } catch (err) {
@@ -55,6 +66,13 @@ const SystemPulse = () => {
   return (
     <div className="space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <StatCard 
+          label="Total Population" 
+          value={stats.total_users} 
+          icon={Users} 
+          color="text-nuvio-purple-400"
+          detail="Total Registered Identities"
+        />
         <StatCard 
           label="Neural Nodes (Active)" 
           value={stats.active_users} 
