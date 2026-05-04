@@ -208,8 +208,12 @@ export const authService = {
   },
 
   signInWithGoogle: async () => {
-    // Sanitize redirect URL: ensure it's just the base origin + path without trailing slashes or hash
-    const baseUrl = window.location.origin + window.location.pathname.replace(/\/$/, "");
+    // CRITICAL FIX: GitHub Pages requires the trailing slash to prevent internal 301 redirects
+    // that strip the OAuth payload on mobile Safari/Chrome.
+    let baseUrl = window.location.origin + window.location.pathname;
+    if (!baseUrl.endsWith('/')) {
+      baseUrl += '/';
+    }
     
     console.log("INITIATING GOOGLE AUTH REDIRECT TO:", baseUrl);
 
@@ -218,8 +222,7 @@ export const authService = {
       options: {
         redirectTo: baseUrl,
         queryParams: {
-          prompt: 'select_account',
-          access_type: 'offline'
+          prompt: 'select_account'
         }
       }
     });

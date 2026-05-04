@@ -10,6 +10,6 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     autoRefreshToken: true,
     detectSessionInUrl: true,
     storageKey: 'nuvio-auth-token',
-    flowType: 'pkce'
+    flowType: 'implicit'
   }
 });

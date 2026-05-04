@@ -178,24 +178,36 @@ const Homework = () => {
         </div>
       </div>
 
-      {/* Input Section (Secondary Mode) */}
-      <div className="relative max-w-4xl opacity-60 hover:opacity-100 transition-opacity">
-        <div className="nv-card bg-black/40 p-2 !shadow-[8px_8px_0_#000] !border-4">
-          <div className="flex flex-col md:flex-row items-center gap-4 bg-black p-4">
-            <Plus className="w-8 h-8 text-nuvio-purple-400" />
+      {/* Input Section - THE FORGE */}
+      <div className="relative max-w-4xl mx-auto">
+        <div className="nv-card bg-nuvio-purple-500 p-2 !shadow-[12px_12px_0_#000] !border-4 relative overflow-hidden group">
+          {/* Subtle Forge Ambient Glow */}
+          <div className="absolute inset-0 bg-gradient-to-r from-nuvio-cyan/20 via-nuvio-purple-500/20 to-nuvio-pink/20 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 blur-xl"></div>
+          
+          <div className="flex flex-col md:flex-row items-center gap-4 bg-black p-6 relative z-10">
+            <Plus className="w-10 h-10 text-white animate-pulse" />
             <input 
-              className="flex-1 bg-transparent text-lg font-black text-white outline-none placeholder:text-white/20 uppercase"
-              placeholder="Or forge unique objective..."
+              className="flex-1 bg-transparent text-2xl md:text-4xl font-black text-white outline-none placeholder:text-white/20 uppercase tracking-tight"
+              placeholder="HELLO"
               value={quickInput}
               onChange={(e) => setQuickInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleQuestForge()}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleQuestForge();
+              }}
+              autoFocus
             />
+            
+            {/* Enter Badge */}
+            <div className="hidden md:flex items-center gap-2 border-[2px] border-white/30 px-3 py-1 bg-white/5 opacity-50 group-focus-within:opacity-100 transition-opacity">
+              <span className="text-[10px] font-black text-nuvio-cyan uppercase bg-nuvio-cyan/20 px-1 border border-nuvio-cyan">Press</span>
+              <span className="text-[10px] font-black text-white uppercase tracking-widest">[Enter] to Forge</span>
+            </div>
+
             <button 
               onClick={handleMagicSuggest}
-              className="p-4 bg-nuvio-cyan hover:bg-white text-black rounded-xl transition-all hover:scale-110 active:scale-90 flex items-center gap-2 group"
+              className="md:hidden p-4 bg-nuvio-cyan hover:bg-white text-black rounded-xl transition-all flex items-center gap-2"
             >
-              <Brain className="w-6 h-6 animate-pulse" />
-              <span className="text-[10px] font-black uppercase hidden lg:block">Auto-Suggest</span>
+              <Zap className="w-6 h-6 animate-pulse" />
             </button>
           </div>
         </div>
@@ -205,10 +217,17 @@ const Homework = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <AnimatePresence mode="popLayout">
           {filteredTasks.length === 0 ? (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="md:col-span-2 py-32 border-4 border-dashed border-black/50 text-center rounded-xl bg-black/20">
-              <ShieldCheck className="w-20 h-20 text-text-muted mx-auto mb-6 opacity-20" />
-              <h3 className="text-4xl font-black text-text-muted uppercase tracking-tighter">Sector Static</h3>
-              <p className="text-xs font-bold text-text-muted uppercase tracking-widest mt-2">All objectives archived or missing</p>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="md:col-span-2 py-32 border-[3px] border-dashed border-white/10 text-center rounded-xl bg-black/20 flex flex-col items-center justify-center">
+              <ShieldCheck className="w-20 h-20 text-white/10 mx-auto mb-6" />
+              <h3 className="text-4xl font-black text-white/30 uppercase tracking-tighter mb-2">Sector Static</h3>
+              <p className="text-xs font-bold text-white/20 uppercase tracking-widest mb-8">All objectives archived or missing</p>
+              
+              <button 
+                onClick={handleMagicSuggest}
+                className="px-6 py-3 border-[2px] border-nuvio-cyan text-nuvio-cyan hover:bg-nuvio-cyan hover:text-black transition-colors font-black uppercase tracking-widest text-xs flex items-center gap-2"
+              >
+                <Zap className="w-4 h-4" /> Quick Inject Objective
+              </button>
             </motion.div>
           ) : (
             filteredTasks.map((task, idx) => (

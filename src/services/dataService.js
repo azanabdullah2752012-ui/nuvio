@@ -4,7 +4,10 @@ import { authService } from './authService';
 export const dataService = {
   list: async (entityName) => {
     const user = authService.me();
-    if (!user) return [];
+    if (!user) {
+      const localData = localStorage.getItem(`nuvio_local_${entityName}`);
+      return localData ? JSON.parse(localData) : [];
+    }
 
     try {
       const { data, error } = await supabase
@@ -36,12 +39,19 @@ export const dataService = {
 
   create: async (entityName, data) => {
     const user = authService.me();
-    if (!user) throw new Error("Authentication required for cloud storage.");
-
     const newItem = {
       ...data,
-      user_id: user.id || '00000000-0000-0000-0000-000000000000' // Using simulated ID or real Auth ID
+      id: Math.random().toString(36).substr(2, 9),
+      created_at: new Date().toISOString(),
+      user_id: user?.id || 'guest-0000-0000-0000-000000000000'
     };
+
+    if (!user) {
+      const localData = JSON.parse(localStorage.getItem(`nuvio_local_${entityName}`) || '[]');
+      const updatedData = [newItem, ...localData];
+      localStorage.setItem(`nuvio_local_${entityName}`, JSON.stringify(updatedData));
+      return newItem;
+    }
 
     const { data: insertedData, error } = await supabase
       .from(entityName)
@@ -57,6 +67,14 @@ export const dataService = {
   },
 
   update: async (entityName, id, data) => {
+    const user = authService.me();
+    if (!user) {
+      const localData = JSON.parse(localStorage.getItem(`nuvio_local_${entityName}`) || '[]');
+      const updatedList = localData.map(item => item.id === id ? { ...item, ...data } : item);
+      localStorage.setItem(`nuvio_local_${entityName}`, JSON.stringify(updatedList));
+      return updatedList.find(item => item.id === id);
+    }
+
     const { data: updatedData, error } = await supabase
       .from(entityName)
       .update(data)
@@ -69,6 +87,14 @@ export const dataService = {
   },
 
   delete: async (entityName, id) => {
+    const user = authService.me();
+    if (!user) {
+      const localData = JSON.parse(localStorage.getItem(`nuvio_local_${entityName}`) || '[]');
+      const updatedList = localData.filter(item => item.id !== id);
+      localStorage.setItem(`nuvio_local_${entityName}`, JSON.stringify(updatedList));
+      return;
+    }
+
     const { error } = await supabase
       .from(entityName)
       .delete()
