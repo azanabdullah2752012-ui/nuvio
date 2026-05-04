@@ -81,7 +81,10 @@ const Flashcards = () => {
       setView('library');
       setNewDeck({ title: '', subject: 'General', cards: [{ front: '', back: '' }] });
       notificationService.send("Deck Compiled", `"${newDeck.title}" secured in vault.`, "success");
-    } catch (err) {} finally {
+    } catch (err) {
+      console.error("Deck Save Error:", err);
+      notificationService.send("System Error", `Save failed: ${err?.message || 'Unknown error'}`, "error");
+    } finally {
       setLoading(false);
     }
   };

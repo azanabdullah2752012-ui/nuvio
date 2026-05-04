@@ -55,7 +55,6 @@ const Homework = () => {
         const created = await dataService.create('tasks', newQuest);
         setTasks(prev => [created, ...prev]);
         notificationService.send("Objective Locked", `"${title}" forged successfully.`, "info");
-        window.dispatchEvent(new CustomEvent('nuvio_stats_update', { detail: { last_gain: 1 } }));
       } catch (err) {
         notificationService.send("System Error", `Forge failed: ${err.message}`, "error");
       }

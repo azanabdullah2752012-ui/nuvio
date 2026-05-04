@@ -74,7 +74,7 @@ export const dataService = {
       if (error) throw error;
       return insertedData;
     } catch (err) {
-      console.warn(`Supabase insert failed, using local fallback:`, err.message);
+      console.warn(`Supabase insert failed, using local fallback:`, err?.message || err);
       return newItem; // Return local item so UI doesn't break
     }
   },
