@@ -62,7 +62,10 @@ const Homework = () => {
         window.dispatchEvent(new CustomEvent('nuvio_stats_update', { detail: { last_gain: 1 } }));
       } catch (err) {
         console.error("Forge failed:", err);
+        notificationService.send("System Error", `Forge failed: ${err.message || 'Unknown error'}`, "error");
       }
+    } else {
+      notificationService.send("Input Required", "Please enter an objective first.", "warning");
     }
   };
 
