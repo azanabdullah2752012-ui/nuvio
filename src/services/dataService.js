@@ -39,19 +39,24 @@ export const dataService = {
 
   create: async (entityName, data) => {
     const user = authService.me();
-    const newItem = {
-      ...data,
-      id: Math.random().toString(36).substr(2, 9),
-      created_at: new Date().toISOString(),
-      user_id: user?.id || 'guest-0000-0000-0000-000000000000'
-    };
 
     if (!user) {
+      const newItem = {
+        ...data,
+        id: Math.random().toString(36).substr(2, 9),
+        created_at: new Date().toISOString(),
+        user_id: 'guest-0000-0000-0000-000000000000'
+      };
       const localData = JSON.parse(localStorage.getItem(`nuvio_local_${entityName}`) || '[]');
       const updatedData = [newItem, ...localData];
       localStorage.setItem(`nuvio_local_${entityName}`, JSON.stringify(updatedData));
       return newItem;
     }
+
+    const newItem = {
+      ...data,
+      user_id: user.id || '00000000-0000-0000-0000-000000000000'
+    };
 
     const { data: insertedData, error } = await supabase
       .from(entityName)
