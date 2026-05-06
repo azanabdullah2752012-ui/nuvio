@@ -13,7 +13,6 @@ import Dashboard from './pages/Dashboard';
 import Flashcards from './pages/Flashcards';
 import Homework from './pages/Homework';
 import AIChat from './pages/AIChat';
-import AIHub from './pages/AIHub';
 import Profile from './pages/Profile';
 import Leaderboard from './pages/Leaderboard';
 import EssayForge from './pages/EssayForge';
@@ -27,7 +26,6 @@ import BossRaid from './pages/BossRaid';
 import LearningGroups from './pages/LearningGroups';
 import Messages from './pages/Messages';
 import Shop from './pages/Shop';
-import Achievements from './pages/Achievements';
 import Analytics from './pages/Analytics';
 import StudyVerse from './pages/StudyVerse';
 import StudySites from './pages/StudySites';
@@ -156,7 +154,6 @@ function App() {
               {/* AI Suite */}
               <Route path="/nova-ai" element={<AIChat />} />
               <Route path="/ai-chat" element={<Navigate to="/nova-ai" replace />} />
-              <Route path="/ai-hub" element={<AIHub />} />
               <Route path="/essay-forge" element={<EssayForge />} />
               
               {/* Study Verse */}
@@ -168,7 +165,6 @@ function App() {
               <Route path="/messages" element={<Messages />} />
               
               {/* Rewards & Analytics */}
-              <Route path="/achievements" element={<Achievements />} />
               <Route path="/shop" element={<Shop />} />
               <Route path="/analytics" element={<Analytics />} />
               <Route path="/study-verse" element={<StudyVerse />} />

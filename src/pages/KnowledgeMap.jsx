@@ -157,7 +157,6 @@ const KnowledgeMap = () => {
                     </div>
                   </div>
                 </div>
-              </div>
             </motion.div>
           )}
         </AnimatePresence>
