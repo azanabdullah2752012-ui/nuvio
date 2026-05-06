@@ -7,22 +7,27 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import { authService } from '../services/authService';
 
+import { dataService } from '../services/dataService';
+
 const Messages = () => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
   const [user, setUser] = useState(authService.me());
   const messagesEndRef = useRef(null);
-  const scrollContainerRef = useRef(null);
-
-  const GLOBAL_CLUSTER_ID = '00000000-0000-0000-0000-000000000000';
 
   useEffect(() => {
     fetchMessages();
-    const interval = setInterval(fetchMessages, 5000);
-    return () => clearInterval(interval);
+
+    // 🚀 Real-time Sharded Stream
+    const channel = supabase
+      .channel('public:messages')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, (payload) => {
+        setMessages(prev => [...prev, payload.new]);
+      })
+      .subscribe();
+
+    return () => supabase.removeChannel(channel);
   }, []);
 
   const fetchMessages = async () => {
@@ -30,7 +35,6 @@ const Messages = () => {
     const data = await dataService.list('messages');
     if (data) {
       setMessages([...data].reverse());
-      setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
     }
     setLoading(false);
   };
@@ -79,15 +83,8 @@ const Messages = () => {
 
       {/* Message Feed */}
       <div 
-        ref={scrollContainerRef}
-        onScroll={handleScroll}
         className="flex-1 overflow-y-auto p-8 space-y-6 bg-background-base/30"
       >
-        {loadingMore && (
-          <div className="text-center py-2 text-[9px] font-black text-nuvio-purple-400 uppercase tracking-widest animate-pulse">
-            Syncing earlier logs...
-          </div>
-        )}
         <AnimatePresence initial={false}>
           {messages.map((msg, i) => {
             const isMe = msg.user_id === user.id;
