@@ -23,17 +23,25 @@ const Dashboard = () => {
   const [isHolding, setIsHolding] = useState(false);
   const navigate = useNavigate();
 
+  const [cloudActive, setCloudActive] = useState(false);
+
   useEffect(() => {
     // Sync with global state
     const handleUpdate = (e) => {
       setUser(e.detail);
       calculateMilestone(e.detail.xp, e.detail.level);
     };
+
+    const handleCloudStatus = (e) => setCloudActive(e.detail.active);
     
     window.addEventListener('nuvio_stats_update', handleUpdate);
+    window.addEventListener('nuvio_cloud_status', handleCloudStatus);
     fetchDashboardData();
 
-    return () => window.removeEventListener('nuvio_stats_update', handleUpdate);
+    return () => {
+      window.removeEventListener('nuvio_stats_update', handleUpdate);
+      window.removeEventListener('nuvio_cloud_status', handleCloudStatus);
+    };
   }, []);
 
   const fetchDashboardData = async () => {
@@ -122,6 +130,10 @@ const Dashboard = () => {
           </p>
         </div>
         <div className="flex items-center gap-4">
+          <div className={`px-4 py-2 rounded-full border flex items-center gap-2 transition-all duration-500 ${cloudActive ? 'bg-nuvio-green/10 border-nuvio-green/30 text-nuvio-green' : 'bg-nuvio-red/10 border-nuvio-red/30 text-nuvio-red'}`}>
+            <div className={`w-1.5 h-1.5 rounded-full ${cloudActive ? 'bg-nuvio-green animate-pulse' : 'bg-nuvio-red'}`} />
+            <span className="text-[10px] font-black uppercase tracking-widest">{cloudActive ? 'Cloud Active' : 'Offline Mode'}</span>
+          </div>
           <div className="bg-white/5 border border-white/10 px-6 py-3 rounded-2xl flex items-center gap-3">
             <Coins className="w-5 h-5 text-nuvio-yellow" />
             <span className="text-xl font-black text-white tabular-nums">{user?.era_tokens?.toLocaleString()}</span>

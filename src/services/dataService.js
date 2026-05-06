@@ -1,7 +1,23 @@
 import { supabase } from '../lib/supabase';
 import { authService } from './authService';
 
+let isCloudActive = false;
 const DB_KEY = 'nuvio_local_db';
+
+const checkConnection = async () => {
+  try {
+    const { data, error } = await supabase.from('profiles').select('id').limit(1);
+    isCloudActive = !error;
+    window.dispatchEvent(new CustomEvent('nuvio_cloud_status', { detail: { active: isCloudActive } }));
+  } catch (e) {
+    isCloudActive = false;
+    window.dispatchEvent(new CustomEvent('nuvio_cloud_status', { detail: { active: false } }));
+  }
+};
+
+// Initial Heartbeat
+checkConnection();
+setInterval(checkConnection, 30000); // Check every 30s
 
 const getLocalDB = () => {
   const data = localStorage.getItem(DB_KEY);
