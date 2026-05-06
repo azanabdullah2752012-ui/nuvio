@@ -3,12 +3,16 @@ import { Dice5, Trophy, Zap, AlertCircle, CheckCircle2, XCircle, Brain } from 'l
 import { motion, AnimatePresence } from 'framer-motion';
 import { gameService } from '../../services/gameService';
 
-const EduLudo = ({ players, turn, onLog, onQuiz, activeSubject, onNextTurn, onUpdatePlayers }) => {
+const EduLudo = ({ players = [], turn, onLog, onQuiz, activeSubject, onNextTurn, onUpdatePlayers }) => {
   const [tokens, setTokens] = useState(players.map(p => ({ pos: -1, player: p }))); // -1 = Home
   const [dice, setDice] = useState(1);
   const [isRolling, setIsRolling] = useState(false);
 
-  // --- BOT LOGIC (Solo Mode) ---
+  useEffect(() => {
+    setTokens(players.map(p => ({ pos: -1, player: p })));
+  }, [players]);
+
+  // --- BOT LOGIC ---
   useEffect(() => {
     const isBot = players[turn]?.isBot;
     if (isBot && !isRolling) {
@@ -71,19 +75,37 @@ const EduLudo = ({ players, turn, onLog, onQuiz, activeSubject, onNextTurn, onUp
     <div className="flex flex-col items-center gap-12 w-full max-w-4xl nv-page-transition">
       <div className="grid grid-cols-11 grid-rows-11 w-full aspect-square border-4 border-black bg-black p-1 gap-1 relative perspective-2000">
         
-        {/* HOMES */}
-        <div className="col-start-1 col-end-5 row-start-1 row-end-5 bg-nuvio-purple-500 border-4 border-black flex items-center justify-center">
-           {tokens[0].pos === -1 && <div className="text-4xl animate-bounce">🛡️</div>}
-        </div>
-        <div className="col-start-8 col-end-12 row-start-1 row-end-5 bg-nuvio-green border-4 border-black flex items-center justify-center">
-           {tokens[1].pos === -1 && <div className="text-4xl animate-bounce">☄️</div>}
-        </div>
-        <div className="col-start-1 col-end-5 row-start-8 row-end-12 bg-nuvio-blue border-4 border-black flex items-center justify-center">
-           {tokens[2].pos === -1 && <div className="text-4xl animate-bounce">🤖</div>}
-        </div>
-        <div className="col-start-8 col-end-12 row-start-8 row-end-12 bg-nuvio-yellow border-4 border-black flex items-center justify-center">
-           {tokens[3].pos === -1 && <div className="text-4xl animate-bounce">🌟</div>}
-        </div>
+        {/* DYNAMIC HOMES */}
+        {tokens.map((t, i) => {
+           const gridClasses = [
+             'col-start-1 col-end-5 row-start-1 row-end-5',
+             'col-start-8 col-end-12 row-start-1 row-end-5',
+             'col-start-1 col-end-5 row-start-8 row-end-12',
+             'col-start-8 col-end-12 row-start-8 row-end-12'
+           ][i % 4];
+           
+           const colorClasses = [
+             'bg-nuvio-purple-500',
+             'bg-nuvio-green',
+             'bg-nuvio-blue',
+             'bg-nuvio-yellow'
+           ][i % 4];
+
+           return (
+             <div key={i} className={`${gridClasses} ${colorClasses} border-4 border-black flex items-center justify-center relative overflow-hidden`}>
+                <div className="absolute inset-0 bg-black/10 flex items-center justify-center text-4xl opacity-20 font-black">HOME</div>
+                {t.pos === -1 && (
+                  <motion.div 
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="text-5xl z-10"
+                  >
+                    {t.player.avatar_emoji || '👤'}
+                  </motion.div>
+                )}
+             </div>
+           );
+        })}
 
         {/* TRACK (Simplified cross pattern for visualization) */}
         {/* For a real Ludo board we'd map every single tile, but we'll use a high-fidelity visual abstraction */}

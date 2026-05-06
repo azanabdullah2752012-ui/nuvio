@@ -20,17 +20,16 @@ import TriviaBingo from '../components/studyverse/TriviaBingo';
 const QUESTION_BANK = gameService.QUESTION_BANK;
 
 // --- MULTIPLAYER SETUP ---
-const INITIAL_PLAYERS = [
-  { id: 1, name: "You (Scholar)", color: "#8258ff", kp: 0, xp: 0, pos: 0, icon: "⚡", isBot: false },
-  { id: 2, name: "Leo Vance", color: "#2ed573", kp: 0, xp: 0, pos: 0, icon: "☄️", isBot: true },
-  { id: 3, name: "Maya Chen", color: "#1e90ff", kp: 0, xp: 0, pos: 0, icon: "🦄", isBot: true },
-  { id: 4, name: "Sam Rivers", color: "#ffa502", kp: 0, xp: 0, pos: 0, icon: "🌟", isBot: true }
+// --- MULTIPLAYER SETUP (Real-Only) ---
+const getInitialPlayers = (user) => [
+  { id: user.id, name: user.full_name || "You (Scholar)", color: "#8258ff", kp: 0, xp: 0, pos: 0, icon: user.avatar_emoji || "⚡", isBot: false },
 ];
 
 const StudyVerse = () => {
+  const [user, setUser] = useState(authService.me());
   const [currentTab, setCurrentTab] = useState('Monopoly');
   const [activeSubject, setActiveSubject] = useState('Science');
-  const [players, setPlayers] = useState(INITIAL_PLAYERS);
+  const [players, setPlayers] = useState(getInitialPlayers(authService.me() || {}));
   const [turn, setTurn] = useState(0); // Player index
   const [activity, setActivity] = useState([{ t: 'System sequence initialized.', type: 'sys' }]);
   const [isSolo, setIsSolo] = useState(true);
@@ -45,22 +44,27 @@ const StudyVerse = () => {
   };
 
   const nextTurn = () => {
-    setTurn(prev => (prev + 1) % 4);
+    if (players.length > 1) {
+      setTurn(prev => (prev + 1) % players.length);
+    }
   };
 
-  // --- AI SENTINEL ENGINE ---
+  // --- AI SENTINEL ENGINE (Real Peers Only) ---
   useEffect(() => {
     const activePlayer = players[turn];
-    if (isSolo && activePlayer.isBot && !showQuiz && !isBotThinking) {
+    if (!activePlayer) return;
+    if (activePlayer.isBot && !showQuiz && !isBotThinking) {
       triggerBotSequence();
     }
-  }, [turn, isSolo, showQuiz, isBotThinking]);
+  }, [turn, players, showQuiz, isBotThinking]);
 
   const triggerBotSequence = () => {
+    // Ghost Logic Terminated. Bots only active in Training Simulation.
+    if (!players[turn]?.isBot) return;
     setIsBotThinking(true);
     addLog(`${players[turn].name} is analyzing tiles...`, 'sys');
     
-    // 1. Roll Move
+    // Bots now play using the same logic as real players
     setTimeout(() => {
       const roll = Math.floor(Math.random() * 6) + 1;
       setDice(roll);
@@ -68,27 +72,11 @@ const StudyVerse = () => {
       const newPlayers = [...players];
       newPlayers[turn].pos = newPos;
       setPlayers(newPlayers);
-      addLog(`${players[turn].name} rolled ${roll} and engaged Sector ${newPos}.`, 'game');
-
-      // 2. Simulated Quiz Result (80% Success Rate)
-      setTimeout(() => {
-        const success = Math.random() < 0.8;
-        if (success) {
-          addLog(`${players[turn].name} synchronized the Focus Node.`, 'success');
-          const finalPlayers = [...newPlayers];
-          finalPlayers[turn].kp += 50;
-          setPlayers(finalPlayers);
-        } else {
-          addLog(`${players[turn].name} failed neural verification.`, 'error');
-        }
-        
-        setIsBotThinking(false);
-        // Ensure turn progression happens after thinking state is cleared
-        setTimeout(() => {
-          if (currentTab === 'Monopoly') nextTurn();
-        }, 500);
-      }, 1500);
-    }, 1500); // More deliberate bot timing
+      addLog(`${players[turn].name} moved to Sector ${newPos}.`, 'game');
+      
+      setIsBotThinking(false);
+      nextTurn();
+    }, 1500);
   };
 
   const handleRoll = () => {

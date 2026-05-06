@@ -37,9 +37,15 @@ const SystemPulse = () => {
         .from('messages')
         .select('*', { count: 'exact', head: true });
 
+      // 4. Real Active Count (Users active in last 15 mins)
+      const { data: activeProfiles } = await supabase
+        .from('profiles')
+        .select('id')
+        .gt('updated_at', new Date(Date.now() - 15 * 60000).toISOString());
+
       const enhancedStats = {
-        total_users: totalCount || 1,
-        active_users: Math.ceil((totalCount || 0) * 0.4) || 1, // Simulated active for now based on total
+        total_users: totalCount || 0,
+        active_users: activeProfiles?.length || 0,
         msgs_per_min: msgCount || 0,
         xp_per_min: (activeCount || 0) * 10,
         timestamp: new Date().toISOString()

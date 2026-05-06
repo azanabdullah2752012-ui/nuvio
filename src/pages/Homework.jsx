@@ -12,6 +12,8 @@ import { xpService } from '../services/xpService';
 import { notificationService } from '../services/notificationService';
 import { rewardService } from '../services/rewardService';
 
+import { aiService } from '../services/aiService';
+
 const SubjectIcon = ({ subject, className = "w-6 h-6" }) => {
   const s = subject?.toLowerCase() || '';
   if (s.includes('math')) return <Target className={className} />;
@@ -74,9 +76,38 @@ const Homework = () => {
     }
   };
 
-  const handleMagicSuggest = () => {
-    const suggestions = ["Master Quantum Theory", "Write English Thesis", "Solve Calculus Set", "Review World History"];
-    handleQuestForge(suggestions[Math.floor(Math.random() * suggestions.length)]);
+  const handleMagicSuggest = async () => {
+    notificationService.send("Neural Core", "Scanning neural pathways for optimal objectives...", "info");
+    try {
+      const prompt = "Generate a short, high-impact study objective (max 6 words) for a student. Example: 'Master Quantum Mechanics Basics'. Return ONLY the title.";
+      const title = await aiService.chat(prompt);
+      handleQuestForge(title.replace(/"/g, ''));
+    } catch (err) {
+      handleQuestForge("Solve Advanced Problems");
+    }
+  };
+
+  const vaultTask = async (task) => {
+    try {
+      notificationService.send("Vaulting Protocol", "Extracting knowledge to permanent storage...", "info");
+      
+      // 1. Create a new deck from this task
+      await dataService.create('decks', {
+        title: task.title,
+        subject: task.subject,
+        cards: [
+          { front: `Core concept of ${task.title}?`, back: "Generated from neural forge." }
+        ]
+      });
+
+      // 2. Delete the task
+      await dataService.delete('tasks', task.id);
+      setTasks(prev => prev.filter(t => t.id !== task.id));
+      
+      notificationService.send("VAULT SECURED", "Directive archived to permanent Knowledge Decks.", "success");
+    } catch (err) {
+      notificationService.send("Vault Failure", "Neural sync failed.", "error");
+    }
   };
 
   const toggleQuest = async (id) => {
@@ -261,6 +292,14 @@ const Homework = () => {
                   <h3 className={`text-4xl font-black text-white uppercase leading-tight tracking-tight ${task.completed ? 'line-through decoration-nuvio-green/50 text-white/40' : ''}`}>
                     {task.title}
                   </h3>
+                  {task.completed && (
+                    <button 
+                      onClick={() => vaultTask(task)}
+                      className="mt-4 px-6 py-3 bg-nuvio-purple-500/20 border border-nuvio-purple-500/40 text-nuvio-purple-400 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-nuvio-purple-500 hover:text-white transition-all"
+                    >
+                       <Layers className="w-4 h-4" /> Archive to VAULT
+                    </button>
+                  )}
                 </div>
 
                 <div className="mt-10 pt-6 border-t border-white/5 flex items-center justify-between">

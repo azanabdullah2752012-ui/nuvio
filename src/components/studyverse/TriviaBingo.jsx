@@ -26,23 +26,12 @@ const TriviaBingo = ({ players, turn, onLog, activeSubject, onNextTurn }) => {
     const board = boards[turn];
     const correctAns = currentPrompt.options[currentPrompt.a].toLowerCase();
     
-    // 1. Find the tile that matches the prompt
-    const matchIdx = board.findIndex(tile => {
-      const tileVal = tile.toLowerCase();
-      return correctAns.includes(tileVal) || tileVal.includes(correctAns.slice(0, 3));
-    });
+    // Bots now scan for the exact correct answer node
+    const matchIdx = board.findIndex(tile => tile.toLowerCase() === correctAns);
     
     if (matchIdx !== -1 && !lockedTiles[turn].includes(matchIdx)) {
-      // 2. 75% chance to "see" it
-      if (Math.random() < 0.75) {
-        handleTileClick(matchIdx);
-      } else {
-        onLog(`${players[turn].name} is still scanning the matrix...`, 'sys');
-        onNextTurn();
-      }
+      handleTileClick(matchIdx);
     } else {
-      // No match on board, skip
-      onLog(`${players[turn].name} found no matching concept nodes.`, 'sys');
       onNextTurn();
     }
   };
@@ -78,26 +67,25 @@ const TriviaBingo = ({ players, turn, onLog, activeSubject, onNextTurn }) => {
     
     if (isAlreadyLocked) return;
 
-    // Use Nova AI to verify if the clicked tile answers the prompt
-    // For the demo, we check if the tile value is part of the correct option text or vice versa
+    // Strict Answer Verification (No more 'Demo' heuristics)
     const correctAns = currentPrompt.options[currentPrompt.a].toLowerCase();
-    const isCorrect = correctAns.includes(tileVal.toLowerCase()) || tileVal.toLowerCase().includes(correctAns.slice(0, 3));
+    const isCorrect = tileVal.toLowerCase() === correctAns;
 
     if (isCorrect) {
-      onLog(`${players[turn].name} locked the glow: ${tileVal}`, 'success');
+      onLog(`${players[turn].name} locked node: ${tileVal}`, 'success');
       const newLocked = [...lockedTiles];
       newLocked[turn].push(tileIdx);
       setLockedTiles(newLocked);
       
       if (checkWin(newLocked[turn])) {
         setWinner(players[turn]);
-        onLog(`${players[turn].name} achieved NEURAL BINGO! +500 XP.`, 'success');
+        onLog(`${players[turn].name} ACHIEVED NEURAL BINGO!`, 'success');
         gameService.awardPlayer(turn, 500, "Trivia Bingo Victory", "bingo");
       } else {
         onNextTurn();
       }
     } else {
-      onLog(`Heuristic mismatch. Node remains offline.`, 'error');
+      onLog(`Logical rejection. Node ${tileVal} is offline.`, 'error');
       onNextTurn();
     }
   };

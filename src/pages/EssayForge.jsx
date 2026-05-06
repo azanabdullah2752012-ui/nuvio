@@ -16,19 +16,33 @@ const EssayForge = () => {
     if (!essay.trim() || essay.length < 50) return;
     setIsForging(true);
     
-    const prompt = `Please grade this student essay and provide a structured feedback report (Grade, Strengths, Weaknesses, Tips). Essay: \n\n${essay}`;
-    const result = await aiService.chat([{ role: 'user', content: prompt }]);
+    const prompt = `Analyze this student essay and return a JSON object with the following structure: { "grade": "string", "score": number, "grammar": number, "complexity": number, "clarity": number, "report": "detailed feedback string" }. Essay: \n\n${essay}`;
     
-    setFeedback({
-      grade: 'A-', // Simulated grade for now
-      report: result,
-      score: 88,
-      metrics: [
-        { label: 'Grammar', score: 92, color: 'bg-nuvio-green' },
-        { label: 'Complexity', score: 75, color: 'bg-nuvio-blue' },
-        { label: 'Clarity', score: 85, color: 'bg-nuvio-purple-500' },
-      ]
-    });
+    try {
+      const result = await aiService.chat([{ role: 'user', content: prompt }]);
+      // Parse JSON from markdown if necessary
+      const jsonStr = result.includes('```json') ? result.split('```json')[1].split('```')[0] : result;
+      const parsed = JSON.parse(jsonStr);
+
+      setFeedback({
+        grade: parsed.grade || 'B',
+        report: parsed.report || result,
+        score: parsed.score || 70,
+        metrics: [
+          { label: 'Grammar', score: parsed.grammar || 70, color: 'bg-nuvio-green' },
+          { label: 'Complexity', score: parsed.complexity || 70, color: 'bg-nuvio-blue' },
+          { label: 'Clarity', score: parsed.clarity || 70, color: 'bg-nuvio-purple-500' },
+        ]
+      });
+    } catch (err) {
+      console.error("Forge Failure:", err);
+      setFeedback({
+        grade: '?',
+        report: "The Forge was unable to crystallize a grade. Please try again.",
+        score: 0,
+        metrics: []
+      });
+    }
     setIsForging(false);
   };
 

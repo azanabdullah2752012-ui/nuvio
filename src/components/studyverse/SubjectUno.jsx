@@ -8,41 +8,28 @@ const SubjectUno = ({ players, turn, onLog, onQuiz, activeSubject, onNextTurn })
   const [discardPile, setDiscardPile] = useState([generateCard()]);
   const [selectedCard, setSelectedCard] = useState(null);
 
-  // --- BOT LOGIC (Solo Mode) ---
+  // --- BOT LOGIC (Only in Training Simulation) ---
   useEffect(() => {
-    const isBot = players[turn]?.isBot;
-    if (isBot) {
+    const activePlayer = players[turn];
+    if (activePlayer?.isBot) {
       const timer = setTimeout(() => {
-        handleBotDecision();
+        const hand = hands[turn];
+        const topCard = discardPile[0];
+        const matchIdx = hand.findIndex(c => c.color === topCard.color || c.val === topCard.val);
+        
+        if (matchIdx !== -1) {
+          executePlay(matchIdx);
+        } else {
+          // No match, bot draws
+          const newHands = [...hands];
+          newHands[turn].push(generateCard());
+          setHands(newHands);
+          onNextTurn();
+        }
       }, 2000);
       return () => clearTimeout(timer);
     }
   }, [turn, players]);
-
-  const handleBotDecision = () => {
-    const hand = hands[turn];
-    const topCard = discardPile[0];
-    
-    // 1. Look for a natural match
-    const matchIdx = hand.findIndex(c => c.color === topCard.color || c.val === topCard.val);
-    
-    if (matchIdx !== -1) {
-      handlePlayCard(matchIdx);
-    } else {
-      // 2. Try to "Solve" a mismatch (80% confidence)
-      const success = Math.random() < 0.8;
-      if (success) {
-        onLog(`${players[turn].name} logic-matched a card via override.`, 'success');
-        executePlay(0); // Just play the first card
-      } else {
-        onLog(`${players[turn].name} semantic chain broke. Drawing card.`, 'error');
-        const newHands = [...hands];
-        newHands[turn].push(generateCard());
-        setHands(newHands);
-        onNextTurn();
-      }
-    }
-  };
 
   function generateCard() {
     const concepts = gameService.QUESTION_BANK[activeSubject] || gameService.QUESTION_BANK.Science;

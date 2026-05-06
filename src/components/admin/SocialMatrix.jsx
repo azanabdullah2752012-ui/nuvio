@@ -3,6 +3,7 @@ import { MessageSquare, Trash2, ShieldOff, Send, Activity, UserX, AlertCircle } 
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../../lib/supabase';
 import { dataService } from '../../services/dataService';
+import { authService } from '../../services/authService';
 import { notificationService } from '../../services/notificationService';
 
 const SocialMatrix = () => {
@@ -54,7 +55,7 @@ const SocialMatrix = () => {
     const newBroadcast = {
       sender_id: user.id,
       recipient_id: '00000000-0000-0000-0000-000000000000', // System Broadcast
-      content: `[DIVINE BROADCAST] ${broadcast}`
+      content: `[SYSTEM BROADCAST] ${broadcast}`
     };
 
     await dataService.create('messages', newBroadcast);
@@ -124,7 +125,7 @@ const SocialMatrix = () => {
                   <textarea 
                     value={broadcast}
                     onChange={e => setBroadcast(e.target.value)}
-                    placeholder="Input divine transmission..."
+                    placeholder="Input system-wide broadcast..."
                     className="w-full h-32 bg-white/5 border border-white/10 rounded-2xl p-4 text-white text-xs outline-none focus:border-nuvio-purple-500 resize-none transition-all placeholder:text-text-muted/30"
                   />
                </div>

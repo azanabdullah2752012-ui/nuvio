@@ -16,11 +16,18 @@ const Leaderboard = () => {
 
   const fetchLeaderboard = async () => {
     try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .order('xp', { ascending: false })
-        .limit(20);
+      let query = supabase.from('profiles').select('*');
+      
+      if (filter === 'global') {
+        query = query.order('xp', { ascending: false });
+      } else {
+        // Weekly Proxy: Scholars with highest XP who were active this week
+        query = query
+          .gt('updated_at', new Date(Date.now() - 7 * 24 * 60 * 60000).toISOString())
+          .order('xp', { ascending: false });
+      }
+
+      const { data, error } = await query.limit(20);
       
       if (error) throw error;
       
@@ -39,15 +46,7 @@ const Leaderboard = () => {
 
   useEffect(() => {
     fetchLeaderboard();
-
-    const handleUpdate = (e) => {
-      setUser(e.detail);
-      fetchLeaderboard();
-    };
-
-    window.addEventListener('nuvio_stats_update', handleUpdate);
-    return () => window.removeEventListener('nuvio_stats_update', handleUpdate);
-  }, [user.xp]);
+  }, [filter, user?.id]);
 
   const top3 = peers.slice(0, 3);
   const others = peers.slice(3);
