@@ -12,11 +12,22 @@ import { xpService } from '../services/xpService';
 import { notificationService } from '../services/notificationService';
 import { rewardService } from '../services/rewardService';
 
+const SubjectIcon = ({ subject, className = "w-6 h-6" }) => {
+  const s = subject?.toLowerCase() || '';
+  if (s.includes('math')) return <Target className={className} />;
+  if (s.includes('sci')) return <Zap className={className} />;
+  if (s.includes('hist') || s.includes('human')) return <ScrollText className={className} />;
+  if (s.includes('lang') || s.includes('write')) return <Brain className={className} />;
+  if (s.includes('lit')) return <Layers className={className} />;
+  if (s.includes('exam') || s.includes('test')) return <Rocket className={className} />;
+  return <ShieldCheck className={className} />;
+};
+
 const QUICK_MISSIONS = [
-  { id: 'math', title: 'Math Prime', icon: Target, color: 'bg-nuvio-blue', glow: 'shadow-nuvio-blue' },
-  { id: 'science', title: 'Science Synapse', icon: Zap, color: 'bg-nuvio-green', glow: 'shadow-nuvio-green' },
-  { id: 'essay', title: 'Deep Draft', icon: ScrollText, color: 'bg-nuvio-purple-500', glow: 'shadow-nuvio-purple-500' },
-  { id: 'vocab', title: 'Lexicon Drill', icon: Brain, color: 'bg-nuvio-cyan', glow: 'shadow-nuvio-cyan' },
+  { id: 'math', title: 'Math Prime', icon: Target, color: 'bg-nuvio-blue', glow: 'shadow-nuvio-blue', subject: 'Mathematics' },
+  { id: 'science', title: 'Science Synapse', icon: Zap, color: 'bg-nuvio-green', glow: 'shadow-nuvio-green', subject: 'Science' },
+  { id: 'essay', title: 'Deep Draft', icon: ScrollText, color: 'bg-nuvio-purple-500', glow: 'shadow-nuvio-purple-500', subject: 'Humanities' },
+  { id: 'vocab', title: 'Lexicon Drill', icon: Brain, color: 'bg-nuvio-cyan', glow: 'shadow-nuvio-cyan', subject: 'Languages' },
 ];
 
 const Homework = () => {
@@ -183,14 +194,32 @@ const Homework = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <AnimatePresence mode="popLayout">
           {filteredTasks.length === 0 ? (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="col-span-full py-32 border-4 border-dashed border-white/5 text-center rounded-3xl bg-black/20 flex flex-col items-center justify-center relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-nuvio-purple-500/5 pointer-events-none" />
-              <ShieldCheck className="w-24 h-24 text-white/5 mx-auto mb-8" />
-              <h3 className="text-5xl font-black text-white/20 uppercase tracking-tighter mb-4">Sector Clear</h3>
-              <p className="text-sm font-bold text-white/20 uppercase tracking-widest">No active directives detected.</p>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="col-span-full py-32 border-4 border-dashed border-white/5 text-center rounded-[40px] bg-black/40 flex flex-col items-center justify-center relative overflow-hidden group">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(168,85,247,0.1)_0%,transparent_70%)]" />
+              
+              {/* Animated Radar Graphic */}
+              <div className="relative w-48 h-48 mb-12">
+                <div className="absolute inset-0 border-4 border-nuvio-purple-500/20 rounded-full animate-ping" />
+                <div className="absolute inset-4 border-2 border-nuvio-purple-500/40 rounded-full animate-[pulse_3s_infinite]" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-1 h-24 bg-gradient-to-t from-nuvio-purple-500 to-transparent origin-bottom animate-[spin_4s_linear_infinite]" />
+                </div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Terminal className="w-16 h-16 text-nuvio-purple-400 opacity-20 group-hover:opacity-100 transition-opacity duration-700" />
+                </div>
+              </div>
+
+              <h3 className="text-5xl font-black text-white uppercase tracking-tighter mb-4 relative z-10">Sector Zero</h3>
+              <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.4em] relative z-10">No active directives detected in local airspace.</p>
+              
+              <div className="mt-12 flex gap-4 relative z-10">
+                <div className="w-2 h-2 rounded-full bg-nuvio-green animate-pulse" />
+                <div className="w-2 h-2 rounded-full bg-nuvio-purple-500 animate-pulse delay-75" />
+                <div className="w-2 h-2 rounded-full bg-nuvio-cyan animate-pulse delay-150" />
+              </div>
             </motion.div>
           ) : (
-            filteredTasks.map((task, idx) => (
+            filteredTasks.filter(t => t).map((task, idx) => (
               <motion.div 
                 layout
                 initial={{ opacity: 0, y: 20 }}
@@ -204,7 +233,7 @@ const Homework = () => {
               >
                 <div className="flex justify-between items-start mb-12">
                   <div className={`p-4 rounded-2xl border-2 ${task.completed ? 'bg-nuvio-green border-nuvio-green text-black' : 'bg-white/5 border-white/10 text-white'}`}>
-                    <Target className="w-8 h-8" />
+                    <SubjectIcon subject={task.subject} className="w-8 h-8" />
                   </div>
                   <div className="flex gap-3">
                     <button 
@@ -236,8 +265,8 @@ const Homework = () => {
 
                 <div className="mt-10 pt-6 border-t border-white/5 flex items-center justify-between">
                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[10px] font-black text-white">
-                        {task.subject ? task.subject.charAt(0) : 'G'}
+                      <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
+                        <SubjectIcon subject={task.subject} className="w-4 h-4 text-white" />
                       </div>
                       <span className="text-[10px] font-black text-white/40 uppercase tracking-widest">{task.subject || 'General'}</span>
                    </div>
