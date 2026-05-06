@@ -46,17 +46,9 @@ const Analytics = () => {
       if (pieData.length > 0) setTaskData(pieData);
       else setTaskData([{ name: 'No Data', value: 1 }]);
 
-      // 2. Session Data (Simulated based on task completion for now)
-      const mockSessions = [
-        { day: 'Mon', minutes: tasks.filter(t => t.completed).length * 10, xp: 120 },
-        { day: 'Tue', minutes: tasks.length * 5, xp: 270 },
-        { day: 'Wed', minutes: decks.length * 15, xp: 180 },
-        { day: 'Thu', minutes: 60, xp: 360 },
-        { day: 'Fri', minutes: 40, xp: 240 },
-        { day: 'Sat', minutes: 55, xp: 330 },
-        { day: 'Sun', minutes: 90, xp: 540 }
-      ];
-      setSessionData(mockSessions);
+      // 2. Real Session Data only
+      const realSessions = [];
+      setSessionData(realSessions);
       
     } catch (err) {
       console.warn("Analytics stream interrupted. Using local buffer.");

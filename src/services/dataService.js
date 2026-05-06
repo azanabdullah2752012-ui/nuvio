@@ -24,9 +24,7 @@ const getLocalDB = () => {
     const initial = {
       tasks: [],
       decks: [],
-      messages: [
-        { id: 'm1', from: 'Nova', content: 'Welcome to your neural workspace. I am ready to assist.', time: 'Just now' }
-      ],
+      messages: [],
       inventory: [],
       stats: { xp: 0, level: 1, tokens: 0 }
     };
