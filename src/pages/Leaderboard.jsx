@@ -13,25 +13,36 @@ const Leaderboard = () => {
   const [peers, setPeers] = useState([]);
   const [filter, setFilter] = useState('global'); // global | weekly
 
-  useEffect(() => {
-    // Combine real user with simulated peers
-    const realUser = {
-      ...user,
-      id: 'me',
-      isMe: true
-    };
-    
-    const simulatedPeers = peerService.getPeers();
-    const combined = [...simulatedPeers, realUser].sort((a, b) => b.xp - a.xp);
-    setPeers(combined);
+  const fetchLeaderboard = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .order('xp', { ascending: false })
+        .limit(20);
+      
+      if (error) throw error;
+      
+      const formatted = data.map(p => ({
+        ...p,
+        isMe: p.id === user?.id
+      }));
+      setPeers(formatted);
+    } catch (err) {
+      console.warn("Cloud Leaderboard failed, using simulated rivals.");
+      const simulatedPeers = peerService.getPeers();
+      const realUser = { ...user, id: 'me', isMe: true };
+      const combined = [...simulatedPeers, realUser].sort((a, b) => b.xp - a.xp);
+      setPeers(combined);
+    }
+  };
 
-    // Listen for XP updates (when user earns XP in another tab or game)
+  useEffect(() => {
+    fetchLeaderboard();
+
     const handleUpdate = (e) => {
-      const updatedUser = { ...e.detail, id: 'me', isMe: true };
       setUser(e.detail);
-      const latestPeers = peerService.getPeers();
-      const newCombined = [...latestPeers, updatedUser].sort((a, b) => b.xp - a.xp);
-      setPeers(newCombined);
+      fetchLeaderboard();
     };
 
     window.addEventListener('nuvio_stats_update', handleUpdate);
