@@ -125,23 +125,38 @@ const Admin = () => {
             <div className="space-y-8">
               <div className="nv-card p-10 space-y-8 border-white/5">
                 <div className="flex items-center justify-between">
-                   <h3 className="text-2xl font-black text-white uppercase tracking-tight">Neural Protocol Hub</h3>
+                   <h3 className="text-2xl font-black text-white uppercase tracking-tight">Master Authority Control</h3>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                   {['Gemini', 'OpenRouter', 'Groq'].map(p => (
-                     <div key={p} className="p-6 bg-white/5 rounded-2xl border border-white/10 flex flex-col items-center gap-4 group hover:border-nuvio-purple-500/30 transition-all cursor-not-allowed grayscale opacity-40">
-                        <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center">
-                           <Lock className="w-5 h-5 text-text-muted" />
-                        </div>
-                        <span className="text-[10px] font-black text-white uppercase tracking-widest">{p} Integration</span>
-                     </div>
-                   ))}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                   <button 
+                     onClick={async () => {
+                       if (confirm("DANGER: This will wipe all local data. Continue?")) {
+                         localStorage.clear();
+                         window.location.reload();
+                       }
+                     }}
+                     className="p-8 bg-nuvio-red/10 rounded-3xl border-2 border-nuvio-red/20 flex flex-col items-center gap-4 group hover:bg-nuvio-red hover:text-white transition-all"
+                   >
+                      <UserX className="w-10 h-10" />
+                      <span className="text-sm font-black uppercase tracking-widest">Wipe System Data</span>
+                   </button>
+
+                   <button 
+                     onClick={async () => {
+                       await authService.injectWealth(10000);
+                       alert("10,000 Era Tokens Injected into Neural Cache. ⚡");
+                     }}
+                     className="p-8 bg-nuvio-yellow/10 rounded-3xl border-2 border-nuvio-yellow/20 flex flex-col items-center gap-4 group hover:bg-nuvio-yellow hover:text-black transition-all"
+                   >
+                      <Coins className="w-10 h-10" />
+                      <span className="text-sm font-black uppercase tracking-widest">Inject 10K Tokens</span>
+                   </button>
                 </div>
 
                 <div className="p-10 bg-nuvio-purple-600/5 border border-nuvio-purple-600/20 rounded-[32px] text-center space-y-6">
                    <ShieldCheck className="w-12 h-12 text-nuvio-purple-400 mx-auto opacity-30" />
-                   <p className="text-xs font-bold text-nuvio-purple-300 uppercase tracking-widest italic">The Divine AI Intelligence is currently locked to Local Protocol Mode while the Era 10K scaling completes.</p>
+                   <p className="text-xs font-bold text-nuvio-purple-300 uppercase tracking-widest italic">Authority Level 10 Verified. Local overrides are active while the cloud database is being recalibrated.</p>
                 </div>
               </div>
             </div>

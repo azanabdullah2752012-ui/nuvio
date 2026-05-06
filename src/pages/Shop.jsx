@@ -28,10 +28,7 @@ const Shop = () => {
   }, []);
 
   const fetchInventory = async () => {
-    const { data } = await supabase
-      .from('user_inventory')
-      .select('item_id')
-      .eq('user_id', user.id);
+    const data = await dataService.list('inventory');
     if (data) setInventory(data.map(i => i.item_id));
     setLoading(false);
   };
@@ -47,24 +44,14 @@ const Shop = () => {
       return;
     }
 
-    // 1. Deduct Tokens
-    const { error: tokenError } = await supabase
-      .from('profiles')
-      .update({ era_tokens: user.era_tokens - item.price })
-      .eq('id', user.id);
-
-    if (tokenError) return;
-
+    // 1. Deduct Tokens locally and attempt sync
+    await authService.addTokens(-item.price);
+    
     // 2. Add to Inventory
-    const { error: invError } = await supabase
-      .from('user_inventory')
-      .insert([{ user_id: user.id, item_id: item.id }]);
-
-    if (!invError) {
-      setInventory([...inventory, item.id]);
-      authService.addTokens(-item.price); // Sync local state
-      alert(`Success! Unlocked: ${item.name} 🛡️`);
-    }
+    await dataService.create('inventory', { item_id: item.id });
+    
+    setInventory([...inventory, item.id]);
+    alert(`Success! Unlocked: ${item.name} 🛡️`);
   };
 
   return (

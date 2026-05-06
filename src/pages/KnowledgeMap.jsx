@@ -21,26 +21,51 @@ const KnowledgeMap = () => {
     const user = authService.me();
     
     // Fetch Decks and Tasks to see what subjects are "Unlocked"
-    const [decksRes, tasksRes] = await Promise.all([
-      supabase.from('decks').select('subject'),
-      supabase.from('tasks').select('category')
+    const [decks, tasks] = await Promise.all([
+      dataService.list('decks'),
+      dataService.list('tasks')
     ]);
 
-    const activeSubjects = new Set([
-      ...(decksRes.data || []).map(d => d.subject?.toLowerCase()),
-      ...(tasksRes.data || []).map(t => t.category?.toLowerCase())
-    ]);
+    const subjectsData = {
+      math: { count: 0, completed: 0, icon: 'Mathematics' },
+      science: { count: 0, completed: 0, icon: 'Science' },
+      humanities: { count: 0, completed: 0, icon: 'History' },
+      general: { count: 0, completed: 0, icon: 'General' },
+    };
+
+    tasks.forEach(t => {
+      const s = t.subject?.toLowerCase() || 'general';
+      if (s.includes('math')) subjectsData.math.count++;
+      else if (s.includes('sci')) subjectsData.science.count++;
+      else if (s.includes('hist') || s.includes('human')) subjectsData.humanities.count++;
+      else subjectsData.general.count++;
+      
+      if (t.completed) {
+        if (s.includes('math')) subjectsData.math.completed++;
+        else if (s.includes('sci')) subjectsData.science.completed++;
+        else if (s.includes('hist') || s.includes('human')) subjectsData.humanities.completed++;
+        else subjectsData.general.completed++;
+      }
+    });
+
+    decks.forEach(d => {
+      const s = d.subject?.toLowerCase() || 'general';
+      if (s.includes('math')) subjectsData.math.count += 5;
+      else if (s.includes('sci')) subjectsData.science.count += 5;
+      else if (s.includes('hist') || s.includes('human')) subjectsData.humanities.count += 5;
+      else subjectsData.general.count += 5;
+    });
 
     const baseNodes = [
-      { id: 1, label: 'Mathematics', x: '20%', y: '30%', color: 'nuvio-blue', size: 'w-24 h-24', key: 'math' },
-      { id: 2, label: 'Science', x: '60%', y: '40%', color: 'nuvio-green', size: 'w-24 h-24', key: 'science' },
-      { id: 3, label: 'History', x: '45%', y: '75%', color: 'nuvio-orange', size: 'w-24 h-24', key: 'history' },
-      { id: 4, label: 'Humanities', x: '10%', y: '60%', color: 'nuvio-purple-500', size: 'w-16 h-16', key: 'general' },
+      { id: 1, label: 'Mathematics', x: '20%', y: '30%', color: 'nuvio-blue', size: 'w-24 h-24', key: 'math', data: subjectsData.math },
+      { id: 2, label: 'Science', x: '60%', y: '40%', color: 'nuvio-green', size: 'w-24 h-24', key: 'science', data: subjectsData.science },
+      { id: 3, label: 'History', x: '45%', y: '75%', color: 'nuvio-orange', size: 'w-24 h-24', key: 'history', data: subjectsData.humanities },
+      { id: 4, label: 'General', x: '10%', y: '60%', color: 'nuvio-purple-500', size: 'w-16 h-16', key: 'general', data: subjectsData.general },
     ];
 
     const processed = baseNodes.map(n => ({
       ...n,
-      status: activeSubjects.has(n.key) ? 'Mastered' : 'Locked'
+      status: n.data.count > 0 ? (n.data.completed >= n.data.count ? 'Mastered' : 'In Progress') : 'Locked'
     }));
 
     setUserNodes(processed);
@@ -113,13 +138,22 @@ const KnowledgeMap = () => {
                 
                 <h3 className="text-3xl font-black text-white uppercase tracking-tighter">{activeNode.label}</h3>
 
-                <div className="space-y-4">
-                  <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Topology Data</label>
                   <div className="p-4 bg-white/5 border border-white/10 rounded-2xl flex items-center gap-4">
                     <Database className="w-5 h-5 text-nuvio-purple-400" />
                     <div>
                       <div className="text-xs font-black text-white">Status: {activeNode.status}</div>
                       <div className="text-[10px] text-text-muted font-bold">Cloud-Verified Subject</div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-4 bg-black/40 border border-white/5 rounded-2xl text-center">
+                       <div className="text-xl font-black text-white">{activeNode.data.completed}/{activeNode.data.count}</div>
+                       <div className="text-[8px] font-black text-text-muted uppercase tracking-widest">Tasks</div>
+                    </div>
+                    <div className="p-4 bg-black/40 border border-white/5 rounded-2xl text-center">
+                       <div className="text-xl font-black text-white">{Math.floor(activeNode.data.count / 5)}</div>
+                       <div className="text-[8px] font-black text-text-muted uppercase tracking-widest">Vault Decks</div>
                     </div>
                   </div>
                 </div>

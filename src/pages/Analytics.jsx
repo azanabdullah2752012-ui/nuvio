@@ -26,62 +26,40 @@ const Analytics = () => {
     setLoading(true);
     
     try {
-      // 1. Fetch Focus Sessions
-      const { data: sessions } = await supabase
-        .from('focus_sessions')
-        .select('duration_minutes, completed_at')
-        .order('completed_at', { ascending: true })
-        .limit(7);
+      const [tasks, decks] = await Promise.all([
+        dataService.list('tasks'),
+        dataService.list('decks')
+      ]);
   
-      if (sessions && sessions.length > 0) {
-        const formattedSessions = sessions.map(s => ({
-          day: new Date(s.completed_at).toLocaleDateString([], { weekday: 'short' }),
-          minutes: s.duration_minutes,
-          xp: s.duration_minutes * 6
-        }));
-        setSessionData(formattedSessions);
-      } else {
-        // Mock fallback for visual fidelity
-        const mockSessions = [
-          { day: 'Mon', minutes: 20, xp: 120 },
-          { day: 'Tue', minutes: 45, xp: 270 },
-          { day: 'Wed', minutes: 30, xp: 180 },
-          { day: 'Thu', minutes: 60, xp: 360 },
-          { day: 'Fri', minutes: 40, xp: 240 },
-          { day: 'Sat', minutes: 55, xp: 330 },
-          { day: 'Sun', minutes: 90, xp: 540 }
-        ];
-        setSessionData(mockSessions);
-      }
-  
-      // 2. Fetch Tasks Distribution
-      const { data: tasks } = await supabase
-        .from('tasks')
-        .select('category, status');
+      // 1. Task Distribution (Real)
+      const distribution = tasks.reduce((acc, t) => {
+        const cat = t.subject || 'General';
+        acc[cat] = (acc[cat] || 0) + 1;
+        return acc;
+      }, {});
       
-      if (tasks && tasks.length > 0) {
-        const distribution = tasks.reduce((acc, t) => {
-          const cat = t.category || 'General';
-          acc[cat] = (acc[cat] || 0) + 1;
-          return acc;
-        }, {});
-        
-        const pieData = Object.keys(distribution).map(name => ({
-          name,
-          value: distribution[name]
-        }));
-        setTaskData(pieData);
-      } else {
-        // Mock fallback for visual fidelity
-        setTaskData([
-          { name: 'General', value: 40 },
-          { name: 'Dev', value: 25 },
-          { name: 'Math', value: 20 },
-          { name: 'Science', value: 15 }
-        ]);
-      }
+      const pieData = Object.keys(distribution).map(name => ({
+        name,
+        value: distribution[name]
+      }));
+
+      if (pieData.length > 0) setTaskData(pieData);
+      else setTaskData([{ name: 'No Data', value: 1 }]);
+
+      // 2. Session Data (Simulated based on task completion for now)
+      const mockSessions = [
+        { day: 'Mon', minutes: tasks.filter(t => t.completed).length * 10, xp: 120 },
+        { day: 'Tue', minutes: tasks.length * 5, xp: 270 },
+        { day: 'Wed', minutes: decks.length * 15, xp: 180 },
+        { day: 'Thu', minutes: 60, xp: 360 },
+        { day: 'Fri', minutes: 40, xp: 240 },
+        { day: 'Sat', minutes: 55, xp: 330 },
+        { day: 'Sun', minutes: 90, xp: 540 }
+      ];
+      setSessionData(mockSessions);
+      
     } catch (err) {
-      console.warn("Analytics stream interrupted. Switching to local buffer.");
+      console.warn("Analytics stream interrupted. Using local buffer.");
     }
 
     setLoading(false);

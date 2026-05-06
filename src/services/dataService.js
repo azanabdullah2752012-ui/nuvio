@@ -1,156 +1,100 @@
 import { supabase } from '../lib/supabase';
 import { authService } from './authService';
 
+const DB_KEY = 'nuvio_local_db';
+
+const getLocalDB = () => {
+  const data = localStorage.getItem(DB_KEY);
+  if (!data) {
+    const initial = {
+      tasks: [],
+      decks: [],
+      messages: [
+        { id: 'm1', from: 'Nova', content: 'Welcome to your neural workspace. I am ready to assist.', time: 'Just now' }
+      ],
+      inventory: [],
+      stats: { xp: 0, level: 1, tokens: 0 }
+    };
+    localStorage.setItem(DB_KEY, JSON.stringify(initial));
+    return initial;
+  }
+  return JSON.parse(data);
+};
+
+const saveLocalDB = (db) => {
+  localStorage.setItem(DB_KEY, JSON.stringify(db));
+  // Emit event to update all components
+  window.dispatchEvent(new CustomEvent('nuvio_stats_update', { detail: authService.me() }));
+};
+
 export const dataService = {
-  list: async (entityName) => {
-    const user = authService.me();
-    const localData = JSON.parse(localStorage.getItem(`nuvio_local_${entityName}`) || '[]');
-
-    if (!user) {
-      return localData;
-    }
-
+  list: async (table) => {
     try {
-      const { data, error } = await supabase
-        .from(entityName)
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.warn(`Supabase Error [list ${entityName}], falling back to local:`, error.message);
-        return localData;
-      }
+      const { data, error } = await supabase.from(table).select('*').order('created_at', { ascending: false });
+      if (error) throw error;
       return data || [];
     } catch (err) {
-      console.warn(`Fetch Error [list ${entityName}], falling back to local:`, err);
-      return localData;
+      console.warn(`Local Engine: Fetching ${table}`);
+      const db = getLocalDB();
+      return db[table] || [];
     }
   },
 
-  get: async (entityName, id) => {
-    try {
-      const { data, error } = await supabase
-        .from(entityName)
-        .select('*')
-        .eq('id', id)
-        .single();
-      if (error) throw error;
-      return data;
-    } catch (err) {
-      const localData = JSON.parse(localStorage.getItem(`nuvio_local_${entityName}`) || '[]');
-      return localData.find(i => i.id === id) || null;
-    }
-  },
-
-  create: async (entityName, data) => {
-    const user = authService.me();
+  create: async (table, item) => {
     const newItem = {
-      ...data,
-      id: Math.random().toString(36).substr(2, 9),
+      ...item,
+      id: item.id || Math.random().toString(36).substr(2, 9),
       created_at: new Date().toISOString(),
-      user_id: user?.id || 'guest-0000-0000-0000-000000000000'
+      user_id: authService.me()?.id
     };
 
-    // Save locally first for instantaneous offline support
-    const localData = JSON.parse(localStorage.getItem(`nuvio_local_${entityName}`) || '[]');
-    localStorage.setItem(`nuvio_local_${entityName}`, JSON.stringify([newItem, ...localData]));
+    // Save locally first
+    const db = getLocalDB();
+    if (!db[table]) db[table] = [];
+    db[table].unshift(newItem);
+    saveLocalDB(db);
 
-    if (!user) {
+    try {
+      const { data, error } = await supabase.from(table).insert([newItem]).select();
+      if (error) throw error;
+      return data[0] || newItem;
+    } catch (err) {
+      console.warn(`Local Engine: Created ${table} item`);
       return newItem;
     }
+  },
+
+  update: async (table, id, updates) => {
+    const db = getLocalDB();
+    if (db[table]) {
+      db[table] = db[table].map(item => item.id === id ? { ...item, ...updates } : item);
+      saveLocalDB(db);
+    }
 
     try {
-      const cloudItem = {
-        ...data,
-        user_id: user.id || '00000000-0000-0000-0000-000000000000'
-      };
-
-      const { data: insertedData, error } = await supabase
-        .from(entityName)
-        .insert([cloudItem])
-        .select()
-        .single();
-
+      const { data, error } = await supabase.from(table).update(updates).eq('id', id).select();
       if (error) throw error;
-      return insertedData || newItem;
+      return data[0];
     } catch (err) {
-      console.warn(`Supabase insert failed, using local fallback:`, err?.message || err);
-      return newItem; // Return local item so UI doesn't break
+      console.warn(`Local Engine: Updated ${table} item`);
+      return { id, ...updates };
     }
   },
 
-  update: async (entityName, id, data) => {
-    const user = authService.me();
-    
-    // Update local storage
-    const localData = JSON.parse(localStorage.getItem(`nuvio_local_${entityName}`) || '[]');
-    const updatedList = localData.map(item => item.id === id ? { ...item, ...data } : item);
-    localStorage.setItem(`nuvio_local_${entityName}`, JSON.stringify(updatedList));
-    const localUpdatedItem = updatedList.find(item => item.id === id) || { id, ...data };
-
-    if (!user) {
-      return localUpdatedItem;
+  delete: async (table, id) => {
+    const db = getLocalDB();
+    if (db[table]) {
+      db[table] = db[table].filter(item => item.id !== id);
+      saveLocalDB(db);
     }
 
     try {
-      const { data: updatedData, error } = await supabase
-        .from(entityName)
-        .update(data)
-        .eq('id', id)
-        .select()
-        .single();
-
+      const { error } = await supabase.from(table).delete().eq('id', id);
       if (error) throw error;
-      return updatedData;
+      return true;
     } catch (err) {
-      console.warn(`Supabase update failed, using local fallback:`, err.message);
-      return localUpdatedItem;
-    }
-  },
-
-  delete: async (entityName, id) => {
-    const user = authService.me();
-    
-    // Delete from local storage
-    const localData = JSON.parse(localStorage.getItem(`nuvio_local_${entityName}`) || '[]');
-    const updatedList = localData.filter(item => item.id !== id);
-    localStorage.setItem(`nuvio_local_${entityName}`, JSON.stringify(updatedList));
-
-    if (!user) {
-      return;
-    }
-
-    try {
-      const { error } = await supabase
-        .from(entityName)
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-    } catch (err) {
-      console.warn(`Supabase delete failed, relying on local fallback:`, err.message);
-    }
-  },
-
-  // Helper for batch filtering
-  filter: async (entityName, column, value) => {
-    const user = authService.me();
-    const localData = JSON.parse(localStorage.getItem(`nuvio_local_${entityName}`) || '[]');
-    const filteredLocal = localData.filter(i => i[column] === value);
-
-    if (!user) return filteredLocal;
-
-    try {
-      const { data, error } = await supabase
-        .from(entityName)
-        .select('*')
-        .eq(column, value);
-
-      if (error) throw error;
-      return data || [];
-    } catch (err) {
-      console.warn(`Supabase filter failed, falling back to local:`, err.message);
-      return filteredLocal;
+      console.warn(`Local Engine: Deleted ${table} item`);
+      return true;
     }
   }
 };

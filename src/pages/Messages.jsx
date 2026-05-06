@@ -21,83 +21,37 @@ const Messages = () => {
 
   useEffect(() => {
     fetchMessages();
-
-    // 🚀 SHARDED SUBSCRIPTION: Filter by Global Cluster ID to reduce packet churn
-    const channel = supabase
-      .channel(`cluster:${GLOBAL_CLUSTER_ID}`)
-      .on('postgres_changes', { 
-        event: 'INSERT', 
-        schema: 'public', 
-        table: 'messages',
-        filter: `recipient_id=eq.${GLOBAL_CLUSTER_ID}` 
-      }, payload => {
-        setMessages(prev => [...prev, payload.new]);
-      })
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    const interval = setInterval(fetchMessages, 5000);
+    return () => clearInterval(interval);
   }, []);
+
+  const fetchMessages = async () => {
+    setLoading(true);
+    const data = await dataService.list('messages');
+    if (data) {
+      setMessages([...data].reverse());
+      setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
+    }
+    setLoading(false);
+  };
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
-
-  const fetchMessages = async (cursor = null) => {
-    if (cursor) setLoadingMore(true);
-    else setLoading(true);
-
-    let query = supabase
-      .from('messages')
-      .select('*')
-      .eq('recipient_id', GLOBAL_CLUSTER_ID)
-      .order('created_at', { ascending: false })
-      .limit(30);
-
-    if (cursor) {
-      query = query.lt('created_at', cursor);
-    }
-
-    const { data } = await query;
-
-    if (data) {
-      const sorted = [...data].reverse();
-      if (cursor) {
-        setMessages(prev => [...sorted, ...prev]);
-        setHasMore(data.length === 30);
-      } else {
-        setMessages(sorted);
-        setHasMore(data.length === 30);
-        setTimeout(() => messagesEndRef.current?.scrollIntoView(), 100);
-      }
-    }
-    
-    setLoading(false);
-    setLoadingMore(false);
-  };
-
-  const handleScroll = (e) => {
-    if (e.target.scrollTop === 0 && hasMore && !loadingMore) {
-      const oldestMessage = messages[0];
-      if (oldestMessage) {
-        fetchMessages(oldestMessage.created_at);
-      }
-    }
-  };
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
 
     const msg = {
-      sender_id: user.id,
-      recipient_id: '00000000-0000-0000-0000-000000000000', // System Broadcast
+      user_id: user.id,
+      from: user.full_name,
       content: newMessage,
     };
 
-    const { error } = await supabase.from('messages').insert([msg]);
-    if (!error) setNewMessage('');
+    await dataService.create('messages', msg);
+    setNewMessage('');
+    fetchMessages();
   };
 
   return (

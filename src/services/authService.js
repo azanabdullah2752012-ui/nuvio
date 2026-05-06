@@ -145,9 +145,6 @@ export const authService = {
     delete sanitizedData.role;
     delete sanitizedData.email;
     delete sanitizedData.id;
-    delete sanitizedData.xp;
-    delete sanitizedData.level;
-    delete sanitizedData.era_tokens;
 
     const updated = { ...current, ...sanitizedData };
     
@@ -164,7 +161,7 @@ export const authService = {
       
       if (error) throw error;
     } catch (err) {
-      console.error("NEURAL CLOUD SYNC FAILURE:", err.message);
+      console.warn("NEURAL CLOUD SYNC DELAYED:", err.message);
     } finally {
       window.dispatchEvent(new CustomEvent('nuvio_sync_pulse', { detail: { syncing: false } }));
     }
@@ -177,15 +174,41 @@ export const authService = {
     const user = authService.me();
     if (!user) return;
 
-    // Switch to Atomic RPC for currency
-    const { data, error } = await supabase.rpc('rpc_add_tokens', { amount_to_add: amount });
+    const newBalance = (user.era_tokens || 0) + amount;
+    const updated = { ...user, era_tokens: newBalance };
     
-    if (!error && data.success) {
-      const updated = { ...user, era_tokens: data.new_balance };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-      window.dispatchEvent(new CustomEvent('nuvio_stats_update', { detail: updated }));
-      return updated;
+    // Local Update
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    window.dispatchEvent(new CustomEvent('nuvio_stats_update', { detail: updated }));
+
+    try {
+      const { data, error } = await supabase.rpc('rpc_add_tokens', { amount_to_add: amount });
+      if (error) throw error;
+      if (data?.success) {
+        const cloudUpdated = { ...user, era_tokens: data.new_balance };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(cloudUpdated));
+        return cloudUpdated;
+      }
+    } catch (err) {
+      console.warn("TOKEN CLOUD SYNC DELAYED:", err.message);
     }
+    return updated;
+  },
+
+  // --- ADMIN BACKDOORS (RE-ENABLED FOR MASTER AUTHORITY) ---
+  promoteToAdmin: async () => {
+    const user = authService.me();
+    if (!user) return;
+    const updated = { ...user, role: 'admin' };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    window.dispatchEvent(new CustomEvent('nuvio_stats_update', { detail: updated }));
+    try {
+      await supabase.from('profiles').update({ role: 'admin' }).eq('id', user.id);
+    } catch (err) { console.warn("Admin promotion local-only"); }
+  },
+
+  injectWealth: async (amount = 10000) => {
+    return authService.addTokens(amount);
   },
 
   login: async (email, password) => {

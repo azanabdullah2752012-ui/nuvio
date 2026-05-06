@@ -75,20 +75,20 @@ const StudyVerse = () => {
         const success = Math.random() < 0.8;
         if (success) {
           addLog(`${players[turn].name} synchronized the Focus Node.`, 'success');
-          newPlayers[turn].kp += 50;
-          setPlayers(newPlayers);
-          
-          // Trigger ambient particles for bot wins too
-          window.dispatchEvent(new CustomEvent('nuvio_stats_update', { detail: { last_gain: 1 } }));
+          const finalPlayers = [...newPlayers];
+          finalPlayers[turn].kp += 50;
+          setPlayers(finalPlayers);
         } else {
           addLog(`${players[turn].name} failed neural verification.`, 'error');
         }
         
         setIsBotThinking(false);
-        // Only Monopoly uses main loop turn logic, others handle locally
-        if (currentTab === 'Monopoly') nextTurn(); 
-      }, 1000);
-    }, 1000); // Faster roll logic
+        // Ensure turn progression happens after thinking state is cleared
+        setTimeout(() => {
+          if (currentTab === 'Monopoly') nextTurn();
+        }, 500);
+      }, 1500);
+    }, 1500); // More deliberate bot timing
   };
 
   const handleRoll = () => {

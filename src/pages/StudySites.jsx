@@ -20,37 +20,42 @@ const StudySites = () => {
 
   const fetchSites = async () => {
     setLoading(true);
-    const { data } = await supabase
-      .from('study_sites')
-      .select('*')
-      .order('created_at', { ascending: false });
+    const data = await dataService.list('study_sites');
     
-    if (data) setSites(data);
+    if (data && data.length > 0) {
+      setSites(data);
+    } else {
+      // Seed default sites
+      const defaults = [
+        { id: 'd1', title: 'Google Scholar', url: 'https://scholar.google.com', category: 'General' },
+        { id: 'd2', title: 'Khan Academy', url: 'https://www.khanacademy.org', category: 'General' },
+        { id: 'd3', title: 'Wolfram Alpha', url: 'https://www.wolframalpha.com', category: 'Math' },
+        { id: 'd4', title: 'MDN Web Docs', url: 'https://developer.mozilla.org', category: 'Dev' },
+      ];
+      setSites(defaults);
+      // Persist defaults locally
+      defaults.forEach(d => dataService.create('study_sites', d));
+    }
     setLoading(false);
   };
 
   const addSite = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    const user = authService.me();
-
     const newSite = {
-      user_id: user.id,
       title: formData.get('title'),
       url: formData.get('url'),
       category: formData.get('category')
     };
 
-    const { data, error } = await supabase.from('study_sites').insert([newSite]).select();
-    if (data) {
-      setSites([data[0], ...sites]);
-      setShowAdd(false);
-    }
+    const saved = await dataService.create('study_sites', newSite);
+    setSites([saved, ...sites]);
+    setShowAdd(false);
   };
 
   const deleteSite = async (id) => {
-    const { error } = await supabase.from('study_sites').delete().eq('id', id);
-    if (!error) setSites(sites.filter(s => s.id !== id));
+    await dataService.delete('study_sites', id);
+    setSites(sites.filter(s => s.id !== id));
   };
 
   const categories = ['All', 'General', 'Math', 'Dev', 'Science'];
