@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { authService } from '../services/authService';
+import { dataService } from '../services/dataService';
 import { supabase } from '../lib/supabase';
 
 const Shop = () => {

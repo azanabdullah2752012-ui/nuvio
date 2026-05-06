@@ -18,55 +18,30 @@ const LearningGroups = () => {
   const PAGE_SIZE = 9;
 
   useEffect(() => {
-    fetchPeers(0);
+    fetchPeers();
   }, []);
 
-  const fetchPeers = async (pageNum = 0) => {
-    if (pageNum === 0) setLoading(true);
-    else setLoadingMore(true);
-
-    const from = pageNum * PAGE_SIZE;
-    const to = from + PAGE_SIZE - 1;
-
-    // 1. Fetch sharded cluster list with performance range
-    const { data: clusters } = await supabase
-      .from('groups')
-      .select('*')
-      .order('member_count', { ascending: false })
-      .range(from, to);
-    
-    // 2. Fetch my memberships (initial sync only)
-    let joinedIds = new Set();
-    if (pageNum === 0) {
-      const { data: myMemberships } = await supabase
-        .from('group_memberships')
-        .select('group_id')
-        .eq('user_id', authService.me().id);
-      joinedIds = new Set(myMemberships?.map(m => m.group_id) || []);
-    }
-
-    if (clusters && clusters.length > 0) {
-      const newPeers = clusters.map(c => ({
-        ...c,
-        joined: pageNum === 0 ? joinedIds.has(c.id) : false
-      }));
-      
-      setPeers(prev => pageNum === 0 ? newPeers : [...prev, ...newPeers]);
-      setHasMore(clusters.length === PAGE_SIZE);
-      setPage(pageNum);
-    } else if (pageNum === 0) {
-      // Fallback: Individual Nodes
-      const { data: profiles } = await supabase
+  const fetchPeers = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .neq('id', authService.me().id)
-        .limit(10);
-      setPeers(profiles || []);
-      setHasMore(false);
+        .neq('id', authService.me()?.id)
+        .order('xp', { ascending: false })
+        .limit(20);
+      
+      if (data) {
+        setPeers(data);
+      } else {
+        // Local Fallback (Simulated peers for UI testing if cloud is empty)
+        setPeers([]);
+      }
+    } catch (err) {
+      console.warn("Social sync interrupted.");
+      setPeers([]);
     }
-    
     setLoading(false);
-    setLoadingMore(false);
   };
 
   const joinGroup = async (groupId) => {

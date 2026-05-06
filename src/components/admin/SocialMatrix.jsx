@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { MessageSquare, Trash2, ShieldOff, Send, Activity, UserX, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../../lib/supabase';
+import { dataService } from '../../services/dataService';
 import { notificationService } from '../../services/notificationService';
 
 const SocialMatrix = () => {
@@ -49,16 +50,17 @@ const SocialMatrix = () => {
     e.preventDefault();
     if (!broadcast.trim()) return;
 
-    const { error } = await supabase.from('messages').insert([{
-      sender_id: (await supabase.auth.getUser()).data.user.id,
+    const user = authService.me();
+    const newBroadcast = {
+      sender_id: user.id,
       recipient_id: '00000000-0000-0000-0000-000000000000', // System Broadcast
       content: `[DIVINE BROADCAST] ${broadcast}`
-    }]);
+    };
 
-    if (!error) {
-      setBroadcast('');
-      notificationService.send("Broadcast Dispatched", "System message synced to all nodes.", "success");
-    }
+    await dataService.create('messages', newBroadcast);
+    setBroadcast('');
+    notificationService.send("Broadcast Dispatched", "System message synced to all nodes.", "success");
+    fetchLatest();
   };
 
   return (
