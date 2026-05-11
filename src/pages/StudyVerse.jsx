@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { xpService } from '../services/xpService';
 import { notificationService } from '../services/notificationService';
 import { gameService } from '../services/gameService';
+import { authService } from '../services/authService';
 
 // --- GAME COMPONENTS ---
 import EduLudo from '../components/studyverse/EduLudo';

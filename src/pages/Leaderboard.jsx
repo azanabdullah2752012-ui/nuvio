@@ -13,9 +13,11 @@ const Leaderboard = () => {
   const [peers, setPeers] = useState([]);
   const [filter, setFilter] = useState('global');
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const fetchLeaderboard = async () => {
     try {
+      setLoading(true);
       let query = supabase.from('profiles').select('*');
       
       if (filter === 'global') {
@@ -31,7 +33,7 @@ const Leaderboard = () => {
       
       if (error) throw error;
       
-      const formatted = data.map(p => ({
+      const formatted = (data || []).map(p => ({
         ...p,
         isMe: p.id === user?.id
       }));
@@ -41,12 +43,23 @@ const Leaderboard = () => {
       console.error("Leaderboard Sync Failure:", err);
       setError("Unable to reach the Cloud Matrix. Competitive data is currently unavailable.");
       setPeers([]);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchLeaderboard();
   }, [filter, user?.id]);
+
+  if (loading && peers.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+        <div className="w-12 h-12 border-4 border-nuvio-purple-500/20 border-t-nuvio-purple-500 rounded-full animate-spin" />
+        <div className="text-[10px] font-black text-text-muted uppercase tracking-[0.3em]">Synchronizing Arena...</div>
+      </div>
+    );
+  }
 
   const top3 = peers.slice(0, 3);
   const others = peers.slice(3);

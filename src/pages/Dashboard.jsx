@@ -48,12 +48,28 @@ const Dashboard = () => {
     setLoading(true);
     try {
       const currentUser = authService.me();
-      const [tasks, decks, topPeers, history] = await Promise.all([
+      const [tasks, decks, history] = await Promise.all([
         dataService.list('tasks'),
         dataService.list('decks'),
-        supabase.from('profiles').select('full_name, level, xp').neq('id', currentUser.id).order('level', { ascending: false }).limit(4),
         xpService.getHistory()
       ]);
+
+      if (currentUser?.id) {
+        const { data: topPeers } = await supabase
+          .from('profiles')
+          .select('full_name, level, xp')
+          .neq('id', currentUser.id)
+          .order('level', { ascending: false })
+          .limit(4);
+
+        if (topPeers) {
+          setPeers(topPeers.map(p => ({
+            name: p.full_name,
+            action: `reached Level ${p.level}`,
+            time: 'Active'
+          })));
+        }
+      }
 
       setCounts({
         tasks: tasks.filter(t => !t.completed).length,

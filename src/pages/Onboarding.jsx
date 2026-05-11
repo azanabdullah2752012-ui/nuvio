@@ -63,7 +63,7 @@ const Onboarding = () => {
             <label className="nv-label px-1">Display Name</label>
             <input 
               type="text" 
-              placeholder="e.g. ShadowMaster"
+              placeholder="e.g. Scholar_01"
               className="w-full bg-white/5 border border-border rounded-[16px] p-4 text-text-primary focus:border-nuvio-purple-500 outline-none transition-colors"
               value={formData.name}
               onChange={(e) => setFormData({...formData, name: e.target.value})}

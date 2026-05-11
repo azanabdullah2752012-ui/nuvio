@@ -39,13 +39,13 @@ const Landing = () => {
     }
   };
 
-  const handleCredentialLogin = (e) => {
+  const handleCredentialLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
     
-    setTimeout(() => {
-      const user = authService.login(email, password);
+    try {
+      const user = await authService.login(email, password);
       if (user.role === 'admin') {
         navigate('/admin');
       } else if (user.onboarding_completed) {
@@ -53,8 +53,11 @@ const Landing = () => {
       } else {
         navigate('/onboarding');
       }
+    } catch (err) {
+      setError(err.message || 'Authentication failed. Check your neural key.');
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   return (
