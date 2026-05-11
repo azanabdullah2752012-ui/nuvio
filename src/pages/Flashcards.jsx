@@ -247,7 +247,7 @@ const Flashcards = () => {
                 style={{ transformStyle: 'preserve-3d' }}
               >
                 {/* Front */}
-                <div className="absolute inset-0 backface-hidden bg-[#0a0a0f] border-4 border-white/5 rounded-[40px] p-16 flex flex-col items-center justify-center text-center shadow-2xl overflow-hidden group-hover:border-nuvio-blue/30 transition-colors">
+                <div className="absolute inset-0 bg-[#0a0a0f] border-4 border-white/5 rounded-[40px] p-16 flex flex-col items-center justify-center text-center shadow-2xl overflow-hidden group-hover:border-nuvio-blue/30 transition-colors [backface-visibility:hidden]">
                   <div className="absolute inset-0 bg-gradient-to-br from-nuvio-blue/5 to-transparent pointer-events-none" />
                   <div className="absolute top-8 left-1/2 -translate-x-1/2 px-6 py-2 bg-white/5 border border-white/10 text-[10px] font-black text-white/50 uppercase tracking-[0.3em] rounded-xl flex items-center gap-3">
                     <Orbit className="w-4 h-4 animate-spin-slow" /> Front
@@ -263,8 +263,7 @@ const Flashcards = () => {
 
                 {/* Back */}
                 <div 
-                  className="absolute inset-0 backface-hidden bg-[#0d1218] border-4 border-nuvio-green/30 rounded-[40px] p-16 flex flex-col items-center justify-center text-center shadow-[0_0_80px_rgba(74,222,128,0.15)] overflow-hidden"
-                  style={{ transform: 'rotateY(180deg)' }}
+                  className="absolute inset-0 bg-[#0d1218] border-4 border-nuvio-green/30 rounded-[40px] p-16 flex flex-col items-center justify-center text-center shadow-[0_0_80px_rgba(74,222,128,0.15)] overflow-hidden [backface-visibility:hidden] [transform:rotateY(180deg)]"
                 >
                   <div className="absolute inset-0 bg-gradient-to-tr from-nuvio-green/10 to-transparent pointer-events-none" />
                   <div className="absolute top-8 left-1/2 -translate-x-1/2 px-6 py-2 bg-nuvio-green/10 border border-nuvio-green/20 text-[10px] font-black text-nuvio-green uppercase tracking-[0.3em] rounded-xl flex items-center gap-3">
