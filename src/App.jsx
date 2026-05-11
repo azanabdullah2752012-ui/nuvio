@@ -1,40 +1,46 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { HashRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 
-// Layout
+// Layout & Core
 import Layout from './components/layout/Layout';
-
-// Auth
-import LandingPage from './pages/Landing';
-import Onboarding from './pages/Onboarding';
-
-// Main Pages
-import Dashboard from './pages/Dashboard';
-import Flashcards from './pages/Flashcards';
-import Homework from './pages/Homework';
-import AIChat from './pages/AIChat';
-import Profile from './pages/Profile';
-import Leaderboard from './pages/Leaderboard';
-import EssayForge from './pages/EssayForge';
-import Admin from './pages/Admin';
-
-// Restored Functional Pages
-import Calendar from './pages/Calendar';
-import FocusTimer from './pages/FocusTimer';
-import KnowledgeMap from './pages/KnowledgeMap';
-import BossRaid from './pages/BossRaid';
-import LearningGroups from './pages/LearningGroups';
-import Messages from './pages/Messages';
-import Shop from './pages/Shop';
-import Analytics from './pages/Analytics';
-import StudyVerse from './pages/StudyVerse';
-import StudySites from './pages/StudySites';
-import TriviaGame from './pages/TriviaGame';
 import NeuralComms from './components/NeuralComms';
 import InteractionSystem from './components/InteractionSystem';
 
+// Auth (Loaded immediately for UX)
+import LandingPage from './pages/Landing';
+import Onboarding from './pages/Onboarding';
+
+// Lazy Loaded Pages (Chunked for performance)
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const Flashcards = lazy(() => import('./pages/Flashcards'));
+const Homework = lazy(() => import('./pages/Homework'));
+const AIChat = lazy(() => import('./pages/AIChat'));
+const Profile = lazy(() => import('./pages/Profile'));
+const Leaderboard = lazy(() => import('./pages/Leaderboard'));
+const EssayForge = lazy(() => import('./pages/EssayForge'));
+const Admin = lazy(() => import('./pages/Admin'));
+const Calendar = lazy(() => import('./pages/Calendar'));
+const FocusTimer = lazy(() => import('./pages/FocusTimer'));
+const KnowledgeMap = lazy(() => import('./pages/KnowledgeMap'));
+const BossRaid = lazy(() => import('./pages/BossRaid'));
+const LearningGroups = lazy(() => import('./pages/LearningGroups'));
+const Messages = lazy(() => import('./pages/Messages'));
+const Shop = lazy(() => import('./pages/Shop'));
+const Analytics = lazy(() => import('./pages/Analytics'));
+const StudyVerse = lazy(() => import('./pages/StudyVerse'));
+const StudySites = lazy(() => import('./pages/StudySites'));
+const TriviaGame = lazy(() => import('./pages/TriviaGame'));
+
 import { authService } from './services/authService';
 import { supabase } from './lib/supabase';
+
+// Loading Spinner for Chunks
+const NeuralLoader = () => (
+  <div className="min-h-screen bg-background-base flex flex-col items-center justify-center gap-4">
+    <div className="w-10 h-10 border-4 border-nuvio-purple-500/20 border-t-nuvio-purple-500 rounded-full animate-spin" />
+    <div className="text-[10px] font-black text-text-muted uppercase tracking-[0.3em]">Downloading Neural Packet...</div>
+  </div>
+);
 
 
 // Robust Route Guard for Admin
@@ -135,56 +141,58 @@ function App() {
       <InteractionSystem />
       <AuthOrchestrator>
         <RetentionEngine>
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/onboarding" element={<Onboarding />} />
+          <Suspense fallback={<NeuralLoader />}>
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/onboarding" element={<Onboarding />} />
 
-            {/* Private Routes (Wrapped in Layout) */}
-            <Route element={<Layout />}>
-              <Route path="/dashboard" element={<Dashboard />} />
-              
-              {/* Study Tools */}
-              <Route path="/flashcards" element={<Flashcards />} />
-              <Route path="/homework" element={<Homework />} />
-              <Route path="/calendar" element={<Calendar />} />
-              <Route path="/focus-timer" element={<FocusTimer />} />
-              <Route path="/knowledge-map" element={<KnowledgeMap />} />
-              
-              {/* AI Suite */}
-              <Route path="/nova-ai" element={<AIChat />} />
-              <Route path="/ai-chat" element={<Navigate to="/nova-ai" replace />} />
-              <Route path="/essay-forge" element={<EssayForge />} />
-              
-              {/* Study Verse */}
-              <Route path="/boss-raid" element={<BossRaid />} />
-              
-              {/* Social Hub */}
-              <Route path="/learning-groups" element={<LearningGroups />} />
-              <Route path="/leaderboard" element={<Leaderboard />} />
-              <Route path="/messages" element={<Messages />} />
-              
-              {/* Rewards & Analytics */}
-              <Route path="/shop" element={<Shop />} />
-              <Route path="/analytics" element={<Analytics />} />
-              <Route path="/study-verse" element={<StudyVerse />} />
-              <Route path="/trivia-game" element={<TriviaGame />} />
-              <Route path="/study-sites" element={<StudySites />} />
+              {/* Private Routes (Wrapped in Layout) */}
+              <Route element={<Layout />}>
+                <Route path="/dashboard" element={<Dashboard />} />
+                
+                {/* Study Tools */}
+                <Route path="/flashcards" element={<Flashcards />} />
+                <Route path="/homework" element={<Homework />} />
+                <Route path="/calendar" element={<Calendar />} />
+                <Route path="/focus-timer" element={<FocusTimer />} />
+                <Route path="/knowledge-map" element={<KnowledgeMap />} />
+                
+                {/* AI Suite */}
+                <Route path="/nova-ai" element={<AIChat />} />
+                <Route path="/ai-chat" element={<Navigate to="/nova-ai" replace />} />
+                <Route path="/essay-forge" element={<EssayForge />} />
+                
+                {/* Study Verse */}
+                <Route path="/boss-raid" element={<BossRaid />} />
+                
+                {/* Social Hub */}
+                <Route path="/learning-groups" element={<LearningGroups />} />
+                <Route path="/leaderboard" element={<Leaderboard />} />
+                <Route path="/messages" element={<Messages />} />
+                
+                {/* Rewards & Analytics */}
+                <Route path="/shop" element={<Shop />} />
+                <Route path="/analytics" element={<Analytics />} />
+                <Route path="/study-verse" element={<StudyVerse />} />
+                <Route path="/trivia-game" element={<TriviaGame />} />
+                <Route path="/study-sites" element={<StudySites />} />
 
-              {/* Account */}
-              <Route path="/profile" element={<Profile />} />
-              
-              {/* Admin */}
-              <Route path="/admin" element={
-                <AdminGuard>
-                  <Admin />
-                </AdminGuard>
-              } />
-            </Route>
+                {/* Account */}
+                <Route path="/profile" element={<Profile />} />
+                
+                {/* Admin */}
+                <Route path="/admin" element={
+                  <AdminGuard>
+                    <Admin />
+                  </AdminGuard>
+                } />
+              </Route>
 
-            {/* Catch All */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
+              {/* Catch All */}
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </Suspense>
         </RetentionEngine>
       </AuthOrchestrator>
     </HashRouter>

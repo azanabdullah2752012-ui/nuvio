@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Zap, Heart, Star, Cloud, MousePointer2 } from 'lucide-react';
+import { xpService } from '../services/xpService';
 
 import MiniProfileCard from './MiniProfileCard';
 
@@ -97,9 +98,7 @@ const InteractionSystem = () => {
         addFloatingReaction(e.detail.emoji, e.detail.x, e.detail.y);
         return;
       }
-      import('../services/xpService').then(({ xpService }) => {
-        xpService.awardXp(10, 'Neural Reflex');
-      });
+      xpService.awardXp(10, 'Neural Reflex');
     };
 
     const handleProfileTrigger = (e) => {
