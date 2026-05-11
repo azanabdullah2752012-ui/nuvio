@@ -15,6 +15,7 @@ const SubjectLibrary = () => {
   const { subject, grade } = location.state || { subject: 'Mathematics', grade: '9' };
   
   const [activeTab, setActiveTab] = useState('chapters');
+  const [selectedChapter, setSelectedChapter] = useState(null);
   const subjectData = CURRICULUM_DATA[grade]?.[subject] || { chapters: [] };
 
   const handleInjectCards = async (chapter) => {
@@ -97,10 +98,10 @@ const SubjectLibrary = () => {
                     </div>
                     <div className="flex items-center gap-3">
                        <button 
-                         onClick={() => handleInjectCards(chapter)}
-                         className="px-6 py-4 bg-slate-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-600 transition-colors flex items-center gap-3"
+                         onClick={() => setSelectedChapter(chapter)}
+                         className="px-10 py-4 bg-slate-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-600 transition-colors flex items-center gap-3 shadow-lg shadow-slate-200"
                        >
-                         Study Cards <ChevronRight className="w-4 h-4" />
+                         Study <ChevronRight className="w-4 h-4" />
                        </button>
                     </div>
                   </div>
@@ -145,7 +146,7 @@ const SubjectLibrary = () => {
                      </div>
                      <h4 className="text-lg font-black text-slate-900 uppercase tracking-tight">{card.front}</h4>
                      <div className="pt-4 border-t border-slate-100 text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center justify-between">
-                        <span>Click Study Cards to add</span>
+                        <span>Click STUDY on chapter to practice</span>
                         <Star className="w-4 h-4" />
                      </div>
                   </div>
@@ -155,6 +156,102 @@ const SubjectLibrary = () => {
           </AnimatePresence>
         </div>
       </div>
+
+      {/* 📖 STUDY MODAL */}
+      <AnimatePresence>
+        {selectedChapter && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedChapter(null)}
+              className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+            />
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              className="bg-white w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-[40px] shadow-2xl relative z-10 flex flex-col"
+            >
+              <div className="p-12 space-y-10">
+                <div className="flex items-start justify-between gap-8">
+                  <div className="space-y-3">
+                    <span className="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em]">Deep Learning Module</span>
+                    <h2 className="text-4xl font-black text-slate-900 uppercase tracking-tighter leading-none">{selectedChapter.title}</h2>
+                  </div>
+                  <button 
+                    onClick={() => setSelectedChapter(null)}
+                    className="w-12 h-12 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-900 transition-colors"
+                  >
+                    <ArrowLeft className="w-5 h-5 rotate-90" />
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+                  <div className="md:col-span-2 space-y-10">
+                    {/* Summary */}
+                    <section className="space-y-4">
+                      <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-3">Chapter Summary</h4>
+                      <p className="text-slate-600 font-medium leading-relaxed italic text-lg">
+                        "{selectedChapter.summary}"
+                      </p>
+                    </section>
+
+                    {/* Key Ideas */}
+                    <section className="space-y-4">
+                      <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-3">Key Concepts</h4>
+                      <div className="grid grid-cols-1 gap-4">
+                        {selectedChapter.keyIdeas?.map((idea, idx) => (
+                          <div key={idx} className="flex gap-4 p-5 bg-blue-50/50 rounded-2xl border border-blue-100/50">
+                            <div className="w-6 h-6 rounded-lg bg-blue-600 flex items-center justify-center text-white text-[10px] font-black shrink-0">{idx + 1}</div>
+                            <p className="text-slate-700 font-semibold text-sm leading-snug">{idea}</p>
+                          </div>
+                        )) || <p className="text-slate-400 italic text-sm">Key ideas are being synced from the Neural Matrix...</p>}
+                      </div>
+                    </section>
+                  </div>
+
+                  <div className="space-y-10">
+                    {/* Formulas (if any) */}
+                    {selectedChapter.formulas && (
+                      <section className="space-y-4">
+                        <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-3">Formula Bank</h4>
+                        <div className="space-y-3">
+                          {selectedChapter.formulas.map((formula, idx) => (
+                            <div key={idx} className="p-5 bg-slate-900 text-white rounded-2xl border border-slate-800 shadow-inner">
+                               <p className="text-center font-mono text-sm tracking-tight">{formula}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </section>
+                    )}
+
+                    {/* Practice CTA */}
+                    <section className="p-8 bg-blue-600 rounded-[32px] text-white space-y-6">
+                      <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center">
+                        <Zap className="w-6 h-6 fill-current" />
+                      </div>
+                      <div className="space-y-2">
+                        <h5 className="text-lg font-black uppercase tracking-tight">Active Recall</h5>
+                        <p className="text-blue-100 text-[10px] font-bold uppercase tracking-wider leading-relaxed">
+                          Master this chapter using the official NCERT flashcard deck.
+                        </p>
+                      </div>
+                      <button 
+                        onClick={() => handleInjectCards(selectedChapter)}
+                        className="w-full py-4 bg-white text-blue-600 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 transition-colors flex items-center justify-center gap-2"
+                      >
+                        Practice Flashcards <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </section>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

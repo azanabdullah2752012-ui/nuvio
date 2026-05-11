@@ -16,6 +16,15 @@ export const CURRICULUM_DATA = {
             { "q": "What is the x-coordinate of a point on the y-axis?", "a": "The x-coordinate of any point on the y-axis is always 0." },
             { "q": "Does point Q(y, x) ever coincide with P(x, y)?", "a": "Yes, if and only if x = y." },
             { "q": "Who was the first to solve algebraic problems using geometry?", "a": "Ömar Khayyām (c. 1100 CE) interpreted algebraic problems in terms of coordinates in the plane." }
+          ],
+          "keyIdeas": [
+            "The Cartesian Plane is divided into four quadrants by the x and y axes.",
+            "Any point is represented as (x, y) where x is the abscissa and y is the ordinate.",
+            "The origin (0, 0) is the starting point for all measurements.",
+            "Points on the x-axis have y=0; points on the y-axis have x=0."
+          ],
+          "formulas": [
+            "Distance Formula: d = √((x₂ - x₁)² + (y₂ - y₁)²) - used for shift analysis."
           ]
         },
         {
@@ -31,6 +40,16 @@ export const CURRICULUM_DATA = {
             { "q": "What is the degree of a constant polynomial like 8?", "a": "The degree is 0, as it can be written as 8x⁰." },
             { "q": "How is linear growth represented on a graph?", "a": "By a straight line with a positive slope." },
             { "q": "Who proposed the identity a² = (a+b)(a-b) + b²?", "a": "Śhrīdharāchārya (750 CE) as a method to quickly compute squares." }
+          ],
+          "keyIdeas": [
+            "A polynomial's degree is the highest power of its variable.",
+            "Linear polynomials have a degree of 1 (e.g., 3x + 5).",
+            "The zeroes of a polynomial are the values that make p(x) = 0.",
+            "Graphically, the zeroes are the x-intercepts of the function."
+          ],
+          "formulas": [
+            "General Form: p(x) = ax + b",
+            "Zero of p(x): x = -b/a"
           ]
         },
         {
@@ -46,6 +65,17 @@ export const CURRICULUM_DATA = {
             { "q": "Is √2 a rational number?", "a": "No, it is irrational. It cannot be expressed as a ratio p/q." },
             { "q": "What is Madhava's Infinite Series?", "a": "A series that unlocks the value of Pi (π) using an infinite sum of fractions." },
             { "q": "What is the absolute value of a rational number?", "a": "It represents its distance from 0 on the number line, always non-negative." }
+          ],
+          "keyIdeas": [
+            "Real numbers consist of Rational and Irrational numbers.",
+            "Rational numbers can be written as p/q (q ≠ 0) with terminating/repeating decimals.",
+            "Irrational numbers have non-terminating, non-repeating decimals.",
+            "Every real number corresponds to a unique point on the number line."
+          ],
+          "formulas": [
+            "Law of Exponents: a^m × a^n = a^(m+n)",
+            "Law of Exponents: (a^m)^n = a^(mn)",
+            "Rationalisation: To remove roots from denominator."
           ]
         },
         {
@@ -60,6 +90,17 @@ export const CURRICULUM_DATA = {
           "qna": [
             { "q": "How can you visualize (a+b)² geometrically?", "a": "As a large square made of two smaller squares (a², b²) and two rectangles (ab)." },
             { "q": "What is the identity for x³ + y³ + z³ - 3xyz?", "a": "(x + y + z)(x² + y² + z² - xy - xz - yz)" }
+          ],
+          "keyIdeas": [
+            "Algebraic identities are true for all variable values.",
+            "Factoring is the reverse of expanding an identity.",
+            "Binomial expansions are used to solve complex multiplications quickly."
+          ],
+          "formulas": [
+            "(a + b)² = a² + 2ab + b²",
+            "(a - b)² = a² - 2ab + b²",
+            "(a + b)(a - b) = a² - b²",
+            "(x + a)(x + b) = x² + (a + b)x + ab"
           ]
         },
         {
@@ -73,6 +114,16 @@ export const CURRICULUM_DATA = {
           "qna": [
             { "q": "What is the plural of axis?", "a": "Axes." },
             { "q": "What is the distance from the centre to any point on the circle called?", "a": "The radius." }
+          ],
+          "keyIdeas": [
+            "Equal chords of a circle subtend equal angles at the centre.",
+            "The perpendicular from the centre of a circle to a chord bisects the chord.",
+            "Chords equidistant from the centre of a circle are equal in length.",
+            "Angles in the same segment of a circle are equal."
+          ],
+          "formulas": [
+            "Circumference = 2πr",
+            "Area = πr²"
           ]
         },
         {
@@ -84,6 +135,15 @@ export const CURRICULUM_DATA = {
           ],
           "qna": [
             { "q": "What is a point in Euclidean terms?", "a": "That which has no part." }
+          ],
+          "keyIdeas": [
+            "Geometry is based on unproven truths called Axioms and Postulates.",
+            "Axioms apply to all branches of math; Postulates are specific to geometry.",
+            "Things which are equal to the same thing are equal to one another."
+          ],
+          "formulas": [
+            "Postulate 1: A straight line joins any two points.",
+            "Postulate 4: All right angles are equal to one another."
           ]
         },
         {
@@ -95,6 +155,15 @@ export const CURRICULUM_DATA = {
           ],
           "qna": [
             { "q": "What happens when a transversal intersects two parallel lines?", "a": "Corresponding angles are equal, and alternate interior angles are equal." }
+          ],
+          "keyIdeas": [
+            "Two lines are parallel if they never meet, no matter how far extended.",
+            "When two lines intersect, vertically opposite angles are equal.",
+            "The sum of angles of a triangle is always 180°."
+          ],
+          "formulas": [
+            "Supplementary Sum: ∠A + ∠B = 180°",
+            "Complementary Sum: ∠A + ∠B = 90°"
           ]
         },
         {
@@ -106,6 +175,15 @@ export const CURRICULUM_DATA = {
           ],
           "qna": [
             { "q": "What is the Angle Sum Property of a triangle?", "a": "The sum of the angles of a triangle is 180°." }
+          ],
+          "keyIdeas": [
+            "Congruent triangles are identical in shape and size.",
+            "Quadrilaterals have four sides, four angles, and four vertices.",
+            "In a parallelogram, diagonals bisect each other."
+          ],
+          "formulas": [
+            "Congruence Rules: SAS, ASA, SSS, RHS",
+            "Sum of angles in Quadrilateral = 360°"
           ]
         },
         {
@@ -141,6 +219,10 @@ export const CURRICULUM_DATA = {
           ],
           "qna": [
             { "q": "What is the difference between primary and secondary data?", "a": "Primary data is collected directly by the researcher; secondary data is retrieved from existing records." }
+          ],
+          "formulas": [
+            "Mean = Σx / n",
+            "Median = (Middle value of sorted set)"
           ]
         },
         {
@@ -171,6 +253,12 @@ export const CURRICULUM_DATA = {
           "qna": [
             { "q": "What happened in the airplane fuel miscalculation incident?", "a": "A flight ran out of fuel because ground crew used density in pounds (lb) instead of kilograms (kg), showing why SI units are critical." },
             { "q": "What is the difference between a Law and a Theory?", "a": "A Law describes a regular pattern (like Newton's Laws), whereas a Theory provides an explanation of WHY patterns occur (like Atomic Theory)." }
+          ],
+          "keyIdeas": [
+            "Science is a process of wonder, observation, and measurement.",
+            "Units must be standardized (SI Units) to avoid errors in technology and trade.",
+            "Models are simplified representations used to understand complex phenomena.",
+            "Laws describe 'what' happens; Theories explain 'why' it happens."
           ]
         },
         {
@@ -187,6 +275,12 @@ export const CURRICULUM_DATA = {
             { "q": "What happens to a cell in a Hypertonic solution?", "a": "The solute concentration outside is higher than inside, causing the cell to lose water and shrink." },
             { "q": "Who proposed that 'all cells arise from pre-existing cells'?", "a": "Rudolf Virchow in 1855, expanding the Cell Theory." },
             { "q": "What is the role of the Golgi apparatus?", "a": "It acts as the cell's post office, modifying, sorting, and packaging proteins for transport." }
+          ],
+          "keyIdeas": [
+            "The cell is the basic structural and functional unit of life.",
+            "Plasma membrane is selectively permeable, controlling entry and exit.",
+            "Organelles like Mitochondria (energy) and Nucleus (DNA) have specific roles.",
+            "Plant cells have a cell wall and chloroplasts, which animal cells lack."
           ]
         },
         {
@@ -220,6 +314,17 @@ export const CURRICULUM_DATA = {
             { "q": "What does the slope of a position-time graph represent?", "a": "The magnitude of velocity (speed if moving in a straight line)." },
             { "q": "What does the area under a velocity-time graph represent?", "a": "The displacement of the object over that time interval." },
             { "q": "What was the 'Aryabhatiya' contribution to motion?", "a": "Established that speed is distance divided by time as early as the 5th century CE." }
+          ],
+          "keyIdeas": [
+            "Motion is relative to a reference point (Origin).",
+            "Scalar quantities have only magnitude (Distance, Speed).",
+            "Vector quantities have magnitude and direction (Displacement, Velocity).",
+            "Acceleration is the change in velocity over time."
+          ],
+          "formulas": [
+            "v = u + at",
+            "s = ut + ½at²",
+            "v² = u² + 2as"
           ]
         },
         {
@@ -258,6 +363,17 @@ export const CURRICULUM_DATA = {
             { "q": "What is 'Inertia'?", "a": "The inherent tendency of objects to resist any change in their state of rest or motion." },
             { "q": "How do airbags reduce injury in a car crash?", "a": "By increasing the time over which the velocity changes, thus reducing the magnitude of acceleration and the resulting force on the passenger." },
             { "q": "What happens if the net force on a moving object is zero?", "a": "The object continues to move with constant velocity in a straight line (Newton's 1st Law)." }
+          ],
+          "keyIdeas": [
+            "Force is a push or pull that changes an object's state of motion.",
+            "Inertia depends on mass: more mass means more inertia.",
+            "Momentum is conserved in a system unless external forces act.",
+            "Friction is a contact force that opposes relative motion."
+          ],
+          "formulas": [
+            "F = ma",
+            "p = mv",
+            "Rate of change of momentum = Net Force"
           ]
         },
         {
