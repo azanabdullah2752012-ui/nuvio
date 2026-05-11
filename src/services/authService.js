@@ -83,6 +83,7 @@ export const authService = {
           xp: 0,
           era_tokens: 500,
           role: isAdminEmail ? 'admin' : 'student',
+          grade_level: user.user_metadata?.grade_level || '9th',
           onboarding_completed: true
         };
 

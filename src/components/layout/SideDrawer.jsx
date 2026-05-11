@@ -26,7 +26,7 @@ const navSections = [
       { name: "Mission Control", path: "/homework", icon: ListChecks },
       { name: "Calendar", path: "/calendar", icon: Calendar },
       { name: "Focus Timer", path: "/focus-timer", icon: Timer },
-      { name: "Knowledge Map", path: "/knowledge-map", icon: Map },
+      { name: "CBSE Hub", path: "/curriculum", icon: BookOpen },
     ]
   },
   {

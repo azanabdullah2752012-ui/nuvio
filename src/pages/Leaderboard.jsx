@@ -12,6 +12,7 @@ const Leaderboard = () => {
   const [user, setUser] = useState(authService.me());
   const [peers, setPeers] = useState([]);
   const [filter, setFilter] = useState('global');
+  const [gradeFilter, setGradeFilter] = useState('All');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -20,6 +21,10 @@ const Leaderboard = () => {
       setLoading(true);
       let query = supabase.from('profiles').select('*');
       
+      if (gradeFilter !== 'All') {
+        query = query.eq('grade_level', gradeFilter);
+      }
+
       if (filter === 'global') {
         query = query.order('xp', { ascending: false });
       } else {
@@ -50,7 +55,7 @@ const Leaderboard = () => {
 
   useEffect(() => {
     fetchLeaderboard();
-  }, [filter, user?.id]);
+  }, [filter, gradeFilter, user?.id]);
 
   if (loading && peers.length === 0) {
     return (
@@ -71,16 +76,32 @@ const Leaderboard = () => {
           <h1 className="text-4xl font-black text-white uppercase tracking-tighter">Academic Arena</h1>
           <p className="text-text-muted font-bold uppercase text-[10px] tracking-widest mt-1 opacity-70">Real-time competitive ranking</p>
         </div>
-        <div className="flex bg-white/5 p-1.5 rounded-2xl border border-white/5">
-           {['global', 'weekly'].map(t => (
-             <button 
-               key={t}
-               onClick={() => setFilter(t)}
-               className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${filter === t ? 'bg-nuvio-purple-500 text-white shadow-lg' : 'text-text-muted hover:text-white'}`}
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex bg-white/5 p-1.5 rounded-2xl border border-white/5">
+             {['global', 'weekly'].map(t => (
+               <button 
+                 key={t}
+                 onClick={() => setFilter(t)}
+                 className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${filter === t ? 'bg-nuvio-purple-500 text-white shadow-lg' : 'text-text-muted hover:text-white'}`}
+               >
+                 {t}
+               </button>
+             ))}
+          </div>
+
+          <div className="flex items-center gap-3 bg-white/5 px-4 rounded-2xl border border-white/5">
+             <span className="text-[9px] font-black text-text-muted uppercase tracking-widest">Filter:</span>
+             <select 
+               value={gradeFilter}
+               onChange={(e) => setGradeFilter(e.target.value)}
+               className="bg-transparent text-[10px] font-black text-white uppercase tracking-widest outline-none border-none cursor-pointer"
              >
-               {t}
-             </button>
-           ))}
+               <option value="All">All Grades</option>
+               {['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th', '11th', '12th'].map(g => (
+                 <option key={g} value={g} className="bg-background-card">Class {g}</option>
+               ))}
+             </select>
+          </div>
         </div>
       </div>
 

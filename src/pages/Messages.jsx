@@ -64,6 +64,7 @@ const Messages = () => {
     const msg = {
       user_id: currentUser.id,
       from: currentUser.full_name,
+      grade_level: currentUser.grade_level || '9th',
       content: newMessage,
     };
 
@@ -113,9 +114,19 @@ const Messages = () => {
                 className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}
               >
                 {!isMe && (
-                  <span className="text-[9px] font-black text-text-muted uppercase tracking-widest mb-2 ml-4">
-                    {msg.from}
-                  </span>
+                  <div className="flex items-center gap-2 mb-2 ml-4">
+                    <span className="text-[9px] font-black text-nuvio-blue uppercase tracking-widest bg-nuvio-blue/10 px-2 py-0.5 rounded">
+                      Class {msg.grade_level || '9'}
+                    </span>
+                    <span className="text-[9px] font-black text-text-muted uppercase tracking-widest">
+                      {msg.from}
+                    </span>
+                  </div>
+                )}
+                {isMe && (
+                   <span className="text-[8px] font-black text-white/40 uppercase tracking-widest mb-2 mr-4">
+                     Class {user?.grade_level || '9'} • You
+                   </span>
                 )}
                 <div className={`
                   max-w-[70%] p-4 rounded-3xl relative

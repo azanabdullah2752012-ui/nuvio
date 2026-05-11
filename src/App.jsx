@@ -21,7 +21,8 @@ const EssayForge = lazy(() => import('./pages/EssayForge'));
 const Admin = lazy(() => import('./pages/Admin'));
 const Calendar = lazy(() => import('./pages/Calendar'));
 const FocusTimer = lazy(() => import('./pages/FocusTimer'));
-const KnowledgeMap = lazy(() => import('./pages/KnowledgeMap'));
+const CurriculumHub = lazy(() => import('./pages/CurriculumHub'));
+const SubjectLibrary = lazy(() => import('./pages/SubjectLibrary'));
 const BossRaid = lazy(() => import('./pages/BossRaid'));
 const LearningGroups = lazy(() => import('./pages/LearningGroups'));
 const Messages = lazy(() => import('./pages/Messages'));
@@ -156,7 +157,8 @@ function App() {
                 <Route path="/homework" element={<Homework />} />
                 <Route path="/calendar" element={<Calendar />} />
                 <Route path="/focus-timer" element={<FocusTimer />} />
-                <Route path="/knowledge-map" element={<KnowledgeMap />} />
+                <Route path="/curriculum" element={<CurriculumHub />} />
+                <Route path="/subject-library" element={<SubjectLibrary />} />
                 
                 {/* AI Suite */}
                 <Route path="/nova-ai" element={<AIChat />} />

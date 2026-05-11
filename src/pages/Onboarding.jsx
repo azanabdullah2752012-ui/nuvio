@@ -10,6 +10,7 @@ const Onboarding = () => {
   const [formData, setFormData] = useState({
     name: '',
     avatar: '⚡',
+    grade: '9th',
     pack: null
   });
   const navigate = useNavigate();
@@ -32,6 +33,7 @@ const Onboarding = () => {
       authService.updateMe({
         full_name: formData.name,
         avatar_emoji: formData.avatar,
+        grade_level: formData.grade,
         onboarding_completed: true,
         era_tokens: starterTokens,
         xp: starterXp,
@@ -56,7 +58,7 @@ const Onboarding = () => {
     },
     {
       title: "Who are you?",
-      subtitle: "Choose your display name and mascot.",
+      subtitle: "Choose your identity and academic level.",
       content: (
         <div className="space-y-6 py-6 w-full max-w-sm">
           <div className="space-y-2">
@@ -69,7 +71,23 @@ const Onboarding = () => {
               onChange={(e) => setFormData({...formData, name: e.target.value})}
             />
           </div>
+
           <div className="space-y-2">
+            <label className="nv-label px-1">Academic Grade</label>
+            <div className="grid grid-cols-4 gap-2">
+               {['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th', '11th', '12th'].map(grade => (
+                 <button
+                   key={grade}
+                   onClick={() => setFormData({...formData, grade})}
+                   className={`p-3 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all ${formData.grade === grade ? 'border-nuvio-blue bg-nuvio-blue/10 text-nuvio-blue' : 'border-border bg-white/5 text-text-muted'}`}
+                 >
+                   {grade}
+                 </button>
+               ))}
+            </div>
+          </div>
+
+          <div className="space-y-2 pt-4">
             <label className="nv-label px-1">Choose Mascot</label>
             <div className="grid grid-cols-4 gap-3">
               {['⚡', '🦊', '🦉', '🐲', '🧊', '🔥', '🌀', '💎'].map(emoji => (

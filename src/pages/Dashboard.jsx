@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   Zap, Trophy, Target, BookOpen, 
   ChevronRight, ArrowUpRight, Flame,
-  Clock, Star, Sparkles, Coins
+  Clock, Star, Sparkles, Coins, ArrowRight
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -156,6 +156,28 @@ const Dashboard = () => {
           </div>
         </div>
       </header>
+
+      {/* 🏛️ CBSE QUICK START / CONTINUE LEARNING */}
+      <div className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-[40px] p-10 text-white shadow-2xl relative overflow-hidden group">
+         <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl group-hover:scale-110 transition-transform duration-1000" />
+         <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="space-y-4 text-center md:text-left">
+               <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/20 rounded-full text-[9px] font-black uppercase tracking-widest backdrop-blur-md">
+                  <Clock className="w-3 h-3" /> System Synchronized
+               </div>
+               <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tight leading-tight">
+                  Ready to conquer <br /> <span className="text-blue-200">{user?.grade_level || '9th'} Grade?</span>
+               </h1>
+               <p className="text-blue-100 text-sm font-medium opacity-80 max-w-md">Your CBSE curriculum is live. Pick up exactly where you left off in your NCERT journey.</p>
+            </div>
+            <button 
+              onClick={() => navigate('/curriculum')}
+              className="px-12 py-6 bg-white text-blue-600 rounded-3xl font-black uppercase tracking-widest text-sm shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center gap-4"
+            >
+               Continue Learning <ArrowRight className="w-5 h-5" />
+            </button>
+         </div>
+      </div>
 
       {/* Hero Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
