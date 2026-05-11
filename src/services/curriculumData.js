@@ -193,8 +193,42 @@ export const CURRICULUM_DATA = {
             { "q": "How does a paperfuge work?", "a": "A hand-powered centrifuge made from cardboard and string that can separate blood components in remote areas." },
             { "q": "What is the role of Alum (Fitkari) in water purification?", "a": "It acts as a coagulant, causing fine suspended particles to clump together and settle down." }
           ]
+        },
+        {
+          "title": "How Forces Affect Motion",
+          "summary": "Investigating the causes of motion through Newton's three laws, balanced forces, and the friction matrix.",
+          "flashcards": [
+            { "front": "Balanced vs Unbalanced Forces", "back": "Balanced forces result in zero net force (no change in motion); Unbalanced forces cause acceleration." },
+            { "front": "Newton's First Law (Inertia)", "back": "An object resists changes to its state of rest or uniform motion unless acted on by a net force." },
+            { "front": "Newton's Second Law Formula", "back": "F = ma (Force equals mass times acceleration)." },
+            { "front": "The Newton (N)", "back": "The force that produces an acceleration of 1 m/s² on a 1 kg mass." },
+            { "front": "Newton's Third Law", "back": "To every action, there is an equal and opposite reaction (acting on different objects)." },
+            { "front": "Momentum", "back": "The product of an object's mass and its velocity (p = mv)." },
+            { "front": "Friction Direction", "back": "Always acts in a direction opposite to the direction of motion or intended motion." }
+          ],
+          "qna": [
+            { "q": "Why did the Vikram lander fire its engines in the direction of motion?", "a": "To exert a force opposite to its velocity, slowing it down for a soft landing on the Moon (Newton's 3rd Law)." },
+            { "q": "What is 'Inertia'?", "a": "The inherent tendency of objects to resist any change in their state of rest or motion." },
+            { "q": "How do airbags reduce injury in a car crash?", "a": "By increasing the time over which the velocity changes, thus reducing the magnitude of acceleration and the resulting force on the passenger." },
+            { "q": "What happens if the net force on a moving object is zero?", "a": "The object continues to move with constant velocity in a straight line (Newton's 1st Law)." }
+          ]
+        },
+        {
+          "title": "Work, Energy & Simple Machines",
+          "summary": "Exploring the capacity to do work, conservation of mechanical energy, and the building blocks of everyday machines.",
+          "flashcards": [
+            { "front": "Scientific Definition of Work", "back": "Work (W) = Force (F) × Displacement (s) in the direction of the force." },
+            { "front": "Kinetic Energy Formula", "back": "K = ½mv² (Energy due to an object's motion)." },
+            { "front": "Potential Energy Formula", "back": "U = mgh (Energy stored due to an object's position or height)." },
+            { "front": "Conservation of Mechanical Energy", "back": "The sum of kinetic and potential energy remains constant in a system without external friction." },
+            { "front": "Power (P)", "back": "The rate at which work is done (P = W / t), measured in Watts (W)." },
+            { "front": "Mechanical Advantage", "back": "The ratio of the Load (force to be overcome) to the Effort (force applied)." },
+            { "front": "Three Simple Machines", "back": "Pulley (changes force direction), Inclined Plane (reduces required force over distance), Lever (pivots on a fulcrum)." }
+          ],
+          "qna": [
+            { "q": "Is work done when you push a rigid wall?", "a": "No, because there is no displacement (s = 0), so work done is zero." },
+            { "q": "What is a 'Gharat' or 'Panchakki'?", "a": "A traditional Himalayan water mill that converts the potential energy of flowing water into kinetic energy to grind grain." },
+            { "q": "Why are roads on hills built in gentle slopes?", "a": "They act as long inclined planes; a longer path (L) requires less effort force (F) to reach the same height (h)." },
+            { "q": "What is Dark Energy?", "a": "A mysterious form of energy proposed by scientists to explain why the expansion of the Universe is accelerating." }
+          ]
         }
-      ]
-    }
-  }
-};
