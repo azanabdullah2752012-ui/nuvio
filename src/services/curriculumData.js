@@ -113,24 +113,85 @@ export const CURRICULUM_DATA = {
     "Science": {
       "chapters": [
         {
-          "title": "Matter in Our Surroundings",
-          "summary": "Exploration of physical states of matter and their characteristics.",
+          "title": "Science Exploration",
+          "summary": "How observations lead to models, and how symbols like 'c' help us understand the universe.",
           "flashcards": [
-            { "front": "The Three States of Matter", "back": "Solid, Liquid, and Gas." },
-            { "front": "Definition of Diffusion", "back": "The intermixing of particles of two different types of matter on their own." }
+            { "front": "What is a Scientific Model?", "back": "A simplified way of looking at real systems that focuses only on what is most important." },
+            { "front": "Why is 'c' used for speed of light?", "back": "It comes from the Latin word 'celeritas', meaning speed." },
+            { "front": "Standard Unit of Mass", "back": "The Kilogram (kg), based on international agreements for fairness in daily life and trade." },
+            { "front": "Meghnad Saha's Contribution", "back": "He simplified the study of stars by treating matter inside as a hot gas, connecting colour to temperature." }
           ],
           "qna": [
-            { "q": "Why does a desert cooler cool better on a hot dry day?", "a": "Evaporation causes cooling; higher temperature and lower humidity increase the rate of evaporation." }
+            { "q": "What happened in the airplane fuel miscalculation incident?", "a": "A flight ran out of fuel because ground crew used density in pounds (lb) instead of kilograms (kg), showing why SI units are critical." },
+            { "q": "What is the difference between a Law and a Theory?", "a": "A Law describes a regular pattern (like Newton's Laws), whereas a Theory provides an explanation of WHY patterns occur (like Atomic Theory)." }
           ]
         },
         {
-          "title": "Is Matter Around Us Pure?",
-          "summary": "Chemical classification of matter into elements, compounds, and mixtures.",
+          "title": "Cell: The Building Block",
+          "summary": "The fascinating world of cellular biology, from Robert Hooke's cork to the Fluid-Mosaic model.",
           "flashcards": [
-            { "front": "Colloid", "back": "A heterogeneous mixture where particle size is intermediate between solution and suspension." }
+            { "front": "Robert Hooke (1665)", "back": "The first person to observe and name 'cells' while examining a thin slice of cork." },
+            { "front": "Selectively Permeable Membrane", "back": "A boundary that allows some substances to pass through while blocking others." },
+            { "front": "Osmosis", "back": "The diffusion of water across a selectively permeable membrane from higher to lower water concentration." },
+            { "front": "Mitochondria", "back": "The 'Powerhouse of the cell' that stores energy in the form of ATP." },
+            { "front": "Mitosis vs Meiosis", "back": "Mitosis produces 2 identical daughter cells; Meiosis produces 4 gametes with half the DNA." }
           ],
           "qna": [
-            { "q": "Difference between mixture and compound?", "a": "Mixtures are physically combined; compounds are chemically combined in fixed ratios." }
+            { "q": "What happens to a cell in a Hypertonic solution?", "a": "The solute concentration outside is higher than inside, causing the cell to lose water and shrink." },
+            { "q": "Who proposed that 'all cells arise from pre-existing cells'?", "a": "Rudolf Virchow in 1855, expanding the Cell Theory." },
+            { "q": "What is the role of the Golgi apparatus?", "a": "It acts as the cell's post office, modifying, sorting, and packaging proteins for transport." }
+          ]
+        },
+        {
+          "title": "Tissues in Action",
+          "summary": "How cells group together to form the engineering marvels of the human and plant body.",
+          "flashcards": [
+            { "front": "Apical Meristem", "back": "Meristematic tissue located at root and shoot tips that helps plants grow in length." },
+            { "front": "Xylem vs Phloem", "back": "Xylem transports water/minerals; Phloem transports food prepared in leaves." },
+            { "front": "Ligament vs Tendon", "back": "Ligaments connect bone to bone; Tendons connect muscle to bone." },
+            { "front": "Neuron structure", "back": "Consists of a cell body, dendrites (receive signals), and an axon (carries messages)." }
+          ],
+          "qna": [
+            { "q": "Why are plant and animal tissues different?", "a": "Plants are fixed (need support/rigidity) while animals move (need flexibility/locomotion)." },
+            { "q": "What are the three types of muscles?", "a": "Skeletal (voluntary), Smooth (involuntary), and Cardiac (heart specific, tireless)." }
+          ]
+        },
+        {
+          "title": "Describing Motion Around Us",
+          "summary": "The simplest kind of motion: Linear and circular, described using position, distance, speed, velocity, and acceleration.",
+          "flashcards": [
+            { "front": "Distance vs Displacement", "back": "Distance is the total path length; Displacement is the net change in position (magnitude and direction)." },
+            { "front": "Average Velocity", "back": "Displacement divided by the time interval (rate of change of position)." },
+            { "front": "Average Acceleration", "back": "The rate of change of velocity: (v - u) / t." },
+            { "front": "Kinematic Equation 1 (Velocity)", "back": "v = u + at (Relates velocity, initial velocity, acceleration, and time)." },
+            { "front": "Kinematic Equation 2 (Position)", "back": "s = ut + ½at² (Calculates displacement under constant acceleration)." },
+            { "front": "Kinematic Equation 3 (Velocity-Position)", "back": "v² = u² + 2as (Relates final velocity to displacement without time)." },
+            { "front": "Uniform Circular Motion", "back": "Motion in a circular path with constant speed; velocity changes continuously due to direction." }
+          ],
+          "qna": [
+            { "q": "When is displacement zero if distance is not zero?", "a": "When an object returns to its starting point after a journey (e.g., swimming a full lap)." },
+            { "q": "What does the slope of a position-time graph represent?", "a": "The magnitude of velocity (speed if moving in a straight line)." },
+            { "q": "What does the area under a velocity-time graph represent?", "a": "The displacement of the object over that time interval." },
+            { "q": "What was the 'Aryabhatiya' contribution to motion?", "a": "Established that speed is distance divided by time as early as the 5th century CE." }
+          ]
+        },
+        {
+          "title": "Exploring Mixtures & Separation",
+          "summary": "From industrial processes like sugar production to life-saving medical tests like ORS and blood analysis.",
+          "flashcards": [
+            { "front": "Homogeneous vs Heterogeneous", "back": "Homogeneous (solutions) have uniform composition; Heterogeneous (suspensions) have visible, non-uniform particles." },
+            { "front": "Concentration (% m/m)", "back": "(Mass of Solute / Mass of Solution) × 100." },
+            { "front": "Crystallization", "back": "Separating a pure solid from a saturated solution by slow cooling (e.g., making candy sugar/mishri)." },
+            { "front": "Distillation", "back": "Separating miscible liquids with a boiling point difference of at least 25°C." },
+            { "front": "Sublimation", "back": "The transition of a solid directly into a vapour without passing through the liquid state (e.g., camphor, naphthalene)." },
+            { "front": "Colloid", "back": "A mixture where particles (1-1000 nm) are uniformly dispersed and do not settle, showing the Tyndall effect." },
+            { "front": "Tyndall Effect", "back": "The scattering of a beam of light by particles in a colloid or suspension, making the path visible." }
+          ],
+          "qna": [
+            { "q": "Who developed the life-saving Oral Rehydration Solution (ORS)?", "a": "Indian paediatrician Dilip Mahalanabis, revolutionising treatment for dehydration." },
+            { "q": "What is 'Mitti ka Ittar'?", "a": "A natural perfume from Kannauj produced using the traditional Deg-Bhapka distillation method." },
+            { "q": "How does a paperfuge work?", "a": "A hand-powered centrifuge made from cardboard and string that can separate blood components in remote areas." },
+            { "q": "What is the role of Alum (Fitkari) in water purification?", "a": "It acts as a coagulant, causing fine suspended particles to clump together and settle down." }
           ]
         }
       ]
