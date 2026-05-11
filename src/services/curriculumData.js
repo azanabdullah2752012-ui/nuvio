@@ -107,6 +107,53 @@ export const CURRICULUM_DATA = {
           "qna": [
             { "q": "What is the Angle Sum Property of a triangle?", "a": "The sum of the angles of a triangle is 180°." }
           ]
+        },
+        {
+          "title": "Heron's Formula",
+          "summary": "Calculating the area of any triangle using its three sides and the semi-perimeter (s).",
+          "flashcards": [
+            { "front": "Semi-perimeter (s)", "back": "Half the sum of the triangle's sides: s = (a + b + c) / 2." },
+            { "front": "Heron's Formula", "back": "Area = √[s(s-a)(s-b)(s-c)]" }
+          ],
+          "qna": [
+            { "q": "When is Heron's Formula most useful?", "a": "When the height of the triangle is unknown, but all three sides are given." }
+          ]
+        },
+        {
+          "title": "Surface Areas and Volumes",
+          "summary": "The 3D geometry of cubes, cylinders, cones, and spheres for engineering and design.",
+          "flashcards": [
+            { "front": "Volume of a Cylinder", "back": "V = πr²h" },
+            { "front": "Surface Area of a Sphere", "back": "A = 4πr²" },
+            { "front": "Volume of a Cone", "back": "V = (1/3)πr²h" }
+          ],
+          "qna": [
+            { "q": "How does volume change if the radius of a sphere is doubled?", "a": "The volume increases by 8 times (2³)." }
+          ]
+        },
+        {
+          "title": "Statistics",
+          "summary": "The science of collecting, organizing, and interpreting data using mean, median, and mode.",
+          "flashcards": [
+            { "front": "Mean", "back": "The average value, calculated by dividing the sum of observations by their count." },
+            { "front": "Median", "back": "The middle-most value of an ordered data set." },
+            { "front": "Mode", "back": "The value that appears most frequently in a data set." }
+          ],
+          "qna": [
+            { "q": "What is the difference between primary and secondary data?", "a": "Primary data is collected directly by the researcher; secondary data is retrieved from existing records." }
+          ]
+        },
+        {
+          "title": "Probability",
+          "summary": "The mathematical study of chance and the likelihood of events occurring.",
+          "flashcards": [
+            { "front": "Empirical Probability", "back": "P(E) = (Number of trials where E occurred) / (Total number of trials)." },
+            { "front": "Sure Event", "back": "An event with a probability of 1." },
+            { "front": "Impossible Event", "back": "An event with a probability of 0." }
+          ],
+          "qna": [
+            { "q": "What is the sum of probabilities of all elementary events in an experiment?", "a": "Exactly 1." }
+          ]
         }
       ]
     },
@@ -231,4 +278,125 @@ export const CURRICULUM_DATA = {
             { "q": "Why are roads on hills built in gentle slopes?", "a": "They act as long inclined planes; a longer path (L) requires less effort force (F) to reach the same height (h)." },
             { "q": "What is Dark Energy?", "a": "A mysterious form of energy proposed by scientists to explain why the expansion of the Universe is accelerating." }
           ]
+        },
+        {
+          "title": "Journey Inside the Atom",
+          "summary": "Exploring the subatomic realm from ancient Parmanu concepts to modern electron clouds and nuclear isotopes.",
+          "flashcards": [
+            { "front": "Parmanu", "back": "The smallest indivisible particle of matter described by Acharya Kanada in the Vaisesika Sutras." },
+            { "front": "Cathode Rays", "back": "Streams of negatively charged particles (electrons) discovered by J.J. Thomson." },
+            { "front": "Plum Pudding Model", "back": "Thomson's model: An atom is a positive sphere with electrons embedded like seeds in a watermelon." },
+            { "front": "Alpha Scattering Result", "back": "Most particles passed through, but some bounced back, proving the existence of a dense, tiny nucleus." },
+            { "front": "Bohr's Shells (K, L, M, N)", "back": "Fixed energy levels where electrons revolve without losing energy (Stationary States)." },
+            { "front": "Valency", "back": "The combining capacity of an atom; determined by electrons lost, gained, or shared to complete an octet." },
+            { "front": "Isotopes", "back": "Atoms of the same element with the same atomic number but different mass numbers (e.g., C-12, C-14)." }
+          ],
+          "qna": [
+            { "q": "Who is the Father of the Indian Nuclear Programme?", "a": "Homi Jehangir Bhabha, who established BARC and TIFR." },
+            { "q": "Why is the mass of helium 4 times hydrogen if it only has 2 protons?", "a": "Because it also contains 2 neutrons, which contribute to mass but have no charge." },
+            { "q": "What are isotopes used for in medicine?", "a": "Cobalt-60 is used for cancer treatment; Iodine-131 is used to treat goitre." },
+            { "q": "What determines the identity of an element?", "a": "The Atomic Number (Z), which is the number of protons in its nucleus." }
+          ]
+        },
+        {
+          "title": "Atomic Foundations of Matter",
+          "summary": "The laws of chemical combination, the logic of bonding, and the architecture of molecules and ionic lattices.",
+          "flashcards": [
+            { "front": "Law of Conservation of Mass", "back": "Matter can neither be created nor destroyed in a chemical reaction (Lavoisier, 1789)." },
+            { "front": "Law of Constant Proportions", "back": "In a compound, elements are always present in definite proportions by mass (Proust)." },
+            { "front": "Covalent Bond", "back": "A chemical bond formed by the sharing of electron pairs between atoms." },
+            { "front": "Ionic Bond", "back": "The electrostatic force of attraction between oppositely charged ions (Cation and Anion)." },
+            { "front": "Polyatomic Ion", "back": "A cluster of atoms that behaves as a single unit and carries a fixed net charge (e.g., SO₄²⁻, NH₄⁺)." },
+            { "front": "Molecular Mass", "back": "The sum of the atomic masses of all atoms in a molecule (measured in unified mass unit 'u')." },
+            { "front": "Formula Unit Mass", "back": "Used for ionic compounds (which don't form single molecules) to represent the simplest whole-number ratio of ions." }
+          ],
+          "qna": [
+            { "q": "Why does dissolved salt conduct electricity but sugar does not?", "a": "Salt (ionic) dissociates into free-moving ions in water; sugar (covalent) remains as neutral molecules." },
+            { "q": "What is Cinnabar (Hingula)?", "a": "An ancient red pigment (Mercury Sulfide) that demonstrated constant proportions (86.22% Hg, 13.78% S) across civilisations." },
+            { "q": "Who is known as the Father of Modern Chemistry?", "a": "Antoine Lavoisier, who proposed the Law of Conservation of Mass." },
+            { "q": "What is the 'criss-cross' method?", "a": "A strategy for writing chemical formulae by crossing over the valencies/charges of combining ions." }
+          ]
+        },
+        {
+          "title": "Sound Waves: Characteristics and Applications",
+          "summary": "The physics of vibrations, the mechanics of longitudinal waves, and the technology of echolocation and SONAR.",
+          "flashcards": [
+            { "front": "Longitudinal Wave", "back": "A wave where particles of the medium vibrate back and forth parallel to the direction of propagation." },
+            { "front": "Compression (C)", "back": "A region in a longitudinal wave where the particles are closest together (high density/pressure)." },
+            { "front": "Rarefaction (R)", "back": "A region in a longitudinal wave where the particles are furthest apart (low density/pressure)." },
+            { "front": "Audible Range", "back": "The frequency range detectable by human ears, typically 20 Hz to 20,000 Hz." },
+            { "front": "Ultrasonic vs Infrasonic", "back": "Ultrasonic is above 20 kHz (bats, medical imaging); Infrasonic is below 20 Hz (earthquakes, elephants)." },
+            { "front": "Echo Condition", "back": "To hear a distinct echo, the reflecting surface must be at least 17m away (0.1s time gap)." },
+            { "front": "SONAR", "back": "Sound Navigation and Ranging: Using ultrasonic waves to measure underwater depth or detect objects." }
+          ],
+          "qna": [
+            { "q": "Why can't sound travel in a vacuum?", "a": "Sound is a mechanical wave that requires a material medium (solid, liquid, or gas) to transmit vibrations." },
+            { "q": "How did C.V. Raman contribute to acoustics?", "a": "He studied the unique harmonic overtones produced by Indian percussion instruments like the Tabla and Mridangam." },
+            { "q": "What determines the pitch of a sound?", "a": "The frequency of the wave; higher frequency results in a higher (shriller) pitch." },
+            { "q": "What is 'Reverberation'?", "a": "The persistence of sound in a large hall due to multiple reflections, often managed by sound-absorbing materials." }
+          ]
+        },
+        {
+          "title": "Reproduction: How Life Continues",
+          "summary": "Exploring the biological mechanics of survival, from vegetative cloning in agriculture to the complex dance of human heredity.",
+          "flashcards": [
+            { "front": "Vegetative Propagation", "back": "Asexual reproduction where new plants grow from parts like stems (cutting), roots, or leaves (Bryophyllum)." },
+            { "front": "Meiosis", "back": "A special cell division that reduces chromosome numbers by half to form haploid gametes (sperm/egg)." },
+            { "front": "Double Fertilisation", "back": "The process in plants where one male gamete fuses with the egg and another with the polar nuclei." },
+            { "front": "Pollination", "back": "The transfer of pollen grains from the anther (male) to the stigma (female)." },
+            { "front": "Zygote vs Foetus", "back": "A zygote is the initial single-cell stage; a foetus is the developing human from the 9th week of pregnancy." },
+            { "front": "Menstrual Cycle", "back": "A 28-day cycle of uterine lining preparation, ovulation (Day 14), and shedding (menstruation)." },
+            { "front": "Contraception", "back": "Methods to prevent pregnancy, including barriers (condoms), hormonal pills, and IUDs (Copper-T)." }
+          ],
+          "qna": [
+            { "q": "Why is genetic variation important in sexual reproduction?", "a": "It helps individuals adapt to changing environments, which is the driving force of evolution." },
+            { "q": "What is the role of ASHA workers in India?", "a": "Community health workers who promote hygiene, immunisation, and maternal care in rural areas." },
+            { "q": "Who pioneered India's first test-tube baby (IVF)?", "a": "Subhash Mukhopadhyay in 1978 (baby nicknamed 'Durga')." },
+            { "q": "How does the 'Syaahi' patch affect drum sounds?", "a": "It alters the membrane's vibration, creating rich harmonic overtones (studied by C.V. Raman)." },
+            { "q": "What is the law regarding prenatal sex determination in India?", "a": "It is strictly prohibited to prevent gender-based selective abortion and maintain societal balance." }
+          ]
+        },
+        {
+          "title": "Patterns in Life: Diversity and Classification",
+          "summary": "From the microscopic Monera to the majestic vertebrates of the Western Ghats, this module maps the tree of life.",
+          "flashcards": [
+            { "front": "Biodiversity Hotspot", "back": "Regions like the Western Ghats or Himalayas with high species richness and endemic life." },
+            { "front": "Five Kingdom Classification", "back": "Whittaker's system (1969): Monera, Protista, Fungi, Plantae, and Animalia." },
+            { "front": "Binomial Nomenclature", "back": "Linnaeus's system for unique scientific names (Genus + Species), e.g., Mangifera indica." },
+            { "front": "Arthropoda", "back": "The largest animal group; features jointed appendages and a hard exoskeleton (insects, crabs)." },
+            { "front": "Endemic Species", "back": "Species found only in a specific region, such as the Nilgiri tahr or Lion-tailed macaque." },
+            { "front": "Angiosperms", "back": "Flowering plants where seeds are enclosed within fruits (the most diverse plant group)." },
+            { "front": "Three Domains", "back": "Modern classification based on DNA: Bacteria, Archaea, and Eukarya (Carl Woese)." }
+          ],
+          "qna": [
+            { "q": "What is the basis of Whittaker's classification?", "a": "Cell type (prokaryote/eukaryote), level of organisation, and mode of nutrition." },
+            { "q": "How do Bryophytes differ from Thallophytes?", "a": "Bryophytes have a slightly differentiated body (mosses) and are the 'amphibians' of the plant kingdom." },
+            { "q": "What is the role of 'Phumdis' in Manipur?", "a": "Unique floating grasslands in Loktak Lake that support the endangered Sangai (dancing deer)." },
+            { "q": "Who founded the Birbal Sahni Institute of Palaeosciences?", "a": "Birbal Sahni, an eminent scientist who studied fossil plants to trace life's history." },
+            { "q": "Why is 'Monera' significant in Earth's history?", "a": "Ancient Cyanobacteria in this kingdom were among the first to produce oxygen, changing the atmosphere." }
+          ]
+        },
+        {
+          "title": "Earth as a System: Energy, Matter, and Life",
+          "summary": "The grand finale: integrating energy flows, planetary cycles, and the delicate balance of Earth's five spheres.",
+          "flashcards": [
+            { "front": "Earth's Spheres", "back": "The Geosphere (rocks), Hydrosphere (water), Cryosphere (ice), Atmosphere (air), and Biosphere (life)." },
+            { "front": "Albedo", "back": "The measure of a surface's reflectivity; high for snow/ice (stays cool), low for oceans (absorbs heat)." },
+            { "front": "Solar Constant", "back": "The average solar energy received at the top of the atmosphere, approximately 1.4 kW/m²." },
+            { "front": "Biogeochemical Cycle", "back": "The continuous cycling of nutrients (C, N, O, H₂O) between living organisms and the environment." },
+            { "front": "Eutrophication", "back": "Excess nutrients (nitrates/phosphates) in water causing algal blooms that deplete oxygen and kill fish." },
+            { "front": "Greenhouse Effect", "back": "The trapping of re-radiated infrared heat by gases like CO₂, keeping Earth habitable but causing warming when excessive." },
+            { "front": "Mission LiFE", "back": "An India-led initiative encouraging mindful, eco-friendly lifestyles to restore planetary balance." }
+          ],
+          "qna": [
+            { "q": "Why is the ozone layer critical for the biosphere?", "a": "It absorbs harmful UV radiation in the stratosphere, protecting DNA and preventing skin/eye damage." },
+            { "q": "How does deforestation affect the carbon cycle?", "a": "It reduces photosynthesis (CO₂ absorption) and releases stored carbon when trees are burnt or decay." },
+            { "q": "What is the 'Urban Heat Island' effect?", "a": "Cities stay warmer than rural areas because concrete and asphalt absorb more solar radiation and retain heat." },
+            { "q": "How do ocean currents regulate global climate?", "a": "They act as a conveyor belt, transporting heat from the equator to the poles (e.g., the North Atlantic Drift)." },
+            { "q": "Who was Anna Mani?", "a": "A pioneering Indian scientist who mapped solar insolation across India, laying the foundation for our solar energy future." }
+          ]
         }
+      ]
+    }
+  }
+};
