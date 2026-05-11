@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Map, Brain, ChevronRight, 
-  Circle, Sparkles, X, Database
+  Circle, Sparkles, X, Database, Play
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { authService } from '../services/authService';
+import { dataService } from '../services/dataService';
 
 const KnowledgeMap = () => {
   const [activeNode, setActiveNode] = useState(null);
   const [userNodes, setUserNodes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchKnowledgeNodes();
@@ -18,58 +21,63 @@ const KnowledgeMap = () => {
 
   const fetchKnowledgeNodes = async () => {
     setLoading(true);
-    const user = authService.me();
     
-    // Fetch Decks and Tasks to see what subjects are "Unlocked"
-    const [decks, tasks] = await Promise.all([
-      dataService.list('decks'),
-      dataService.list('tasks')
-    ]);
+    try {
+      // Fetch Decks and Tasks to see what subjects are "Unlocked"
+      const [decks, tasks] = await Promise.all([
+        dataService.list('decks'),
+        dataService.list('tasks')
+      ]);
 
-    const subjectsData = {
-      math: { count: 0, completed: 0, icon: 'Mathematics' },
-      science: { count: 0, completed: 0, icon: 'Science' },
-      humanities: { count: 0, completed: 0, icon: 'History' },
-      general: { count: 0, completed: 0, icon: 'General' },
-    };
+      const subjectsData = {};
 
-    tasks.forEach(t => {
-      const s = t.subject?.toLowerCase() || 'general';
-      if (s.includes('math')) subjectsData.math.count++;
-      else if (s.includes('sci')) subjectsData.science.count++;
-      else if (s.includes('hist') || s.includes('human')) subjectsData.humanities.count++;
-      else subjectsData.general.count++;
-      
-      if (t.completed) {
-        if (s.includes('math')) subjectsData.math.completed++;
-        else if (s.includes('sci')) subjectsData.science.completed++;
-        else if (s.includes('hist') || s.includes('human')) subjectsData.humanities.completed++;
-        else subjectsData.general.completed++;
-      }
-    });
+      // 1. Process all unique subjects from both sources
+      const allSubjects = new Set([
+        ...tasks.map(t => t.subject?.toLowerCase() || 'general'),
+        ...decks.map(d => d.subject?.toLowerCase() || 'general')
+      ]);
 
-    decks.forEach(d => {
-      const s = d.subject?.toLowerCase() || 'general';
-      if (s.includes('math')) subjectsData.math.count += 5;
-      else if (s.includes('sci')) subjectsData.science.count += 5;
-      else if (s.includes('hist') || s.includes('human')) subjectsData.humanities.count += 5;
-      else subjectsData.general.count += 5;
-    });
+      allSubjects.forEach(s => {
+        subjectsData[s] = { count: 0, completed: 0, decks: 0 };
+      });
 
-    const baseNodes = [
-      { id: 1, label: 'Mathematics', x: '20%', y: '30%', color: 'nuvio-blue', size: 'w-24 h-24', key: 'math', data: subjectsData.math },
-      { id: 2, label: 'Science', x: '60%', y: '40%', color: 'nuvio-green', size: 'w-24 h-24', key: 'science', data: subjectsData.science },
-      { id: 3, label: 'History', x: '45%', y: '75%', color: 'nuvio-orange', size: 'w-24 h-24', key: 'history', data: subjectsData.humanities },
-      { id: 4, label: 'General', x: '10%', y: '60%', color: 'nuvio-purple-500', size: 'w-16 h-16', key: 'general', data: subjectsData.general },
-    ];
+      tasks.forEach(t => {
+        const s = t.subject?.toLowerCase() || 'general';
+        subjectsData[s].count++;
+        if (t.completed) subjectsData[s].completed++;
+      });
 
-    const processed = baseNodes.map(n => ({
-      ...n,
-      status: n.data.count > 0 ? (n.data.completed >= n.data.count ? 'Mastered' : 'In Progress') : 'Locked'
-    }));
+      decks.forEach(d => {
+        const s = d.subject?.toLowerCase() || 'general';
+        subjectsData[s].decks++;
+      });
 
-    setUserNodes(processed);
-    setLoading(false);
+      // 2. Generate Dynamic Nodes in a circular constellation pattern
+      const subjects = Object.keys(subjectsData);
+      const processed = subjects.map((s, i) => {
+        const angle = (i / subjects.length) * 2 * Math.PI;
+        const radius = subjects.length > 1 ? 30 : 0;
+        const x = 50 + radius * Math.cos(angle);
+        const y = 50 + radius * Math.sin(angle);
+
+        return {
+          id: s,
+          label: s.charAt(0).toUpperCase() + s.slice(1),
+          x: `${x}%`,
+          y: `${y}%`,
+          color: s === 'math' ? 'nuvio-blue' : s === 'science' ? 'nuvio-green' : 'nuvio-purple-500',
+          size: s === 'general' ? 'w-16 h-16' : 'w-24 h-24',
+          status: subjectsData[s].count > 0 && subjectsData[s].completed >= subjectsData[s].count ? 'Mastered' : 'In Progress',
+          data: subjectsData[s]
+        };
+      });
+
+      setUserNodes(processed);
+    } catch (err) {
+      console.error("Neural Map Calibration Error:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -152,10 +160,17 @@ const KnowledgeMap = () => {
                        <div className="text-[8px] font-black text-text-muted uppercase tracking-widest">Tasks</div>
                     </div>
                     <div className="p-4 bg-black/40 border border-white/5 rounded-2xl text-center">
-                       <div className="text-xl font-black text-white">{Math.floor(activeNode.data.count / 5)}</div>
+                       <div className="text-xl font-black text-white">{activeNode.data.decks}</div>
                        <div className="text-[8px] font-black text-text-muted uppercase tracking-widest">Vault Decks</div>
                     </div>
                   </div>
+
+                  <button 
+                    onClick={() => navigate('/homework', { state: { filterSubject: activeNode.label } })}
+                    className="w-full py-5 bg-nuvio-purple-500 text-white font-black uppercase tracking-[0.2em] text-[10px] rounded-2xl flex items-center justify-center gap-3 shadow-lg shadow-nuvio-purple-500/20 hover:scale-105 transition-all mt-auto"
+                  >
+                    <Play className="w-4 h-4 fill-white" /> Commence Study
+                  </button>
                 </div>
             </motion.div>
           )}

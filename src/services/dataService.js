@@ -42,15 +42,23 @@ const saveLocalDB = (db) => {
 export const dataService = {
   list: async (table) => {
     try {
-      const { data, error } = await supabase.from(table).select('*').order('created_at', { ascending: false });
+      const { data: cloudData, error } = await supabase.from(table).select('*').order('created_at', { ascending: false });
       if (error) throw error;
       
-      // Sync cloud data to local for offline use
-      const db = getLocalDB();
-      db[table] = data;
-      saveLocalDB(db);
+      const localDB = getLocalDB();
+      const localData = localDB[table] || [];
+
+      // Smart Merge: Keep local items that haven't been synced to cloud yet
+      // We identify them by checking if their ID exists in the cloud data
+      const cloudIds = new Set(cloudData.map(item => item.id));
+      const localOnly = localData.filter(item => !cloudIds.has(item.id));
       
-      return data || [];
+      const merged = [...cloudData, ...localOnly];
+      
+      localDB[table] = merged;
+      saveLocalDB(localDB);
+      
+      return merged;
     } catch (err) {
       console.warn(`Cloud list failed for ${table}, using local engine.`);
       const db = getLocalDB();
@@ -59,11 +67,14 @@ export const dataService = {
   },
 
   create: async (table, item) => {
+    const user = authService.me();
+    if (!user?.id) throw new Error("Neural identity not verified. Cannot persist to cloud.");
+
     const newItem = {
       ...item,
-      id: item.id || Math.random().toString(36).substr(2, 9),
+      id: item.id || crypto.randomUUID(),
       created_at: new Date().toISOString(),
-      user_id: authService.me()?.id
+      user_id: user.id
     };
 
     // Optimistic Local Save

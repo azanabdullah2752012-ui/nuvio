@@ -22,6 +22,7 @@ const Admin = () => {
   const [user, setUser] = useState(authService.me());
   const [activeTab, setActiveTab] = useState('pulse');
   const [healthStatus, setHealthStatus] = useState('NOMINAL');
+  const [registryUsers, setRegistryUsers] = useState([]);
 
   const tabs = [
     { id: 'pulse', name: 'System Pulse', icon: Activity, color: 'text-nuvio-green' },
@@ -35,7 +36,7 @@ const Admin = () => {
 
   return (
     <div className="space-y-10 pb-32 nv-page-transition max-w-[1600px] mx-auto">
-      {/* 🏛️ DIVINE COMMAND HEADER */}
+      {/* 🏛️ SYSTEM AUTHORITY HEADER */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 border-b border-white/5 pb-10">
         <div className="flex items-center gap-6">
           <div className="w-16 h-16 bg-nuvio-purple-600 rounded-[24px] flex items-center justify-center shadow-2xl shadow-nuvio-purple-500/20 group hover:rotate-12 transition-all">
@@ -50,7 +51,7 @@ const Admin = () => {
                 <div className="w-1.5 h-1.5 rounded-full bg-nuvio-green animate-pulse" />
                 <span className="text-[9px] font-black text-nuvio-green uppercase tracking-widest">System Health: {healthStatus}</span>
               </div>
-              <span className="text-[10px] font-black text-text-muted uppercase tracking-[0.3em] opacity-40">Omniscience Level 9 Active</span>
+              <span className="text-[10px] font-black text-text-muted uppercase tracking-[0.3em] opacity-40">Master Session Secure</span>
             </div>
           </div>
         </div>
@@ -106,17 +107,63 @@ const Admin = () => {
           {activeTab === 'audit' && <AuditLogs />}
           
           {activeTab === 'identity' && (
-             <div className="nv-card p-12 text-center border-white/5 bg-white/[0.01]">
-                <Users className="w-16 h-16 text-nuvio-blue mx-auto mb-6 opacity-20" />
-                <h3 className="text-2xl font-black text-white uppercase tracking-tight">Student Identity Matrix</h3>
-                <p className="text-text-muted text-sm max-w-md mx-auto mt-4 mb-10 leading-relaxed uppercase tracking-widest font-bold">The Identity registry is currently undergoing a neural refactor to support sharded high-load population scans.</p>
-                <div className="relative max-w-2xl mx-auto">
-                   <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted opacity-40" />
-                   <input 
-                     className="w-full h-20 bg-white/5 border border-white/10 rounded-[28px] pl-16 pr-8 text-white font-bold tracking-widest uppercase text-xs"
-                     placeholder="Search across 10,000+ nodes..."
-                     disabled
-                   />
+             <div className="nv-card p-12 border-white/5 bg-white/[0.01]">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+                  <div>
+                    <h3 className="text-2xl font-black text-white uppercase tracking-tight">Student Identity Registry</h3>
+                    <p className="text-[10px] text-text-muted font-black uppercase tracking-[0.2em] mt-2">Live Database Oversight</p>
+                  </div>
+                  <div className="relative w-full md:w-96">
+                    <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted opacity-40" />
+                    <input 
+                      className="w-full h-16 bg-white/5 border border-white/10 rounded-[22px] pl-16 pr-8 text-white font-bold tracking-widest uppercase text-xs focus:border-nuvio-blue outline-none transition-all"
+                      placeholder="Search Scholars..."
+                      onChange={async (e) => {
+                        const val = e.target.value;
+                        if (!val) {
+                          setRegistryUsers([]);
+                          return;
+                        }
+                        const { data } = await supabase
+                          .from('profiles')
+                          .select('*')
+                          .or(`full_name.ilike.%${val}%,email.ilike.%${val}%`)
+                          .limit(10);
+                        setRegistryUsers(data || []);
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                   {registryUsers.length === 0 ? (
+                     <div className="py-20 text-center opacity-30 italic text-[10px] uppercase font-black tracking-widest">
+                        Enter query to scan the Neural Registry...
+                     </div>
+                   ) : (
+                     registryUsers.map(u => (
+                       <div key={u.id} className="p-6 bg-white/5 border border-white/5 rounded-2xl flex items-center justify-between hover:bg-white/10 transition-all">
+                          <div className="flex items-center gap-6">
+                             <div className="w-12 h-12 bg-nuvio-blue/20 rounded-xl flex items-center justify-center text-nuvio-blue text-2xl">
+                                {u.avatar_emoji || '⚡'}
+                             </div>
+                             <div>
+                                <div className="text-sm font-black text-white uppercase">{u.full_name}</div>
+                                <div className="text-[9px] text-text-muted font-bold tracking-widest uppercase">{u.email}</div>
+                             </div>
+                          </div>
+                          <div className="flex items-center gap-6">
+                             <div className="text-right">
+                                <div className="text-xs font-black text-white">Level {u.level}</div>
+                                <div className="text-[9px] text-nuvio-purple-400 font-bold uppercase tracking-widest">{u.role}</div>
+                             </div>
+                             <button className="p-3 bg-nuvio-red/10 border border-nuvio-red/20 text-nuvio-red rounded-lg hover:bg-nuvio-red hover:text-white transition-all">
+                                <UserX className="w-4 h-4" />
+                             </button>
+                          </div>
+                       </div>
+                     ))
+                   )}
                 </div>
              </div>
           )}

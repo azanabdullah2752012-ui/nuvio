@@ -11,6 +11,7 @@ import { dataService } from '../services/dataService';
 
 const Messages = () => {
   const [messages, setMessages] = useState([]);
+  const [activeCount, setActiveCount] = useState(0);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(authService.me());
@@ -18,17 +19,29 @@ const Messages = () => {
 
   useEffect(() => {
     fetchMessages();
+    fetchActiveCount();
 
     // 🚀 Real-time Sharded Stream
     const channel = supabase
       .channel('public:messages')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, (payload) => {
-        setMessages(prev => [...prev, payload.new]);
+        // Only add if not from current user (to avoid duplicates since we fetch locally on send)
+        if (payload.new.user_id !== authService.me()?.id) {
+          setMessages(prev => [...prev, payload.new]);
+        }
       })
       .subscribe();
 
     return () => supabase.removeChannel(channel);
   }, []);
+
+  const fetchActiveCount = async () => {
+    const { count } = await supabase
+      .from('profiles')
+      .select('*', { count: 'exact', head: true })
+      .gt('updated_at', new Date(Date.now() - 15 * 60000).toISOString());
+    setActiveCount(count || 1);
+  };
 
   const fetchMessages = async () => {
     setLoading(true);
@@ -45,17 +58,20 @@ const Messages = () => {
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (!newMessage.trim()) return;
+    const currentUser = authService.me();
+    if (!newMessage.trim() || !currentUser?.id) return;
 
     const msg = {
-      user_id: user.id,
-      from: user.full_name,
+      user_id: currentUser.id,
+      from: currentUser.full_name,
       content: newMessage,
     };
 
-    await dataService.create('messages', msg);
-    setNewMessage('');
-    fetchMessages();
+    const created = await dataService.create('messages', msg);
+    if (created) {
+      setMessages(prev => [...prev, created]);
+      setNewMessage('');
+    }
   };
 
   return (
@@ -74,10 +90,11 @@ const Messages = () => {
             </div>
           </div>
         </div>
-        <div className="flex -space-x-3">
-           {['🦊', '🐼', '🐬', '🧠'].map((e, i) => (
-             <div key={i} className="w-10 h-10 rounded-full bg-white/5 border-2 border-background-card flex items-center justify-center text-xl">{e}</div>
-           ))}
+        <div className="flex items-center gap-3">
+           <div className="bg-white/5 border border-white/10 px-4 py-2 rounded-full flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-nuvio-green" />
+              <span className="text-[10px] font-black text-white uppercase tracking-widest">{activeCount} Scholars Online</span>
+           </div>
         </div>
       </div>
 
@@ -87,14 +104,19 @@ const Messages = () => {
       >
         <AnimatePresence initial={false}>
           {messages.map((msg, i) => {
-            const isMe = msg.user_id === user.id;
+            const isMe = msg.user_id === user?.id;
             return (
               <motion.div
                 key={msg.id}
                 initial={{ opacity: 0, y: 10, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
-                className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}
+                className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}
               >
+                {!isMe && (
+                  <span className="text-[9px] font-black text-text-muted uppercase tracking-widest mb-2 ml-4">
+                    {msg.from}
+                  </span>
+                )}
                 <div className={`
                   max-w-[70%] p-4 rounded-3xl relative
                   ${isMe 
