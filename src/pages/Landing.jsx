@@ -123,12 +123,38 @@ const Landing = () => {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.3 }}
-          className="flex flex-col sm:flex-row items-center gap-4 w-full max-w-md"
+          className="flex flex-col items-center gap-4 w-full max-w-md"
         >
           <GoogleAuthButton 
             onClick={handleGoogleSignIn}
             disabled={loading}
           />
+
+          {(window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && (
+            <button
+              onClick={() => {
+                const devProfile = {
+                  id: 'dev-guest-id',
+                  email: 'azanabdullah27.5.2012@gmail.com',
+                  full_name: 'Dev Guest',
+                  avatar_emoji: '🛠️',
+                  level: 9,
+                  xp: 999,
+                  era_tokens: 5000,
+                  role: 'admin',
+                  grade_level: '9th',
+                  onboarding_completed: true,
+                  last_activity_date: new Date().toISOString()
+                };
+                localStorage.setItem('nuvio_user', JSON.stringify(devProfile));
+                window.dispatchEvent(new CustomEvent('nuvio_auth_change', { detail: devProfile }));
+                navigate('/dashboard');
+              }}
+              className="w-full py-4 px-8 border border-nuvio-purple-500/50 bg-nuvio-purple-500/10 hover:bg-nuvio-purple-500/20 text-nuvio-purple-300 rounded-full font-black uppercase tracking-widest text-[10px] shadow-lg shadow-nuvio-purple-500/10 transition-all active:scale-[0.98]"
+            >
+              ⚡ Enter Developer Sandbox (Local Bypass)
+            </button>
+          )}
         </motion.div>
 
         <motion.div 
