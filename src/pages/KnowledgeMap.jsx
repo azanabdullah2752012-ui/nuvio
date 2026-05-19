@@ -146,6 +146,8 @@ const KnowledgeMap = () => {
                 
                 <h3 className="text-3xl font-black text-white uppercase tracking-tighter">{activeNode.label}</h3>
 
+                <div className="space-y-4">
+                  <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Topology Data</label>
                   <div className="p-4 bg-white/5 border border-white/10 rounded-2xl flex items-center gap-4">
                     <Database className="w-5 h-5 text-nuvio-purple-400" />
                     <div>
@@ -172,6 +174,7 @@ const KnowledgeMap = () => {
                     <Play className="w-4 h-4 fill-white" /> Commence Study
                   </button>
                 </div>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>

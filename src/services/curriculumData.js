@@ -513,6 +513,162 @@ export const CURRICULUM_DATA = {
           ]
         }
       ]
+    },
+    "English": {
+      "chapters": [
+        {
+          "title": "How I Taught My Grandmother to Read",
+          "summary": "A beautiful story about a twelve-year-old girl in north Karnataka who teaches her sixty-two-year-old grandmother, Krishtakka, to read the Kannada alphabet so she can independently read the novel Kashi Yatre.",
+          "keyIdeas": [
+            "Education is the ultimate tool for personal independence and self-reliance, regardless of age.",
+            "Determination and willpower can overcome any obstacle, including starting to learn at the age of sixty-two.",
+            "The relationship between a teacher and a student transcends familial hierarchy and age.",
+            "Traditional storytelling and serialized novels act as powerful cultural anchors in rural households."
+          ],
+          "flashcards": [
+            { "front": "Ardent", "back": "Keen, passionate, or full of enthusiasm (e.g., an ardent desire)." },
+            { "front": "Savouring", "back": "Enjoying or tasting something to the absolute fullest." },
+            { "front": "Taken aback", "back": "Surprised and completely shocked by something unexpected." },
+            { "front": "Passed with flying colours", "back": "An idiom meaning to perform outstandingly and succeed brilliantly." },
+            { "front": "Sink or swim", "back": "A binomial meaning to succeed or fail entirely by one's own efforts." },
+            { "front": "Learn by heart", "back": "To completely memorize something so it can be repeated from memory." }
+          ],
+          "qna": [
+            { "q": "Why did Krishtakka weep when the narrator returned from the wedding?", "a": "She felt dependent and helpless because she was unable to read the latest episode of Kashi Yatre in the Karmaveera magazine." },
+            { "q": "Why did the grandmother touch her granddaughter's feet on Dassara?", "a": "She touched her feet as a mark of respect for a teacher, stating that one must respect a teacher irrespective of age and gender." },
+            { "q": "What was the significance of the novel Kashi Yatre to the grandmother?", "a": "The protagonist of the novel desired to go to Kashi but sacrificed her savings to help an orphan girl marry. The grandmother identified deeply with this selfless struggle." }
+          ]
+        },
+        {
+          "title": "Bharat Our Land",
+          "summary": "A patriotic ode that celebrates India's majestic physical geography, rich spiritual heritage, sacred texts, and courageous historical figures.",
+          "keyIdeas": [
+            "India possesses an unparalleled synthesis of physical grandeur (Himalayas, Ganga) and deep spiritual wisdom (Upanishads).",
+            "The nation's legacy is built on the dual pillars of valor (gallant warriors) and wisdom (sacred sages).",
+            "A strong connection to cultural heritage and geography fosters unity and national pride."
+          ],
+          "flashcards": [
+            { "front": "Peerless", "back": "Incomparable, unmatched, and having no equal anywhere on Earth." },
+            { "front": "Hoary antiquity", "back": "The ancient, primeval past, stretching back to time immemorial." },
+            { "front": "Himavant", "back": "The mighty Himalayan mountain range, symbolizing strength and permanence." },
+            { "front": "Generous Ganga", "back": "Symbol of purity and natural grace, depicting India's life-giving river systems." },
+            { "front": "Sanctified land", "back": "A land blessed, purified, and made sacred by ancient sages and historical leaders." }
+          ],
+          "qna": [
+            { "q": "Why is India referred to as 'this sunny golden land'?", "a": "To symbolize its natural richness, warmth, glory, and agricultural abundance." },
+            { "q": "What does the refrain 'she's peerless, let's praise her!' convey?", "a": "It reinforces absolute national pride and highlights India's unique standing in the world." },
+            { "q": "Name the two prominent spiritual figures mentioned in the poem who enriched the land.", "a": "Gautama Buddha (who preached Dhamma) and the ancient sages who realized Brahma-knowledge." }
+          ]
+        },
+        {
+          "title": "The Pot Maker",
+          "summary": "Set in a traditional village, it tells the story of Sentila, a young girl determined to carry forward the ancient, laborious craft of pottery despite her mother's discouragement and the village council's interference, eventually finding her flow with the help of Aunt Onula.",
+          "keyIdeas": [
+            "Traditional skills and cultural crafts belong to the collective community, carrying historical legacy across generations.",
+            "Perseverance and intrinsic passion are essential when pursuing a creative vocation against practical obstacles.",
+            "Teaching requires patience and an understanding of the student's emotional state, as shown by Onula's success over Arenla's frustration."
+          ],
+          "flashcards": [
+            { "front": "Pittance", "back": "A very small, insufficient amount of money received as income or wages." },
+            { "front": "Deftly", "back": "Performing an action with high skill, speed, and cleverness." },
+            { "front": "Malleable dough", "back": "Soft clay that is highly pliable and easily shaped without cracking." },
+            { "front": "Momentous transition", "back": "An event or moment of grand significance that marks a major turning point." },
+            { "front": "Profound revelation", "back": "A powerful, deep moment of realization or discovery." },
+            { "front": "Symmetry", "back": "Perfect balance and matching proportions, as seen in the two neat rows of pots." }
+          ],
+          "qna": [
+            { "q": "Why did Sentila's mother, Arenla, prefer that she learn weaving over pot making?", "a": "Weaving was cleaner, could be done indoors, took less time, and earned a handsome return compared to the tedious and low-paying labor of pot making." },
+            { "q": "What did the village council remind Mesoba regarding traditional crafts?", "a": "That traditional crafts symbolize the culture and history of the community, do not belong to individuals, and must be passed down to anyone wishing to learn." },
+            { "q": "How did Onula help Sentila find her confidence in shaping clay?", "a": "Onula taught her to relax, showed her how to shape clay when she was too tense, and gave her the quiet encouragement her mother couldn't offer." }
+          ]
+        },
+        {
+          "title": "Gifts of Grace: Honouring Our Vocations",
+          "summary": "A celebratory poem that honors the dignity of labor, profiling various skilled artisans and craftsmen—electricians, carpenters, cooks, shoemakers—and their role in forming societal identity.",
+          "keyIdeas": [
+            "The dignity of labor and respect for all vocations is vital for a harmonious society.",
+            "Every craftsperson's skill is an act of creation, linking math, art, and function.",
+            "The voice of one's vocation forms the core of personal and cultural identity."
+          ],
+          "flashcards": [
+            { "front": "Myriad", "back": "Countless, innumerable, or existing in extremely large numbers." },
+            { "front": "Hues", "back": "Shades or tints of colors that create visual variety and beauty." },
+            { "front": "Affirming", "back": "Declaring with confidence, verifying, or validating the quality of something." },
+            { "front": "Delicious singing", "back": "A sensory metaphor equating pleasing music to an enjoyable taste." },
+            { "front": "Dignity of Labor", "back": "The philosophy that all types of jobs are respected equally, and no occupation is superior." }
+          ],
+          "qna": [
+            { "q": "Explain the significance of the line 'The voice of their vocation is the voice of their identity.'", "a": "It highlights that a person's work is not just a source of income, but a fundamental expression of who they are and their place in the community." },
+            { "q": "What does the carpenter create with mathematical precision?", "a": "The carpenter is admired for creating beautiful and functional things out of raw wood using logical, precise calculations." },
+            { "q": "How does the poet use sensory imagery in this poem?", "a": "By using terms like 'delicious singing' for the cook, 'humming' for the electrician, and 'myriad hues' for the craftsperson's work to bring everyday activities to life." }
+          ]
+        },
+        {
+          "title": "Winds of Change",
+          "summary": "An exploration of the punkha (traditional hand fan) as a historical and cultural artifact, tracing its evolution from Ajanta paintings and royal courts to its modern status as a preserved traditional craft.",
+          "keyIdeas": [
+            "The design of traditional artifacts reflects the local geography, materials, and cultural heritage.",
+            "Industrial and technological progress runs the risk of displacing beautiful historical crafts and artisan livelihoods.",
+            "Preservation initiatives (like workshops and exhibitions) are crucial to sustain traditional craftspersons economically."
+          ],
+          "flashcards": [
+            { "front": "Punkha origin", "back": "Originates from the word 'pankh', meaning bird feather, used for traditional hand fans." },
+            { "front": "Appliqué hand fan", "back": "A Rajasthani fan made of pieces of fabric sewn onto another cloth with needlework." },
+            { "front": "Zardozi hand fan", "back": "A Rajasthani hand fan decorated with glittering ornate gold and silver threadwork." },
+            { "front": "Tal Patar Pankha", "back": "Bengali palm-leaf hand fans perpetually kept as staples in local households." },
+            { "front": "Antiquity", "back": "The ancient past or great age, representing the long historical lineage of the fans." },
+            { "front": "Encrusted", "back": "Covered or decorated with a hard, ornate layer of thread or beads." }
+          ],
+          "qna": [
+            { "q": "Why does the author refer to punkhas as a 'culture' rather than just objects?", "a": "Because their design, materials (bamboo, leather, palm leaf, zardozi), and decorative styles reflect the distinct identity, history, and rituals of different Indian regions." },
+            { "q": "How has the role of the punkha changed in modern India?", "a": "It has transitioned from a utility item for cooling royal courts and households into a decorative art piece and commercial handicraft that supports artisan livelihoods." },
+            { "q": "What materials do Bengal artisans use to make delicate fans?", "a": "They use the milky-white spongy centre of the sola plant and palm leaves (Tal Patar Pankha)." }
+          ]
+        },
+        {
+          "title": "Canvas of Soil",
+          "summary": "A lyric poem that frames the acts of gardening and farming as a form of art, comparing seeds to brushstrokes and the earth to a wide painter's canvas.",
+          "keyIdeas": [
+            "Nature and human creativity are deeply intertwined, with gardening serving as a living art form.",
+            "The Earth is a fertile canvas where life and aesthetic beauty coincide.",
+            "The cycle of planting seeds and waiting for spring reflects patience, hope, and growth."
+          ],
+          "flashcards": [
+            { "front": "Palette", "back": "A board or tablet on which a painter mixes colors; in the poem, it represents the rich soil." },
+            { "front": "Hue", "back": "A specific shade or tint of a color (e.g., spring's vibrant green, red, or blue)." },
+            { "front": "Brushstrokes of seeds", "back": "A metaphor comparing the act of planting seeds to a painter laying down paint." },
+            { "front": "Canvas", "back": "The strong cloth used for oil paintings; in the poem, it represents the garden plot." },
+            { "front": "Coincide", "back": "To happen at the same time or place; here, it marks the intersection of art and life." }
+          ],
+          "qna": [
+            { "q": "How does the metaphor 'Brushstrokes of seeds' enhance the poem's theme?", "a": "It beautifully frames the physical, manual act of planting as a deliberate, creative gesture that will eventually paint the soil with colors." },
+            { "q": "What is the deeper, allegorical meaning of the garden in the poem?", "a": "The garden can represent life's journey, the growth of dreams, and the harmony of diverse elements working together." },
+            { "q": "What does the line 'Gardens become paintings still' suggest?", "a": "It captures the timeless, frozen beauty of a well-tended garden, which exists as a masterpiece of nature." }
+          ]
+        },
+        {
+          "title": "Vitamin-M",
+          "summary": "A heartwarming story about young Ravi, his forgetful yet brilliant grandfather, and a series of comical misadventures during a stealthy chase through town that ultimately strengthens their family bond.",
+          "keyIdeas": [
+            "Aging brings physical and memory challenges, but the emotional bonds of family remain deep and vital.",
+            "Respecting the dignity and independence of elders is just as important as ensuring their safety.",
+            "Love and caring are reciprocal; small acts of kindness and attention can heal generational gaps."
+          ],
+          "flashcards": [
+            { "front": "Vitamin-M", "back": "A humorous name coined by Ravi's mother for a hypothetical memory-enhancing vitamin." },
+            { "front": "Frail", "back": "Weak, delicate, or easily broken (often describing health or the elderly)." },
+            { "front": "Jauntily", "back": "Happily, confidently, and in a self-assured, lively manner." },
+            { "front": "Deterred", "back": "Prevented or discouraged from doing something through fear or difficulty." },
+            { "front": "Confront", "back": "To face someone directly, especially in a challenging or questioning way." },
+            { "front": "Frantic", "back": "Highly excited, worried, or wild with fear and anxiety." }
+          ],
+          "qna": [
+            { "q": "Why was Ravi's grandfather unhappy about living in the city flat?", "a": "He hated the crowded, noisy city life and missed the quietness of his small brick house in the town, where he could hear a leaf fall at dusk." },
+            { "q": "How did Ravi find himself in a dilemma when his grandfather went out?", "a": "His grandfather would feel insulted if Ravi accompanied him, but his mother would be furious if she knew Grandpa was allowed to go out alone." },
+            { "q": "What surprise did the grandfather have for Ravi and his mother?", "a": "He got them gift-wrapped parcels because he always gave gifts to every child in the house on his own birthday, which the mother had forgotten." }
+          ]
+        }
+      ]
     }
   }
 };

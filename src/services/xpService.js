@@ -32,19 +32,15 @@ export const xpService = {
     const user = authService.me();
     if (!user) return [];
     
-    try {
-      const { data, error } = await supabase
-        .from('xp_logs')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(50);
-        
-      if (error) throw error;
-      return data;
-    } catch (err) {
-      return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-    }
+    const { data, error } = await supabase
+      .from('xp_logs')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(50);
+      
+    if (error) return [];
+    return data;
   },
 
   awardXp: async (amount, reason) => {
@@ -56,42 +52,8 @@ export const xpService = {
                      reason.toLowerCase().includes('streak') ? 'streak' : 
                      reason.toLowerCase().includes('task') || reason.toLowerCase().includes('planner') ? 'task' : 'social';
 
-    // 1. Prepare Local Fallback Data
-    const newXp = (user.xp || 0) + amount;
-    const newLevel = xpService.getLevel(newXp);
-    const leveledUp = newLevel > (user.level || 1);
-    
-    const localUpdatedUser = {
-      ...user,
-      xp: newXp,
-      level: newLevel,
-      last_activity_date: new Date().toISOString()
-    };
-
-    const localLog = {
-      id: Math.random().toString(36).substr(2, 9),
-      user_id: user.id,
-      amount,
-      reason,
-      category,
-      created_at: new Date().toISOString()
-    };
-
-    // 2. Commit to Local Storage Immediately
-    localStorage.setItem('nuvio_user', JSON.stringify(localUpdatedUser));
-    const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-    localStorage.setItem(HISTORY_KEY, JSON.stringify([localLog, ...history].slice(0, 50)));
-
-    // 3. Emit events for UI
-    window.dispatchEvent(new CustomEvent('nuvio_stats_update', { detail: localUpdatedUser }));
-    if (leveledUp) {
-      window.dispatchEvent(new CustomEvent('nuvio_notification', { 
-        detail: { title: "Neural Ascension", message: `Reached Level ${newLevel}!`, type: 'success' } 
-      }));
-    }
-
     try {
-      // 🚀 Attempt Cloud Sync
+      // 🚀 ATOMIC SYNC: One call to handle Profile + Logs + Level Calculation
       const { data, error } = await supabase.rpc('rpc_award_xp', {
         amount_to_add: amount,
         award_reason: reason,
@@ -99,14 +61,26 @@ export const xpService = {
       });
 
       if (error || !data.success) throw error || new Error(data.message);
+
+      const updatedUser = data.profile;
+      const leveledUp = data.leveled_up;
+
+      // 1. Sync Local State
+      localStorage.setItem('nuvio_user', JSON.stringify(updatedUser));
       
-      // If cloud succeeds, it might have extra data (like role updates), so sync back
-      const cloudProfile = data.profile;
-      localStorage.setItem('nuvio_user', JSON.stringify(cloudProfile));
-      return { updatedUser: cloudProfile, leveledUp: data.leveled_up, amount, reason };
+      // 2. Emit events for UI
+      window.dispatchEvent(new CustomEvent('nuvio_stats_update', { detail: updatedUser }));
+      
+      if (leveledUp) {
+        window.dispatchEvent(new CustomEvent('nuvio_notification', { 
+          detail: { title: "Neural Ascension", message: `Reached Level ${updatedUser.level}!`, type: 'success' } 
+        }));
+      }
+
+      return { updatedUser, leveledUp, amount, reason };
     } catch (err) {
-      console.warn("XP CLOUD SYNC DELAYED (USING LOCAL):", err.message);
-      return { updatedUser: localUpdatedUser, leveledUp, amount, reason };
+      console.error("NEURAL XP SYNC FAILURE:", err);
+      return null;
     }
   },
 

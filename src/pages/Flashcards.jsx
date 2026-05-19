@@ -10,17 +10,6 @@ import { dataService } from '../services/dataService';
 import { xpService } from '../services/xpService';
 import { notificationService } from '../services/notificationService';
 
-const SubjectIcon = ({ subject, className = "w-6 h-6" }) => {
-  const s = subject?.toLowerCase() || '';
-  if (s.includes('math')) return <Zap className={className} />; // Use Zap for math in flashcards for variety
-  if (s.includes('sci')) return <Orbit className={className} />;
-  if (s.includes('hist') || s.includes('human')) return <BookMarked className={className} />;
-  if (s.includes('lang') || s.includes('write')) return <Brain className={className} />;
-  if (s.includes('lit')) return <Layers className={className} />;
-  if (s.includes('exam') || s.includes('test')) return <Zap className={className} />;
-  return <Database className={className} />;
-};
-
 const Flashcards = () => {
   const [decks, setDecks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -125,30 +114,11 @@ const Flashcards = () => {
         </header>
 
         {decks.length === 0 ? (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-40 border-4 border-dashed border-white/5 text-center rounded-[40px] bg-black/40 flex flex-col items-center justify-center relative overflow-hidden group">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.1)_0%,transparent_70%)]" />
-            
-            {/* 3D Data Cube Graphic */}
-            <div className="relative w-48 h-48 mb-12 perspective-1000">
-               <motion.div 
-                 animate={{ rotateY: 360, rotateX: 360 }}
-                 transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-                 className="w-24 h-24 relative mx-auto"
-                 style={{ transformStyle: 'preserve-3d' }}
-               >
-                 <div className="absolute inset-0 border-2 border-nuvio-blue bg-nuvio-blue/10 shadow-[0_0_20px_rgba(59,130,246,0.5)]" style={{ transform: 'translateZ(48px)' }} />
-                 <div className="absolute inset-0 border-2 border-nuvio-blue bg-nuvio-blue/10" style={{ transform: 'rotateY(180deg) translateZ(48px)' }} />
-                 <div className="absolute inset-0 border-2 border-nuvio-blue bg-nuvio-blue/10" style={{ transform: 'rotateY(90deg) translateZ(48px)' }} />
-                 <div className="absolute inset-0 border-2 border-nuvio-blue bg-nuvio-blue/10" style={{ transform: 'rotateY(-90deg) translateZ(48px)' }} />
-                 <div className="absolute inset-0 border-2 border-nuvio-blue bg-nuvio-blue/10" style={{ transform: 'rotateX(90deg) translateZ(48px)' }} />
-                 <div className="absolute inset-0 border-2 border-nuvio-blue bg-nuvio-blue/10" style={{ transform: 'rotateX(-90deg) translateZ(48px)' }} />
-               </motion.div>
-            </div>
-
-            <h3 className="text-4xl font-black text-white uppercase tracking-tighter mb-4 relative z-10">Vault Cold</h3>
-            <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.4em] mb-12 relative z-10">No cognitive modules detected in neural storage.</p>
-            
-            <button onClick={() => setView('create')} className="px-12 py-5 bg-white text-black font-black uppercase tracking-[0.3em] text-xs rounded-2xl hover:scale-105 transition-all shadow-[0_0_40px_rgba(255,255,255,0.2)] relative z-10">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-40 border-4 border-dashed border-white/5 text-center rounded-[40px] bg-black/20 flex flex-col items-center justify-center">
+            <BookMarked className="w-24 h-24 text-white/5 mb-8" />
+            <h3 className="text-4xl font-black text-white/20 uppercase tracking-tighter mb-4">Vault Empty</h3>
+            <p className="text-sm font-bold text-white/20 uppercase tracking-widest mb-8">No cognitive modules detected.</p>
+            <button onClick={() => setView('create')} className="px-8 py-4 bg-white/5 text-nuvio-blue font-black uppercase tracking-widest text-xs rounded-xl hover:bg-nuvio-blue hover:text-black transition-all">
               Initialize First Deck
             </button>
           </motion.div>
@@ -164,8 +134,8 @@ const Flashcards = () => {
                   
                   <div className="relative z-10 space-y-8">
                     <div className="flex justify-between items-start">
-                      <div className="w-16 h-16 rounded-[20px] bg-black border-2 border-white/10 flex items-center justify-center text-nuvio-blue group-hover:bg-nuvio-blue group-hover:text-black group-hover:border-nuvio-blue transition-all shadow-lg">
-                        <SubjectIcon subject={deck.subject} className="w-8 h-8" />
+                      <div className="w-16 h-16 rounded-[20px] bg-black border-2 border-white/10 flex items-center justify-center text-nuvio-blue font-black text-3xl group-hover:bg-nuvio-blue group-hover:text-black group-hover:border-nuvio-blue transition-all shadow-lg">
+                        {deck.subject?.charAt(0) || 'D'}
                       </div>
                       <button 
                         onClick={() => deleteDeck(deck.id)}

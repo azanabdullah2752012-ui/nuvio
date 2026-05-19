@@ -22,38 +22,22 @@ const SystemPulse = () => {
 
   const fetchStats = async () => {
     try {
-      // 1. Total Population
+      const { data, error } = await supabase.rpc('rpc_get_admin_stats');
+      
+      // Fetch Total Population count directly from profiles
       const { count: totalCount } = await supabase
         .from('profiles')
         .select('*', { count: 'exact', head: true });
 
-      // 2. Total Tasks (Activity Proxy)
-      const { count: activeCount } = await supabase
-        .from('tasks')
-        .select('*', { count: 'exact', head: true });
-
-      // 3. Message Throughput (Proxy)
-      const { count: msgCount } = await supabase
-        .from('messages')
-        .select('*', { count: 'exact', head: true });
-
-      // 4. Real Active Count (Users active in last 15 mins)
-      const { data: activeProfiles } = await supabase
-        .from('profiles')
-        .select('id')
-        .gt('updated_at', new Date(Date.now() - 15 * 60000).toISOString());
-
-      const enhancedStats = {
-        total_users: totalCount || 0,
-        active_users: activeProfiles?.length || 0,
-        msgs_per_min: msgCount || 0,
-        xp_per_min: (activeCount || 0) * 10,
-        timestamp: new Date().toISOString()
-      };
-      
-      setStats(enhancedStats);
-      setHistory(prev => [...prev.slice(-19), enhancedStats]);
-      setLoading(false);
+      if (data) {
+        const enhancedStats = {
+          ...data,
+          total_users: totalCount || 0
+        };
+        setStats(enhancedStats);
+        setHistory(prev => [...prev.slice(-19), enhancedStats]); // Keep last 20 samples
+        setLoading(false);
+      }
     } catch (err) {
       console.error("Telemetry failure:", err);
     }
