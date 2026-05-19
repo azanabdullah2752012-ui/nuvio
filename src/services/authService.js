@@ -84,7 +84,8 @@ export const authService = {
           era_tokens: 500,
           role: isAdminEmail ? 'admin' : 'student',
           grade_level: user.user_metadata?.grade_level || '9th',
-          onboarding_completed: true
+          onboarding_completed: true,
+          last_activity_date: new Date().toISOString()
         };
 
         const { error } = await supabase.from('profiles').insert(newProfile);
@@ -101,6 +102,12 @@ export const authService = {
           existing.role = 'admin';
           await supabase.from('profiles').update({ role: 'admin' }).eq('id', existing.id);
         }
+        
+        if (!existing.last_activity_date) {
+          existing.last_activity_date = new Date().toISOString();
+          await supabase.from('profiles').update({ last_activity_date: existing.last_activity_date }).eq('id', existing.id);
+        }
+        
         localStorage.setItem(STORAGE_KEY, JSON.stringify(existing));
       }
       
@@ -118,7 +125,13 @@ export const authService = {
 
   validateStreak: async () => {
     const user = authService.me();
-    if (!user || !user.last_activity_date) return;
+    if (!user) return { status: 'active' };
+    
+    if (!user.last_activity_date) {
+      // Initialize if missing
+      await authService.updateMe({ last_activity_date: new Date().toISOString() });
+      return { status: 'active' };
+    }
 
     const last = new Date(user.last_activity_date);
     const now = new Date();
@@ -134,6 +147,11 @@ export const authService = {
       await authService.updateMe({ streak: (user.streak || 0) + 1 });
       return { status: 'increment' };
     }
+
+    // Keep the local timestamp moving forward as the user is actively navigating
+    user.last_activity_date = now.toISOString();
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+    
     return { status: 'active' };
   },
 
@@ -147,7 +165,12 @@ export const authService = {
     delete sanitizedData.email;
     delete sanitizedData.id;
 
-    const updated = { ...current, ...sanitizedData };
+    const nowIso = new Date().toISOString();
+    const updated = { 
+      ...current, 
+      ...sanitizedData, 
+      last_activity_date: nowIso 
+    };
     
     // Save locally for speed
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
@@ -157,7 +180,7 @@ export const authService = {
     try {
       const { error } = await supabase
         .from('profiles')
-        .update({ ...sanitizedData, last_activity_date: new Date().toISOString() })
+        .update({ ...sanitizedData, last_activity_date: nowIso })
         .eq('id', current.id);
       
       if (error) throw error;
