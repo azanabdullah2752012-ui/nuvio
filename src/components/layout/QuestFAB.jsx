@@ -99,7 +99,7 @@ const QuestFAB = () => {
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="absolute bottom-18 right-0 w-[320px] md:w-[360px] bg-background-surface border-4 border-nuvio-purple-500 shadow-nb rounded-[24px] overflow-hidden flex flex-col p-6 space-y-6"
+            className="fixed bottom-24 right-4 left-4 sm:left-auto sm:right-6 sm:w-[360px] bg-background-surface border-4 border-nuvio-purple-500 shadow-nb rounded-[24px] overflow-hidden flex flex-col p-6 space-y-6"
           >
             {/* Header */}
             <div className="flex items-center justify-between border-b border-white/5 pb-4">
