@@ -3,7 +3,7 @@ import { HashRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'r
 
 // Layout & Core
 import Layout from './components/layout/Layout';
-import NeuralComms from './components/NeuralComms';
+import NudgeSystem from './components/NudgeSystem';
 import InteractionSystem from './components/InteractionSystem';
 
 // Auth (Loaded immediately for UX)
@@ -14,10 +14,10 @@ import Onboarding from './pages/Onboarding';
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Flashcards = lazy(() => import('./pages/Flashcards'));
 const Homework = lazy(() => import('./pages/Homework'));
-const AIChat = lazy(() => import('./pages/AIChat'));
+const StudyHub = lazy(() => import('./pages/StudyHub'));
 const Profile = lazy(() => import('./pages/Profile'));
 const Leaderboard = lazy(() => import('./pages/Leaderboard'));
-const EssayForge = lazy(() => import('./pages/EssayForge'));
+const WritingWorkshop = lazy(() => import('./pages/EssayForge'));
 const Admin = lazy(() => import('./pages/Admin'));
 const Calendar = lazy(() => import('./pages/Calendar'));
 const FocusTimer = lazy(() => import('./pages/FocusTimer'));
@@ -36,10 +36,10 @@ import { authService } from './services/authService';
 import { supabase } from './lib/supabase';
 
 // Loading Spinner for Chunks
-const NeuralLoader = () => (
+const AppLoader = () => (
   <div className="min-h-screen bg-background-base flex flex-col items-center justify-center gap-4">
     <div className="w-10 h-10 border-4 border-nuvio-purple-500/20 border-t-nuvio-purple-500 rounded-full animate-spin" />
-    <div className="text-[10px] font-black text-text-muted uppercase tracking-[0.3em]">Downloading Neural Packet...</div>
+    <div className="text-[10px] font-black text-text-muted uppercase tracking-[0.3em]">Loading Acadevance...</div>
   </div>
 );
 
@@ -65,18 +65,18 @@ const RetentionEngine = ({ children }) => {
 
       const result = await authService.validateStreak();
       if (result.status === 'reset') {
-        window.dispatchEvent(new CustomEvent('acadevance_neural_nudge', {
+        window.dispatchEvent(new CustomEvent('acadevance_nudge', {
           detail: {
-            title: "Streak Terminated",
-            message: `Neural Link was cold for too long. Reset to 1 Day.`,
+            title: "Streak Reset",
+            message: `Study streak was cold for too long. Reset to 1 Day.`,
             type: 'streak'
           }
         }));
       } else if (result.status === 'increment') {
-        window.dispatchEvent(new CustomEvent('acadevance_neural_nudge', {
+        window.dispatchEvent(new CustomEvent('acadevance_nudge', {
           detail: {
-            title: "Neural Synergy",
-            message: `Day ${user.streak + 1} synchronized. Keep the burn!`,
+            title: "Streak Extended!",
+            message: `Day ${user.streak + 1} active. Keep the burn!`,
             type: 'streak'
           }
         }));
@@ -88,7 +88,7 @@ const RetentionEngine = ({ children }) => {
   return (
     <>
       {children}
-      <NeuralComms />
+      <NudgeSystem />
     </>
   );
 };
@@ -101,7 +101,7 @@ const AuthOrchestrator = ({ children }) => {
     // 1. Listen for Auth State Changes (OAuth Redirects)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log("NEURAL AUTH EVENT:", event);
+        console.log("AUTH EVENT:", event);
         
         if (session?.user && (event === 'SIGNED_IN' || event === 'USER_UPDATED')) {
           const profile = authService.me();
@@ -142,7 +142,7 @@ function App() {
       <InteractionSystem />
       <AuthOrchestrator>
         <RetentionEngine>
-          <Suspense fallback={<NeuralLoader />}>
+          <Suspense fallback={<AppLoader />}>
             <Routes>
               {/* Public Routes */}
               <Route path="/" element={<LandingPage />} />
@@ -160,10 +160,9 @@ function App() {
                 <Route path="/curriculum" element={<CurriculumHub />} />
                 <Route path="/subject-library" element={<SubjectLibrary />} />
                 
-                {/* AI Suite */}
-                <Route path="/nova-ai" element={<AIChat />} />
-                <Route path="/ai-chat" element={<Navigate to="/nova-ai" replace />} />
-                <Route path="/essay-forge" element={<EssayForge />} />
+                {/* Learning Section */}
+                <Route path="/study-hub" element={<StudyHub />} />
+                <Route path="/essay-forge" element={<WritingWorkshop />} />
                 
                 {/* Study Verse */}
                 <Route path="/boss-raid" element={<BossRaid />} />

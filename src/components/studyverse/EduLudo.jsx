@@ -37,7 +37,7 @@ const EduLudo = ({ players = [], turn, onLog, onQuiz, activeSubject, onNextTurn,
     
     // 1. Check if in Home
     if (currentPlayerToken.pos === -1) {
-      onLog(`${players[turn].name} needs neural launch authorization...`, 'sys');
+      onLog(`${players[turn].name} needs launch authorization...`, 'sys');
       onQuiz({
         difficulty: 'Easy',
         callback: (correct) => {
@@ -58,7 +58,7 @@ const EduLudo = ({ players = [], turn, onLog, onQuiz, activeSubject, onNextTurn,
         gameService.awardPlayer(turn, 200, "Edu Ludo Mastery");
         moveToken(turn, -2); // -2 = Finished
       } else {
-        onLog(`${players[turn].name} advancing ${roll} neural nodes.`, 'game');
+        onLog(`${players[turn].name} advancing ${roll} nodes.`, 'game');
         moveToken(turn, newPos);
       }
       onNextTurn();

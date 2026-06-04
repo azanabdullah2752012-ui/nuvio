@@ -122,7 +122,7 @@ const Dashboard = () => {
 
   const handleHoldComplete = () => {
     setIsHolding(false);
-    notificationService.send("Neural Surge", "Tasks synchronized. Gained +10 Focus Energy.", "success");
+    notificationService.send("Focus Surge", "Tasks synchronized. Gained +10 Focus Energy.", "success");
     xpService.awardXp(10, 'Daily Ritual');
     navigate('/homework');
   };

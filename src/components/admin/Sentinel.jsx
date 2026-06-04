@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../../lib/supabase';
 import { notificationService } from '../../services/notificationService';
 
-const NeuralSentinel = () => {
+const Sentinel = () => {
   const [threats, setThreats] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedThreat, setSelectedThreat] = useState(null);
@@ -22,7 +22,7 @@ const NeuralSentinel = () => {
     setLoading(false);
   };
 
-  const executeIntervention = async (userId, action, reason = 'Neural Breach Detected') => {
+  const executeIntervention = async (userId, action, reason = 'System Breach Detected') => {
     setIntervening(true);
     try {
       const { data, error } = await supabase.rpc('rpc_admin_user_action', {
@@ -63,11 +63,11 @@ const NeuralSentinel = () => {
 
         <div className="space-y-4">
           {loading ? (
-             <div className="text-center py-20 animate-pulse text-[10px] font-black uppercase text-nuvio-red tracking-[0.3em]">Scanning Neural Pathways...</div>
+             <div className="text-center py-20 animate-pulse text-[10px] font-black uppercase text-nuvio-red tracking-[0.3em]">Scanning System Logs...</div>
           ) : threats.length === 0 ? (
              <div className="nv-card p-12 text-center border-nuvio-green/20 bg-nuvio-green/5">
                 <ShieldAlert className="w-10 h-10 text-nuvio-green mx-auto mb-4 opacity-50" />
-                <p className="text-xs font-black text-nuvio-green uppercase tracking-widest">Neural Ecosystem Stable. No Breaches Detected.</p>
+                <p className="text-xs font-black text-nuvio-green uppercase tracking-widest">System Ecosystem Stable. No Breaches Detected.</p>
              </div>
           ) : threats.map(target => (
             <motion.div 
@@ -152,4 +152,4 @@ const NeuralSentinel = () => {
   );
 };
 
-export default NeuralSentinel;
+export default Sentinel;

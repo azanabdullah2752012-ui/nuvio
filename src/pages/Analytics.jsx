@@ -81,9 +81,9 @@ const Analytics = () => {
       <header>
         <h1 className="text-4xl font-black text-white uppercase tracking-tighter flex items-center gap-3">
           <Activity className="w-10 h-10 text-nuvio-purple-400" />
-          Neural Analytics
+          Learning Analytics
         </h1>
-        <p className="text-text-secondary font-medium mt-1">High-fidelity extraction of your study velocity and cognitive trends.</p>
+        <p className="text-text-secondary font-medium mt-1">High-fidelity insights into your study velocity and learning trends.</p>
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -163,7 +163,7 @@ const Analytics = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
          {[
            { label: 'Avg session', val: statsData.avg, icon: Clock, color: 'text-nuvio-purple-400' },
-           { label: 'Neural Gain', val: statsData.gain, icon: TrendingUp, color: 'text-nuvio-green' },
+           { label: 'Progression Gain', val: statsData.gain, icon: TrendingUp, color: 'text-nuvio-green' },
            { label: 'Total Cycles', val: statsData.total, icon: Award, color: 'text-nuvio-yellow' },
            { label: 'Focus Rank', val: statsData.rank, icon: Target, color: 'text-nuvio-blue' },
          ].map((stat, i) => (

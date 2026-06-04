@@ -50,7 +50,7 @@ const StudyVerse = () => {
     }
   };
 
-  // --- AI SENTINEL ENGINE (Real Peers Only) ---
+  // --- BOT OPPONENT ENGINE (Real Peers Only) ---
   useEffect(() => {
     const activePlayer = players[turn];
     if (!activePlayer) return;
@@ -128,13 +128,13 @@ const StudyVerse = () => {
              kp_earned: 50,
              xp_earned: 20
           }])
-        ]).catch(e => console.error("Neural Matrix Sync Error:", e));
+        ]).catch(e => console.error("Study Matrix Sync Error:", e));
       }
       
       notificationService.send("Node Secured", "KP +50 awarded.", "success");
       if (window.quiz_callback) window.quiz_callback(true);
     } else {
-      addLog(`${players[turn].name} failed neural verification.`, 'error');
+      addLog(`${players[turn].name} failed question verification.`, 'error');
       notificationService.send("Logic Error", "Movement penalized.", "error");
       if (window.quiz_callback) window.quiz_callback(false);
     }
@@ -264,7 +264,7 @@ const StudyVerse = () => {
                     <div key={p.id} className={`flex items-center justify-between p-3 border-2 border-black ${turn === players.indexOf(p) ? 'bg-nuvio-purple-500/20 border-nuvio-purple-500 shadow-[4px_4px_0_#000]' : 'bg-black/20 opacity-70'}`}>
                        <div className="flex items-center gap-3">
                           <div className="w-8 h-8 flex items-center justify-center border-2 border-black" style={{ backgroundColor: p.color }}>{p.icon}</div>
-                          <span className="text-[11px] font-black uppercase tracking-tight">{p.name} {p.isBot && isSolo && "(AI)"}</span>
+                          <span className="text-[11px] font-black uppercase tracking-tight">{p.name} {p.isBot && isSolo && "(Rival)"}</span>
                        </div>
                        <div className="text-[10px] font-bold text-nuvio-cyan">KP {p.kp}</div>
                     </div>
@@ -346,7 +346,7 @@ const StudyVerse = () => {
                 <div className="flex flex-col items-center justify-center opacity-30 space-y-6">
                    <Layers className="w-32 h-32" />
                    <h2 className="text-4xl font-black uppercase tracking-tighter">System Initializing</h2>
-                   <p className="text-[10px] font-black uppercase tracking-[0.4em]">Allocating Neural Capacity for {currentTab}</p>
+                   <p className="text-[10px] font-black uppercase tracking-[0.4em]">Loading Study Station for {currentTab}</p>
                 </div>
               )}
 

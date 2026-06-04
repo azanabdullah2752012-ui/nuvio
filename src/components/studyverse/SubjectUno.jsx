@@ -52,12 +52,12 @@ const SubjectUno = ({ players, turn, onLog, onQuiz, activeSubject, onNextTurn })
       onLog(`${players[turn].name} established a Semantic Link: ${card.val}`, 'success');
       executePlay(cardIdx);
     } else {
-      onLog(`Semantic Mismatch. Neural Penalty required.`, 'sys');
+      onLog(`Semantic Mismatch. Challenge Penalty required.`, 'sys');
       onQuiz({
         difficulty: 'Medium',
         callback: (correct) => {
           if (correct) {
-            onLog(`Logic override success. Card forced into matrix.`, 'success');
+            onLog(`Override success. Card successfully played.`, 'success');
             executePlay(cardIdx);
           } else {
             onLog(`Override failed. Hand growth detected.`, 'error');
@@ -80,7 +80,7 @@ const SubjectUno = ({ players, turn, onLog, onQuiz, activeSubject, onNextTurn })
     setHands(newHands);
 
     if (newHands[turn].length === 0) {
-      onLog(`${players[turn].name} ACHIEVED SEMANTIC UNITY! +300 XP.`, 'success');
+      onLog(`${players[turn].name} ACHIEVED SEMANTIC LINK! +300 XP.`, 'success');
       gameService.awardPlayer(turn, 300, "Subject Uno Victory", "uno");
     }
     onNextTurn();
@@ -89,7 +89,7 @@ const SubjectUno = ({ players, turn, onLog, onQuiz, activeSubject, onNextTurn })
   return (
     <div className="w-full max-w-5xl h-full flex flex-col items-center justify-between py-8 space-y-12 nv-page-transition">
       
-      {/* Discard Pile (Neural Matrix) */}
+      {/* Discard Pile */}
       <div className="relative flex items-center justify-center h-48 w-full">
          <AnimatePresence mode="popLayout">
             <motion.div 
@@ -98,7 +98,7 @@ const SubjectUno = ({ players, turn, onLog, onQuiz, activeSubject, onNextTurn })
                animate={{ scale: 1, rotate: 0 }}
                className={`w-40 h-56 ${discardPile[0].color} border-4 border-black shadow-nb flex flex-col items-center justify-center p-6 text-center absolute`}
             >
-               <div className="text-[10px] font-black text-black/40 uppercase tracking-widest mb-4">Neural Node</div>
+               <div className="text-[10px] font-black text-black/40 uppercase tracking-widest mb-4">Top Card</div>
                <div className="text-xl font-black text-black uppercase leading-tight">{discardPile[0].val}</div>
                <Brain className="w-10 h-10 text-black/20 mt-6" />
             </motion.div>
@@ -114,7 +114,7 @@ const SubjectUno = ({ players, turn, onLog, onQuiz, activeSubject, onNextTurn })
                </div>
                <div>
                   <h3 className="text-2xl font-black text-white uppercase tracking-tighter">{players[turn].name}'s Hand</h3>
-                  <p className="text-[10px] font-black text-nuvio-cyan uppercase tracking-widest">Constructing Semantic Chain...</p>
+                  <p className="text-[10px] font-black text-nuvio-cyan uppercase tracking-widest">Connecting Cards...</p>
                </div>
             </div>
             <div className="flex gap-2">

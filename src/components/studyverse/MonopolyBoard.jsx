@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { xpService } from '../../services/xpService';
 import { dataService } from '../../services/dataService';
-import { aiService } from '../../services/aiService';
+import { CURRICULUM_DATA } from '../../services/curriculumData';
 
 const MonopolyBoard = ({ onWin }) => {
   const [playerPosition, setPlayerPosition] = useState(0);
@@ -38,30 +38,56 @@ const MonopolyBoard = ({ onWin }) => {
       const randomDeck = decks[Math.floor(Math.random() * decks.length)];
       if (randomDeck.cards && randomDeck.cards.length > 0) {
         const card = randomDeck.cards[Math.floor(Math.random() * randomDeck.cards.length)];
-        // Generate distractors using simple logic or just use the card
         return {
           q: card.front,
           a: card.back,
           opts: [card.back, "Option B", "Option C", "Option D"].sort(() => Math.random() - 0.5),
-          subject: randomDeck.name
+          subject: randomDeck.title || randomDeck.name || 'Flashcard'
         };
       }
     }
 
-    // Fallback: AI Generated Question
-    setIsLoadingQuestion(true);
+    // Fallback: Pick a random Q&A from static CURRICULUM_DATA
     try {
-      const prompt = "Generate a multiple choice question about general science or math. Output only a JSON object: {q: string, a: string, opts: [string, string, string, string], subject: string}";
-      const response = await aiService.chat([{ role: 'user', content: prompt }]);
-      const cleaned = response.replace(/```json/g, '').replace(/```/g, '').trim();
-      const quiz = JSON.parse(cleaned);
-      setIsLoadingQuestion(false);
-      return quiz;
+      const grades = Object.keys(CURRICULUM_DATA);
+      const randomGrade = grades[Math.floor(Math.random() * grades.length)];
+      const subjects = Object.keys(CURRICULUM_DATA[randomGrade]);
+      const randomSubject = subjects[Math.floor(Math.random() * subjects.length)];
+      const chapters = CURRICULUM_DATA[randomGrade][randomSubject].chapters;
+      const randomChapter = chapters[Math.floor(Math.random() * chapters.length)];
+      
+      let item = null;
+      if (randomChapter.qna && randomChapter.qna.length > 0) {
+        item = randomChapter.qna[Math.floor(Math.random() * randomChapter.qna.length)];
+      } else if (randomChapter.flashcards && randomChapter.flashcards.length > 0) {
+        const fc = randomChapter.flashcards[Math.floor(Math.random() * randomChapter.flashcards.length)];
+        item = { q: fc.front, a: fc.back };
+      }
+
+      if (item) {
+        const allAnswers = [];
+        chapters.forEach(ch => {
+          if (ch.qna) ch.qna.forEach(q => allAnswers.push(q.a));
+          if (ch.flashcards) ch.flashcards.forEach(f => allAnswers.push(f.back));
+        });
+        const otherAnswers = Array.from(new Set(allAnswers.filter(ans => ans !== item.a)));
+        const distractors = otherAnswers.sort(() => Math.random() - 0.5).slice(0, 3);
+        while (distractors.length < 3) {
+          distractors.push(`Distractor Option ${distractors.length + 1}`);
+        }
+        
+        return {
+          q: item.q,
+          a: item.a,
+          opts: [item.a, ...distractors].sort(() => Math.random() - 0.5),
+          subject: randomSubject
+        };
+      }
     } catch (e) {
-      console.error("AI Question Failed", e);
-      setIsLoadingQuestion(false);
-      return { q: "What is 2+2?", a: "4", opts: ["3", "4", "5", "6"], subject: "Math" };
+      console.error("Static question extraction failed:", e);
     }
+    
+    return { q: "What is 2+2?", a: "4", opts: ["3", "4", "5", "6"], subject: "Math" };
   };
 
   const handleAiTurn = () => {
@@ -140,7 +166,7 @@ const MonopolyBoard = ({ onWin }) => {
                   <motion.div layoutId="player" className="w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-lg text-[10px]">👨‍🎓</motion.div>
                 )}
                 {aiPosition === i && (
-                  <motion.div layoutId="ai" className="w-5 h-5 bg-nuvio-orange rounded-full flex items-center justify-center shadow-lg text-[10px]">🤖</motion.div>
+                  <motion.div layoutId="ai" className="w-5 h-5 bg-nuvio-orange rounded-full flex items-center justify-center shadow-lg text-[10px]">🎓</motion.div>
                 )}
               </div>
             </div>
@@ -154,7 +180,7 @@ const MonopolyBoard = ({ onWin }) => {
         <div className="flex items-center justify-center gap-4">
            <div className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest ${turn === 'player' ? 'bg-nuvio-purple-500 text-white' : 'text-text-muted'}`}>You</div>
            <div className="w-2 h-2 rounded-full bg-white/10" />
-           <div className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest ${turn === 'ai' ? 'bg-nuvio-orange text-white' : 'text-text-muted'}`}>Nova AI</div>
+           <div className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest ${turn === 'ai' ? 'bg-nuvio-orange text-white' : 'text-text-muted'}`}>Study Rival</div>
         </div>
         
         <div className="pt-4 relative">

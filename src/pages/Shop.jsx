@@ -63,7 +63,7 @@ const Shop = () => {
             <ShoppingBag className="w-10 h-10 text-nuvio-purple-400" />
             Academy Shop
           </h1>
-          <p className="text-text-secondary font-medium mt-1">Exchange your hard-earned tokens for neural power-ups.</p>
+          <p className="text-text-secondary font-medium mt-1">Exchange your hard-earned tokens for academy power-ups.</p>
         </div>
         <div className="bg-white/5 border border-white/10 px-8 py-4 rounded-3xl flex items-center gap-4 shadow-xl shadow-nuvio-yellow/5">
           <Coins className="w-6 h-6 text-nuvio-yellow" />
@@ -126,7 +126,7 @@ const Shop = () => {
           })}
           {inventory.length === 0 && (
             <div className="flex items-center gap-3 text-text-muted opacity-30 italic text-xs uppercase font-bold px-4">
-              <Lock className="w-4 h-4" /> No items acquired in the current neural cycle...
+              <Lock className="w-4 h-4" /> No items acquired in the current learning cycle...
             </div>
           )}
         </div>

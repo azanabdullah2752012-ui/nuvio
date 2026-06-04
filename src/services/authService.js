@@ -15,11 +15,11 @@ export const authService = {
   },
 
   seedUserData: async (userId) => {
-    console.log("ACTIVATE NEURAL SEEDING PROTOCOL...");
+    console.log("ACTIVATE SEEDING PROTOCOL...");
     
     // 1. Initial Homework Tasks
     const starterTasks = [
-      { user_id: userId, title: 'Explore Neural Hub', subject: 'Acadevance', due: 'Today', priority: 'High', completed: false },
+      { user_id: userId, title: 'Explore Curriculum Hub', subject: 'Acadevance', due: 'Today', priority: 'High', completed: false },
       { user_id: userId, title: 'First Focus Session', subject: 'Meta', due: 'Soon', priority: 'Medium', completed: false }
     ];
 
@@ -27,11 +27,11 @@ export const authService = {
     const starterDecks = [
       { 
         user_id: userId, 
-        title: 'Cognitive Science 101', 
-        subject: 'Neural', 
+        title: 'Grade 9 Math', 
+        subject: 'Curriculum', 
         cards: [
-          { front: 'What is neuroplasticity?', back: 'The brain\'s ability to reorganize itself by forming new neural connections.' },
-          { front: 'Defined "Flow State"?', back: 'A mental state of operation in which a person performing an activity is fully immersed.' }
+          { front: 'What is the Origin?', back: 'The point of intersection of the x-axis and y-axis, with coordinates (0, 0).' },
+          { front: 'What is a Line?', back: 'A one-dimensional figure that has length but no width.' }
         ]
       }
     ];
@@ -41,7 +41,7 @@ export const authService = {
         supabase.from('tasks').insert(starterTasks),
         supabase.from('decks').insert(starterDecks)
       ]);
-      console.log("SEEDING COMPLETE. NEURAL CLOUD POPULATED.");
+      console.log("SEEDING COMPLETE. USER DATA POPULATED.");
     } catch (err) {
       console.error("Seeding interference detected:", err);
     }
@@ -49,7 +49,7 @@ export const authService = {
 
   syncProfile: async (user) => {
     if (!user) return;
-    console.log("NEURAL IDENTITY SYNC INITIATED FOR:", user.email);
+    console.log("USER IDENTITY SYNC INITIATED FOR:", user.email);
     
     try {
       const { data: existing } = await supabase
@@ -73,11 +73,11 @@ export const authService = {
       const isAdminEmail = ADMIN_EMAILS.some(e => processEmail(e) === userEmailProcessed);
 
       if (!existing) {
-        console.log("CREATING NEW NEURAL IDENTITY... ADMIN STATUS:", isAdminEmail);
+        console.log("CREATING NEW IDENTITY... ADMIN STATUS:", isAdminEmail);
         const newProfile = {
           id: user.id,
           email: user.email,
-          full_name: user.user_metadata?.full_name || 'Neural Student',
+          full_name: user.user_metadata?.full_name || 'Scholar',
           avatar_emoji: '⚡',
           level: 1,
           xp: 0,
@@ -121,7 +121,7 @@ export const authService = {
   },
 
   // --- REDACTED: DANGEROUS BACKDOORS REMOVED FOR PRODUCTION ---
-  // promoteToAdmin and injectWealth are now disabled at the neural level.
+  // promoteToAdmin and injectWealth are now disabled at the system level.
 
   validateStreak: async () => {
     const user = authService.me();
@@ -139,7 +139,7 @@ export const authService = {
 
     if (diffHours > 48) {
       // Streak Lost (Tier 1: Loss Aversion)
-      console.log("NEURAL STREAK TERMINATED. RESETTING TO 1.");
+      console.log("STREAK RESET. RESETTING TO 1.");
       await authService.updateMe({ streak: 1 });
       return { status: 'reset', lostDays: Math.floor(diffHours / 24) };
     } else if (diffHours > 24 && now.getDate() !== last.getDate()) {
@@ -185,7 +185,7 @@ export const authService = {
       
       if (error) throw error;
     } catch (err) {
-      console.warn("NEURAL CLOUD SYNC DELAYED:", err.message);
+      console.warn("CLOUD SYNC DELAYED:", err.message);
     } finally {
       window.dispatchEvent(new CustomEvent('acadevance_sync_pulse', { detail: { syncing: false } }));
     }

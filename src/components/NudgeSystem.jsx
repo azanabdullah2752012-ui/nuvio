@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Brain, Sparkles, Zap, AlertCircle } from 'lucide-react';
+import { Trophy, Sparkles, Zap, AlertCircle } from 'lucide-react';
 
-const NeuralComms = () => {
+const NudgeSystem = () => {
   const [nudge, setNudge] = useState(null);
 
   useEffect(() => {
@@ -12,8 +12,8 @@ const NeuralComms = () => {
       setTimeout(() => setNudge(null), 8000);
     };
 
-    window.addEventListener('acadevance_neural_nudge', handleNudge);
-    return () => window.removeEventListener('acadevance_neural_nudge', handleNudge);
+    window.addEventListener('acadevance_nudge', handleNudge);
+    return () => window.removeEventListener('acadevance_nudge', handleNudge);
   }, []);
 
   return (
@@ -27,7 +27,7 @@ const NeuralComms = () => {
             className="w-[350px] bg-black border-4 border-nuvio-purple-500 shadow-nb p-6 pointer-events-auto relative overflow-hidden"
           >
             <div className="absolute top-0 right-0 p-2 opacity-5">
-               <Brain className="w-20 h-20" />
+               <Trophy className="w-20 h-20" />
             </div>
             
             <div className="flex items-start gap-4">
@@ -35,7 +35,7 @@ const NeuralComms = () => {
                   {nudge.type === 'streak' ? <Zap className="w-6 h-6" /> : <Sparkles className="w-6 h-6" />}
                </div>
                <div className="space-y-1">
-                  <div className="text-[10px] font-black text-nuvio-purple-400 uppercase tracking-widest leading-none">Neural Transmission</div>
+                  <div className="text-[10px] font-black text-nuvio-purple-400 uppercase tracking-widest leading-none">System Notification</div>
                   <h4 className="text-sm font-black text-white uppercase tracking-tight leading-tight">{nudge.title}</h4>
                   <p className="text-[11px] text-text-secondary font-medium leading-relaxed">{nudge.message}</p>
                </div>
@@ -49,6 +49,7 @@ const NeuralComms = () => {
                  Dismiss
                </button>
                <button 
+                 onClick={() => setNudge(null)}
                  className="flex-1 py-2 bg-nuvio-purple-500 text-black text-[9px] font-black uppercase tracking-widest shadow-nb-small active:translate-y-1 active:shadow-none transition-all"
                >
                  Acknowledge
@@ -61,4 +62,4 @@ const NeuralComms = () => {
   );
 };
 
-export default NeuralComms;
+export default NudgeSystem;

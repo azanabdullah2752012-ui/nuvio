@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  Sparkles, 
+  GraduationCap, 
   ArrowRight, 
   Globe, 
   Users, 
@@ -54,7 +54,7 @@ const Landing = () => {
         navigate('/onboarding');
       }
     } catch (err) {
-      setError(err.message || 'Authentication failed. Check your neural key.');
+      setError(err.message || 'Authentication failed. Check your login credentials.');
     } finally {
       setLoading(false);
     }
@@ -70,7 +70,7 @@ const Landing = () => {
       <nav className="relative z-10 flex items-center justify-between px-6 py-8 md:px-12 max-w-7xl mx-auto">
         <div className="flex items-center gap-2">
           <div className="w-10 h-10 bg-nuvio-purple-500 rounded-xl flex items-center justify-center shadow-lg shadow-nuvio-purple-500/20">
-            <Sparkles className="text-white w-6 h-6" />
+            <GraduationCap className="text-white w-6 h-6" />
           </div>
           <span className="text-2xl font-black uppercase tracking-tighter">Acadevance</span>
         </div>
@@ -114,9 +114,8 @@ const Landing = () => {
           transition={{ delay: 0.2 }}
           className="max-w-2xl text-text-secondary text-lg md:text-xl font-medium leading-relaxed mb-12"
         >
-          Acadevance turns your homework into quests, exams into boss raids, and study 
-          groups into academic squads. Level up your grades with Nova, the world's most 
-          powerful AI tutor.
+          Acadevance is a gamified learning platform that helps students advance academically 
+          through structured learning, productivity tools, challenges, rewards, and measurable progress.
         </motion.p>
 
         <motion.div 

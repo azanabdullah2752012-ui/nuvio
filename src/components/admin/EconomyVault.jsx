@@ -48,7 +48,7 @@ const EconomyVault = () => {
         .eq('key', key);
 
       if (!error) {
-        notificationService.send("Neural Adjustment", `Global ${key} updated to ${newValue}.`, "success");
+        notificationService.send("System Adjustment", `Global ${key} updated to ${newValue}.`, "success");
         // Log the change
         await supabase.from('admin_logs').insert([{
           action_type: 'CONFIG_CHANGE',
@@ -96,7 +96,7 @@ const EconomyVault = () => {
           disabled={saving}
           className="w-full py-3 bg-nuvio-yellow/10 hover:bg-nuvio-yellow text-nuvio-yellow hover:text-black border border-nuvio-yellow/20 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all"
         >
-          {saving ? 'Synchronizing...' : 'Apply Neural Multiplier'}
+          {saving ? 'Synchronizing...' : 'Apply Economy Multiplier'}
         </button>
       </div>
     </div>
@@ -109,7 +109,7 @@ const EconomyVault = () => {
          {[
            { label: 'Circulating Tokens', val: stats.total_tokens, icon: Coins, color: 'text-nuvio-blue' },
            { label: 'Global XP Mass', val: stats.total_xp, icon: TrendingUp, color: 'text-nuvio-yellow' },
-           { label: 'Avg Node Wealth', val: stats.avg_balance, icon: Sliders, color: 'text-nuvio-green' }
+           { label: 'Avg Scholar Wealth', val: stats.avg_balance, icon: Sliders, color: 'text-nuvio-green' }
          ].map((stat, i) => (
            <div key={i} className="nv-card p-6 border-white/5 bg-white/[0.02]">
              <stat.icon className={`w-5 h-5 ${stat.color} mb-4`} />
@@ -137,7 +137,7 @@ const EconomyVault = () => {
          <Info className="w-10 h-10 text-nuvio-blue opacity-50" />
          <div>
             <p className="text-xs font-bold text-nuvio-blue/80 leading-relaxed uppercase tracking-tighter">
-              The Economy Vault regulates the neural reward kernel. Adjusting multipliers will affect the progress velocity of all 10,000+ nodes in real-time. Use caution to prevent asset devaluation.
+              The Economy Vault regulates the system reward kernel. Adjusting multipliers will affect the progress velocity of all scholars in real-time. Use caution to prevent asset devaluation.
             </p>
          </div>
       </div>

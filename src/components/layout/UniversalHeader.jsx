@@ -92,7 +92,7 @@ const UniversalHeader = ({ onMenuClick, user }) => {
           {isSyncing && (
             <div className="flex items-center gap-2 bg-nuvio-cyan text-black px-3 py-1 border-2 border-black font-black text-[9px] uppercase tracking-widest leading-none shadow-[2px_2px_0_#000]">
               <div className="w-2 h-2 rounded-full bg-black animate-pulse" />
-              Neural Sync
+              Cloud Sync
             </div>
           )}
         </div>

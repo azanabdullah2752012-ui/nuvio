@@ -15,7 +15,7 @@ const SystemPulse = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const pulse = setInterval(fetchStats, 5000); // 5-second neural sync
+    const pulse = setInterval(fetchStats, 5000); // 5-second telemetry sync
     fetchStats();
     return () => clearInterval(pulse);
   }, []);
@@ -74,7 +74,7 @@ const SystemPulse = () => {
           detail="Total Registered Identities"
         />
         <StatCard 
-          label="Neural Nodes (Active)" 
+          label="Active Users" 
           value={stats.active_users} 
           icon={Activity} 
           color="text-nuvio-blue"
@@ -95,7 +95,7 @@ const SystemPulse = () => {
           detail="Total XP generated/min"
         />
         <StatCard 
-          label="Neural Latency" 
+          label="System Latency" 
           value="< 120ms" 
           icon={Clock} 
           color="text-nuvio-green"
@@ -106,7 +106,7 @@ const SystemPulse = () => {
       {/* Simplified Live Chart (CSS Visualization) */}
       <div className="nv-card p-8 border-white/5 bg-white/[0.01]">
         <div className="flex items-center justify-between mb-8">
-           <h3 className="text-sm font-black text-white uppercase tracking-widest">Neural Activity Pulse (Last 20 Samples)</h3>
+           <h3 className="text-sm font-black text-white uppercase tracking-widest">System Activity Pulse (Last 20 Samples)</h3>
            <div className="flex items-center gap-4 text-[9px] font-black uppercase tracking-widest">
               <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-nuvio-purple-400" /> Messages</div>
               <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-nuvio-yellow" /> XP Flow</div>
@@ -114,7 +114,7 @@ const SystemPulse = () => {
         </div>
         <div className="h-48 flex items-end gap-1 px-2 border-l border-b border-white/10 pb-1">
           {history.length === 0 ? (
-            <div className="m-auto text-text-muted text-[10px] font-black uppercase italic tracking-widest">Observing neural pathways...</div>
+            <div className="m-auto text-text-muted text-[10px] font-black uppercase italic tracking-widest">Observing system pathways...</div>
           ) : history.map((h, i) => (
             <div key={i} className="flex-1 flex flex-col justify-end gap-[1px]">
                <motion.div 

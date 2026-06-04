@@ -98,7 +98,7 @@ const InteractionSystem = () => {
         addFloatingReaction(e.detail.emoji, e.detail.x, e.detail.y);
         return;
       }
-      xpService.awardXp(10, 'Neural Reflex');
+      xpService.awardXp(10, 'Study Reflex');
     };
 
     const handleProfileTrigger = (e) => {

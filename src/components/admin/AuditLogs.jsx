@@ -95,7 +95,7 @@ const AuditLogs = () => {
                  <tr>
                     <td colSpan="5" className="p-20 text-center">
                        <AlertCircle className="w-10 h-10 text-text-muted mx-auto mb-4 opacity-20" />
-                       <p className="text-[10px] font-black text-text-muted uppercase tracking-[0.3em]">Neural Logs Empty. Awaiting first authority action.</p>
+                       <p className="text-[10px] font-black text-text-muted uppercase tracking-[0.3em]">System Audit Logs Empty. Awaiting first authority action.</p>
                     </td>
                  </tr>
                )}

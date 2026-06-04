@@ -122,7 +122,7 @@ const FocusTimer = () => {
       <div className="space-y-8">
         <div className="nv-card p-8 space-y-6 border-white/5">
           <h3 className="text-sm font-black text-white uppercase tracking-widest flex items-center gap-2">
-            <Zap className="w-4 h-4 text-nuvio-yellow" /> Neural Sessions
+            <Zap className="w-4 h-4 text-nuvio-yellow" /> Focus Sessions
           </h3>
           <div className="space-y-4">
             {sessions.map((s, i) => (

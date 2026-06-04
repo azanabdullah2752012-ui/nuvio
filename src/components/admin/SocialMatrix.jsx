@@ -42,7 +42,7 @@ const SocialMatrix = () => {
       const { error } = await supabase.from('messages').delete().eq('id', msgId);
       if (!error) {
         setMessages(prev => prev.filter(m => m.id !== msgId));
-        notificationService.send("Cleanup Success", "Message purged from neural net.", "info");
+        notificationService.send("Cleanup Success", "Message purged from database.", "info");
       }
     } catch (e) { console.error(e); }
   };
@@ -60,7 +60,7 @@ const SocialMatrix = () => {
 
     await dataService.create('messages', newBroadcast);
     setBroadcast('');
-    notificationService.send("Broadcast Dispatched", "System message synced to all nodes.", "success");
+    notificationService.send("Broadcast Dispatched", "System message synced to all scholars.", "success");
     fetchLatest();
   };
 
@@ -71,9 +71,9 @@ const SocialMatrix = () => {
         <div className="flex items-center justify-between">
            <div>
               <h3 className="text-xl font-black text-white uppercase tracking-tight flex items-center gap-3">
-                <Activity className="w-6 h-6 text-nuvio-purple-400" /> Neural Stream
+                <Activity className="w-6 h-6 text-nuvio-purple-400" /> Message Stream
               </h3>
-              <p className="text-[10px] text-text-muted font-bold uppercase tracking-widest mt-1">Real-time unmasked monitoring of global communications</p>
+              <p className="text-[10px] text-text-muted font-bold uppercase tracking-widest mt-1">Real-time monitoring of global communications</p>
            </div>
            <div className="flex items-center gap-3">
               <div className="text-[10px] font-black text-nuvio-green animate-pulse uppercase">Live Sync</div>
@@ -133,7 +133,7 @@ const SocialMatrix = () => {
                  type="submit"
                  className="nv-btn-primary w-full h-14 uppercase tracking-widest text-[10px] flex items-center justify-center gap-3"
                >
-                 <Send className="w-4 h-4" /> Dispatch Packet
+                 <Send className="w-4 h-4" /> Dispatch Broadcast
                </button>
             </form>
 
@@ -147,7 +147,7 @@ const SocialMatrix = () => {
             <div className="p-4 bg-nuvio-purple-500/10 rounded-xl border border-nuvio-purple-500/20 flex gap-3">
                <AlertCircle className="w-5 h-5 text-nuvio-purple-400 mt-0.5" />
                <p className="text-[9px] font-bold text-nuvio-purple-300 leading-relaxed uppercase tracking-widest">
-                 System broadcasts are pinned to the top of all active student pods and bypass local notification filters.
+                 System broadcasts are pinned to the top of all active student accounts and bypass local notification filters.
                </p>
             </div>
          </div>

@@ -51,7 +51,7 @@ const LearningGroups = () => {
         user_id: user.id,
         group_id: groupId
       }]);
-      notificationService.send("Cluster Sync", "Neural link established with group.", "success");
+      notificationService.send("Cluster Sync", "Study link established with group.", "success");
       fetchPeers(0); // Full refresh
     } catch (e) {
       console.error("Join failed:", e);
@@ -127,7 +127,7 @@ const LearningGroups = () => {
             disabled={loadingMore}
             className="nv-btn-primary px-12 py-4 bg-white/5 border-white/10 hover:bg-white/10 text-xs tracking-[0.3em]"
           >
-            {loadingMore ? 'Syncing...' : 'Expand Neural Matrix'}
+            {loadingMore ? 'Syncing...' : 'Expand Study Network'}
           </button>
         </div>
       )}

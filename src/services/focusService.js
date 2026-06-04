@@ -40,12 +40,12 @@ class FocusService {
         .insert(itemsToSync);
 
       if (error) {
-        console.error("NEURAL ANALYTICS SYNC FAILURE:", error);
+        console.error("ANALYTICS SYNC FAILURE:", error);
         // Put back in buffer on failure
         this.buffer = [...itemsToSync, ...this.buffer];
       }
     } catch (err) {
-      console.error("NEURAL ANALYTICS CRITICAL FAILURE:", err);
+      console.error("ANALYTICS CRITICAL FAILURE:", err);
     } finally {
       this.syncing = false;
     }

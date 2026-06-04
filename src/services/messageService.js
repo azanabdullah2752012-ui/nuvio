@@ -21,7 +21,7 @@ export const messageService = {
     if (contactIds.length === 0) {
       // Return a set of system/onboarding contacts if none exist
       return [
-        { id: 'system', name: 'Nova Bot 🤖', avatar: '🤖', lastMsg: 'I am hardcoded for logic help.', time: 'Always', unread: 0 },
+        { id: 'system', name: 'Study Support 📚', avatar: '📚', lastMsg: 'Welcome! Message classmates to get started.', time: 'Always', unread: 0 },
       ];
     }
 

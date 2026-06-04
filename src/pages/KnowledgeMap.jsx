@@ -74,7 +74,7 @@ const KnowledgeMap = () => {
 
       setUserNodes(processed);
     } catch (err) {
-      console.error("Neural Map Calibration Error:", err);
+      console.error("Knowledge Map Calibration Error:", err);
     } finally {
       setLoading(false);
     }
@@ -88,7 +88,7 @@ const KnowledgeMap = () => {
         <div>
           <h1 className="text-3xl font-black text-white flex items-center gap-3 uppercase tracking-tighter">
             <Map className="w-8 h-8 text-nuvio-purple-400" />
-            Neural Map
+            Knowledge Map
           </h1>
           <p className="text-[10px] text-text-muted font-black uppercase tracking-[0.2em] mt-2">Data-Synced Academic Topology 🛰️</p>
         </div>

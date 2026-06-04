@@ -37,11 +37,10 @@ const navSections = [
     ]
   },
   {
-    label: "AI Suite",
+    label: "Learning",
     items: [
-      { name: "Nova AI", path: "/nova-ai", icon: Sparkles },
-      { name: "AI Hub", path: "/ai-hub", icon: History },
-      { name: "Essay Forge", path: "/essay-forge", icon: PenTool },
+      { name: "Study Hub", path: "/study-hub", icon: BookOpen },
+      { name: "Writing Workshop", path: "/essay-forge", icon: PenTool },
     ]
   },
   {

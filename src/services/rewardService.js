@@ -3,7 +3,7 @@ import { notificationService } from './notificationService';
 
 export const rewardService = {
   // Variable Reward (Tier 2: Slot Machine Psychology)
-  triggerNeuralDrop: async () => {
+  triggerLuckyDrop: async () => {
     const chance = Math.random();
     
     // 10% chance for a Critical Drop
@@ -14,7 +14,7 @@ export const rewardService = {
       const user = authService.me();
       if (!user) return null;
 
-      console.log(`CRITICAL NEURAL DROP: +${amount} ${type}`);
+      console.log(`CRITICAL LUCKY DROP: +${amount} ${type}`);
       
       const updateData = type === 'Tokens' 
         ? { era_tokens: (user.era_tokens || 0) + amount }
@@ -24,7 +24,7 @@ export const rewardService = {
       
       notificationService.send(
         "CRITICAL DROP", 
-        `Nova detected a neural surge! +${amount} ${type} secured.`, 
+        `Achievement unlocked! Critical Drop secured! +${amount} ${type} added to your vault.`, 
         "success"
       );
 

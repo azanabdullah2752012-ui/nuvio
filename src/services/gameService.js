@@ -47,7 +47,7 @@ export const gameService = {
           }])
         ]);
         
-        notificationService.send("Neural Gain", `+${amount} XP Synchronized to cloud.`, "success");
+        notificationService.send("Progression Gain", `+${amount} XP Synchronized to cloud.`, "success");
       } catch (err) {
         console.error("StudyVerse Sync failure:", err);
       }

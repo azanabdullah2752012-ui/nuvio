@@ -38,7 +38,7 @@ const Flashcards = () => {
     try {
       await dataService.delete('decks', id);
       setDecks(decks.filter(d => d.id !== id));
-      notificationService.send("Vault Cleared", "Neural deck successfully purged.", "info");
+      notificationService.send("Vault Cleared", "Study deck successfully purged.", "info");
     } catch (err) {}
   };
 
@@ -97,7 +97,7 @@ const Flashcards = () => {
           <div className="space-y-4 relative z-10">
             <div className="inline-flex items-center gap-4 bg-black border-[3px] border-nuvio-blue shadow-[6px_6px_0_#3B82F6] px-6 py-2 transform -skew-x-6">
               <Database className="w-6 h-6 text-nuvio-blue" />
-              <span className="text-sm font-black text-white uppercase tracking-widest">Neural Storage</span>
+              <span className="text-sm font-black text-white uppercase tracking-widest">Study Storage</span>
             </div>
             <h1 className="text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-white/90 to-nuvio-blue uppercase tracking-tighter leading-none filter drop-shadow-lg">
               Mnemonic <br /> Vault

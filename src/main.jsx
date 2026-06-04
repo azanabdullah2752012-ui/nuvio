@@ -10,7 +10,7 @@ const catchAuthFragment = async () => {
   try {
     const hash = window.location.hash;
     if (hash && (hash.includes('access_token=') || hash.includes('error='))) {
-      console.log("NEURAL FRAGMENT DETECTED. CAPTURING SESSION...");
+      console.log("SESSION FRAGMENT DETECTED. CAPTURING SESSION...");
       
       // 1. Force Supabase to parse the token into localStorage immediately
       await supabase.auth.getSession();
@@ -20,7 +20,7 @@ const catchAuthFragment = async () => {
       window.history.replaceState(null, '', window.location.pathname + '#/');
     }
   } catch (err) {
-    console.error("Neural auth fragment interception failure:", err);
+    console.error("Session auth fragment interception failure:", err);
   }
 };
 

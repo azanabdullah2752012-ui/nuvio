@@ -70,16 +70,17 @@ export const xpService = {
       
       // 2. Emit events for UI
       window.dispatchEvent(new CustomEvent('acadevance_stats_update', { detail: updatedUser }));
+      window.dispatchEvent(new CustomEvent('acadevance_xp_awarded', { detail: { amount, reason } }));
       
       if (leveledUp) {
         window.dispatchEvent(new CustomEvent('acadevance_notification', { 
-          detail: { title: "Neural Ascension", message: `Reached Level ${updatedUser.level}!`, type: 'success' } 
+          detail: { title: "Level Up! 🎉", message: `You reached Level ${updatedUser.level}!`, type: 'success' } 
         }));
       }
 
       return { updatedUser, leveledUp, amount, reason };
     } catch (err) {
-      console.error("NEURAL XP SYNC FAILURE:", err);
+      console.error("XP SYNC FAILURE:", err);
       return null;
     }
   },

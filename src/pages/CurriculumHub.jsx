@@ -193,7 +193,7 @@ const CurriculumHub = () => {
             <div className="space-y-8 pt-10">
                <div className="flex items-center justify-between">
                   <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tight flex items-center gap-3">
-                     <MessageSquare className="w-6 h-6 text-blue-600" /> Neural Question Bank
+                     <MessageSquare className="w-6 h-6 text-blue-600" /> Curriculum Question Bank
                   </h2>
                </div>
                

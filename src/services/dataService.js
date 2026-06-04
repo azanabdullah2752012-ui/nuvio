@@ -68,7 +68,7 @@ export const dataService = {
 
   create: async (table, item) => {
     const user = authService.me();
-    if (!user?.id) throw new Error("Neural identity not verified. Cannot persist to cloud.");
+    if (!user?.id) throw new Error("User session not verified. Cannot persist to cloud.");
 
     const newItem = {
       ...item,

@@ -78,7 +78,7 @@ const Homework = () => {
       if (isCompleting) {
         xpService.awardXp(50, `Objective Accomplished: ${task.title}`);
         notificationService.send("Mission Complete", "+50 XP Synchronized.", "success");
-        rewardService.triggerNeuralDrop();
+        rewardService.triggerLuckyDrop();
       }
     } catch (err) {}
   };

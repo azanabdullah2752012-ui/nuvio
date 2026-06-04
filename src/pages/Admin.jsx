@@ -9,11 +9,10 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { authService } from '../services/authService';
 import { supabase } from '../lib/supabase';
-import { aiService } from '../services/aiService';
 
-// Neural Control Modules
+// System Control Modules
 import SystemPulse from '../components/admin/SystemPulse';
-import NeuralSentinel from '../components/admin/NeuralSentinel';
+import Sentinel from '../components/admin/Sentinel';
 import EconomyVault from '../components/admin/EconomyVault';
 import SocialMatrix from '../components/admin/SocialMatrix';
 import AuditLogs from '../components/admin/AuditLogs';
@@ -26,12 +25,12 @@ const Admin = () => {
 
   const tabs = [
     { id: 'pulse', name: 'System Pulse', icon: Activity, color: 'text-nuvio-green' },
-    { id: 'sentinel', name: 'Neural Sentinel', icon: ShieldAlert, color: 'text-nuvio-red' },
+    { id: 'sentinel', name: 'System Sentinel', icon: ShieldAlert, color: 'text-nuvio-red' },
     { id: 'vault', name: 'Economy Vault', icon: Coins, color: 'text-nuvio-yellow' },
     { id: 'matrix', name: 'Social Matrix', icon: MessageSquare, color: 'text-nuvio-purple-400' },
     { id: 'identity', name: 'Student registry', icon: Users, color: 'text-nuvio-blue' },
     { id: 'audit', name: 'Audit Trail', icon: ShieldCheck, color: 'text-nuvio-green' },
-    { id: 'aicore', name: 'AI Protocol', icon: BrainCircuit, color: 'text-nuvio-blue' }
+    { id: 'controls', name: 'System Controls', icon: Settings, color: 'text-nuvio-blue' }
   ];
 
   return (
@@ -101,7 +100,7 @@ const Admin = () => {
           className="min-h-[600px]"
         >
           {activeTab === 'pulse' && <SystemPulse />}
-          {activeTab === 'sentinel' && <NeuralSentinel />}
+          {activeTab === 'sentinel' && <Sentinel />}
           {activeTab === 'vault' && <EconomyVault />}
           {activeTab === 'matrix' && <SocialMatrix />}
           {activeTab === 'audit' && <AuditLogs />}
@@ -138,7 +137,7 @@ const Admin = () => {
                 <div className="space-y-4">
                    {registryUsers.length === 0 ? (
                      <div className="py-20 text-center opacity-30 italic text-[10px] uppercase font-black tracking-widest">
-                        Enter query to scan the Neural Registry...
+                        Enter query to scan the Student Registry...
                      </div>
                    ) : (
                      registryUsers.map(u => (
@@ -168,7 +167,7 @@ const Admin = () => {
              </div>
           )}
 
-          {activeTab === 'aicore' && (
+          {activeTab === 'controls' && (
             <div className="space-y-8">
               <div className="nv-card p-10 space-y-8 border-white/5">
                 <div className="flex items-center justify-between">
@@ -192,7 +191,7 @@ const Admin = () => {
                    <button 
                      onClick={async () => {
                        await authService.injectWealth(10000);
-                       alert("10,000 Era Tokens Injected into Neural Cache. ⚡");
+                       alert("10,000 Era Tokens Injected into Wallet. ⚡");
                      }}
                      className="p-8 bg-nuvio-yellow/10 rounded-3xl border-2 border-nuvio-yellow/20 flex flex-col items-center gap-4 group hover:bg-nuvio-yellow hover:text-black transition-all"
                    >

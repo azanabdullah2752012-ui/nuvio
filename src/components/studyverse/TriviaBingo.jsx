@@ -79,7 +79,7 @@ const TriviaBingo = ({ players, turn, onLog, activeSubject, onNextTurn }) => {
       
       if (checkWin(newLocked[turn])) {
         setWinner(players[turn]);
-        onLog(`${players[turn].name} ACHIEVED NEURAL BINGO!`, 'success');
+        onLog(`${players[turn].name} ACHIEVED BINGO!`, 'success');
         gameService.awardPlayer(turn, 500, "Trivia Bingo Victory", "bingo");
       } else {
         onNextTurn();

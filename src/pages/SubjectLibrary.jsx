@@ -97,7 +97,7 @@ const SubjectLibrary = () => {
               {subject}
             </h1>
             <p className="text-slate-500 font-medium max-w-xl">
-              Access verified study modules, pre-made 3D flashcards, and the Neural Q&A bank for the official CBSE syllabus.
+              Access verified study modules, pre-made 3D flashcards, and the Curriculum Q&A bank for the official CBSE syllabus.
             </p>
           </div>
           
@@ -163,7 +163,7 @@ const SubjectLibrary = () => {
                   <div key={i} className="bg-white border border-slate-100 rounded-[32px] p-10 hover:border-blue-200 transition-all group">
                      <div className="flex items-center gap-3 mb-6">
                         <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-xs font-black">Q</div>
-                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Neural Q&A Module</span>
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Curriculum Q&A Module</span>
                      </div>
                      <h4 className="text-xl font-black text-slate-900 mb-6 leading-tight">{qa.q}</h4>
                      <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100 text-slate-600 font-medium leading-relaxed">
@@ -686,7 +686,7 @@ const SubjectLibrary = () => {
                               <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400">
                                 <BookOpen className="w-6 h-6" />
                               </div>
-                              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Neural Mind Map Matrix</span>
+                              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Curriculum Mind Map Matrix</span>
                               <p className="text-xs text-slate-400 italic">Fully mapped to CBSE & NCERT terms.</p>
                             </div>
                           )}

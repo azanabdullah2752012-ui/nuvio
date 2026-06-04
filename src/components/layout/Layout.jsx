@@ -3,7 +3,7 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import UniversalHeader from './UniversalHeader';
 import SideDrawer from './SideDrawer';
 import { authService } from '../../services/authService';
-import NovaFAB from '../ai/NovaFAB';
+import QuestFAB from './QuestFAB';
 
 const Layout = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -33,7 +33,7 @@ const Layout = () => {
           profile = {
             id: session.user.id,
             email: session.user.email,
-            full_name: session.user.user_metadata?.full_name || 'Neural Student',
+            full_name: session.user.user_metadata?.full_name || 'Scholar',
             avatar_emoji: '⚡',
             level: 1, 
             xp: 0, 
@@ -78,7 +78,7 @@ const Layout = () => {
       <div className="min-h-screen bg-background-base flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div className="w-12 h-12 border-4 border-nuvio-purple-500/20 border-t-nuvio-purple-500 rounded-full animate-spin" />
-          <p className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] animate-pulse">Neural Identity Syncing...</p>
+          <p className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] animate-pulse">Scholar Identity Syncing...</p>
         </div>
       </div>
     );
@@ -105,8 +105,8 @@ const Layout = () => {
         <Outlet context={{ user, setUser }} />
       </main>
 
-      {/* Global AI Assistant */}
-      <NovaFAB />
+      {/* Global Quests */}
+      <QuestFAB />
     </div>
   );
 };
