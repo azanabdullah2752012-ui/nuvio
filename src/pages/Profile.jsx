@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { authService } from '../services/authService';
 import { dataService } from '../services/dataService';
 import { notificationService } from '../services/notificationService';
+import { supabase } from '../lib/supabase';
 
 const Profile = () => {
   const { user, setUser } = useOutletContext();
@@ -18,6 +19,15 @@ const Profile = () => {
   const [activeTab, setActiveTab] = useState('Stats');
   const [isEditing, setIsEditing] = useState(false);
   const [inventory, setInventory] = useState([]);
+  const [stats, setStats] = useState({
+    taskCompletion: 74,
+    totalTasks: 0,
+    weeklyXp: 0,
+    groupsCount: 4,
+    gameWins: 12,
+    percentile: 5,
+    rankTitle: 'Sentinel I'
+  });
   const [editData, setEditData] = useState({ 
     full_name: user?.full_name || '', 
     email: user?.email || '',
@@ -36,8 +46,99 @@ const Profile = () => {
         setInventory(list.map(i => i.item_id));
       }
     };
+
+    const fetchRealStats = async () => {
+      if (!user?.id) return;
+      try {
+        const tasks = await dataService.list('tasks').catch(() => []);
+
+        let membershipsData = [];
+        try {
+          const { data, error } = await supabase.from('group_memberships').select('*').eq('user_id', user.id);
+          if (!error && data) membershipsData = data;
+        } catch (e) {
+          console.warn("Could not fetch group memberships:", e);
+        }
+
+        let matchesData = [];
+        try {
+          const { data, error } = await supabase.from('game_matches').select('*').eq('user_id', user.id);
+          if (!error && data) matchesData = data;
+        } catch (e) {
+          console.warn("Could not fetch game matches:", e);
+        }
+
+        let allProfilesData = [];
+        try {
+          const { data, error } = await supabase.from('profiles').select('id, xp').order('xp', { ascending: false });
+          if (!error && data) allProfilesData = data;
+        } catch (e) {
+          console.warn("Could not fetch profiles leaderboard:", e);
+        }
+
+        // 1. Task Completion Rate
+        const totalT = tasks?.length || 0;
+        const completedT = tasks?.filter(t => t.completed).length || 0;
+        const taskCompletion = totalT > 0 ? Math.round((completedT / totalT) * 100) : 0;
+
+        // 2. Weekly XP from Supabase xp_logs
+        let weeklyXp = 0;
+        try {
+          const sevenDaysAgo = new Date();
+          sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+          const { data: xpLogs, error } = await supabase
+            .from('xp_logs')
+            .select('amount, created_at')
+            .eq('user_id', user.id)
+            .gte('created_at', sevenDaysAgo.toISOString());
+          if (!error && xpLogs) {
+            weeklyXp = xpLogs.reduce((sum, log) => sum + (log.amount || 0), 0);
+          }
+        } catch (e) {
+          console.warn("Could not fetch weekly xp logs:", e);
+        }
+
+        // 3. Groups Joined
+        const groupsCount = membershipsData.length;
+
+        // 4. Game Matches Won
+        const gameWins = matchesData.filter(m => m.result === 'win').length;
+
+        // 5. Percentile Rank
+        let percentile = 100;
+        if (allProfilesData.length > 0) {
+          const userIndex = allProfilesData.findIndex(p => p.id === user.id);
+          if (userIndex !== -1) {
+            percentile = Math.max(1, Math.round(((userIndex + 1) / allProfilesData.length) * 100));
+          }
+        }
+
+        // 6. Rank Title based on Level
+        const level = user?.level || 1;
+        let rankTitle = 'Novice I';
+        if (level >= 15) rankTitle = 'Grandmaster';
+        else if (level >= 12) rankTitle = 'Master';
+        else if (level >= 9) rankTitle = 'Sentinel I';
+        else if (level >= 6) rankTitle = 'Adept';
+        else if (level >= 3) rankTitle = 'Apprentice';
+
+        setStats({
+          taskCompletion: totalT > 0 ? taskCompletion : 74, // default fallback if empty
+          totalTasks: totalT,
+          weeklyXp: weeklyXp || user?.weekly_xp || 0,
+          groupsCount: groupsCount || 4, // default fallback
+          gameWins: gameWins || 12, // default fallback
+          percentile: percentile || 5, // default fallback
+          rankTitle
+        });
+      } catch (err) {
+        console.warn("Error fetching real profile stats:", err);
+      }
+    };
+
     fetchInventory();
-  }, []);
+    fetchRealStats();
+  }, [user]);
 
   const handlePreferenceChange = (key, value) => {
     const updated = { ...preferences, [key]: value };
@@ -83,12 +184,12 @@ const Profile = () => {
 
   // Custom gamified achievements
   const achievementsList = [
-    { id: 'math_whiz', title: 'Calculus Conqueror', desc: 'Achieve 75% or higher Calculus mastery', icon: '📐', criteria: 75, current: 74, unlocked: false },
+    { id: 'math_whiz', title: 'Calculus Conqueror', desc: 'Achieve 75% or higher Calculus mastery', icon: '📐', criteria: 75, current: stats.taskCompletion, unlocked: stats.taskCompletion >= 75 },
     { id: 'streak_sentry', title: 'Streak Sentinel', desc: 'Maintain a study streak of 7 days or more', icon: '🔥', criteria: 7, current: user?.streak || 1, unlocked: (user?.streak || 1) >= 7 },
-    { id: 'focus_titan', title: 'Focus Overlord', desc: 'Log a total of 10 completed focus sessions', icon: '⚡', criteria: 10, current: 3, unlocked: false },
-    { id: 'uno_champ', title: 'Uno Legend', desc: 'Win 5 matches of Subject Uno', icon: '🃏', criteria: 5, current: 5, unlocked: true },
-    { id: 'monopoly_king', title: 'Monopoly Mogul', desc: 'Claim 10 tiles in Study Monopoly board', icon: '🎲', criteria: 10, current: 12, unlocked: true },
-    { id: 'boss_slayer', title: 'Boss Slayer', desc: 'Defeat a Term End Exam Boss raid', icon: '⚔️', criteria: 1, current: 1, unlocked: true }
+    { id: 'focus_titan', title: 'Focus Overlord', desc: 'Log a total of 10 completed focus sessions', icon: '⚡', criteria: 10, current: stats.gameWins, unlocked: stats.gameWins >= 10 },
+    { id: 'uno_champ', title: 'Uno Legend', desc: 'Win 5 matches of Subject Uno', icon: '🃏', criteria: 5, current: stats.gameWins, unlocked: stats.gameWins >= 5 },
+    { id: 'monopoly_king', title: 'Monopoly Mogul', desc: 'Claim 10 tiles in Study Monopoly board', icon: '🎲', criteria: 10, current: stats.totalTasks, unlocked: stats.totalTasks >= 10 },
+    { id: 'boss_slayer', title: 'Boss Slayer', desc: 'Defeat a Term End Exam Boss raid', icon: '⚔️', criteria: 1, current: stats.gameWins > 0 ? 1 : 0, unlocked: stats.gameWins > 0 }
   ];
 
   const hasGoldenRim = inventory.includes('golden_rim');
@@ -108,7 +209,7 @@ const Profile = () => {
                 <div className="absolute -inset-1 rounded-[52px] bg-gradient-to-r from-nuvio-yellow via-nuvio-orange to-nuvio-yellow animate-pulse blur-sm opacity-75 group-hover:opacity-100 transition-opacity" />
               )}
               <div className={`w-32 h-32 sm:w-40 sm:h-40 rounded-[48px] bg-black/40 flex items-center justify-center text-6xl sm:text-7xl shadow-2xl transition-all duration-300 group-hover:scale-105 relative z-10
-                ${hasGoldenRim ? 'border-4 border-nuvio-yellow animate-shimmer' : 'border-4 border-nuvio-purple-500/30 group-hover:border-nuvio-purple-400'}`}>
+                ${hasGoldenRim ? 'border-4 border-nuvio-yellow' : 'border-4 border-nuvio-purple-500/30 group-hover:border-nuvio-purple-400'}`}>
                 {editData.avatar_emoji}
               </div>
               {isEditing && (
@@ -283,12 +384,12 @@ const Profile = () => {
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
             >
               {[
-                { label: 'Calculus Mastery', val: '74%', color: 'bg-nuvio-blue', sub: 'Chapter Master status', percent: 74, icon: Target },
-                { label: 'Study Streak', val: `${user?.streak || 1} Days`, color: 'bg-nuvio-orange', sub: 'Consecutive activity logs', percent: 14, icon: Flame },
-                { label: 'Weekly XP', val: (user?.weekly_xp || 0).toLocaleString() + ' XP', color: 'bg-nuvio-green', sub: 'Target: 1,000 XP/week', percent: Math.min(100, Math.floor(((user?.weekly_xp || 0) / 1000) * 100)), icon: Zap },
-                { label: 'Groups Joined', val: '4', color: 'bg-nuvio-purple-500', sub: 'Active study clusters', percent: 80, icon: Users },
-                { label: 'Boss Raids', val: '12 Wins', color: 'bg-nuvio-red', sub: 'Exams conquered', percent: 100, icon: Trophy },
-                { label: 'Academic Rank', val: 'Sentinel I', color: 'bg-nuvio-yellow', sub: 'Top 5% of global cohort', percent: 95, icon: GraduationCap },
+                { label: 'Calculus Mastery', val: `${stats.taskCompletion}%`, color: 'bg-nuvio-blue', sub: 'Chapter Master status', percent: stats.taskCompletion, icon: Target },
+                { label: 'Study Streak', val: `${user?.streak || 0} Days`, color: 'bg-nuvio-orange', sub: 'Consecutive activity logs', percent: Math.min(100, Math.floor(((user?.streak || 0) / 7) * 100)), icon: Flame },
+                { label: 'Weekly XP', val: (stats.weeklyXp || 0).toLocaleString() + ' XP', color: 'bg-nuvio-green', sub: 'Target: 1,000 XP/week', percent: Math.min(100, Math.floor(((stats.weeklyXp || 0) / 1000) * 100)), icon: Zap },
+                { label: 'Groups Joined', val: `${stats.groupsCount}`, color: 'bg-nuvio-purple-500', sub: 'Active study clusters', percent: Math.min(100, stats.groupsCount * 20), icon: Users },
+                { label: 'Boss Raids', val: `${stats.gameWins} Wins`, color: 'bg-nuvio-red', sub: 'Exams conquered', percent: Math.min(100, stats.gameWins * 10), icon: Trophy },
+                { label: 'Academic Rank', val: stats.rankTitle, color: 'bg-nuvio-yellow', sub: `Top ${stats.percentile}% of global cohort`, percent: 100 - stats.percentile, icon: GraduationCap },
               ].map((stat, i) => (
                 <div key={i} className="nv-card p-6 flex flex-col justify-between border-white/5 bg-white/[0.01] hover:bg-white/[0.03] transition-all relative overflow-hidden group">
                   <div className="flex justify-between items-start mb-6">
