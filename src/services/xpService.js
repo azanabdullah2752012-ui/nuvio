@@ -6,8 +6,8 @@ const LEVEL_THRESHOLDS = [
   15000, 20000, 26000, 33000, 41000, 50000, 60000, 71000, 83000, 96000
 ];
 
-const HISTORY_KEY = 'nuvio_xp_history';
-const BREAKDOWN_KEY = 'nuvio_xp_breakdown';
+const HISTORY_KEY = 'acadevance_xp_history';
+const BREAKDOWN_KEY = 'acadevance_xp_breakdown';
 
 export const xpService = {
   getLevel: (xp) => {
@@ -66,13 +66,13 @@ export const xpService = {
       const leveledUp = data.leveled_up;
 
       // 1. Sync Local State
-      localStorage.setItem('nuvio_user', JSON.stringify(updatedUser));
+      localStorage.setItem('acadevance_user', JSON.stringify(updatedUser));
       
       // 2. Emit events for UI
-      window.dispatchEvent(new CustomEvent('nuvio_stats_update', { detail: updatedUser }));
+      window.dispatchEvent(new CustomEvent('acadevance_stats_update', { detail: updatedUser }));
       
       if (leveledUp) {
-        window.dispatchEvent(new CustomEvent('nuvio_notification', { 
+        window.dispatchEvent(new CustomEvent('acadevance_notification', { 
           detail: { title: "Neural Ascension", message: `Reached Level ${updatedUser.level}!`, type: 'success' } 
         }));
       }

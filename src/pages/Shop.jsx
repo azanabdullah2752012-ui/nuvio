@@ -24,8 +24,8 @@ const Shop = () => {
     fetchInventory();
     
     const handleUpdate = (e) => setUser(e.detail);
-    window.addEventListener('nuvio_stats_update', handleUpdate);
-    return () => window.removeEventListener('nuvio_stats_update', handleUpdate);
+    window.addEventListener('acadevance_stats_update', handleUpdate);
+    return () => window.removeEventListener('acadevance_stats_update', handleUpdate);
   }, []);
 
   const fetchInventory = async () => {

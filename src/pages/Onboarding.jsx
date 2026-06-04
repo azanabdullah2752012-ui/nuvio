@@ -45,7 +45,7 @@ const Onboarding = () => {
 
   const steps = [
     {
-      title: "Welcome to Nuvio",
+      title: "Welcome to Acadevance",
       subtitle: "Let's get your learning journey started.",
       content: (
         <div className="flex flex-col items-center gap-6 py-10">

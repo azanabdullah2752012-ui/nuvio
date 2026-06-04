@@ -1,16 +1,16 @@
 import { supabase } from '../lib/supabase';
 import { authService } from './authService';
-const DB_KEY = 'nuvio_local_db';
+const DB_KEY = 'acadevance_local_db';
 let isCloudActive = false;
 
 const checkConnection = async () => {
   try {
     const { data, error } = await supabase.from('profiles').select('id').limit(1);
     isCloudActive = !error;
-    window.dispatchEvent(new CustomEvent('nuvio_cloud_status', { detail: { active: isCloudActive } }));
+    window.dispatchEvent(new CustomEvent('acadevance_cloud_status', { detail: { active: isCloudActive } }));
   } catch (e) {
     isCloudActive = false;
-    window.dispatchEvent(new CustomEvent('nuvio_cloud_status', { detail: { active: false } }));
+    window.dispatchEvent(new CustomEvent('acadevance_cloud_status', { detail: { active: false } }));
   }
 };
 
@@ -36,7 +36,7 @@ const getLocalDB = () => {
 
 const saveLocalDB = (db) => {
   localStorage.setItem(DB_KEY, JSON.stringify(db));
-  window.dispatchEvent(new CustomEvent('nuvio_stats_update', { detail: authService.me() }));
+  window.dispatchEvent(new CustomEvent('acadevance_stats_update', { detail: authService.me() }));
 };
 
 export const dataService = {

@@ -1,4 +1,4 @@
-const STORAGE_KEY = 'nuvio_peers';
+const STORAGE_KEY = 'acadevance_peers';
 
 export const peerService = {
   getPeers: () => {

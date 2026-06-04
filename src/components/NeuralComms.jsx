@@ -12,8 +12,8 @@ const NeuralComms = () => {
       setTimeout(() => setNudge(null), 8000);
     };
 
-    window.addEventListener('nuvio_neural_nudge', handleNudge);
-    return () => window.removeEventListener('nuvio_neural_nudge', handleNudge);
+    window.addEventListener('acadevance_neural_nudge', handleNudge);
+    return () => window.removeEventListener('acadevance_neural_nudge', handleNudge);
   }, []);
 
   return (

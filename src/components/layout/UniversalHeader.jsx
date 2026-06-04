@@ -20,8 +20,8 @@ const UniversalHeader = ({ onMenuClick, user }) => {
     const handleSyncPulse = (e) => {
       setIsSyncing(e.detail.syncing);
     };
-    window.addEventListener('nuvio_sync_pulse', handleSyncPulse);
-    return () => window.removeEventListener('nuvio_sync_pulse', handleSyncPulse);
+    window.addEventListener('acadevance_sync_pulse', handleSyncPulse);
+    return () => window.removeEventListener('acadevance_sync_pulse', handleSyncPulse);
   }, []);
 
   useEffect(() => {
@@ -33,8 +33,8 @@ const UniversalHeader = ({ onMenuClick, user }) => {
 
     loadNotifications();
     fetchUnreadMessages();
-    window.addEventListener('nuvio_notification', loadNotifications);
-    return () => window.removeEventListener('nuvio_notification', loadNotifications);
+    window.addEventListener('acadevance_notification', loadNotifications);
+    return () => window.removeEventListener('acadevance_notification', loadNotifications);
   }, []);
 
   const fetchUnreadMessages = async () => {
@@ -87,7 +87,7 @@ const UniversalHeader = ({ onMenuClick, user }) => {
             <Menu className="w-6 h-6 text-text-primary" />
           </button>
           <div className="flex items-center gap-1 cursor-pointer select-none" onClick={handleLogoClick}>
-            <span className="text-xl font-black nv-gradient-text tracking-tighter">⚡ NUVIO</span>
+            <span className="text-xl font-black nv-gradient-text tracking-tighter">⚡ ACADEVANCE</span>
           </div>
           {isSyncing && (
             <div className="flex items-center gap-2 bg-nuvio-cyan text-black px-3 py-1 border-2 border-black font-black text-[9px] uppercase tracking-widest leading-none shadow-[2px_2px_0_#000]">

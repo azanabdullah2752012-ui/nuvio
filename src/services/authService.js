@@ -1,6 +1,6 @@
 import { supabase } from '../lib/supabase';
 
-const STORAGE_KEY = 'nuvio_user';
+const STORAGE_KEY = 'acadevance_user';
 const ADMIN_EMAILS = ['azanabdullah27.5.2012@gmail.com'];
 
 export const authService = {
@@ -19,7 +19,7 @@ export const authService = {
     
     // 1. Initial Homework Tasks
     const starterTasks = [
-      { user_id: userId, title: 'Explore Neural Hub', subject: 'Nuvio', due: 'Today', priority: 'High', completed: false },
+      { user_id: userId, title: 'Explore Neural Hub', subject: 'Acadevance', due: 'Today', priority: 'High', completed: false },
       { user_id: userId, title: 'First Focus Session', subject: 'Meta', due: 'Soon', priority: 'Medium', completed: false }
     ];
 
@@ -112,7 +112,7 @@ export const authService = {
       }
       
       // Dispatch update event
-      window.dispatchEvent(new CustomEvent('nuvio_stats_update', { 
+      window.dispatchEvent(new CustomEvent('acadevance_stats_update', { 
         detail: JSON.parse(localStorage.getItem(STORAGE_KEY)) 
       }));
     } catch (err) {
@@ -174,8 +174,8 @@ export const authService = {
     
     // Save locally for speed
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-    window.dispatchEvent(new CustomEvent('nuvio_stats_update', { detail: updated }));
-    window.dispatchEvent(new CustomEvent('nuvio_sync_pulse', { detail: { syncing: true } }));
+    window.dispatchEvent(new CustomEvent('acadevance_stats_update', { detail: updated }));
+    window.dispatchEvent(new CustomEvent('acadevance_sync_pulse', { detail: { syncing: true } }));
 
     try {
       const { error } = await supabase
@@ -187,7 +187,7 @@ export const authService = {
     } catch (err) {
       console.warn("NEURAL CLOUD SYNC DELAYED:", err.message);
     } finally {
-      window.dispatchEvent(new CustomEvent('nuvio_sync_pulse', { detail: { syncing: false } }));
+      window.dispatchEvent(new CustomEvent('acadevance_sync_pulse', { detail: { syncing: false } }));
     }
 
     return updated;
@@ -203,7 +203,7 @@ export const authService = {
     
     // Local Update
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-    window.dispatchEvent(new CustomEvent('nuvio_stats_update', { detail: updated }));
+    window.dispatchEvent(new CustomEvent('acadevance_stats_update', { detail: updated }));
 
     try {
       const { data, error } = await supabase.rpc('rpc_add_tokens', { amount_to_add: amount });
@@ -225,7 +225,7 @@ export const authService = {
     if (!user) return;
     const updated = { ...user, role: 'admin' };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-    window.dispatchEvent(new CustomEvent('nuvio_stats_update', { detail: updated }));
+    window.dispatchEvent(new CustomEvent('acadevance_stats_update', { detail: updated }));
     try {
       await supabase.from('profiles').update({ role: 'admin' }).eq('id', user.id);
     } catch (err) { console.warn("Admin promotion local-only"); }
@@ -250,7 +250,7 @@ export const authService = {
       .single();
       
     localStorage.setItem(STORAGE_KEY, JSON.stringify(profile || data.user));
-    window.dispatchEvent(new CustomEvent('nuvio_auth_change', { detail: profile || data.user }));
+    window.dispatchEvent(new CustomEvent('acadevance_auth_change', { detail: profile || data.user }));
     return profile || data.user;
   },
 
@@ -280,7 +280,7 @@ export const authService = {
   logout: async () => {
     await supabase.auth.signOut();
     localStorage.removeItem(STORAGE_KEY);
-    window.dispatchEvent(new CustomEvent('nuvio_auth_change', { detail: null }));
+    window.dispatchEvent(new CustomEvent('acadevance_auth_change', { detail: null }));
     // Hard refresh to clear state
     window.location.href = window.location.origin + window.location.pathname;
   }

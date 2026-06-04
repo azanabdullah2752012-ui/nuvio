@@ -83,7 +83,7 @@ const GoogleSelector = ({ isOpen, onClose, onSelect }) => {
                   </svg>
                 </div>
                 <h1 className="text-2xl font-normal text-[#202124] mb-1">Choose an account</h1>
-                <p className="text-sm text-[#5f6368]">to continue to <span className="text-[#3c4043] font-medium">Nuvio</span></p>
+                <p className="text-sm text-[#5f6368]">to continue to <span className="text-[#3c4043] font-medium">Acadevance</span></p>
               </div>
 
               <div className="space-y-0 pt-2">
@@ -121,7 +121,7 @@ const GoogleSelector = ({ isOpen, onClose, onSelect }) => {
               </div>
 
               <div className="mt-8 text-xs text-[#5f6368] leading-relaxed">
-                To continue, Google will share your name, email address, language preference, and profile picture with Nuvio. Before using this app, you can review Nuvio’s <span className="text-[#4285F4] hover:underline cursor-pointer">privacy policy</span> and <span className="text-[#4285F4] hover:underline cursor-pointer">terms of service</span>.
+                To continue, Google will share your name, email address, language preference, and profile picture with Acadevance. Before using this app, you can review Acadevance’s <span className="text-[#4285F4] hover:underline cursor-pointer">privacy policy</span> and <span className="text-[#4285F4] hover:underline cursor-pointer">terms of service</span>.
               </div>
             </div>
 

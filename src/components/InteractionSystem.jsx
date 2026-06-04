@@ -29,7 +29,7 @@ const ParticleBurst = ({ x, y, onComplete }) => {
           className="fixed pointer-events-auto z-[9999] cursor-pointer"
           onClick={(e) => {
             e.stopPropagation();
-            window.dispatchEvent(new CustomEvent('nuvio_particle_bonus', { detail: { x: p.tx, y: p.ty } }));
+            window.dispatchEvent(new CustomEvent('acadevance_particle_bonus', { detail: { x: p.tx, y: p.ty } }));
           }}
         >
           <Zap className="w-4 h-4 text-nuvio-yellow fill-nuvio-yellow drop-shadow-[0_0_10px_rgba(255,165,2,0.8)]" />
@@ -105,15 +105,15 @@ const InteractionSystem = () => {
       setActiveProfile(e.detail.user);
     };
 
-    window.addEventListener('nuvio_stats_update', handleStatsUpdate);
-    window.addEventListener('nuvio_particle_bonus', handleParticleBonus);
-    window.addEventListener('nuvio_open_profile', handleProfileTrigger);
+    window.addEventListener('acadevance_stats_update', handleStatsUpdate);
+    window.addEventListener('acadevance_particle_bonus', handleParticleBonus);
+    window.addEventListener('acadevance_open_profile', handleProfileTrigger);
     
     return () => {
       clearInterval(eggInterval);
-      window.removeEventListener('nuvio_stats_update', handleStatsUpdate);
-      window.removeEventListener('nuvio_particle_bonus', handleParticleBonus);
-      window.removeEventListener('nuvio_open_profile', handleProfileTrigger);
+      window.removeEventListener('acadevance_stats_update', handleStatsUpdate);
+      window.removeEventListener('acadevance_particle_bonus', handleParticleBonus);
+      window.removeEventListener('acadevance_open_profile', handleProfileTrigger);
     };
   }, []);
 
@@ -140,7 +140,7 @@ const InteractionSystem = () => {
              animate={{ scale: 1 }}
              exit={{ scale: 0 }}
              onClick={() => {
-               window.dispatchEvent(new CustomEvent('nuvio_particle_bonus', { detail: { x: egg.x, y: egg.y } }));
+               window.dispatchEvent(new CustomEvent('acadevance_particle_bonus', { detail: { x: egg.x, y: egg.y } }));
                setEasterEggs(prev => prev.filter(e => e.id !== egg.id));
              }}
              className="fixed pointer-events-auto cursor-pointer p-3 bg-nuvio-purple-500/20 rounded-full border border-nuvio-purple-500/40 hover:bg-nuvio-purple-500 transition-all opacity-40 hover:opacity-100"

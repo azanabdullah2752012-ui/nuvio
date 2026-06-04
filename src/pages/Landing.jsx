@@ -72,7 +72,7 @@ const Landing = () => {
           <div className="w-10 h-10 bg-nuvio-purple-500 rounded-xl flex items-center justify-center shadow-lg shadow-nuvio-purple-500/20">
             <Sparkles className="text-white w-6 h-6" />
           </div>
-          <span className="text-2xl font-black uppercase tracking-tighter">Nuvio</span>
+          <span className="text-2xl font-black uppercase tracking-tighter">Acadevance</span>
         </div>
         <div className="hidden md:flex items-center gap-8 lowercase text-sm font-bold text-text-secondary">
           <a href="#" className="hover:text-nuvio-purple-400 transition-colors">features</a>
@@ -114,7 +114,7 @@ const Landing = () => {
           transition={{ delay: 0.2 }}
           className="max-w-2xl text-text-secondary text-lg md:text-xl font-medium leading-relaxed mb-12"
         >
-          Nuvio turns your homework into quests, exams into boss raids, and study 
+          Acadevance turns your homework into quests, exams into boss raids, and study 
           groups into academic squads. Level up your grades with Nova, the world's most 
           powerful AI tutor.
         </motion.p>
@@ -146,8 +146,8 @@ const Landing = () => {
                   onboarding_completed: true,
                   last_activity_date: new Date().toISOString()
                 };
-                localStorage.setItem('nuvio_user', JSON.stringify(devProfile));
-                window.dispatchEvent(new CustomEvent('nuvio_auth_change', { detail: devProfile }));
+                localStorage.setItem('acadevance_user', JSON.stringify(devProfile));
+                window.dispatchEvent(new CustomEvent('acadevance_auth_change', { detail: devProfile }));
                 navigate('/dashboard');
               }}
               className="w-full py-4 px-8 border border-nuvio-purple-500/50 bg-nuvio-purple-500/10 hover:bg-nuvio-purple-500/20 text-nuvio-purple-300 rounded-full font-black uppercase tracking-widest text-[10px] shadow-lg shadow-nuvio-purple-500/10 transition-all active:scale-[0.98]"

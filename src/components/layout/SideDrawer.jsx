@@ -86,7 +86,7 @@ const SideDrawer = ({ isOpen, onClose, user }) => {
         {/* User Card */}
         <div className="p-4 border-b border-border">
           <div 
-            onClick={() => window.dispatchEvent(new CustomEvent('nuvio_open_profile', { detail: { user } }))}
+            onClick={() => window.dispatchEvent(new CustomEvent('acadevance_open_profile', { detail: { user } }))}
             className="flex items-center gap-4 mb-4 cursor-pointer hover:translate-x-1 transition-transform group"
           >
             <div className="w-12 h-12 rounded-full bg-nuvio-purple-500 flex items-center justify-center text-2xl border-2 border-white/10 group-hover:border-nuvio-cyan ring-0 group-hover:ring-4 ring-nuvio-purple-500/20 transition-all">

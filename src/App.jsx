@@ -65,7 +65,7 @@ const RetentionEngine = ({ children }) => {
 
       const result = await authService.validateStreak();
       if (result.status === 'reset') {
-        window.dispatchEvent(new CustomEvent('nuvio_neural_nudge', {
+        window.dispatchEvent(new CustomEvent('acadevance_neural_nudge', {
           detail: {
             title: "Streak Terminated",
             message: `Neural Link was cold for too long. Reset to 1 Day.`,
@@ -73,7 +73,7 @@ const RetentionEngine = ({ children }) => {
           }
         }));
       } else if (result.status === 'increment') {
-        window.dispatchEvent(new CustomEvent('nuvio_neural_nudge', {
+        window.dispatchEvent(new CustomEvent('acadevance_neural_nudge', {
           detail: {
             title: "Neural Synergy",
             message: `Day ${user.streak + 1} synchronized. Keep the burn!`,

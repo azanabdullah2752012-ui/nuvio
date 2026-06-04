@@ -34,13 +34,13 @@ const Dashboard = () => {
 
     const handleCloudStatus = (e) => setCloudActive(e.detail.active);
     
-    window.addEventListener('nuvio_stats_update', handleUpdate);
-    window.addEventListener('nuvio_cloud_status', handleCloudStatus);
+    window.addEventListener('acadevance_stats_update', handleUpdate);
+    window.addEventListener('acadevance_cloud_status', handleCloudStatus);
     fetchDashboardData();
 
     return () => {
-      window.removeEventListener('nuvio_stats_update', handleUpdate);
-      window.removeEventListener('nuvio_cloud_status', handleCloudStatus);
+      window.removeEventListener('acadevance_stats_update', handleUpdate);
+      window.removeEventListener('acadevance_cloud_status', handleCloudStatus);
     };
   }, []);
 
@@ -130,7 +130,7 @@ const Dashboard = () => {
   const emitReaction = (emoji, e) => {
     const x = e.clientX;
     const y = e.clientY;
-    window.dispatchEvent(new CustomEvent('nuvio_particle_bonus', { detail: { emoji, x, y, type: 'reaction' } }));
+    window.dispatchEvent(new CustomEvent('acadevance_particle_bonus', { detail: { emoji, x, y, type: 'reaction' } }));
   };
 
   const tasksCount = counts.tasks;

@@ -40,7 +40,7 @@ const Layout = () => {
             era_tokens: 500, 
             role: isAdmin ? 'admin' : 'student'
           };
-          localStorage.setItem('nuvio_user', JSON.stringify(profile));
+          localStorage.setItem('acadevance_user', JSON.stringify(profile));
         }
       }
 
@@ -60,13 +60,13 @@ const Layout = () => {
     init();
 
     const handleUpdate = (e) => { if (mounted) setUser(e.detail); };
-    window.addEventListener('nuvio_stats_update', handleUpdate);
-    window.addEventListener('nuvio_auth_change', handleUpdate);
+    window.addEventListener('acadevance_stats_update', handleUpdate);
+    window.addEventListener('acadevance_auth_change', handleUpdate);
 
     return () => {
       mounted = false;
-      window.removeEventListener('nuvio_stats_update', handleUpdate);
-      window.removeEventListener('nuvio_auth_change', handleUpdate);
+      window.removeEventListener('acadevance_stats_update', handleUpdate);
+      window.removeEventListener('acadevance_auth_change', handleUpdate);
     };
   }, []);  // Run ONCE on mount only
 

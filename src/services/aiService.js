@@ -19,7 +19,7 @@ const MODELS = {
   synthesis: 'google/gemma-2-9b-it:free'            // Fast synthesis & summaries
 };
 
-const NOVA_SYSTEM = `You are Nova, the AI academic companion for Nuvio — a gamified study platform. 
+const NOVA_SYSTEM = `You are Nova, the AI academic companion for Acadevance — a gamified study platform. 
 You are encouraging, sharp, and use emojis ⚡🧠🎯. 
 Help students understand concepts clearly, create study plans, quiz them, and explain difficult topics with simple language and real examples.
 Keep answers concise but complete. Use bullet points for lists.`;
@@ -31,7 +31,7 @@ export const aiService = {
       return;
     }
     localStorage.setItem(STORAGE_KEYS[provider], key);
-    window.dispatchEvent(new CustomEvent('nuvio_ai_key_updated', { detail: { provider } }));
+    window.dispatchEvent(new CustomEvent('acadevance_ai_key_updated', { detail: { provider } }));
   },
 
   getKey: (provider) => {
@@ -144,8 +144,8 @@ export const aiService = {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${orKey}`,
-            'HTTP-Referer': 'https://azanabdullah2752012-ui.github.io/nuvio/',
-            'X-Title': 'Nuvio AI',
+            'HTTP-Referer': 'https://azanabdullah2752012-ui.github.io/acadevance/',
+            'X-Title': 'Acadevance AI',
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
@@ -183,7 +183,7 @@ export const aiService = {
     if (m.includes('essay') || m.includes('write') || m.includes('plan'))
       return `✍️ **Essay & Writing Mode!**\n\nI can help you:\n• Structure your essay (intro → body → conclusion)\n• Create a thesis statement\n• Build a study schedule\n• Outline complex topics\n\nTell me what you're writing about and I'll get you started! 📝`;
     if (m.includes('hi') || m.includes('hello') || m.includes('hey'))
-      return `Hey there! ⚡ I'm Nova, your Nuvio AI tutor.\n\nAsk me to:\n• Explain a topic\n• Quiz you on a subject  \n• Create a study plan\n• Help with math or essays\n\nWhat are we conquering today? 🎯`;
+      return `Hey there! ⚡ I'm Nova, your Acadevance AI tutor.\n\nAsk me to:\n• Explain a topic\n• Quiz you on a subject  \n• Create a study plan\n• Help with math or essays\n\nWhat are we conquering today? 🎯`;
     // Generic response for anything else
     return `Nova ⚡ here! I'm fully synchronized and ready to crush your study goals. 
     
