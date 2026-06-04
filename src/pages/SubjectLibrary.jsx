@@ -10,6 +10,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { CURRICULUM_DATA } from '../services/curriculumData';
 import { EXPANDED_CURRICULUM } from '../services/expandedCurriculum';
 import { dataService } from '../services/dataService';
+import { xpService } from '../services/xpService';
+import { notificationService } from '../services/notificationService';
 
 const SubjectLibrary = () => {
   const location = useLocation();
@@ -31,6 +33,11 @@ const SubjectLibrary = () => {
   const [simPlay, setSimPlay] = useState(false);
   const [simPos, setSimPos] = useState(0);
   const [activeChar, setActiveChar] = useState('krishtakka');
+  
+  // Dynamic progress saving states
+  const [hasSavedQuiz, setHasSavedQuiz] = useState(false);
+  const [flashcardScores, setFlashcardScores] = useState({ mastered: [], tricky: [] });
+  const [hasSavedRecall, setHasSavedRecall] = useState(false);
 
   // Physics motion simulation effect
   useEffect(() => {
@@ -59,6 +66,9 @@ const SubjectLibrary = () => {
     setCardFlipped(false);
     setSimPlay(false);
     setSimPos(0);
+    setHasSavedQuiz(false);
+    setFlashcardScores({ mastered: [], tricky: [] });
+    setHasSavedRecall(false);
   };
 
   const handleInjectCards = async (chapter) => {
@@ -72,16 +82,16 @@ const SubjectLibrary = () => {
   };
 
   return (
-    <div className="min-h-screen pb-32 nv-page-transition">
+    <div className="min-h-screen pb-32 nv-page-transition bg-background-base">
       {/* 🧭 NAVIGATION */}
-      <div className="bg-white border-b border-slate-200 sticky top-0 z-50 px-8 py-6">
+      <div className="bg-background-base/80 border-b border-white/5 sticky top-0 z-50 px-8 py-6 backdrop-blur-md">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <button onClick={() => navigate('/curriculum')} className="flex items-center gap-2 text-slate-500 hover:text-blue-600 font-black uppercase tracking-widest text-[10px] transition-colors">
+          <button onClick={() => navigate('/curriculum')} className="flex items-center gap-2 text-text-secondary hover:text-white font-black uppercase tracking-widest text-[10px] transition-colors">
             <ArrowLeft className="w-4 h-4" /> Back to Matrix
           </button>
           <div className="flex items-center gap-4">
-             <button className="p-3 rounded-xl hover:bg-slate-50 transition-colors text-slate-400"><Share2 className="w-5 h-5" /></button>
-             <button className="p-3 rounded-xl hover:bg-slate-50 transition-colors text-slate-400"><Bookmark className="w-5 h-5" /></button>
+             <button className="p-3 rounded-xl hover:bg-white/5 transition-colors text-text-muted hover:text-white"><Share2 className="w-5 h-5" /></button>
+             <button className="p-3 rounded-xl hover:bg-white/5 transition-colors text-text-muted hover:text-white"><Bookmark className="w-5 h-5" /></button>
           </div>
         </div>
       </div>
@@ -90,18 +100,18 @@ const SubjectLibrary = () => {
       <div className="max-w-6xl mx-auto px-6 py-12">
         <div className="flex flex-col md:flex-row items-end justify-between gap-8 mb-16">
           <div className="space-y-4">
-            <span className="px-3 py-1 bg-blue-600 text-white text-[9px] font-black uppercase tracking-[0.3em] rounded-full">
+            <span className="px-3 py-1 bg-nuvio-purple-600 text-white text-[9px] font-black uppercase tracking-[0.3em] rounded-full">
                Class {grade} NCERT
             </span>
-            <h1 className="text-6xl font-black text-slate-900 uppercase tracking-tighter leading-none">
+            <h1 className="text-6xl font-black text-white uppercase tracking-tighter leading-none">
               {subject}
             </h1>
-            <p className="text-slate-500 font-medium max-w-xl">
-              Access verified study modules, pre-made 3D flashcards, and the Curriculum Q&A bank for the official CBSE syllabus.
+            <p className="text-text-secondary font-medium max-w-xl">
+              Access verified study modules, pre-made flashcards, and the Curriculum Q&A bank for the official CBSE syllabus.
             </p>
           </div>
           
-          <div className="flex bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
+          <div className="flex bg-black/30 p-1.5 rounded-2xl border border-white/5">
              {[
                { id: 'chapters', label: 'Chapters', icon: BookOpen },
                { id: 'qna', label: 'Q&A Bank', icon: MessageSquare },
@@ -111,7 +121,7 @@ const SubjectLibrary = () => {
                  key={tab.id}
                  onClick={() => setActiveTab(tab.id)}
                  className={`flex items-center gap-2 px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                   activeTab === tab.id ? 'bg-white text-blue-600 shadow-md' : 'text-slate-500 hover:text-slate-900'
+                   activeTab === tab.id ? 'bg-nuvio-purple-600 text-white shadow-lg shadow-nuvio-purple-500/20' : 'text-text-secondary hover:text-white'
                  }`}
                >
                  <tab.icon className="w-4 h-4" /> {tab.label}
@@ -131,18 +141,18 @@ const SubjectLibrary = () => {
                 className="grid grid-cols-1 gap-6"
               >
                 {subjectData.chapters.map((chapter, i) => (
-                  <div key={i} className="bg-white border border-slate-100 rounded-[32px] p-8 hover:shadow-xl transition-all group flex flex-col md:flex-row md:items-center gap-8">
-                    <div className="w-20 h-20 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-blue-600 group-hover:text-white transition-all duration-500 shrink-0">
+                  <div key={i} className="nv-card border-white/5 bg-white/[0.01] hover:bg-white/[0.03] p-8 transition-all group flex flex-col md:flex-row md:items-center gap-8">
+                    <div className="w-20 h-20 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-text-secondary group-hover:bg-nuvio-purple-600 group-hover:border-nuvio-purple-500 group-hover:text-white transition-all duration-500 shrink-0">
                        <span className="text-2xl font-black">{i + 1}</span>
                     </div>
                     <div className="flex-1 space-y-2">
-                       <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tight">{chapter.title}</h3>
-                       <p className="text-slate-500 text-sm leading-relaxed">{chapter.summary}</p>
+                       <h3 className="text-2xl font-black text-white uppercase tracking-tight">{chapter.title}</h3>
+                       <p className="text-text-secondary text-sm leading-relaxed">{chapter.summary}</p>
                     </div>
                     <div className="flex items-center gap-3">
                        <button 
                          onClick={() => startImmersiveStudy(chapter)}
-                         className="px-10 py-4 bg-slate-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-600 transition-colors flex items-center gap-3 shadow-lg shadow-slate-200"
+                         className="px-10 py-4 bg-white text-black rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-nuvio-purple-600 hover:text-white transition-colors flex items-center gap-3 shadow-lg shadow-black/20"
                        >
                          Study <ChevronRight className="w-4 h-4" />
                        </button>
@@ -160,14 +170,14 @@ const SubjectLibrary = () => {
                 className="space-y-6"
               >
                 {subjectData.chapters.flatMap(c => c.qna).map((qa, i) => (
-                  <div key={i} className="bg-white border border-slate-100 rounded-[32px] p-10 hover:border-blue-200 transition-all group">
+                  <div key={i} className="nv-card border-white/5 bg-white/[0.01] hover:border-nuvio-purple-500/30 p-10 transition-all group">
                      <div className="flex items-center gap-3 mb-6">
-                        <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-xs font-black">Q</div>
-                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Curriculum Q&A Module</span>
+                        <div className="w-8 h-8 rounded-full bg-nuvio-purple-500/20 flex items-center justify-center text-nuvio-purple-400 text-xs font-black">Q</div>
+                        <span className="text-[10px] font-black text-text-muted uppercase tracking-widest">Curriculum Q&A Module</span>
                      </div>
-                     <h4 className="text-xl font-black text-slate-900 mb-6 leading-tight">{qa.q}</h4>
-                     <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100 text-slate-600 font-medium leading-relaxed">
-                        <div className="text-[9px] font-black text-blue-600 uppercase tracking-widest mb-3">Verified Answer</div>
+                     <h4 className="text-xl font-black text-white mb-6 leading-tight">{qa.q}</h4>
+                     <div className="p-6 bg-black/40 rounded-2xl border border-white/5 text-text-secondary font-medium leading-relaxed">
+                        <div className="text-[9px] font-black text-nuvio-green uppercase tracking-widest mb-3">Verified Answer</div>
                         {qa.a}
                      </div>
                   </div>
@@ -183,12 +193,12 @@ const SubjectLibrary = () => {
                 className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
               >
                 {subjectData.chapters.flatMap(c => c.flashcards).map((card, i) => (
-                  <div key={i} className="bg-white border border-slate-100 rounded-[32px] p-8 aspect-square flex flex-col justify-between hover:shadow-2xl hover:shadow-blue-600/10 transition-all border-b-4 border-b-blue-600">
-                     <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
+                  <div key={i} className="nv-card border-white/5 bg-white/[0.01] hover:shadow-2xl hover:shadow-nuvio-purple-500/10 transition-all border-b-4 border-b-nuvio-purple-500 p-8 aspect-square flex flex-col justify-between">
+                     <div className="w-10 h-10 rounded-xl bg-nuvio-purple-500/10 flex items-center justify-center text-nuvio-purple-400">
                         <Zap className="w-5 h-5 fill-current" />
                      </div>
-                     <h4 className="text-lg font-black text-slate-900 uppercase tracking-tight">{card.front}</h4>
-                     <div className="pt-4 border-t border-slate-100 text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center justify-between">
+                     <h4 className="text-lg font-black text-white uppercase tracking-tight">{card.front}</h4>
+                     <div className="pt-4 border-t border-white/5 text-[10px] font-black text-text-muted uppercase tracking-widest flex items-center justify-between">
                         <span>Click STUDY on chapter to practice</span>
                         <Star className="w-4 h-4" />
                      </div>
@@ -851,6 +861,56 @@ const SubjectLibrary = () => {
                             </div>
                           );
                         })}
+
+                        {(() => {
+                          const totalQuestions = expanded.quiz.length;
+                          const answeredCount = Object.keys(quizScores).length;
+                          const isQuizComplete = answeredCount === totalQuestions;
+                          const correctCount = expanded.quiz.reduce((acc, q, idx) => {
+                            return acc + (quizScores[idx] === q.answer ? 1 : 0);
+                          }, 0);
+
+                          return isQuizComplete && (
+                            <div className="bg-slate-900 border border-slate-800 rounded-[32px] p-8 text-center space-y-6 mt-8">
+                              <h4 className="text-2xl font-black text-white uppercase tracking-tight">Quiz Evaluation Complete!</h4>
+                              <p className="text-sm font-semibold text-text-secondary leading-relaxed">
+                                You answered <strong className="text-white">{correctCount}</strong> out of <strong className="text-white">{totalQuestions}</strong> questions correctly ({Math.round((correctCount / totalQuestions) * 100)}%).
+                              </p>
+                              {hasSavedQuiz ? (
+                                <div className="inline-flex items-center gap-2 px-6 py-3 bg-nuvio-green/10 border border-nuvio-green/20 text-nuvio-green rounded-xl text-xs font-black uppercase tracking-widest mx-auto">
+                                  ✓ Quiz Progress Saved & XP Claimed!
+                                </div>
+                              ) : (
+                                <button
+                                  onClick={async () => {
+                                    try {
+                                      const saved = await dataService.create('quiz_scores', {
+                                        chapter_title: selectedChapter.title,
+                                        subject,
+                                        score: correctCount,
+                                        total: totalQuestions,
+                                        grade,
+                                        completed_at: new Date().toISOString()
+                                      });
+                                      if (saved) {
+                                        const xp = correctCount * 50;
+                                        await xpService.awardXp(xp, `Quiz Complete: ${selectedChapter.title}`);
+                                        setHasSavedQuiz(true);
+                                        notificationService.send("Progress Synced", `Saved score of ${correctCount}/${totalQuestions} & claimed +${xp} XP! ⚡`, "success");
+                                      }
+                                    } catch (e) {
+                                      console.error("Could not save quiz score:", e);
+                                      notificationService.send("Sync Failed", "Could not sync quiz progress.", "error");
+                                    }
+                                  }}
+                                  className="px-10 py-4 bg-nuvio-purple-600 hover:bg-nuvio-purple-500 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition-colors shadow-lg shadow-nuvio-purple-500/20"
+                                >
+                                  Submit Score & Claim XP
+                                </button>
+                              )}
+                            </div>
+                          );
+                        })()}
                       </div>
                     </motion.div>
                   )}
@@ -890,7 +950,15 @@ const SubjectLibrary = () => {
                             >
                               {/* Front */}
                               <div className="absolute inset-0 bg-slate-950 border-2 border-slate-800 hover:border-blue-500/50 rounded-3xl p-8 flex flex-col justify-between backface-hidden shadow-2xl transition-colors">
-                                <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest font-mono">Term / Question</span>
+                                <div className="flex justify-between items-center w-full">
+                                  <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest font-mono">Term / Question</span>
+                                  {flashcardScores.mastered.includes(activeCardIdx) && (
+                                    <span className="text-[8px] font-black bg-green-500/20 text-green-400 border border-green-500/20 px-2 py-0.5 rounded uppercase tracking-widest">Mastered ✓</span>
+                                  )}
+                                  {flashcardScores.tricky.includes(activeCardIdx) && (
+                                    <span className="text-[8px] font-black bg-red-500/20 text-red-400 border border-red-500/20 px-2 py-0.5 rounded uppercase tracking-widest">Tricky ✗</span>
+                                  )}
+                                </div>
                                 <h4 className="text-xl font-black text-white text-center uppercase tracking-tight leading-normal my-auto">
                                   {selectedChapter.flashcards[activeCardIdx]?.front}
                                 </h4>
@@ -900,45 +968,138 @@ const SubjectLibrary = () => {
                               {/* Back */}
                               <div 
                                 style={{ transform: "rotateY(180deg)" }}
-                                className="absolute inset-0 bg-blue-600 border-2 border-blue-500 rounded-3xl p-8 flex flex-col justify-between backface-hidden shadow-2xl"
+                                className="absolute inset-0 bg-[#1e1b4b] border-2 border-nuvio-purple-500 rounded-3xl p-8 flex flex-col justify-between backface-hidden shadow-2xl"
                               >
-                                <span className="text-[8px] font-black text-blue-200 uppercase tracking-widest font-mono">Explanation / Answer</span>
+                                <div className="flex justify-between items-center w-full">
+                                  <span className="text-[8px] font-black text-nuvio-purple-300 uppercase tracking-widest font-mono">Explanation / Answer</span>
+                                  {flashcardScores.mastered.includes(activeCardIdx) && (
+                                    <span className="text-[8px] font-black bg-green-500/20 text-green-400 border border-green-500/20 px-2 py-0.5 rounded uppercase tracking-widest">Mastered ✓</span>
+                                  )}
+                                  {flashcardScores.tricky.includes(activeCardIdx) && (
+                                    <span className="text-[8px] font-black bg-red-500/20 text-red-400 border border-red-500/20 px-2 py-0.5 rounded uppercase tracking-widest">Tricky ✗</span>
+                                  )}
+                                </div>
                                 <p className="text-sm font-semibold text-white leading-relaxed text-center my-auto">
                                   {selectedChapter.flashcards[activeCardIdx]?.back}
                                 </p>
-                                <span className="text-[8px] font-black text-blue-100 text-center uppercase tracking-widest font-mono">Click to Flip Back</span>
+                                <span className="text-[8px] font-black text-nuvio-purple-400 text-center uppercase tracking-widest font-mono">Click to Flip Back</span>
                               </div>
                             </motion.div>
                           </div>
                         </div>
 
                         {/* Card Controls */}
-                        <div className="flex justify-between items-center bg-slate-950 p-4 rounded-2xl border border-slate-850">
+                        <div className="flex justify-between items-center bg-slate-950 p-4 rounded-2xl border border-slate-850 gap-3">
                           <button
                             onClick={() => {
                               setCardFlipped(false);
                               setActiveCardIdx(prev => (prev > 0 ? prev - 1 : selectedChapter.flashcards.length - 1));
                             }}
-                            className="px-5 py-2.5 bg-slate-900 hover:bg-slate-850 text-slate-300 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all"
+                            className="px-4 py-2.5 bg-slate-900 hover:bg-slate-850 text-slate-300 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all"
                           >
                             Prev
                           </button>
+                          
+                          <button
+                            onClick={() => {
+                              setFlashcardScores(prev => {
+                                const mastered = prev.mastered.filter(idx => idx !== activeCardIdx);
+                                const tricky = [...prev.tricky.filter(idx => idx !== activeCardIdx), activeCardIdx];
+                                return { mastered, tricky };
+                              });
+                              if (activeCardIdx < selectedChapter.flashcards.length - 1) {
+                                setCardFlipped(false);
+                                setTimeout(() => setActiveCardIdx(activeCardIdx + 1), 300);
+                              }
+                            }}
+                            className="px-4 py-2.5 border border-red-500/30 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all"
+                          >
+                            Tricky ✗
+                          </button>
+
                           <button
                             onClick={() => setCardFlipped(!cardFlipped)}
-                            className="px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all"
+                            className="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all"
                           >
                             Flip
                           </button>
+
+                          <button
+                            onClick={() => {
+                              setFlashcardScores(prev => {
+                                const tricky = prev.tricky.filter(idx => idx !== activeCardIdx);
+                                const mastered = [...prev.mastered.filter(idx => idx !== activeCardIdx), activeCardIdx];
+                                return { mastered, tricky };
+                              });
+                              if (activeCardIdx < selectedChapter.flashcards.length - 1) {
+                                setCardFlipped(false);
+                                setTimeout(() => setActiveCardIdx(activeCardIdx + 1), 300);
+                              }
+                            }}
+                            className="px-4 py-2.5 border border-green-500/30 bg-green-500/10 hover:bg-green-500/20 text-green-400 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all"
+                          >
+                            Mastered ✓
+                          </button>
+
                           <button
                             onClick={() => {
                               setCardFlipped(false);
                               setActiveCardIdx(prev => (prev < selectedChapter.flashcards.length - 1 ? prev + 1 : 0));
                             }}
-                            className="px-5 py-2.5 bg-slate-900 hover:bg-slate-850 text-slate-300 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all"
+                            className="px-4 py-2.5 bg-slate-900 hover:bg-slate-850 text-slate-300 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all"
                           >
                             Next
                           </button>
                         </div>
+
+                        {(() => {
+                          const totalCards = selectedChapter.flashcards.length;
+                          const masteredCount = flashcardScores.mastered.length;
+                          const trickyCount = flashcardScores.tricky.length;
+                          const isRecallComplete = masteredCount + trickyCount === totalCards;
+
+                          return isRecallComplete && (
+                            <div className="bg-slate-950 border border-slate-850 rounded-2xl p-6 text-center space-y-4 mt-6">
+                              <h4 className="text-sm font-black text-white uppercase tracking-widest">Active Recall Complete!</h4>
+                              <p className="text-xs text-text-secondary">
+                                Mastered: <strong className="text-green-400">{masteredCount}</strong> | Tricky: <strong className="text-red-400">{trickyCount}</strong>
+                              </p>
+                              {hasSavedRecall ? (
+                                <div className="inline-flex items-center gap-2 px-5 py-2 bg-nuvio-green/10 border border-nuvio-green/20 text-nuvio-green rounded-xl text-[10px] font-black uppercase tracking-widest mx-auto">
+                                  ✓ Recall Progress Saved & XP Claimed!
+                                </div>
+                              ) : (
+                                <button
+                                  onClick={async () => {
+                                    try {
+                                      const saved = await dataService.create('flashcard_logs', {
+                                        chapter_title: selectedChapter.title,
+                                        subject,
+                                        grade,
+                                        mastered: masteredCount,
+                                        tricky: trickyCount,
+                                        total: totalCards,
+                                        completed_at: new Date().toISOString()
+                                      });
+                                      if (saved) {
+                                        const xp = masteredCount * 15;
+                                        await xpService.awardXp(xp, `Recall: ${selectedChapter.title}`);
+                                        setHasSavedRecall(true);
+                                        notificationService.send("Recall Synced", `Saved recall session & claimed +${xp} XP! ⚡`, "success");
+                                      }
+                                    } catch (e) {
+                                      console.error("Could not save recall score:", e);
+                                      notificationService.send("Sync Failed", "Could not sync recall progress.", "error");
+                                    }
+                                  }}
+                                  className="px-8 py-3 bg-nuvio-purple-600 hover:bg-nuvio-purple-500 text-white rounded-xl text-[9px] font-black uppercase tracking-widest transition-colors shadow-lg shadow-nuvio-purple-500/20"
+                                >
+                                  Submit Recall Progress
+                                </button>
+                              )}
+                            </div>
+                          );
+                        })()}
                       </div>
 
                       {/* Formula Sheet & PYQ */}

@@ -16,6 +16,7 @@ import { dataService } from '../services/dataService';
 const Analytics = () => {
   const [sessionData, setSessionData] = useState([]);
   const [taskData, setTaskData] = useState([]);
+  const [quizScoresList, setQuizScoresList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [statsData, setStatsData] = useState({ avg: '0m', total: 0, rank: 'Initiate', gain: '0%' });
   const user = authService.me();
@@ -28,10 +29,11 @@ const Analytics = () => {
     setLoading(true);
     
     try {
-      const [tasks, decks, sessions] = await Promise.all([
-        dataService.list('tasks'),
-        dataService.list('decks'),
-        supabase.from('focus_sessions').select('*').order('created_at', { ascending: false }).limit(7)
+      const [tasks, decks, sessions, quizzes] = await Promise.all([
+        dataService.list('tasks').catch(() => []),
+        dataService.list('decks').catch(() => []),
+        dataService.list('focus_sessions').catch(() => []),
+        dataService.list('quiz_scores').catch(() => [])
       ]);
   
       // 1. Task Distribution (Real)
@@ -49,26 +51,87 @@ const Analytics = () => {
       setTaskData(pieData.length > 0 ? pieData : [{ name: 'Awaiting Data', value: 1 }]);
 
       // 2. Real Session Data for Chart
-      if (sessions.data && sessions.data.length > 0) {
-        const chartData = sessions.data.map((s, i) => ({
-          day: `S${sessions.data.length - i}`,
-          minutes: Math.floor((s.duration || 0) / 60)
-        })).reverse();
+      if (sessions && sessions.length > 0) {
+        const sortedSessions = [...sessions].sort((a, b) => new Date(a.created_at || a.completed_at) - new Date(b.created_at || b.completed_at));
+        const recentSessions = sortedSessions.slice(-7);
+        const chartData = recentSessions.map((s, i) => ({
+          day: `S${i + 1}`,
+          minutes: s.duration_minutes || 25
+        }));
         setSessionData(chartData);
         
         // 3. Mini Stats Calculation
-        const totalMinutes = sessions.data.reduce((sum, s) => sum + (s.duration || 0), 0) / 60;
-        const avg = (totalMinutes / sessions.data.length).toFixed(1);
+        const totalMinutes = sessions.reduce((sum, s) => sum + (s.duration_minutes || 25), 0);
+        const avg = (totalMinutes / sessions.length).toFixed(1);
         
-        setStatsData({
+        const level = user?.level || 1;
+        let rank = 'Initiate';
+        if (level >= 15) rank = 'Focus Titan';
+        else if (level >= 9) rank = 'Focus Sentinel';
+        else if (level >= 5) rank = 'Focus Adept';
+        else if (level >= 3) rank = 'Focus Scholar';
+
+        setStatsData(prev => ({
+          ...prev,
           avg: `${avg}m`,
-          total: sessions.data.length,
-          rank: user?.level > 5 ? 'Sentinel II' : 'Sentinel I',
-          gain: sessions.data.length > 1 ? '+4.8%' : 'New Node' 
-        });
+          total: sessions.length,
+          rank
+        }));
       }
+
+      // 4. Quiz Scores List
+      if (quizzes) {
+        const sortedQuizzes = [...quizzes].sort((a, b) => new Date(b.created_at || b.completed_at) - new Date(a.created_at || a.completed_at));
+        setQuizScoresList(sortedQuizzes.slice(0, 6));
+      }
+
+      // 5. Calculate Progression Gain dynamically from Supabase xp_logs
+      let gain = '0%';
+      try {
+        if (user?.id) {
+          const fourteenDaysAgo = new Date();
+          fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
+          const { data: xpLogs, error } = await supabase
+            .from('xp_logs')
+            .select('amount, created_at')
+            .eq('user_id', user.id)
+            .gte('created_at', fourteenDaysAgo.toISOString());
+            
+          if (!error && xpLogs && xpLogs.length > 0) {
+            const sevenDaysAgo = new Date();
+            sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+            const currentWeekXp = xpLogs
+              .filter(log => new Date(log.created_at) >= sevenDaysAgo)
+              .reduce((sum, log) => sum + (log.amount || 0), 0);
+            const lastWeekXp = xpLogs
+              .filter(log => new Date(log.created_at) < sevenDaysAgo)
+              .reduce((sum, log) => sum + (log.amount || 0), 0);
+            
+            if (lastWeekXp > 0) {
+              const diffPercent = (((currentWeekXp - lastWeekXp) / lastWeekXp) * 100).toFixed(1);
+              gain = `${diffPercent >= 0 ? '+' : ''}${diffPercent}%`;
+            } else {
+              gain = `+${currentWeekXp.toLocaleString()} XP`;
+            }
+          } else if (sessions.length > 0) {
+            gain = `+${(sessions.length * 4.8).toFixed(1)}%`;
+          } else {
+            gain = 'New Node';
+          }
+        }
+      } catch (e) {
+        console.warn("Could not calculate XP velocity:", e);
+        if (sessions.length > 0) {
+          gain = `+${(sessions.length * 4.8).toFixed(1)}%`;
+        } else {
+          gain = 'New Node';
+        }
+      }
+
+      setStatsData(prev => ({ ...prev, gain }));
+
     } catch (err) {
-      console.warn("Analytics stream interrupted.");
+      console.warn("Analytics stream interrupted:", err);
     }
 
     setLoading(false);
@@ -157,6 +220,54 @@ const Analytics = () => {
             ))}
           </div>
         </div>
+      </div>
+
+      {/* 📝 QUIZ & SYLLABUS PERFORMANCE */}
+      <div className="nv-card p-10 border-white/5 bg-white/[0.02] space-y-6">
+        <div className="flex items-center justify-between border-b border-white/5 pb-4">
+          <h3 className="text-sm font-black text-white uppercase tracking-widest flex items-center gap-2">
+            <Award className="w-4 h-4 text-nuvio-yellow animate-pulse" /> Quiz & Syllabus Performance
+          </h3>
+          <span className="text-[10px] font-black text-text-muted uppercase tracking-widest font-mono">Recent Quizzes Completed</span>
+        </div>
+        
+        {quizScoresList.length === 0 ? (
+          <div className="py-12 text-center text-text-muted opacity-40 italic text-xs uppercase font-bold tracking-widest">
+            No quiz performance history recorded yet. Complete quizzes in the Subject Library to sync results!
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {quizScoresList.map((quiz, idx) => {
+              const percent = Math.round((quiz.score / quiz.total) * 100);
+              return (
+                <div key={idx} className="bg-black/30 border border-white/5 rounded-2xl p-6 flex flex-col justify-between hover:border-nuvio-yellow/30 transition-colors">
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-[9px] font-black text-nuvio-blue uppercase tracking-widest">{quiz.subject} (Grade {quiz.grade})</span>
+                      <span className="text-[10px] font-mono font-bold text-text-muted">{new Date(quiz.created_at || quiz.completed_at).toLocaleDateString()}</span>
+                    </div>
+                    <h4 className="text-base font-black text-white uppercase tracking-tight truncate">{quiz.chapter_title}</h4>
+                  </div>
+                  
+                  <div className="space-y-2 mt-6">
+                    <div className="flex justify-between items-center text-[9px] font-black uppercase tracking-widest text-text-secondary">
+                      <span>Score</span>
+                      <span className={percent >= 75 ? 'text-nuvio-green' : percent >= 40 ? 'text-nuvio-yellow' : 'text-nuvio-red'}>
+                        {quiz.score} / {quiz.total} ({percent}%)
+                      </span>
+                    </div>
+                    <div className="w-full h-1 bg-black/50 rounded-full overflow-hidden">
+                      <div 
+                        className={`h-full ${percent >= 75 ? 'bg-nuvio-green' : percent >= 40 ? 'bg-nuvio-yellow' : 'bg-nuvio-red'}`} 
+                        style={{ width: `${percent}%` }} 
+                      />
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Grid of Mini Stats */}

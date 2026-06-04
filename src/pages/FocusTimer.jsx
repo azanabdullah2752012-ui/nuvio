@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import { authService } from '../services/authService';
 import { xpService } from '../services/xpService';
+import { dataService } from '../services/dataService';
 
 const FocusTimer = () => {
   const [minutes, setMinutes] = useState(25);
@@ -23,12 +24,15 @@ const FocusTimer = () => {
   }, []);
 
   const fetchSessions = async () => {
-    const { data } = await supabase
-      .from('focus_sessions')
-      .select('*')
-      .order('completed_at', { ascending: false })
-      .limit(5);
-    if (data) setSessions(data);
+    try {
+      const list = await dataService.list('focus_sessions');
+      if (list) {
+        const sorted = [...list].sort((a, b) => new Date(b.created_at || b.completed_at) - new Date(a.created_at || a.completed_at));
+        setSessions(sorted.slice(0, 5));
+      }
+    } catch (e) {
+      console.warn("Could not load focus sessions:", e);
+    }
   };
 
   const toggleTimer = () => {
@@ -66,19 +70,21 @@ const FocusTimer = () => {
     if (mode === 'focus') {
       const xp = 150;
       const tokens = 30;
-      const user = authService.me();
 
-      // 1. Save to Cloud
-      const { error } = await supabase.from('focus_sessions').insert([{
-        user_id: user.id,
+      // 1. Save using dataService
+      const newSession = await dataService.create('focus_sessions', {
         duration_minutes: 25,
         xp_earned: xp,
-        tokens_earned: tokens
-      }]);
+        tokens_earned: tokens,
+        completed_at: new Date().toISOString()
+      }).catch(err => {
+        console.warn("Could not save focus session:", err);
+        return null;
+      });
 
-      if (!error) {
+      if (newSession) {
         // 2. Award XP & Tokens
-        xpService.awardXP(xp, "Deep Focus Session Complete");
+        xpService.awardXp(xp, "Deep Focus Session Complete");
         authService.addTokens(tokens);
         fetchSessions();
         alert(`Focus Session Complete! Awarded ${xp} XP & ${tokens} Tokens! ⚡`);
