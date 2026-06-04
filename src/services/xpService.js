@@ -48,6 +48,13 @@ export const xpService = {
     const user = authService.me();
     if (!user) return null;
 
+    let finalAmount = amount;
+    const boostExpires = localStorage.getItem('acadevance_xp_boost_expires');
+    const isBoostActive = boostExpires && Number(boostExpires) > Date.now();
+    if (isBoostActive) {
+      finalAmount = amount * 2;
+    }
+
     const category = reason.toLowerCase().includes('quiz') || reason.toLowerCase().includes('bingo') || reason.toLowerCase().includes('ludo') || reason.toLowerCase().includes('uno') ? 'game' : 
                      reason.toLowerCase().includes('streak') ? 'streak' : 
                      reason.toLowerCase().includes('task') || reason.toLowerCase().includes('planner') ? 'task' : 'social';
@@ -55,8 +62,8 @@ export const xpService = {
     try {
       // 🚀 ATOMIC SYNC: One call to handle Profile + Logs + Level Calculation
       const { data, error } = await supabase.rpc('rpc_award_xp', {
-        amount_to_add: amount,
-        award_reason: reason,
+        amount_to_add: finalAmount,
+        award_reason: reason + (isBoostActive ? ' (2x Boost)' : ''),
         award_category: category
       });
 
@@ -70,7 +77,7 @@ export const xpService = {
       
       // 2. Emit events for UI
       window.dispatchEvent(new CustomEvent('acadevance_stats_update', { detail: updatedUser }));
-      window.dispatchEvent(new CustomEvent('acadevance_xp_awarded', { detail: { amount, reason } }));
+      window.dispatchEvent(new CustomEvent('acadevance_xp_awarded', { detail: { amount: finalAmount, reason } }));
       
       if (leveledUp) {
         window.dispatchEvent(new CustomEvent('acadevance_notification', { 
@@ -78,7 +85,7 @@ export const xpService = {
         }));
       }
 
-      return { updatedUser, leveledUp, amount, reason };
+      return { updatedUser, leveledUp, amount: finalAmount, reason };
     } catch (err) {
       console.error("XP SYNC FAILURE:", err);
       return null;

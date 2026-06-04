@@ -6,12 +6,14 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { authService } from '../services/authService';
 import { dataService } from '../services/dataService';
+import { notificationService } from '../services/notificationService';
 import { supabase } from '../lib/supabase';
 
 const Shop = () => {
   const [user, setUser] = useState(authService.me());
   const [inventory, setInventory] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [boostTimeLeft, setBoostTimeLeft] = useState('');
 
   const shopItems = [
     { id: 'xp_boost', name: 'XP Overdrive', price: 1000, icon: Zap, color: 'text-nuvio-yellow', desc: 'Double XP for the next 4 hours.' },
@@ -28,6 +30,30 @@ const Shop = () => {
     return () => window.removeEventListener('acadevance_stats_update', handleUpdate);
   }, []);
 
+  // Timer for XP boost countdown
+  useEffect(() => {
+    const checkBoost = () => {
+      const expires = localStorage.getItem('acadevance_xp_boost_expires');
+      if (expires) {
+        const diff = Number(expires) - Date.now();
+        if (diff > 0) {
+          const hours = Math.floor(diff / (1000 * 60 * 60));
+          const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+          const secs = Math.floor((diff % (1000 * 60)) / 1000);
+          setBoostTimeLeft(`${hours}h ${mins}m ${secs}s`);
+        } else {
+          setBoostTimeLeft('');
+        }
+      } else {
+        setBoostTimeLeft('');
+      }
+    };
+
+    checkBoost();
+    const timer = setInterval(checkBoost, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
   const fetchInventory = async () => {
     const data = await dataService.list('inventory');
     if (data) setInventory(data.map(i => i.item_id));
@@ -36,12 +62,13 @@ const Shop = () => {
 
   const buyItem = async (item) => {
     if (user.era_tokens < item.price) {
-      alert("Insufficient Era Tokens! Keep studying to earn more. ⚡");
+      notificationService.send("Tokens Insufficient", "Keep studying to earn more Era Tokens! ⚡", "error");
       return;
     }
 
-    if (inventory.includes(item.id)) {
-      alert("You already own this item!");
+    const isUnique = ['golden_rim', 'divine_avatar'].includes(item.id);
+    if (isUnique && inventory.includes(item.id)) {
+      notificationService.send("Already Acquired", `You already own the ${item.name}!`, "info");
       return;
     }
 
@@ -51,9 +78,27 @@ const Shop = () => {
     // 2. Add to Inventory
     await dataService.create('inventory', { item_id: item.id });
     
-    setInventory([...inventory, item.id]);
-    alert(`Success! Unlocked: ${item.name} 🛡️`);
+    setInventory(prev => [...prev, item.id]);
+
+    // Apply special activation logic
+    if (item.id === 'xp_boost') {
+      const currentExpires = localStorage.getItem('acadevance_xp_boost_expires');
+      let newExpires = Date.now() + 4 * 60 * 60 * 1000;
+      if (currentExpires && Number(currentExpires) > Date.now()) {
+        newExpires = Number(currentExpires) + 4 * 60 * 60 * 1000; // extend duration
+      }
+      localStorage.setItem('acadevance_xp_boost_expires', String(newExpires));
+      notificationService.send("XP Boost Activated", "2x XP Overdrive active for next 4 hours! ⚡", "success");
+    } else {
+      notificationService.send("Purchase Complete", `Successfully acquired: ${item.name}! 🎁`, "success");
+    }
   };
+
+  // Group inventory items by count for duplicate items like streak shields
+  const groupedInventory = inventory.reduce((acc, curr) => {
+    acc[curr] = (acc[curr] || 0) + 1;
+    return acc;
+  }, {});
 
   return (
     <div className="space-y-10 pb-20">
@@ -74,13 +119,31 @@ const Shop = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {shopItems.map((item, i) => {
           const isOwned = inventory.includes(item.id);
+          const isUnique = ['golden_rim', 'divine_avatar'].includes(item.id);
+          const isBoostActive = item.id === 'xp_boost' && boostTimeLeft !== '';
+
+          // Determine button display properties
+          let buttonText = `${item.price} Tokens`;
+          let isDisabled = false;
+          let buttonClass = 'bg-white/5 border border-white/10 text-white hover:bg-nuvio-purple-500 hover:border-nuvio-purple-400';
+
+          if (isUnique && isOwned) {
+            buttonText = 'OWNED';
+            isDisabled = true;
+            buttonClass = 'bg-nuvio-green/20 text-nuvio-green border border-nuvio-green/30 cursor-default';
+          } else if (item.id === 'xp_boost' && isBoostActive) {
+            buttonText = `Active: ${boostTimeLeft}`;
+            isDisabled = false; // allow extension
+            buttonClass = 'bg-gradient-to-r from-nuvio-yellow/20 to-nuvio-purple-500/20 text-nuvio-yellow border border-nuvio-yellow/30 hover:from-nuvio-yellow hover:to-nuvio-purple-500 hover:text-black';
+          }
+
           return (
             <motion.div 
               key={item.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.1 }}
-              className={`nv-card p-8 border-white/5 group relative ${isOwned ? 'opacity-70 grayscale' : ''}`}
+              className={`nv-card p-8 border-white/5 group relative ${isUnique && isOwned ? 'opacity-70 grayscale' : ''}`}
             >
               <div className={`w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center mb-6 transition-transform group-hover:scale-110 ${item.color}`}>
                 <item.icon className="w-8 h-8" />
@@ -93,17 +156,17 @@ const Shop = () => {
 
               <button 
                 onClick={() => buyItem(item)}
-                disabled={isOwned}
-                className={`w-full py-4 rounded-xl text-xs font-black uppercase tracking-widest transition-all
-                  ${isOwned 
-                    ? 'bg-nuvio-green/20 text-nuvio-green border border-nuvio-green/30 cursor-default' 
-                    : 'bg-white/5 border border-white/10 text-white hover:bg-nuvio-purple-500 hover:border-nuvio-purple-400'}
-                `}
+                disabled={isDisabled}
+                className={`w-full py-4 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${buttonClass}`}
               >
-                {isOwned ? (
-                  <span className="flex items-center justify-center gap-2 italic"><CheckCircle2 className="w-4 h-4" /> OWNED</span>
+                {isUnique && isOwned ? (
+                  <span className="flex items-center justify-center gap-2 italic">
+                    <CheckCircle2 className="w-4 h-4" /> OWNED
+                  </span>
                 ) : (
-                  <span className="flex items-center justify-center gap-2"><ShoppingCart className="w-4 h-4" /> {item.price} Tokens</span>
+                  <span className="flex items-center justify-center gap-2">
+                    <ShoppingCart className="w-4 h-4" /> {buttonText}
+                  </span>
                 )}
               </button>
             </motion.div>
@@ -112,15 +175,17 @@ const Shop = () => {
       </div>
 
       {/* Inventory Section */}
-      <div className="nv-card p-10 border-white/5 bg-white/[0.02]">
+      <div className="nv-card p-10 border-white/5 bg-white/[0.02] rounded-[24px]">
         <h3 className="text-sm font-black text-text-muted uppercase tracking-[0.2em] mb-8">Your Cloud Inventory</h3>
         <div className="flex flex-wrap gap-4">
-          {inventory.map(id => {
+          {Object.entries(groupedInventory).map(([id, count]) => {
             const item = shopItems.find(i => i.id === id);
             return (
               <div key={id} className="px-6 py-3 bg-nuvio-purple-600/20 border border-nuvio-purple-500/30 rounded-full flex items-center gap-3">
                 {item && <item.icon className={`w-4 h-4 ${item.color}`} />}
-                <span className="text-[10px] font-black text-white uppercase tracking-widest">{item ? item.name : id}</span>
+                <span className="text-[10px] font-black text-white uppercase tracking-widest">
+                  {item ? item.name : id} {count > 1 ? `x${count}` : ''}
+                </span>
               </div>
             );
           })}

@@ -138,6 +138,48 @@ export const authService = {
     const diffHours = (now - last) / (1000 * 60 * 60);
 
     if (diffHours > 48) {
+      // Check if they have a streak_shield
+      try {
+        const { data: shields } = await supabase
+          .from('inventory')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('item_id', 'streak_shield');
+
+        if (shields && shields.length > 0) {
+          // Consume the shield from Supabase
+          const shieldId = shields[0].id;
+          await supabase.from('inventory').delete().eq('id', shieldId);
+
+          // Consuming locally
+          const localData = localStorage.getItem('acadevance_local_db');
+          if (localData) {
+            const db = JSON.parse(localData);
+            const shieldIdx = db.inventory?.findIndex(item => item.item_id === 'streak_shield');
+            if (shieldIdx !== -1 && shieldIdx !== undefined) {
+              db.inventory.splice(shieldIdx, 1);
+              localStorage.setItem('acadevance_local_db', JSON.stringify(db));
+            }
+          }
+
+          // Protect the streak - update last activity to now to prevent immediate trigger on next check
+          const nowIso = new Date().toISOString();
+          await authService.updateMe({ last_activity_date: nowIso });
+
+          window.dispatchEvent(new CustomEvent('acadevance_nudge', {
+            detail: {
+              title: "Shield Consumed! 🛡️",
+              message: "Your Streak Aegis protected your daily streak.",
+              type: 'streak'
+            }
+          }));
+
+          return { status: 'protected' };
+        }
+      } catch (err) {
+        console.warn("Streak shield validation failed:", err);
+      }
+
       // Streak Lost (Tier 1: Loss Aversion)
       console.log("STREAK RESET. RESETTING TO 1.");
       await authService.updateMe({ streak: 1 });

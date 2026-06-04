@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
 import { 
   User, Settings, Award, BarChart3, 
   Shield, LogOut, Camera, Save, 
   Coins, Zap, Trophy, Flame, 
   Target, GraduationCap, Users, ShieldAlert,
-  Sparkles
+  Sparkles, Lock
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { authService } from '../services/authService';
+import { dataService } from '../services/dataService';
 import { notificationService } from '../services/notificationService';
 
 const Profile = () => {
@@ -16,6 +17,7 @@ const Profile = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('Stats');
   const [isEditing, setIsEditing] = useState(false);
+  const [inventory, setInventory] = useState([]);
   const [editData, setEditData] = useState({ 
     full_name: user?.full_name || '', 
     email: user?.email || '',
@@ -26,6 +28,16 @@ const Profile = () => {
     const saved = localStorage.getItem('acadevance_learning_preferences');
     return saved ? JSON.parse(saved) : { goal: '30m', streakShield: true, sounds: true };
   });
+
+  useEffect(() => {
+    const fetchInventory = async () => {
+      const list = await dataService.list('inventory');
+      if (list) {
+        setInventory(list.map(i => i.item_id));
+      }
+    };
+    fetchInventory();
+  }, []);
 
   const handlePreferenceChange = (key, value) => {
     const updated = { ...preferences, [key]: value };
@@ -59,6 +71,10 @@ const Profile = () => {
     '🪐', '🧬', '🛡️', '👾', '🦁', '🦖', '🐼', '🦊', '🦉', '🔥'
   ];
 
+  const mythicEmojis = [
+    '👑', '🐉', '🔮', '🌌', '🦄', '🌟', '☄️', '💎'
+  ];
+
   // Progression calculation
   const currentXp = user?.xp || 0;
   const currentLevel = user?.level || 1;
@@ -75,6 +91,8 @@ const Profile = () => {
     { id: 'boss_slayer', title: 'Boss Slayer', desc: 'Defeat a Term End Exam Boss raid', icon: '⚔️', criteria: 1, current: 1, unlocked: true }
   ];
 
+  const hasGoldenRim = inventory.includes('golden_rim');
+
   return (
     <div className="max-w-5xl mx-auto space-y-12 pb-32 px-4 sm:px-6">
       {/* 🔮 PREMIUM PROFILE CARD */}
@@ -86,11 +104,15 @@ const Profile = () => {
           {/* Avatar Area */}
           <div className="flex flex-col items-center gap-4">
             <div className="relative group">
-              <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-[48px] bg-black/40 border-4 border-nuvio-purple-500/30 flex items-center justify-center text-6xl sm:text-7xl shadow-2xl transition-all duration-300 group-hover:scale-105 group-hover:border-nuvio-purple-400">
+              {hasGoldenRim && (
+                <div className="absolute -inset-1 rounded-[52px] bg-gradient-to-r from-nuvio-yellow via-nuvio-orange to-nuvio-yellow animate-pulse blur-sm opacity-75 group-hover:opacity-100 transition-opacity" />
+              )}
+              <div className={`w-32 h-32 sm:w-40 sm:h-40 rounded-[48px] bg-black/40 flex items-center justify-center text-6xl sm:text-7xl shadow-2xl transition-all duration-300 group-hover:scale-105 relative z-10
+                ${hasGoldenRim ? 'border-4 border-nuvio-yellow animate-shimmer' : 'border-4 border-nuvio-purple-500/30 group-hover:border-nuvio-purple-400'}`}>
                 {editData.avatar_emoji}
               </div>
               {isEditing && (
-                <div className="absolute inset-0 bg-black/70 rounded-[48px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                <div className="absolute inset-0 bg-black/70 rounded-[48px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-20">
                   <Camera className="w-8 h-8 text-white animate-pulse" />
                 </div>
               )}
@@ -116,6 +138,32 @@ const Profile = () => {
                         {emoji}
                       </button>
                     ))}
+                    {mythicEmojis.map(emoji => {
+                      const isUnlocked = inventory.includes('divine_avatar');
+                      return (
+                        <button
+                          key={emoji}
+                          onClick={() => {
+                            if (isUnlocked) {
+                              setEditData({ ...editData, avatar_emoji: emoji });
+                            } else {
+                              notificationService.send("Crest Locked", "Requires Divine Cipher from the Academy Shop! 🔒", "info");
+                            }
+                          }}
+                          className={`text-2xl p-1.5 rounded-xl transition-all relative
+                            ${isUnlocked 
+                              ? editData.avatar_emoji === emoji 
+                                ? 'bg-nuvio-purple-500/30 border border-nuvio-purple-500' 
+                                : 'hover:bg-white/10 border border-transparent'
+                              : 'opacity-40 hover:opacity-60 cursor-not-allowed'}`}
+                        >
+                          {emoji}
+                          {!isUnlocked && (
+                            <Lock className="w-3 h-3 text-nuvio-red absolute bottom-1 right-1" />
+                          )}
+                        </button>
+                      );
+                    })}
                   </div>
                 </motion.div>
               )}
