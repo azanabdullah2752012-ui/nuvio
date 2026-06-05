@@ -87,14 +87,6 @@ const Dashboard = () => {
         tasks: tasks.filter(t => !t.completed).length,
         decks: decks.length
       });
-      
-      if (topPeers.data) {
-        setPeers(topPeers.data.map(p => ({
-          name: p.full_name,
-          action: `reached Level ${p.level}`,
-          time: 'Active'
-        })));
-      }
 
       setActivity((history || []).slice(0, 5));
       calculateMilestone(currentUser?.xp || 0, currentUser?.level || 1);
