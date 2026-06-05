@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { dataService } from '../services/dataService';
 import { xpService } from '../services/xpService';
 import { notificationService } from '../services/notificationService';
+import { gamificationService } from '../services/gamificationService';
 
 const Flashcards = () => {
   const [decks, setDecks] = useState([]);
@@ -62,6 +63,21 @@ const Flashcards = () => {
       const gainedXp = totalMastered * 15;
       
       xpService.awardXp(gainedXp, `Mastery: ${selectedDeck.title}`);
+      
+      // Gamification: increment flashcards reviewed
+      gamificationService.incrementStat('stats_flashcards_reviewed', selectedDeck.cards.length);
+
+      // Subject activity increments
+      const subLower = (selectedDeck.subject || '').toLowerCase();
+      if (subLower.includes('math')) {
+        gamificationService.incrementStat('stats_math_completed', 1);
+      } else if (subLower.includes('science')) {
+        gamificationService.incrementStat('stats_science_completed', 1);
+      }
+
+      // Boss damage: 5 DMG per card reviewed
+      gamificationService.dealDamage(selectedDeck.subject || 'General', selectedDeck.cards.length * 5);
+
       notificationService.send("Session Complete", `Gained +${gainedXp} XP.`, "success");
       
       setView('library');

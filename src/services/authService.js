@@ -85,7 +85,24 @@ export const authService = {
           role: isAdminEmail ? 'admin' : 'student',
           grade_level: user.user_metadata?.grade_level || '9th',
           onboarding_completed: true,
-          last_activity_date: new Date().toISOString()
+          last_activity_date: new Date().toISOString(),
+          // Retention Features Defaults
+          achievements: [],
+          stats_focus_sessions: 0,
+          stats_flashcards_reviewed: 0,
+          stats_quizzes_correct: 0,
+          stats_math_completed: 0,
+          stats_science_completed: 0,
+          stats_quests_completed: 0,
+          login_streak: 1,
+          last_login_reward_date: null,
+          unlocked_avatars: ['⚡'],
+          claimed_season_tiers: [],
+          boss_chapter_progress: {
+            dragon: { hp: 1000, max: 1000, status: 'active' },
+            monster: { hp: 2000, max: 2000, status: 'locked' },
+            titan: { hp: 5000, max: 5000, status: 'locked' }
+          }
         };
 
         const { error } = await supabase.from('profiles').insert(newProfile);
@@ -107,6 +124,24 @@ export const authService = {
           existing.last_activity_date = new Date().toISOString();
           await supabase.from('profiles').update({ last_activity_date: existing.last_activity_date }).eq('id', existing.id);
         }
+
+        // Fill defaults if columns are missing
+        existing.achievements = existing.achievements || [];
+        existing.stats_focus_sessions = existing.stats_focus_sessions ?? 0;
+        existing.stats_flashcards_reviewed = existing.stats_flashcards_reviewed ?? 0;
+        existing.stats_quizzes_correct = existing.stats_quizzes_correct ?? 0;
+        existing.stats_math_completed = existing.stats_math_completed ?? 0;
+        existing.stats_science_completed = existing.stats_science_completed ?? 0;
+        existing.stats_quests_completed = existing.stats_quests_completed ?? 0;
+        existing.login_streak = existing.login_streak ?? 1;
+        existing.last_login_reward_date = existing.last_login_reward_date || null;
+        existing.unlocked_avatars = existing.unlocked_avatars || ['⚡'];
+        existing.claimed_season_tiers = existing.claimed_season_tiers || [];
+        existing.boss_chapter_progress = existing.boss_chapter_progress || {
+          dragon: { hp: 1000, max: 1000, status: 'active' },
+          monster: { hp: 2000, max: 2000, status: 'locked' },
+          titan: { hp: 5000, max: 5000, status: 'locked' }
+        };
         
         localStorage.setItem(STORAGE_KEY, JSON.stringify(existing));
       }
@@ -188,6 +223,26 @@ export const authService = {
       // New Day, increment streak
       await authService.updateMe({ streak: (user.streak || 0) + 1 });
       return { status: 'increment' };
+    }
+
+    // Check daily login reward trigger
+    const lastReward = user.last_login_reward_date ? new Date(user.last_login_reward_date) : null;
+    const isNewDay = !lastReward || now.toDateString() !== lastReward.toDateString();
+    if (isNewDay) {
+      let streakCount = user.login_streak || 1;
+      if (lastReward) {
+        const diffHours = (now - lastReward) / (1000 * 60 * 60);
+        if (diffHours > 48) {
+          streakCount = 1;
+        } else if (diffHours > 24 || now.getDate() !== lastReward.getDate()) {
+          streakCount = (streakCount % 7) + 1;
+        }
+      }
+      setTimeout(() => {
+        window.dispatchEvent(new CustomEvent('acadevance_show_login_reward', {
+          detail: { day: streakCount }
+        }));
+      }, 1500);
     }
 
     // Keep the local timestamp moving forward as the user is actively navigating
@@ -275,6 +330,56 @@ export const authService = {
 
   injectWealth: async (amount = 10000) => {
     return authService.addTokens(amount);
+  },
+
+  claimLoginReward: async (day) => {
+    const user = authService.me();
+    if (!user) return null;
+
+    const rewards = {
+      1: { coins: 20, desc: "Day 1 Reward" },
+      2: { coins: 30, desc: "Day 2 Reward" },
+      3: { coins: 40, desc: "Day 3 Reward" },
+      4: { coins: 50, desc: "Day 4 Reward" },
+      5: { coins: 60, desc: "Day 5 Reward" },
+      6: { coins: 70, desc: "Day 6 Reward" },
+      7: { coins: 100, avatar: "👑", desc: "Day 7 Grand Reward" }
+    };
+
+    const reward = rewards[day] || { coins: 20, desc: "Daily Reward" };
+    
+    // Add coins (era_tokens)
+    const newTokens = (user.era_tokens || 0) + reward.coins;
+    
+    // Unlocked avatars
+    const newAvatars = [...(user.unlocked_avatars || ['⚡'])];
+    if (reward.avatar && !newAvatars.includes(reward.avatar)) {
+      newAvatars.push(reward.avatar);
+    }
+
+    const updated = {
+      ...user,
+      era_tokens: newTokens,
+      login_streak: day,
+      last_login_reward_date: new Date().toISOString(),
+      unlocked_avatars: newAvatars
+    };
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    window.dispatchEvent(new CustomEvent('acadevance_stats_update', { detail: updated }));
+
+    try {
+      await supabase.from('profiles').update({
+        era_tokens: newTokens,
+        login_streak: day,
+        last_login_reward_date: updated.last_login_reward_date,
+        unlocked_avatars: newAvatars
+      }).eq('id', user.id);
+    } catch (err) {
+      console.warn("Daily login reward sync delayed");
+    }
+
+    return reward;
   },
 
   login: async (email, password) => {

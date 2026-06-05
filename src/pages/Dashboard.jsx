@@ -2,15 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { 
   Zap, Trophy, Target, BookOpen, 
   ChevronRight, ArrowUpRight, Flame,
-  Clock, Star, Sparkles, Coins, ArrowRight
+  Clock, Star, Sparkles, Coins, ArrowRight,
+  X, CheckCircle2, Lock
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
 import { xpService } from '../services/xpService';
 import { dataService } from '../services/dataService';
 import { notificationService } from '../services/notificationService';
 import { supabase } from '../lib/supabase';
+import confetti from 'canvas-confetti';
 
 const Dashboard = () => {
   const [user, setUser] = useState(authService.me());
@@ -25,6 +27,9 @@ const Dashboard = () => {
 
   const [cloudActive, setCloudActive] = useState(false);
 
+  const [showLoginReward, setShowLoginReward] = useState(false);
+  const [rewardDay, setRewardDay] = useState(1);
+
   useEffect(() => {
     // Sync with global state
     const handleUpdate = (e) => {
@@ -34,13 +39,20 @@ const Dashboard = () => {
 
     const handleCloudStatus = (e) => setCloudActive(e.detail.active);
     
+    const handleShowReward = (e) => {
+      setRewardDay(e.detail.day);
+      setShowLoginReward(true);
+    };
+    
     window.addEventListener('acadevance_stats_update', handleUpdate);
     window.addEventListener('acadevance_cloud_status', handleCloudStatus);
+    window.addEventListener('acadevance_show_login_reward', handleShowReward);
     fetchDashboardData();
 
     return () => {
       window.removeEventListener('acadevance_stats_update', handleUpdate);
       window.removeEventListener('acadevance_cloud_status', handleCloudStatus);
+      window.removeEventListener('acadevance_show_login_reward', handleShowReward);
     };
   }, []);
 
@@ -325,6 +337,110 @@ const Dashboard = () => {
            </div>
         </div>
       </div>
+      {/* Daily Login Rewards Modal */}
+      <AnimatePresence>
+        {showLoginReward && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
+            <motion.div 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              exit={{ opacity: 0 }} 
+              onClick={() => setShowLoginReward(false)} 
+              className="absolute inset-0 bg-background-base/80 backdrop-blur-md" 
+            />
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0, y: 20 }} 
+              animate={{ scale: 1, opacity: 1, y: 0 }} 
+              exit={{ scale: 0.9, opacity: 0, y: 20 }} 
+              className="nv-card w-full max-w-2xl p-8 sm:p-10 space-y-8 relative z-10 border-nuvio-purple-500/30 bg-gradient-to-br from-nuvio-purple-900/20 via-background-card to-background-card"
+            >
+              <div className="flex justify-between items-start">
+                <div className="space-y-1">
+                  <h2 className="text-3xl font-black text-white uppercase tracking-tighter flex items-center gap-3">
+                    Daily Login Ritual 🎁
+                  </h2>
+                  <p className="text-xs text-text-secondary font-semibold uppercase tracking-wider">
+                    Maintain your streak to claim progressive academy rewards!
+                  </p>
+                </div>
+                <button onClick={() => setShowLoginReward(false)} className="p-2 hover:bg-white/5 rounded-full transition-colors text-text-muted hover:text-white">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-4 py-4">
+                {[1, 2, 3, 4, 5, 6, 7].map((day) => {
+                  const isCurrent = day === rewardDay;
+                  const isPast = day < rewardDay;
+                  const isFuture = day > rewardDay;
+                  
+                  const rewards = {
+                    1: { coins: 20, icon: '🪙' },
+                    2: { coins: 30, icon: '🪙' },
+                    3: { coins: 40, icon: '🪙' },
+                    4: { coins: 50, icon: '🪙' },
+                    5: { coins: 60, icon: '🪙' },
+                    6: { coins: 70, icon: '🪙' },
+                    7: { coins: 100, icon: '👑' }
+                  };
+                  
+                  const reward = rewards[day];
+
+                  return (
+                    <div 
+                      key={day}
+                      className={`p-4 rounded-2xl border flex flex-col items-center justify-between gap-3 text-center transition-all relative
+                        ${isCurrent 
+                          ? 'border-nuvio-purple-500 bg-nuvio-purple-500/10 shadow-lg shadow-nuvio-purple-500/10 scale-105 animate-pulse' 
+                          : isPast 
+                            ? 'border-nuvio-green/30 bg-nuvio-green/5 opacity-70' 
+                            : 'border-white/5 bg-white/[0.01] opacity-50'}`}
+                    >
+                      {isPast && (
+                        <div className="absolute top-1.5 right-1.5 text-nuvio-green">
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                        </div>
+                      )}
+                      
+                      <div className="text-[10px] font-black text-text-muted uppercase tracking-wider">Day {day}</div>
+                      <div className="text-3xl">{reward.icon}</div>
+                      <div>
+                        <div className="text-sm font-black text-white">{reward.coins}</div>
+                        <div className="text-[8px] font-bold text-text-muted uppercase">Coins</div>
+                      </div>
+                      
+                      {day === 7 && (
+                        <div className="text-[8px] font-black text-nuvio-yellow uppercase tracking-widest mt-1 bg-nuvio-yellow/10 px-1 py-0.5 rounded border border-nuvio-yellow/20">Crest</div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="pt-4 flex flex-col items-center gap-3">
+                <button
+                  onClick={async () => {
+                    const claimed = await authService.claimLoginReward(rewardDay);
+                    if (claimed) {
+                      confetti({
+                        particleCount: 100,
+                        spread: 70,
+                        origin: { y: 0.6 }
+                      });
+                      notificationService.send("Claimed! 🎉", `Earned ${claimed.coins} Coins! ${claimed.avatar ? 'Unlocked ' + claimed.avatar + ' crest!' : ''}`, "success");
+                    }
+                    setShowLoginReward(false);
+                  }}
+                  className="w-full sm:w-auto px-12 py-5 bg-gradient-to-r from-nuvio-purple-500 to-nuvio-blue hover:from-white hover:to-white hover:text-black text-white font-black text-xs uppercase tracking-[0.2em] rounded-2xl shadow-xl shadow-nuvio-purple-500/25 transition-all"
+                >
+                  Claim Reward
+                </button>
+                <span className="text-[9px] text-text-muted font-bold uppercase tracking-widest">Login streak resets if absent for more than 48 hours</span>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

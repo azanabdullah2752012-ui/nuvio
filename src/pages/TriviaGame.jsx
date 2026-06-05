@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { dataService } from '../services/dataService';
 import { xpService } from '../services/xpService';
 import { notificationService } from '../services/notificationService';
+import { gamificationService } from '../services/gamificationService';
 import { CURRICULUM_DATA } from '../services/curriculumData';
 
 // Build a flat question bank from CBSE curriculum data
@@ -82,6 +83,7 @@ const TriviaGame = () => {
   const [questions, setQuestions] = useState([]);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [score, setScore] = useState(0);
+  const [correctCount, setCorrectCount] = useState(0);
   const [streak, setStreak] = useState(0);
   const [bestStreak, setBestStreak] = useState(0);
   const [feedback, setFeedback] = useState(null);
@@ -115,6 +117,7 @@ const TriviaGame = () => {
     setSubject(topic);
     setCurrentIdx(0);
     setScore(0);
+    setCorrectCount(0);
     setStreak(0);
     setFeedback(null);
     setTimeLeft(20);
@@ -129,6 +132,7 @@ const TriviaGame = () => {
       const timeBonus = Math.floor(timeLeft / 2);
       const points = 10 + timeBonus;
       setScore(prev => prev + points);
+      setCorrectCount(prev => prev + 1);
       setStreak(prev => {
         const next = prev + 1;
         if (next > bestStreak) setBestStreak(next);
@@ -146,6 +150,22 @@ const TriviaGame = () => {
       } else {
         const finalXp = score * 2 + (correct ? 20 : 0);
         xpService.awardXp(finalXp, `Trivia Mastery: ${subject || 'General CBSE'}`);
+        
+        // Gamification
+        const finalCorrectCount = correctCount + (correct ? 1 : 0);
+        gamificationService.incrementStat('stats_quizzes_correct', finalCorrectCount);
+        
+        // Subject activity increments
+        const subLower = (subject || '').toLowerCase();
+        if (subLower.includes('math')) {
+          gamificationService.incrementStat('stats_math_completed', 1);
+        } else if (subLower.includes('science')) {
+          gamificationService.incrementStat('stats_science_completed', 1);
+        }
+
+        // Boss damage: 10 DMG per correct answer
+        gamificationService.dealDamage(subject || 'General', finalCorrectCount * 10);
+
         notificationService.send('Round Complete! 🏆', `Gained +${finalXp} XP for your trivia session.`, 'success');
         setGameState('results');
       }

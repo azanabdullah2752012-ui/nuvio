@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { authService } from '../services/authService';
 import { dataService } from '../services/dataService';
 import { notificationService } from '../services/notificationService';
+import { gamificationService } from '../services/gamificationService';
 import { supabase } from '../lib/supabase';
 
 const Profile = () => {
@@ -114,13 +115,7 @@ const Profile = () => {
         }
 
         // 6. Rank Title based on Level
-        const level = user?.level || 1;
-        let rankTitle = 'Novice I';
-        if (level >= 15) rankTitle = 'Grandmaster';
-        else if (level >= 12) rankTitle = 'Master';
-        else if (level >= 9) rankTitle = 'Sentinel I';
-        else if (level >= 6) rankTitle = 'Adept';
-        else if (level >= 3) rankTitle = 'Apprentice';
+        const rankTitle = gamificationService.getRank(user?.level || 1).title;
 
         setStats({
           taskCompletion: totalT > 0 ? taskCompletion : 74, // default fallback if empty
@@ -183,14 +178,22 @@ const Profile = () => {
   const xpPercent = Math.min(100, Math.floor((currentXp / xpNeededForNextLevel) * 100));
 
   // Custom gamified achievements
-  const achievementsList = [
-    { id: 'math_whiz', title: 'Calculus Conqueror', desc: 'Achieve 75% or higher Calculus mastery', icon: '📐', criteria: 75, current: stats.taskCompletion, unlocked: stats.taskCompletion >= 75 },
-    { id: 'streak_sentry', title: 'Streak Sentinel', desc: 'Maintain a study streak of 7 days or more', icon: '🔥', criteria: 7, current: user?.streak || 1, unlocked: (user?.streak || 1) >= 7 },
-    { id: 'focus_titan', title: 'Focus Overlord', desc: 'Log a total of 10 completed focus sessions', icon: '⚡', criteria: 10, current: stats.gameWins, unlocked: stats.gameWins >= 10 },
-    { id: 'uno_champ', title: 'Uno Legend', desc: 'Win 5 matches of Subject Uno', icon: '🃏', criteria: 5, current: stats.gameWins, unlocked: stats.gameWins >= 5 },
-    { id: 'monopoly_king', title: 'Monopoly Mogul', desc: 'Claim 10 tiles in Study Monopoly board', icon: '🎲', criteria: 10, current: stats.totalTasks, unlocked: stats.totalTasks >= 10 },
-    { id: 'boss_slayer', title: 'Boss Slayer', desc: 'Defeat a Term End Exam Boss raid', icon: '⚔️', criteria: 1, current: stats.gameWins > 0 ? 1 : 0, unlocked: stats.gameWins > 0 }
-  ];
+  const achievementsList = gamificationService.getAchievements().map(ach => {
+    const isUnlocked = user?.achievements?.includes(ach.id);
+    const value = ach.stat === 'level' ? user?.level : 
+                  ach.stat === 'streak' ? user?.streak : 
+                  user?.[ach.stat] || 0;
+                  
+    return {
+      id: ach.id,
+      title: ach.title,
+      desc: ach.desc,
+      icon: ach.icon,
+      criteria: ach.target,
+      current: value,
+      unlocked: isUnlocked
+    };
+  });
 
   const hasGoldenRim = inventory.includes('golden_rim');
 
@@ -240,7 +243,7 @@ const Profile = () => {
                       </button>
                     ))}
                     {mythicEmojis.map(emoji => {
-                      const isUnlocked = inventory.includes('divine_avatar');
+                      const isUnlocked = inventory.includes('divine_avatar') || user?.unlocked_avatars?.includes(emoji);
                       return (
                         <button
                           key={emoji}
@@ -248,7 +251,7 @@ const Profile = () => {
                             if (isUnlocked) {
                               setEditData({ ...editData, avatar_emoji: emoji });
                             } else {
-                              notificationService.send("Crest Locked", "Requires Divine Cipher from the Academy Shop! 🔒", "info");
+                              notificationService.send("Crest Locked", "Earn this avatar from achievements/seasons, or buy the Divine Cipher from the Shop! 🔒", "info");
                             }
                           }}
                           className={`text-2xl p-1.5 rounded-xl transition-all relative

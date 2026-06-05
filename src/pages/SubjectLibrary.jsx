@@ -12,6 +12,7 @@ import { EXPANDED_CURRICULUM } from '../services/expandedCurriculum';
 import { dataService } from '../services/dataService';
 import { xpService } from '../services/xpService';
 import { notificationService } from '../services/notificationService';
+import { gamificationService } from '../services/gamificationService';
 
 const SubjectLibrary = () => {
   const location = useLocation();
@@ -895,6 +896,21 @@ const SubjectLibrary = () => {
                                       if (saved) {
                                         const xp = correctCount * 50;
                                         await xpService.awardXp(xp, `Quiz Complete: ${selectedChapter.title}`);
+                                        
+                                        // Gamification: increment correct answers
+                                        await gamificationService.incrementStat('stats_quizzes_correct', correctCount);
+                                        
+                                        // Subject activity increments
+                                        const subLower = subject.toLowerCase();
+                                        if (subLower.includes('math')) {
+                                          await gamificationService.incrementStat('stats_math_completed', 1);
+                                        } else if (subLower.includes('science')) {
+                                          await gamificationService.incrementStat('stats_science_completed', 1);
+                                        }
+
+                                        // Boss damage: 10 DMG per correct answer
+                                        await gamificationService.dealDamage(subject, correctCount * 10);
+
                                         setHasSavedQuiz(true);
                                         notificationService.send("Progress Synced", `Saved score of ${correctCount}/${totalQuestions} & claimed +${xp} XP! ⚡`, "success");
                                       }
@@ -1084,6 +1100,21 @@ const SubjectLibrary = () => {
                                       if (saved) {
                                         const xp = masteredCount * 15;
                                         await xpService.awardXp(xp, `Recall: ${selectedChapter.title}`);
+                                        
+                                        // Gamification: increment flashcards reviewed
+                                        await gamificationService.incrementStat('stats_flashcards_reviewed', totalCards);
+                                        
+                                        // Subject activity increments
+                                        const subLower = subject.toLowerCase();
+                                        if (subLower.includes('math')) {
+                                          await gamificationService.incrementStat('stats_math_completed', 1);
+                                        } else if (subLower.includes('science')) {
+                                          await gamificationService.incrementStat('stats_science_completed', 1);
+                                        }
+
+                                        // Boss damage: 5 DMG per card
+                                        await gamificationService.dealDamage(subject, totalCards * 5);
+
                                         setHasSavedRecall(true);
                                         notificationService.send("Recall Synced", `Saved recall session & claimed +${xp} XP! ⚡`, "success");
                                       }

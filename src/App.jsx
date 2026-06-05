@@ -31,6 +31,8 @@ const Analytics = lazy(() => import('./pages/Analytics'));
 const StudyVerse = lazy(() => import('./pages/StudyVerse'));
 const StudySites = lazy(() => import('./pages/StudySites'));
 const TriviaGame = lazy(() => import('./pages/TriviaGame'));
+const Achievements = lazy(() => import('./pages/Achievements'));
+const SeasonalPass = lazy(() => import('./pages/SeasonalPass'));
 
 import { authService } from './services/authService';
 import { supabase } from './lib/supabase';
@@ -178,6 +180,8 @@ function App() {
                 <Route path="/study-verse" element={<StudyVerse />} />
                 <Route path="/trivia-game" element={<TriviaGame />} />
                 <Route path="/study-sites" element={<StudySites />} />
+                <Route path="/achievements" element={<Achievements />} />
+                <Route path="/seasonal-pass" element={<SeasonalPass />} />
 
                 {/* Account */}
                 <Route path="/profile" element={<Profile />} />

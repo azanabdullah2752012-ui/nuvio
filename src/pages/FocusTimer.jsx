@@ -9,6 +9,7 @@ import { supabase } from '../lib/supabase';
 import { authService } from '../services/authService';
 import { xpService } from '../services/xpService';
 import { dataService } from '../services/dataService';
+import { gamificationService } from '../services/gamificationService';
 
 const FocusTimer = () => {
   const [minutes, setMinutes] = useState(25);
@@ -86,6 +87,8 @@ const FocusTimer = () => {
         // 2. Award XP & Tokens
         xpService.awardXp(xp, "Deep Focus Session Complete");
         authService.addTokens(tokens);
+        // 3. Increment focus session stat for achievements
+        await gamificationService.incrementStat('stats_focus_sessions', 1);
         fetchSessions();
         alert(`Focus Session Complete! Awarded ${xp} XP & ${tokens} Tokens! ⚡`);
       }

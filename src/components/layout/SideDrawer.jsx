@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 
 import { xpService } from '../../services/xpService';
+import { gamificationService } from '../../services/gamificationService';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 
@@ -56,6 +57,7 @@ const navSections = [
     items: [
       { name: "Study Sites", path: "/study-sites", icon: Globe },
       { name: "Achievements", path: "/achievements", icon: Award },
+      { name: "Seasonal Pass", path: "/seasonal-pass", icon: Calendar },
       { name: "Shop", path: "/shop", icon: ShoppingBag },
       { name: "Analytics", path: "/analytics", icon: BarChart3 },
     ]
@@ -93,7 +95,10 @@ const SideDrawer = ({ isOpen, onClose, user }) => {
             </div>
             <div>
               <div className="font-bold text-text-primary leading-tight group-hover:text-nuvio-cyan transition-colors">{user?.full_name || 'Student'}</div>
-              <div className="text-xs text-nuvio-purple-400 font-bold">Level {user?.level || 1}</div>
+              <div className="text-[10px] text-text-muted font-bold flex flex-col gap-0.5 mt-0.5">
+                <span className="text-nuvio-purple-400 font-black uppercase">Level {user?.level || 1}</span>
+                <span className="text-nuvio-cyan font-black uppercase tracking-wider text-[8px]">{gamificationService.getRank(user?.level || 1).title}</span>
+              </div>
             </div>
           </div>
           
