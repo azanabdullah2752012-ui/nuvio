@@ -106,35 +106,35 @@ const TriviaBingo = ({ players, turn, onLog, activeSubject, onNextTurn }) => {
     <div className="w-full h-full flex flex-col items-center gap-10 py-6 nv-page-transition overflow-hidden">
       
       {/* Current Prompt Panel */}
-      <div className="w-full max-w-2xl nv-card !bg-black border-4 !border-nuvio-blue shadow-nb flex items-center gap-8 p-8 relative overflow-hidden">
-         <div className="absolute top-0 left-0 w-2 h-full bg-nuvio-blue" />
-         <div className="w-16 h-16 bg-nuvio-blue/10 rounded-2xl flex items-center justify-center text-nuvio-blue animate-pulse">
-            <HelpCircle className="w-10 h-10" />
+      <div className="w-full max-w-2xl rounded-3xl border border-nuvio-blue/20 bg-background-card/45 backdrop-blur-2xl flex items-center gap-6 p-6 shadow-xl relative overflow-hidden">
+         <div className="absolute top-0 left-0 w-1.5 h-full bg-nuvio-blue" />
+         <div className="w-14 h-14 bg-nuvio-blue/15 border border-nuvio-blue/30 rounded-2xl flex items-center justify-center text-nuvio-blue animate-pulse">
+            <HelpCircle className="w-8 h-8" />
          </div>
-         <div className="flex-1 space-y-2">
-            <div className="text-[10px] font-black text-nuvio-blue uppercase tracking-widest">Active Host Prompt</div>
-            <h2 className="text-2xl font-black text-white uppercase tracking-tight leading-tight">
+         <div className="flex-1 space-y-1">
+            <div className="text-[9px] font-black text-nuvio-blue uppercase tracking-widest">Active Host Prompt</div>
+            <h2 className="text-xl sm:text-2xl font-black text-white uppercase tracking-tight leading-snug">
                {currentPrompt?.q || "Initializing..."}
             </h2>
          </div>
       </div>
 
       {/* 5x5 Grid */}
-      <div className="grid grid-cols-5 gap-3 p-4 bg-black border-4 border-black relative">
+      <div className="grid grid-cols-5 gap-3 p-4 bg-background-card/30 border border-white/10 rounded-2xl shadow-2xl relative">
          {boards[turn].map((tile, idx) => {
            const isLocked = lockedTiles[turn].includes(idx);
            return (
               <motion.button 
                 key={idx}
-                whileHover={!isLocked ? { scale: 1.1, zIndex: 10 } : {}}
-                whileTap={!isLocked ? { scale: 0.9 } : {}}
+                whileHover={!isLocked ? { scale: 1.08, zIndex: 10 } : {}}
+                whileTap={!isLocked ? { scale: 0.95 } : {}}
                 onClick={() => handleTileClick(idx)}
                 className={`
-                   w-24 h-24 sm:w-28 sm:h-28 border-4 border-black transition-all flex items-center justify-center p-3 text-center
-                   ${isLocked ? 'bg-nuvio-green text-black font-black shadow-[0_0_30px_rgba(46,213,115,0.4)]' : 'bg-[#121418] text-white/40 hover:text-white hover:bg-[#1a1c22]'}
+                   w-24 h-24 sm:w-28 sm:h-28 rounded-2xl border transition-all flex items-center justify-center p-3 text-center
+                   ${isLocked ? 'bg-gradient-to-br from-nuvio-green/25 to-nuvio-green/5 border-nuvio-green/45 text-nuvio-green font-black shadow-[0_0_20px_rgba(46,213,115,0.2)]' : 'border-white/5 bg-white/5 text-text-secondary/60 hover:text-white hover:bg-white/10 hover:border-white/10'}
                 `}
               >
-                 <span className={`text-[11px] font-black uppercase tracking-tight leading-none ${isLocked ? 'text-black' : ''}`}>
+                 <span className={`text-[11px] font-black uppercase tracking-tight leading-none ${isLocked ? 'text-nuvio-green' : ''}`}>
                     {tile}
                  </span>
               </motion.button>
@@ -145,7 +145,7 @@ const TriviaBingo = ({ players, turn, onLog, activeSubject, onNextTurn }) => {
       {/* Player Stats Bar */}
       <div className="flex gap-6">
          {players.map((p, i) => (
-            <div key={i} className={`px-4 py-2 border-2 border-black flex items-center gap-3 ${turn === i ? 'bg-white text-black shadow-nb-small' : 'bg-black/40 opacity-40'}`}>
+            <div key={i} className={`px-4 py-2.5 rounded-xl border transition-all flex items-center gap-3 ${turn === i ? 'bg-white/10 border-white/20 text-white shadow-lg backdrop-blur-md' : 'border-white/5 bg-white/5 opacity-50 text-text-secondary'}`}>
                <span className="text-sm">{p.icon}</span>
                <span className="text-[10px] font-black uppercase">{lockedTiles[i].length} nodes</span>
             </div>
@@ -156,18 +156,20 @@ const TriviaBingo = ({ players, turn, onLog, activeSubject, onNextTurn }) => {
       <AnimatePresence>
         {winner && (
            <motion.div 
-             initial={{ opacity: 0, scale: 0.5 }}
+             initial={{ opacity: 0, scale: 0.95 }}
              animate={{ opacity: 1, scale: 1 }}
-             className="absolute inset-0 bg-black/90 z-[100] flex flex-col items-center justify-center space-y-8"
+             className="absolute inset-0 bg-background-base/85 backdrop-blur-2xl z-[100] flex flex-col items-center justify-center space-y-8 rounded-2xl"
            >
-              <div className="w-32 h-32 bg-nuvio-yellow rounded-full flex items-center justify-center text-6xl shadow-[0_0_100px_rgba(255,165,2,0.5)]">
-                 <Trophy className="w-16 h-16 text-black" />
+              <div className="w-28 h-28 bg-nuvio-yellow/20 border border-nuvio-yellow/30 rounded-full flex items-center justify-center text-nuvio-yellow shadow-[0_0_50px_rgba(255,165,2,0.25)] animate-bounce">
+                 <Trophy className="w-12 h-12 text-nuvio-yellow" />
               </div>
-              <h1 className="text-6xl font-black text-white uppercase tracking-tighter">BINGO SECURED</h1>
-              <div className="text-3xl font-black text-nuvio-yellow uppercase tracking-widest">{winner.name} Wins</div>
+              <div className="text-center space-y-2">
+                 <h1 className="text-5xl font-black text-white uppercase tracking-tighter">BINGO SECURED</h1>
+                 <div className="text-2xl font-black text-nuvio-yellow uppercase tracking-widest">{winner.name} Wins</div>
+              </div>
               <button 
                 onClick={() => window.location.reload()}
-                className="nv-btn-primary h-20 px-12 text-sm"
+                className="h-16 px-10 rounded-2xl border border-nuvio-yellow/30 bg-nuvio-yellow/15 hover:bg-nuvio-yellow/25 text-nuvio-yellow hover:text-white font-black uppercase tracking-widest text-xs transition-all flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(255,165,2,0.1)] active:scale-95"
               >
                 Reboot Matrix
               </button>
