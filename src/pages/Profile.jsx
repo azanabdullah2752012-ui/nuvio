@@ -36,8 +36,12 @@ const Profile = () => {
   });
 
   const [preferences, setPreferences] = useState(() => {
-    const saved = localStorage.getItem('acadevance_learning_preferences');
-    return saved ? JSON.parse(saved) : { goal: '30m', streakShield: true, sounds: true };
+    try {
+      const saved = localStorage.getItem('acadevance_learning_preferences');
+      return saved ? JSON.parse(saved) : { goal: '30m', streakShield: true, sounds: true };
+    } catch (e) {
+      return { goal: '30m', streakShield: true, sounds: true };
+    }
   });
 
   useEffect(() => {

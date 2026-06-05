@@ -19,8 +19,22 @@ checkConnection();
 setInterval(checkConnection, 30000); // Check every 30s
 
 const getLocalDB = () => {
-  const data = localStorage.getItem(DB_KEY);
-  if (!data) {
+  try {
+    const data = localStorage.getItem(DB_KEY);
+    if (!data) {
+      const initial = {
+        tasks: [],
+        decks: [],
+        messages: [],
+        inventory: [],
+        stats: { xp: 0, level: 1, tokens: 0 }
+      };
+      localStorage.setItem(DB_KEY, JSON.stringify(initial));
+      return initial;
+    }
+    return JSON.parse(data);
+  } catch (e) {
+    console.warn("Malformed local DB in localStorage, resetting:", e);
     const initial = {
       tasks: [],
       decks: [],
@@ -31,7 +45,6 @@ const getLocalDB = () => {
     localStorage.setItem(DB_KEY, JSON.stringify(initial));
     return initial;
   }
-  return JSON.parse(data);
 };
 
 const saveLocalDB = (db) => {

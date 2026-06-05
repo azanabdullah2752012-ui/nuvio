@@ -5,8 +5,14 @@ const ADMIN_EMAILS = ['azanabdullah27.5.2012@gmail.com'];
 
 export const authService = {
   me: () => {
-    const data = localStorage.getItem(STORAGE_KEY);
-    return data ? JSON.parse(data) : null;
+    try {
+      const data = localStorage.getItem(STORAGE_KEY);
+      return data ? JSON.parse(data) : null;
+    } catch (e) {
+      console.warn("Malformed user data in localStorage:", e);
+      localStorage.removeItem(STORAGE_KEY);
+      return null;
+    }
   },
 
   getSession: async () => {
@@ -148,7 +154,7 @@ export const authService = {
       
       // Dispatch update event
       window.dispatchEvent(new CustomEvent('acadevance_stats_update', { 
-        detail: JSON.parse(localStorage.getItem(STORAGE_KEY)) 
+        detail: authService.me() 
       }));
     } catch (err) {
       console.error("Supabase Profile Sync Error:", err);
@@ -187,14 +193,18 @@ export const authService = {
           await supabase.from('inventory').delete().eq('id', shieldId);
 
           // Consuming locally
-          const localData = localStorage.getItem('acadevance_local_db');
-          if (localData) {
-            const db = JSON.parse(localData);
-            const shieldIdx = db.inventory?.findIndex(item => item.item_id === 'streak_shield');
-            if (shieldIdx !== -1 && shieldIdx !== undefined) {
-              db.inventory.splice(shieldIdx, 1);
-              localStorage.setItem('acadevance_local_db', JSON.stringify(db));
+          try {
+            const localData = localStorage.getItem('acadevance_local_db');
+            if (localData) {
+              const db = JSON.parse(localData);
+              const shieldIdx = db.inventory?.findIndex(item => item.item_id === 'streak_shield');
+              if (shieldIdx !== -1 && shieldIdx !== undefined) {
+                db.inventory.splice(shieldIdx, 1);
+                localStorage.setItem('acadevance_local_db', JSON.stringify(db));
+              }
             }
+          } catch (e) {
+            console.warn("Could not parse local inventory for streak protection:", e);
           }
 
           // Protect the streak - update last activity to now to prevent immediate trigger on next check
