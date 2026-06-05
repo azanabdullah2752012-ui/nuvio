@@ -11,6 +11,7 @@ import { xpService } from '../services/xpService';
 import { notificationService } from '../services/notificationService';
 import { gameService } from '../services/gameService';
 import { authService } from '../services/authService';
+import { supabase } from '../lib/supabase';
 
 // --- GAME COMPONENTS ---
 import EduLudo from '../components/studyverse/EduLudo';
@@ -147,7 +148,7 @@ const StudyVerse = () => {
   const renderBoard = () => {
     const tiles = Array.from({ length: 20 });
     return (
-      <div className="relative w-full aspect-square border-4 border-black bg-black p-2 grid grid-cols-6 grid-rows-6 gap-2">
+      <div className="relative w-full aspect-square border border-white/10 bg-background-card/25 backdrop-blur-xl rounded-2xl p-3 grid grid-cols-6 grid-rows-6 gap-3 shadow-2xl">
         {tiles.map((_, i) => {
           // Manual geometry for Monopoly perimeter
           let row, col;
@@ -157,20 +158,39 @@ const StudyVerse = () => {
           else { row = 20 - i; col = 0; }
 
           const occupants = players.filter(p => p.pos === i);
+          
+          let tileBg = 'bg-white/5 hover:bg-white/10';
+          let borderGlow = 'border-white/5';
+          if (i % 5 === 0) {
+            tileBg = 'bg-gradient-to-br from-nuvio-red/20 to-nuvio-red/5';
+            borderGlow = 'border-nuvio-red/30 shadow-[0_0_10px_rgba(255,71,87,0.15)]';
+          } else if (i % 5 === 1) {
+            tileBg = 'bg-gradient-to-br from-nuvio-blue/20 to-nuvio-blue/5';
+            borderGlow = 'border-nuvio-blue/20';
+          } else if (i % 5 === 2) {
+            tileBg = 'bg-gradient-to-br from-nuvio-green/20 to-nuvio-green/5';
+            borderGlow = 'border-nuvio-green/20';
+          } else if (i % 5 === 3) {
+            tileBg = 'bg-gradient-to-br from-nuvio-yellow/20 to-nuvio-yellow/5';
+            borderGlow = 'border-nuvio-yellow/20';
+          } else {
+            tileBg = 'bg-gradient-to-br from-nuvio-purple-500/20 to-nuvio-purple-500/5';
+            borderGlow = 'border-nuvio-purple-500/20';
+          }
 
           return (
             <div 
               key={i} 
               style={{ gridRow: row + 1, gridColumn: col + 1 }}
-              className={`border-[3px] border-black flex items-center justify-center relative transition-all ${i % 5 === 0 ? 'bg-nuvio-red' : 'bg-white/10'}`}
+              className={`border rounded-xl flex flex-col items-center justify-center relative transition-all ${tileBg} ${borderGlow}`}
             >
-              <span className="text-[10px] font-black text-black/20 absolute top-1 left-1">0{i}</span>
-              <div className="flex -space-x-2">
+              <span className="text-[10px] font-black text-text-muted absolute top-1.5 left-1.5">0{i}</span>
+              <div className="flex -space-x-1.5">
                 {occupants.map(p => (
                   <motion.div 
                     layoutId={`player-${p.id}`}
                     key={p.id} 
-                    className="w-8 h-8 rounded-sm border-2 border-black flex items-center justify-center text-xs shadow-nb-small"
+                    className="w-8 h-8 rounded-xl border border-white/20 flex items-center justify-center text-xs shadow-lg font-bold"
                     style={{ backgroundColor: p.color }}
                   >
                     {p.icon}
@@ -181,18 +201,21 @@ const StudyVerse = () => {
           );
         })}
         {/* Center Arena */}
-        <div className="col-start-2 col-end-6 row-start-2 row-end-6 bg-[#16181d] border-4 border-black flex flex-col items-center justify-center text-center p-8">
-           <div className="text-[10px] font-black text-nuvio-purple-400 uppercase tracking-[0.4em] mb-4">Central Matrix</div>
-           <h2 className="text-4xl font-black text-white uppercase tracking-tighter">Monopoly</h2>
+        <div className="col-start-2 col-end-6 row-start-2 row-end-6 bg-background-card/85 backdrop-blur-xl border border-white/10 rounded-2xl flex flex-col items-center justify-center text-center p-6 shadow-2xl">
+           <div className="text-[10px] font-black text-nuvio-purple-400 tracking-[0.4em] mb-2">Central Matrix</div>
+           <h2 className="text-4xl font-black text-white uppercase tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-white via-text-secondary to-white">Monopoly</h2>
            <div className="mt-8 flex items-center gap-6">
-              <div className="w-20 h-20 border-4 border-black bg-white flex items-center justify-center text-5xl font-black text-black shadow-nb">
+              <motion.div 
+                animate={showQuiz ? { scale: [1, 1.1, 1], rotate: [0, 5, -5, 0] } : {}}
+                className="w-20 h-20 rounded-2xl border border-white/10 bg-white/5 flex items-center justify-center text-4xl font-black text-white shadow-inner backdrop-blur-md relative overflow-hidden"
+              >
                  {dice}
-              </div>
+              </motion.div>
               <button 
                 onClick={handleRoll}
-                className="nv-btn-primary !bg-nuvio-yellow h-20 px-10 group"
+                className="h-20 px-10 rounded-2xl border border-nuvio-yellow/30 bg-nuvio-yellow/15 hover:bg-nuvio-yellow/25 text-nuvio-yellow hover:text-white font-black uppercase tracking-widest text-sm transition-all flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(255,165,2,0.1)] hover:shadow-[0_0_30px_rgba(255,165,2,0.2)] active:scale-95 group"
               >
-                Roll <Dice5 className="w-8 h-8 group-hover:rotate-180 transition-transform" />
+                Roll <Dice5 className="w-8 h-8 group-hover:rotate-180 transition-transform duration-500" />
               </button>
            </div>
         </div>
@@ -206,28 +229,27 @@ const StudyVerse = () => {
         
         {/* SIDEBAR (30%) */}
         <aside className="hidden lg:flex flex-col w-[350px] gap-8">
-           <div className="nv-card !bg-nuvio-purple-500 !text-black !shadow-[8px_8px_0_#000]">
-              <div className="flex items-center gap-3">
-                 <Gamepad2 className="w-8 h-8" />
-                 <h2 className="text-2xl font-black tracking-tighter uppercase">Study Arcade</h2>
-              </div>
+           <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-background-card/45 backdrop-blur-2xl p-6 shadow-xl flex items-center gap-3">
+              <Gamepad2 className="w-8 h-8 text-nuvio-purple-400" />
+              <h2 className="text-2xl font-black tracking-tighter uppercase text-white">Study Arcade</h2>
            </div>
 
            {/* Subject Switcher */}
-           <div className="nv-card space-y-4">
-              <div className="nv-label tracking-widest text-[#F7F4EF60]">Subject Area</div>
+           <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-background-card/45 backdrop-blur-2xl p-6 shadow-xl space-y-4">
+              <div className="nv-label tracking-widest text-text-secondary/55">Subject Area</div>
               <div className="grid grid-cols-1 gap-3">
                  {['Math', 'Science', 'Social'].map(s => {
-                    // Logic: Pulse if it's the "suggested" subject (random for demo or based on logic)
                     const isNeglected = (s === 'Social' && activeSubject !== 'Social'); 
                     return (
                       <button 
                         key={s}
                         onClick={() => setActiveSubject(s)}
                         className={`
-                          px-6 py-3 border-[3px] border-black text-left font-black uppercase tracking-widest text-xs transition-all 
-                          ${activeSubject === s ? 'bg-nuvio-cyan text-black shadow-nb-small' : 'bg-white/5 opacity-50'}
-                          ${isNeglected ? 'nv-pulse-attention' : ''}
+                          px-5 py-3 border rounded-xl font-bold uppercase tracking-wider text-xs transition-all 
+                          ${activeSubject === s 
+                            ? 'bg-nuvio-cyan/15 text-nuvio-cyan border-nuvio-cyan/30 shadow-[0_0_15px_rgba(88,244,255,0.1)]' 
+                            : 'bg-white/5 text-text-secondary border-white/5 opacity-70 hover:opacity-100'}
+                          ${isNeglected ? 'animate-pulse border-nuvio-yellow/30 bg-nuvio-yellow/5' : ''}
                         `}
                       >
                         {s} Module
@@ -238,48 +260,55 @@ const StudyVerse = () => {
            </div>
 
             {/* Turn Indicator */}
-            <div className="nv-card !bg-nuvio-yellow !text-black border-black border-4 shadow-nb-small">
+            <div className="relative overflow-hidden rounded-2xl border border-nuvio-yellow/20 bg-nuvio-yellow/5 backdrop-blur-2xl p-5 shadow-[0_0_20px_rgba(255,165,2,0.02)]">
                <div className="flex items-center justify-between">
                   <div className="space-y-1">
-                     <div className="text-[10px] font-black uppercase tracking-widest opacity-70">Active Player</div>
-                    <div className="text-lg font-black uppercase tracking-tighter leading-none">{players[turn].name}</div>
-                 </div>
-                 <div className="w-12 h-12 bg-black flex items-center justify-center text-2xl">{players[turn].icon}</div>
-              </div>
-           </div>
+                     <div className="text-[10px] font-black uppercase tracking-widest text-nuvio-yellow/70">Active Player</div>
+                     <div className="text-lg font-black uppercase tracking-tighter leading-none text-white">{players[turn]?.name || 'Unknown'}</div>
+                  </div>
+                  <div className="w-12 h-12 bg-nuvio-yellow/15 border border-nuvio-yellow/30 rounded-xl flex items-center justify-center text-2xl">{players[turn]?.icon || '⚡'}</div>
+               </div>
+            </div>
 
            {/* Player Grid */}
-           <div className="nv-card space-y-6">
+           <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-background-card/45 backdrop-blur-2xl p-6 shadow-xl space-y-6">
               <div className="flex items-center justify-between nv-label">
-                 <div className="flex items-center gap-2"><Users className="w-4 h-4" /> Live Leaderboard</div>
+                 <div className="flex items-center gap-2 text-text-secondary"><Users className="w-4 h-4 text-nuvio-purple-400" /> Live Leaderboard</div>
                  <button 
                   onClick={() => setIsSolo(!isSolo)}
-                  className={`text-[9px] px-2 py-0.5 border border-black font-black uppercase tracking-widest transition-all ${isSolo ? 'bg-nuvio-cyan text-black' : 'bg-white/5 opacity-50'}`}
+                  className={`text-[9px] px-2.5 py-1 border rounded-md font-bold uppercase tracking-widest transition-all ${isSolo ? 'bg-nuvio-cyan/20 text-nuvio-cyan border-nuvio-cyan/30 shadow-[0_0_10px_rgba(88,244,255,0.15)]' : 'bg-white/5 border-white/5 text-text-muted hover:text-white'}`}
                  >
                    {isSolo ? 'Solo Mode' : 'Group Mode'}
                  </button>
               </div>
               <div className="space-y-3">
                  {players.map(p => (
-                    <div key={p.id} className={`flex items-center justify-between p-3 border-2 border-black ${turn === players.indexOf(p) ? 'bg-nuvio-purple-500/20 border-nuvio-purple-500 shadow-[4px_4px_0_#000]' : 'bg-black/20 opacity-70'}`}>
+                    <div 
+                      key={p.id} 
+                      className={`flex items-center justify-between p-3 rounded-xl border transition-all ${
+                        turn === players.indexOf(p) 
+                          ? 'bg-nuvio-purple-500/10 border-nuvio-purple-500/30 shadow-[0_0_15px_rgba(130,88,255,0.1)] text-white' 
+                          : 'bg-white/5 border-white/5 opacity-70 text-text-secondary'
+                      }`}
+                    >
                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 flex items-center justify-center border-2 border-black" style={{ backgroundColor: p.color }}>{p.icon}</div>
+                          <div className="w-8 h-8 flex items-center justify-center border border-white/10 rounded-lg text-lg" style={{ backgroundColor: p.color }}>{p.icon}</div>
                           <span className="text-[11px] font-black uppercase tracking-tight">{p.name} {p.isBot && isSolo && "(Rival)"}</span>
                        </div>
-                       <div className="text-[10px] font-bold text-nuvio-cyan">KP {p.kp}</div>
+                       <div className="text-[10px] font-bold text-nuvio-cyan bg-nuvio-cyan/10 px-2 py-0.5 rounded-full border border-nuvio-cyan/20">KP {p.kp}</div>
                     </div>
                  ))}
               </div>
            </div>
 
            {/* Activity Feed */}
-           <div className="nv-card flex-1 space-y-4 overflow-hidden">
-              <div className="flex items-center gap-2 nv-label"><History className="w-4 h-4" /> Activity Feed</div>
-              <div className="space-y-3 font-mono text-[10px] uppercase overflow-y-auto max-h-[200px] pr-2 scrollbar-none">
+           <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-background-card/45 backdrop-blur-2xl p-6 shadow-xl flex-1 space-y-4 overflow-hidden flex flex-col">
+              <div className="flex items-center gap-2 nv-label text-text-secondary"><History className="w-4 h-4 text-nuvio-purple-400" /> Activity Feed</div>
+              <div className="space-y-2.5 font-mono text-[10px] uppercase overflow-y-auto max-h-[220px] pr-1 scrollbar-none flex-1">
                  {activity.map((a, i) => (
-                   <div key={i} className={`p-2 border-l-4 ${a.type === 'error' ? 'border-nuvio-red bg-nuvio-red/5' : a.type === 'success' ? 'border-nuvio-green bg-nuvio-green/5' : 'border-nuvio-blue bg-white/5'}`}>
-                      <span className="text-text-muted mr-2">{a.time}</span>
-                      <span className={a.type === 'success' ? 'text-nuvio-green' : a.type === 'error' ? 'text-nuvio-red' : 'text-white'}>{a.t}</span>
+                   <div key={i} className={`p-2.5 rounded-xl border-l-2 ${a.type === 'error' ? 'border-nuvio-red bg-nuvio-red/5 text-nuvio-red' : a.type === 'success' ? 'border-nuvio-green bg-nuvio-green/5 text-nuvio-green' : 'border-nuvio-blue/20 bg-white/5 text-text-secondary'}`}>
+                      <span className="opacity-40 mr-2">{a.time}</span>
+                      <span className="font-semibold">{a.t}</span>
                    </div>
                  ))}
               </div>
@@ -289,12 +318,16 @@ const StudyVerse = () => {
         {/* WORKSPACE (Stage) */}
         <main className="flex-1 flex flex-col gap-8">
            {/* Topbar Tabs */}
-           <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-none">
+           <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none">
               {['Monopoly', 'Edu Ludo', 'Subject Uno', 'Trivia Bingo'].map(tab => (
                 <button 
                   key={tab}
                   onClick={() => setCurrentTab(tab)}
-                  className={`flex-none px-8 py-5 border-[3px] border-black font-black uppercase tracking-widest text-[11px] transition-all ${currentTab === tab ? 'bg-white text-black shadow-nb translate-y-[-4px]' : 'bg-black text-text-muted'}`}
+                  className={`flex-none px-6 py-4 rounded-xl border font-bold uppercase tracking-wider text-xs transition-all ${
+                    currentTab === tab 
+                      ? 'bg-white/10 text-white border-white/20 shadow-lg backdrop-blur-md shadow-[0_0_15px_rgba(255,255,255,0.05)]' 
+                      : 'bg-white/5 text-text-secondary border-white/5 hover:bg-white/10 hover:text-white'
+                  }`}
                 >
                   {tab}
                 </button>
@@ -302,7 +335,7 @@ const StudyVerse = () => {
            </div>
 
            {/* The Stage */}
-           <div className="flex-1 bg-[#121418] border-[3px] border-black shadow-nb flex items-center justify-center p-8 overflow-hidden relative">
+           <div className="flex-1 bg-background-card/45 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-xl flex items-center justify-center p-8 overflow-hidden relative">
               {currentTab === 'Monopoly' ? renderBoard() : 
                currentTab === 'Edu Ludo' ? (
                  <EduLudo 
@@ -357,26 +390,27 @@ const StudyVerse = () => {
                      initial={{ opacity: 0 }}
                      animate={{ opacity: 1 }}
                      exit={{ opacity: 0 }}
-                     className="absolute inset-0 bg-black/95 z-50 flex items-center justify-center p-8 sm:p-20"
+                     className="absolute inset-0 bg-background-base/80 backdrop-blur-xl z-50 flex items-center justify-center p-6 sm:p-12"
                    >
                      <motion.div 
-                       initial={{ scale: 0.9, rotate: -2 }}
-                       animate={{ scale: 1, rotate: 0 }}
-                       className="nv-card !bg-[#2ed573] !text-black w-full max-w-2xl border-4 !shadow-[20px_20px_0_#000]"
+                       initial={{ scale: 0.9, y: 15 }}
+                       animate={{ scale: 1, y: 0 }}
+                       exit={{ scale: 0.9, y: 15 }}
+                       className="w-full max-w-2xl rounded-3xl border border-nuvio-green/20 bg-background-card/95 backdrop-blur-2xl p-8 sm:p-12 shadow-2xl relative overflow-hidden flex flex-col"
                      >
-                        <div className="flex justify-between items-start mb-10">
-                           <div className="bg-black text-white px-4 py-1 text-[10px] font-black uppercase tracking-widest">Focus Check</div>
-                           <div className="text-2xl font-black">Subject: {activeSubject}</div>
+                        <div className="flex justify-between items-center mb-8 pb-4 border-b border-white/10">
+                           <div className="bg-nuvio-green/20 text-nuvio-green border border-nuvio-green/30 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Focus Check</div>
+                           <div className="text-sm font-bold text-text-secondary uppercase">Subject: {activeSubject}</div>
                         </div>
-                        <h2 className="text-3xl font-black mb-12 border-b-4 border-black pb-8">{activeQuiz.q}</h2>
+                        <h2 className="text-2xl sm:text-3xl font-black text-white mb-8 leading-snug">{activeQuiz.q}</h2>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                            {activeQuiz.options.map((opt, i) => (
                              <button
                                key={i}
                                onClick={() => submitQuiz(i)}
-                               className="p-6 bg-black text-white text-left font-bold uppercase tracking-wide border-2 border-black hover:bg-[#101114] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000]"
+                               className="p-5 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/10 text-left text-white font-medium transition-all active:scale-[0.98] flex items-center gap-3"
                              >
-                                <span className="text-nuvio-cyan mr-3">[{i + 1}]</span> {opt}
+                                <span className="text-nuvio-cyan font-black">[{i + 1}]</span> {opt}
                              </button>
                            ))}
                         </div>
