@@ -3,6 +3,24 @@ import { authService } from './authService';
 const DB_KEY = 'acadevance_local_db';
 let isCloudActive = false;
 
+// Safari-safe UUID generator — crypto.randomUUID() requires HTTPS in Safari,
+// so we fall back to a Math.random polyfill on plain http://localhost
+const generateUUID = () => {
+  try {
+    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+      return crypto.randomUUID();
+    }
+  } catch (e) {
+    // Safari throws SecurityError on http:// — fall through to polyfill
+  }
+  // RFC 4122 v4 UUID polyfill
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+};
+
 const checkConnection = async () => {
   try {
     const { data, error } = await supabase.from('profiles').select('id').limit(1);
@@ -85,7 +103,7 @@ export const dataService = {
 
     const newItem = {
       ...item,
-      id: item.id || crypto.randomUUID(),
+      id: item.id || generateUUID(),
       created_at: new Date().toISOString(),
       user_id: user.id
     };

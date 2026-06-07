@@ -11,6 +11,7 @@ import { dataService } from '../services/dataService';
 import { xpService } from '../services/xpService';
 import { notificationService } from '../services/notificationService';
 import { rewardService } from '../services/rewardService';
+import { gamificationService } from '../services/gamificationService';
 
 const QUICK_MISSIONS = [
   { id: 'math', title: 'Math Prime', icon: Target, color: 'bg-nuvio-blue', glow: 'shadow-nuvio-blue' },
@@ -79,6 +80,9 @@ const Homework = () => {
         xpService.awardXp(50, `Objective Accomplished: ${task.title}`);
         notificationService.send("Mission Complete", "+50 XP Synchronized.", "success");
         rewardService.triggerLuckyDrop();
+        // Track stats for achievements
+        await gamificationService.incrementStat('stats_homework_completed', 1);
+        await gamificationService.incrementStat('stats_quests_completed', 1);
       }
     } catch (err) {}
   };

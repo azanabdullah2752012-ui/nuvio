@@ -99,15 +99,23 @@ export const authService = {
           stats_quizzes_correct: 0,
           stats_math_completed: 0,
           stats_science_completed: 0,
+          stats_social_completed: 0,
+          stats_homework_completed: 0,
+          stats_boss_defeated: 0,
           stats_quests_completed: 0,
           login_streak: 1,
           last_login_reward_date: null,
           unlocked_avatars: ['⚡'],
           claimed_season_tiers: [],
           boss_chapter_progress: {
-            dragon: { hp: 1000, max: 1000, status: 'active' },
-            monster: { hp: 2000, max: 2000, status: 'locked' },
-            titan: { hp: 5000, max: 5000, status: 'locked' }
+            dragon:    { hp: 1000, max: 1000,  status: 'active',  claimed: false },
+            algebra:   { hp: 2500, max: 2500,  status: 'locked',  claimed: false },
+            geometry:  { hp: 4000, max: 4000,  status: 'locked',  claimed: false },
+            cell:      { hp: 1500, max: 1500,  status: 'active',  claimed: false },
+            motion:    { hp: 3000, max: 3000,  status: 'locked',  claimed: false },
+            atom:      { hp: 5000, max: 5000,  status: 'locked',  claimed: false },
+            empire:    { hp: 2000, max: 2000,  status: 'active',  claimed: false },
+            leviathan: { hp: 6000, max: 6000,  status: 'locked',  claimed: false },
           }
         };
 
@@ -138,15 +146,25 @@ export const authService = {
         existing.stats_quizzes_correct = existing.stats_quizzes_correct ?? 0;
         existing.stats_math_completed = existing.stats_math_completed ?? 0;
         existing.stats_science_completed = existing.stats_science_completed ?? 0;
+        existing.stats_social_completed = existing.stats_social_completed ?? 0;
+        existing.stats_homework_completed = existing.stats_homework_completed ?? 0;
+        existing.stats_boss_defeated = existing.stats_boss_defeated ?? 0;
         existing.stats_quests_completed = existing.stats_quests_completed ?? 0;
         existing.login_streak = existing.login_streak ?? 1;
         existing.last_login_reward_date = existing.last_login_reward_date || null;
         existing.unlocked_avatars = existing.unlocked_avatars || ['⚡'];
         existing.claimed_season_tiers = existing.claimed_season_tiers || [];
-        existing.boss_chapter_progress = existing.boss_chapter_progress || {
-          dragon: { hp: 1000, max: 1000, status: 'active' },
-          monster: { hp: 2000, max: 2000, status: 'locked' },
-          titan: { hp: 5000, max: 5000, status: 'locked' }
+        // Migrate old 3-boss schema → new 8-boss schema
+        const bp = existing.boss_chapter_progress || {};
+        existing.boss_chapter_progress = {
+          dragon:    bp.dragon    || { hp: 1000, max: 1000,  status: 'active',  claimed: false },
+          algebra:   bp.algebra   || { hp: 2500, max: 2500,  status: 'locked',  claimed: false },
+          geometry:  bp.geometry  || { hp: 4000, max: 4000,  status: 'locked',  claimed: false },
+          cell:      bp.cell      || { hp: 1500, max: 1500,  status: 'active',  claimed: false },
+          motion:    bp.motion    || { hp: 3000, max: 3000,  status: 'locked',  claimed: false },
+          atom:      bp.atom      || { hp: 5000, max: 5000,  status: 'locked',  claimed: false },
+          empire:    bp.empire    || { hp: 2000, max: 2000,  status: 'active',  claimed: false },
+          leviathan: bp.leviathan || { hp: 6000, max: 6000,  status: 'locked',  claimed: false },
         };
         
         localStorage.setItem(STORAGE_KEY, JSON.stringify(existing));
@@ -346,22 +364,23 @@ export const authService = {
     const user = authService.me();
     if (!user) return null;
 
+    // Roadmap-spec daily rewards:
+    // Day 5 = Wizard avatar, Day 7 = Epic (500 coins + Nebula avatar)
     const rewards = {
-      1: { coins: 20, desc: "Day 1 Reward" },
-      2: { coins: 30, desc: "Day 2 Reward" },
-      3: { coins: 40, desc: "Day 3 Reward" },
-      4: { coins: 50, desc: "Day 4 Reward" },
-      5: { coins: 60, desc: "Day 5 Reward" },
-      6: { coins: 70, desc: "Day 6 Reward" },
-      7: { coins: 100, avatar: "👑", desc: "Day 7 Grand Reward" }
+      1: { coins: 25,  desc: 'Day 1 — Welcome Back!',    label: '25 Coins' },
+      2: { coins: 50,  desc: 'Day 2 — Keep it up!',      label: '50 Coins' },
+      3: { coins: 75,  desc: 'Day 3 — On a roll!',       label: '75 Coins' },
+      4: { coins: 100, desc: 'Day 4 — Halfway there!',   label: '100 Coins' },
+      5: { coins: 0,   avatar: '🧙', xp: 100, desc: 'Day 5 — Wizard Avatar Unlocked!', label: '🧙 Wizard Avatar + 100 XP' },
+      6: { coins: 150, desc: 'Day 6 — Almost there!',    label: '150 Coins' },
+      7: { coins: 500, avatar: '🌌', xp: 500, desc: 'Day 7 — EPIC REWARD!', label: '500 Coins + 🌌 Nebula Avatar + 500 XP' },
     };
 
-    const reward = rewards[day] || { coins: 20, desc: "Daily Reward" };
-    
-    // Add coins (era_tokens)
-    const newTokens = (user.era_tokens || 0) + reward.coins;
-    
-    // Unlocked avatars
+    const reward = rewards[day] || { coins: 25, desc: 'Daily Reward', label: '25 Coins' };
+
+    const newTokens = (user.era_tokens || 0) + (reward.coins || 0);
+    const newXp = (user.xp || 0) + (reward.xp || 0);
+
     const newAvatars = [...(user.unlocked_avatars || ['⚡'])];
     if (reward.avatar && !newAvatars.includes(reward.avatar)) {
       newAvatars.push(reward.avatar);
@@ -370,9 +389,10 @@ export const authService = {
     const updated = {
       ...user,
       era_tokens: newTokens,
+      xp: newXp,
       login_streak: day,
       last_login_reward_date: new Date().toISOString(),
-      unlocked_avatars: newAvatars
+      unlocked_avatars: newAvatars,
     };
 
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
@@ -381,12 +401,13 @@ export const authService = {
     try {
       await supabase.from('profiles').update({
         era_tokens: newTokens,
+        xp: newXp,
         login_streak: day,
         last_login_reward_date: updated.last_login_reward_date,
-        unlocked_avatars: newAvatars
+        unlocked_avatars: newAvatars,
       }).eq('id', user.id);
     } catch (err) {
-      console.warn("Daily login reward sync delayed");
+      console.warn('Daily login reward sync delayed');
     }
 
     return reward;

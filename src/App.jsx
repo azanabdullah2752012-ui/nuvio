@@ -33,6 +33,7 @@ const StudySites = lazy(() => import('./pages/StudySites'));
 const TriviaGame = lazy(() => import('./pages/TriviaGame'));
 const Achievements = lazy(() => import('./pages/Achievements'));
 const SeasonalPass = lazy(() => import('./pages/SeasonalPass'));
+const JourneyMap = lazy(() => import('./pages/JourneyMap'));
 
 import { authService } from './services/authService';
 import { supabase } from './lib/supabase';
@@ -168,6 +169,8 @@ function App() {
                 
                 {/* Study Verse */}
                 <Route path="/boss-raid" element={<BossRaid />} />
+                <Route path="/journey-map" element={<JourneyMap />} />
+
                 
                 {/* Social Hub */}
                 <Route path="/learning-groups" element={<LearningGroups />} />

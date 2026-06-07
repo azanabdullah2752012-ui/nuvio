@@ -35,6 +35,7 @@ const navSections = [
     items: [
       { name: "Verse Portal", path: "/study-verse", icon: Gamepad2 },
       { name: "Boss Raid", path: "/boss-raid", icon: Skull },
+      { name: "Journey Map", path: "/journey-map", icon: Map },
     ]
   },
   {
