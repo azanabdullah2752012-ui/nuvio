@@ -15,6 +15,8 @@ import { dataService } from '../services/dataService';
 import { xpService } from '../services/xpService';
 import { notificationService } from '../services/notificationService';
 import { gamificationService, BOSSES } from '../services/gamificationService';
+import { authService } from '../services/authService';
+
 
 const ELI5_ANALOGIES = {
   "Coordinate Geometry": "Imagine a completely empty movie theater. To find your seat, you walk along the front row (x-axis) and then go up the aisle (y-axis) from the entrance (origin). Those two numbers, like Row 3 Seat 4, are coordinates!",
