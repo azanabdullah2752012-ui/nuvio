@@ -12,6 +12,7 @@ import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import { authService } from '../services/authService';
 import { dataService } from '../services/dataService';
+import { revisionService } from '../services/revisionService';
 
 const Analytics = () => {
   const [sessionData, setSessionData] = useState([]);
@@ -19,6 +20,8 @@ const Analytics = () => {
   const [quizScoresList, setQuizScoresList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [statsData, setStatsData] = useState({ avg: '0m', total: 0, rank: 'Initiate', gain: '0%' });
+  const [subjectStrengths, setSubjectStrengths] = useState({});
+  const [topicAccuracy, setTopicAccuracy] = useState([]);
   const user = authService.me();
 
   useEffect(() => {
@@ -129,6 +132,30 @@ const Analytics = () => {
       }
 
       setStatsData(prev => ({ ...prev, gain }));
+
+      // 6. Subject strengths from revision service
+      const strengths = await revisionService.getSubjectStrengths();
+      setSubjectStrengths(strengths || {});
+
+      // 7. Calculate Topic-wise Accuracy from all quizzes
+      if (quizzes) {
+        const topicMap = {};
+        quizzes.forEach(q => {
+          const key = `${q.subject} - ${q.chapter_title}`;
+          if (!topicMap[key]) {
+            topicMap[key] = { subject: q.subject, chapter: q.chapter_title, score: 0, total: 0 };
+          }
+          topicMap[key].score += q.score;
+          topicMap[key].total += q.total;
+        });
+
+        const topics = Object.values(topicMap).map(t => ({
+          ...t,
+          accuracy: Math.round(t.total > 0 ? (t.score / t.total) * 100 : 0)
+        }));
+
+        setTopicAccuracy(topics);
+      }
 
     } catch (err) {
       console.warn("Analytics stream interrupted:", err);
@@ -268,6 +295,103 @@ const Analytics = () => {
             })}
           </div>
         )}
+      </div>
+
+      {/* 🔮 SUBJECT STRENGTH HEATMAP & TOPIC ACCURACY MATRIX */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Heatmap Panel */}
+        <div className="border-3 border-black bg-slate-900 p-8 shadow-[8px_8px_0_#000]">
+          <h3 className="text-xl font-black text-white uppercase tracking-tight flex items-center gap-2 mb-2">
+            <Target className="w-5 h-5 text-purple-400" />
+            Subject Strength Heatmap
+          </h3>
+          <p className="text-[10px] text-text-muted font-bold uppercase tracking-widest mb-6">
+            Real-time visual map of subject mastery
+          </p>
+
+          <div className="grid grid-cols-2 gap-4">
+            {Object.keys(subjectStrengths).length === 0 ? (
+              <div className="col-span-2 text-center py-12 text-text-muted font-black uppercase text-[10px] tracking-widest opacity-50 italic">
+                Awaiting performance data to map strengths...
+              </div>
+            ) : (
+              Object.values(subjectStrengths).map((sub, idx) => {
+                let bgClass = "bg-rose-500 text-black";
+                let badgeText = "Weak";
+                if (sub.status === 'strong') {
+                  bgClass = "bg-green-500 text-black";
+                  badgeText = "Strong";
+                } else if (sub.status === 'developing') {
+                  bgClass = "bg-yellow-500 text-black";
+                  badgeText = "Developing";
+                }
+
+                return (
+                  <div key={idx} className={`p-6 border-3 border-black ${bgClass} shadow-[4px_4px_0_#000] flex flex-col justify-between h-[140px]`}>
+                    <div>
+                      <span className="text-[8px] font-black uppercase tracking-widest bg-black text-white px-2 py-0.5 rounded">
+                        {badgeText}
+                      </span>
+                      <h4 className="font-black text-lg uppercase tracking-tighter mt-2 leading-none">{sub.subject}</h4>
+                    </div>
+                    <div className="flex justify-between items-end">
+                      <span className="text-3xl font-black tracking-tight">{sub.accuracy}%</span>
+                      <span className="text-[9px] font-bold uppercase tracking-wider opacity-80">{sub.quizzesCount} Quizzes</span>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
+
+        {/* Topic Accuracy Tracker */}
+        <div className="border-3 border-black bg-slate-900 p-8 shadow-[8px_8px_0_#000]">
+          <h3 className="text-xl font-black text-white uppercase tracking-tight flex items-center gap-2 mb-2">
+            <TrendingUp className="w-5 h-5 text-green-400" />
+            Topic-wise Accuracy Matrix
+          </h3>
+          <p className="text-[10px] text-text-muted font-bold uppercase tracking-widest mb-6">
+            Detailed precision percentage per NCERT/CBSE chapter
+          </p>
+
+          <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2">
+            {topicAccuracy.length === 0 ? (
+              <div className="text-center py-12 text-text-muted font-black uppercase text-[10px] tracking-widest opacity-50 italic">
+                Awaiting quiz results to populate accuracy grid...
+              </div>
+            ) : (
+              topicAccuracy.map((topic, idx) => {
+                let accuracyColor = "text-rose-500";
+                let progressBg = "bg-rose-500";
+                if (topic.accuracy >= 80) {
+                  accuracyColor = "text-green-500";
+                  progressBg = "bg-green-500";
+                } else if (topic.accuracy >= 50) {
+                  accuracyColor = "text-yellow-500";
+                  progressBg = "bg-yellow-500";
+                }
+
+                return (
+                  <div key={idx} className="p-4 bg-slate-950 border-2 border-black rounded-[4px] shadow-[4px_4px_0_#000]">
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <span className="text-[8px] font-black uppercase px-1.5 py-0.5 rounded bg-slate-800 text-text-secondary border border-black">
+                          {topic.subject}
+                        </span>
+                        <h4 className="font-black text-white text-xs uppercase tracking-tight mt-2">{topic.chapter}</h4>
+                      </div>
+                      <span className={`text-base font-black ${accuracyColor}`}>{topic.accuracy}%</span>
+                    </div>
+                    <div className="w-full h-2 bg-slate-900 border border-black rounded-[2px] overflow-hidden">
+                      <div className={`h-full ${progressBg}`} style={{ width: `${topic.accuracy}%` }} />
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Grid of Mini Stats */}

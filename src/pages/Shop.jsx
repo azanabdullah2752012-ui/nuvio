@@ -18,7 +18,7 @@ const Shop = () => {
   const shopItems = [
     { id: 'xp_boost', name: 'XP Overdrive', price: 1000, icon: Zap, color: 'text-nuvio-yellow', desc: 'Double XP for the next 4 hours.' },
     { id: 'golden_rim', name: 'Aura Aura', price: 2500, icon: Star, color: 'text-nuvio-purple-400', desc: 'A legendary golden profile border.' },
-    { id: 'streak_shield', name: 'Streak Aegis', price: 1500, icon: Shield, color: 'text-nuvio-blue', desc: 'Protects your streak for 1 missed day.' },
+    { id: 'streak_shield', name: 'Streak Shield 🛡️', price: 150, icon: Shield, color: 'text-nuvio-blue', desc: 'Protects your streak for 1 missed day.' },
     { id: 'divine_avatar', name: 'Divine Cipher', price: 5000, icon: ShoppingBag, color: 'text-nuvio-red', desc: 'Unlock the exclusive Mythic avatar set.' },
   ];
 
@@ -102,7 +102,7 @@ const Shop = () => {
 
   return (
     <div className="space-y-10 pb-20">
-      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <header className="border-b-4 border-black bg-slate-900 p-8 md:p-12 shadow-[8px_8px_0_#000] flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
           <h1 className="text-4xl font-black text-white uppercase tracking-tighter flex items-center gap-3">
             <ShoppingBag className="w-10 h-10 text-nuvio-purple-400" />
@@ -110,7 +110,7 @@ const Shop = () => {
           </h1>
           <p className="text-text-secondary font-medium mt-1">Exchange your hard-earned tokens for academy power-ups.</p>
         </div>
-        <div className="bg-white/5 border border-white/10 px-8 py-4 rounded-3xl flex items-center gap-4 shadow-xl shadow-nuvio-yellow/5">
+        <div className="bg-slate-950 border-3 border-black px-8 py-4 shadow-[4px_4px_0_#000] flex items-center gap-4">
           <Coins className="w-6 h-6 text-nuvio-yellow" />
           <span className="text-3xl font-black text-white tabular-nums">{user.era_tokens?.toLocaleString()}</span>
         </div>
@@ -125,16 +125,16 @@ const Shop = () => {
           // Determine button display properties
           let buttonText = `${item.price} Tokens`;
           let isDisabled = false;
-          let buttonClass = 'bg-white/5 border border-white/10 text-white hover:bg-nuvio-purple-500 hover:border-nuvio-purple-400';
+          let buttonClass = 'bg-purple-500 text-black border-2 border-black hover:bg-purple-400 shadow-[3px_3px_0_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none';
 
           if (isUnique && isOwned) {
             buttonText = 'OWNED';
             isDisabled = true;
-            buttonClass = 'bg-nuvio-green/20 text-nuvio-green border border-nuvio-green/30 cursor-default';
+            buttonClass = 'bg-green-500 text-black border-2 border-black cursor-default shadow-none';
           } else if (item.id === 'xp_boost' && isBoostActive) {
             buttonText = `Active: ${boostTimeLeft}`;
             isDisabled = false; // allow extension
-            buttonClass = 'bg-gradient-to-r from-nuvio-yellow/20 to-nuvio-purple-500/20 text-nuvio-yellow border border-nuvio-yellow/30 hover:from-nuvio-yellow hover:to-nuvio-purple-500 hover:text-black';
+            buttonClass = 'bg-yellow-500 text-black border-2 border-black hover:bg-yellow-400 shadow-[3px_3px_0_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none';
           }
 
           return (
@@ -143,15 +143,17 @@ const Shop = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.1 }}
-              className={`nv-card p-8 border-white/5 group relative ${isUnique && isOwned ? 'opacity-70 grayscale' : ''}`}
+              className={`border-3 border-black bg-slate-900 shadow-[8px_8px_0_#000] p-8 group relative flex flex-col justify-between min-h-[320px] hover:translate-y-[-4px] hover:shadow-[12px_12px_0_#000] transition-all ${isUnique && isOwned ? 'opacity-70 grayscale' : ''}`}
             >
-              <div className={`w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center mb-6 transition-transform group-hover:scale-110 ${item.color}`}>
-                <item.icon className="w-8 h-8" />
-              </div>
-              
-              <div className="space-y-2 mb-8">
-                <h3 className="text-xl font-black text-white uppercase tracking-tight">{item.name}</h3>
-                <p className="text-xs text-text-muted font-medium leading-relaxed">{item.desc}</p>
+              <div>
+                <div className={`w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center mb-6 transition-transform group-hover:scale-110 ${item.color}`}>
+                  <item.icon className="w-8 h-8" />
+                </div>
+                
+                <div className="space-y-2 mb-8">
+                  <h3 className="text-xl font-black text-white uppercase tracking-tight">{item.name}</h3>
+                  <p className="text-xs text-text-muted font-medium leading-relaxed">{item.desc}</p>
+                </div>
               </div>
 
               <button 
@@ -175,13 +177,13 @@ const Shop = () => {
       </div>
 
       {/* Inventory Section */}
-      <div className="nv-card p-10 border-white/5 bg-white/[0.02] rounded-[24px]">
+      <div className="border-3 border-black bg-slate-900 p-10 shadow-[8px_8px_0_#000]">
         <h3 className="text-sm font-black text-text-muted uppercase tracking-[0.2em] mb-8">Your Cloud Inventory</h3>
         <div className="flex flex-wrap gap-4">
           {Object.entries(groupedInventory).map(([id, count]) => {
             const item = shopItems.find(i => i.id === id);
             return (
-              <div key={id} className="px-6 py-3 bg-nuvio-purple-600/20 border border-nuvio-purple-500/30 rounded-full flex items-center gap-3">
+              <div key={id} className="px-6 py-3 bg-slate-950 border-2 border-black rounded-[4px] flex items-center gap-3 shadow-[2px_2px_0_#000]">
                 {item && <item.icon className={`w-4 h-4 ${item.color}`} />}
                 <span className="text-[10px] font-black text-white uppercase tracking-widest">
                   {item ? item.name : id} {count > 1 ? `x${count}` : ''}

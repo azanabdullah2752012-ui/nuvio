@@ -3,13 +3,14 @@ import {
   Zap, Trophy, Target, BookOpen, 
   ChevronRight, ArrowUpRight, Flame,
   Clock, Star, Sparkles, Coins, ArrowRight,
-  X, CheckCircle2, Lock
+  X, CheckCircle2, Lock, RotateCcw
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
 import { xpService } from '../services/xpService';
 import { dataService } from '../services/dataService';
+import { revisionService } from '../services/revisionService';
 import { notificationService } from '../services/notificationService';
 import { supabase } from '../lib/supabase';
 import confetti from 'canvas-confetti';
@@ -29,6 +30,9 @@ const Dashboard = () => {
 
   const [showLoginReward, setShowLoginReward] = useState(false);
   const [rewardDay, setRewardDay] = useState(1);
+
+  const [recommendations, setRecommendations] = useState([]);
+  const [revisionQueue, setRevisionQueue] = useState([]);
 
   useEffect(() => {
     // Sync with global state
@@ -60,10 +64,12 @@ const Dashboard = () => {
     setLoading(true);
     try {
       const currentUser = authService.me();
-      const [tasks, decks, history] = await Promise.all([
+      const [tasks, decks, history, recs, revQueue] = await Promise.all([
         dataService.list('tasks'),
         dataService.list('decks'),
-        xpService.getHistory()
+        xpService.getHistory(),
+        revisionService.getPersonalizedRecommendations(),
+        revisionService.getRevisionQueue()
       ]);
 
       if (currentUser?.id) {
@@ -89,6 +95,8 @@ const Dashboard = () => {
       });
 
       setActivity((history || []).slice(0, 5));
+      setRecommendations(recs || []);
+      setRevisionQueue(revQueue || []);
       calculateMilestone(currentUser?.xp || 0, currentUser?.level || 1);
     } catch (err) {
       console.error("Dashboard cloud sync failed:", err);
@@ -181,6 +189,85 @@ const Dashboard = () => {
                Continue Learning <ArrowRight className="w-5 h-5" />
             </button>
          </div>
+      </div>
+
+      {/* 🔮 PERSONALIZED STUDY PATHWAY & REVISION QUEUE */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Recommendation Panel */}
+        <div className="border-3 border-black bg-slate-900 p-8 shadow-[8px_8px_0_#000] flex flex-col justify-between">
+          <div>
+            <h3 className="text-xl font-black text-white uppercase tracking-tight flex items-center gap-2 mb-2">
+              <Sparkles className="w-5 h-5 text-purple-400" />
+              Personalized Pathway
+            </h3>
+            <p className="text-[10px] text-text-muted font-bold uppercase tracking-widest mb-6">
+              AI-Generated Study Recommendations
+            </p>
+            <div className="space-y-4">
+              {recommendations.map((rec, idx) => (
+                <div key={idx} className="p-4 bg-slate-950 border-2 border-black rounded-[4px] shadow-[4px_4px_0_#000]">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[9px] font-black uppercase bg-purple-500 text-black px-2 py-0.5 rounded">
+                      {rec.type}
+                    </span>
+                    <span className="text-[9px] font-bold text-text-muted uppercase">
+                      {rec.subject}
+                    </span>
+                  </div>
+                  <h4 className="font-black text-white text-sm uppercase tracking-tight">{rec.title}</h4>
+                  <p className="text-[10px] text-text-muted mt-1 leading-relaxed font-semibold">{rec.desc}</p>
+                  <button
+                    onClick={() => {
+                      if (rec.route) navigate(rec.route);
+                      else if (rec.type === 'revision') navigate(`/curriculum`);
+                    }}
+                    className="mt-4 px-4 py-2 bg-purple-500 border-2 border-black text-black font-black uppercase tracking-widest text-[9px] rounded-[4px] hover:bg-purple-400 shadow-[2px_2px_0_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all flex items-center gap-2"
+                  >
+                    {rec.actionLabel || 'Go'} <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Revision Queue */}
+        <div className="border-3 border-black bg-slate-900 p-8 shadow-[8px_8px_0_#000] flex flex-col justify-between">
+          <div>
+            <h3 className="text-xl font-black text-white uppercase tracking-tight flex items-center gap-2 mb-2">
+              <RotateCcw className="w-5 h-5 text-rose-500" />
+              Revision Queue
+            </h3>
+            <p className="text-[10px] text-text-muted font-bold uppercase tracking-widest mb-6">
+              Topics requiring review (&lt;80% mastery)
+            </p>
+            <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2">
+              {revisionQueue.length === 0 ? (
+                <div className="text-center py-8 text-text-muted font-black uppercase text-[10px] tracking-widest opacity-50 italic">
+                  No pending revisions! All clear. 🌟
+                </div>
+              ) : (
+                revisionQueue.map((item, idx) => (
+                  <div key={idx} className="p-4 bg-slate-950 border-2 border-black rounded-[4px] shadow-[4px_4px_0_#000] flex items-center justify-between gap-4">
+                    <div>
+                      <span className="text-[8px] font-black uppercase text-rose-400 bg-rose-950/40 border border-rose-900 px-1.5 py-0.5 rounded">
+                        {item.subject}
+                      </span>
+                      <h4 className="font-black text-white text-xs uppercase tracking-tight mt-2">{item.chapterTitle}</h4>
+                      <p className="text-[9px] text-text-muted font-bold mt-1">Accuracy: <span className="text-rose-500 font-black">{item.accuracy}%</span> ({item.score}/{item.total})</p>
+                    </div>
+                    <button
+                      onClick={() => navigate('/curriculum')}
+                      className="px-4 py-2 bg-rose-500 border-2 border-black text-black font-black uppercase tracking-widest text-[9px] rounded-[4px] hover:bg-rose-400 shadow-[2px_2px_0_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all flex items-center gap-2"
+                    >
+                      Revise
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Hero Stats */}

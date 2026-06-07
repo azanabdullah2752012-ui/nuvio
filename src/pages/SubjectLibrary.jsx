@@ -61,6 +61,84 @@ const SubjectLibrary = () => {
   const [activeQuizIdx, setActiveQuizIdx] = useState(0);
   const [quizStreak, setQuizStreak] = useState(0);
   const [solvePredictions, setSolvePredictions] = useState({}); // { exampleIdx_stepIdx: true/false }
+  const [hintTier, setHintTier] = useState(0);
+
+  useEffect(() => {
+    setHintTier(0);
+  }, [activeQuizIdx]);
+
+  const getQuestionHint = (q, subject, tier) => {
+    if (!q) return "";
+    const text = (q.q || "").toLowerCase();
+    const sub = (subject || "").toLowerCase();
+
+    if (tier === 1) {
+      if (sub.includes("math") || sub.includes("phys") || sub.includes("chem") || sub.includes("science")) {
+        if (text.includes("coordinate") || text.includes("point") || text.includes("distance")) {
+          return "Formula Hint: Distance Formula d = √((x₂ - x₁)² + (y₂ - y₁)²) or Section Formula.";
+        }
+        if (text.includes("speed") || text.includes("velocity") || text.includes("motion") || text.includes("accelerat")) {
+          return "Formula Hint: Newton's Equations of Motion: v = u + at, or Average Speed = Total Distance / Total Time.";
+        }
+        if (text.includes("force") || text.includes("mass") || text.includes("gravity") || text.includes("weight")) {
+          return "Formula Hint: Newton's Second Law F = m * a, or Gravitational force F = G*(m1*m2)/r².";
+        }
+        if (text.includes("work") || text.includes("energy") || text.includes("power")) {
+          return "Formula Hint: Work = Force × Displacement × cos(θ), Kinetic Energy = ½mv², Potential Energy = mgh.";
+        }
+        if (text.includes("real") || text.includes("number") || text.includes("rational") || text.includes("irrational")) {
+          return "Axiom Hint: Fundamental Theorem of Arithmetic (Unique factorization of prime products) or Euclid's Division Lemma: a = bq + r.";
+        }
+        if (text.includes("quadrat") || text.includes("polynomial")) {
+          return "Formula Hint: Quadratic Formula x = [-b ± √(b² - 4ac)] / 2a, Sum of roots = -b/a, Product of roots = c/a.";
+        }
+        if (text.includes("atom") || text.includes("mole") || text.includes("mass")) {
+          return "Formula Hint: Number of Moles = Given Mass / Molar Mass. 1 mole = 6.022 × 10²³ atoms/molecules.";
+        }
+        return "Formula/Axiom Hint: Recall the primary physical/algebraic definitions: check parameters and units carefully.";
+      } else if (sub.includes("bio") || sub.includes("science")) {
+        if (text.includes("cell") || text.includes("membrane") || text.includes("organelle")) {
+          return "Axiom Hint: Recall the Cell Theory (all organisms are composed of cells) and functions of cellular organelles (nucleus, mitochondria, ribosomes).";
+        }
+        if (text.includes("plant") || text.includes("animal") || text.includes("tissue")) {
+          return "Axiom Hint: Plants have cell walls made of cellulose; animal cells have no cell walls. Tissues perform specialized physiological tasks.";
+        }
+        return "Axiom Hint: Read standard NCERT definition rules for structure-function relationship.";
+      } else {
+        return "Axiom Hint: Examine key definitions. Re-read the chapter summary notes for the core definitions.";
+      }
+    }
+
+    if (tier === 2) {
+      if (sub.includes("math") || sub.includes("phys") || sub.includes("chem") || sub.includes("science")) {
+        if (text.includes("coordinate") || text.includes("point") || text.includes("distance")) {
+          return "Step: Write down the given coordinates. Identify (x₁, y₁) and (x₂, y₂). Substitute them into the formula and solve.";
+        }
+        if (text.includes("speed") || text.includes("velocity") || text.includes("motion") || text.includes("accelerat")) {
+          return "Step: Identify initial velocity (u), final velocity (v), acceleration (a), time (t), or displacement (s). Check if units need conversion (e.g., km/h to m/s).";
+        }
+        if (text.includes("force") || text.includes("mass")) {
+          return "Step: Check if mass is in kg and acceleration is in m/s². Multiply them directly to compute force in Newtons.";
+        }
+        if (text.includes("quadrat") || text.includes("polynomial")) {
+          return "Step: Identify coefficients a, b, and c. Compute the discriminant (D = b² - 4ac) to determine real/imaginary roots first.";
+        }
+        if (text.includes("atom") || text.includes("mole")) {
+          return "Step: Find the atomic mass from the periodic table. Divide the mass given by that atomic weight, then multiply by Avogadro's number if counting atoms.";
+        }
+        return "Step: Isolate the unknown variable. Rearrange your formula to make the desired variable the subject, then compute.";
+      } else if (sub.includes("bio") || sub.includes("science")) {
+        if (text.includes("cell") || text.includes("membrane") || text.includes("organelle")) {
+          return "Step: Match the organelle function (e.g., protein factory = ribosome, powerhouse = mitochondria, control center = nucleus) to find the correct answer.";
+        }
+        return "Step: Rule out options that describe different biological kingdoms (e.g. fungi vs plants) or standard contradictory statements.";
+      } else {
+        return "Step: Process of elimination. Look for options that represent general truths vs specific exceptions, and cross-reference with the text.";
+      }
+    }
+
+    return "";
+  };
 
   // Physics motion simulation effect
   useEffect(() => {
@@ -1144,6 +1222,59 @@ const SubjectLibrary = () => {
                               </div>
 
                               <h4 className="text-xl font-black text-white leading-relaxed">{q.q}</h4>
+
+                              {/* Hint Request Section */}
+                              {!answered && (
+                                <div className="space-y-3 pt-2">
+                                  <div className="flex items-center justify-between">
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        if (hintTier < 2) {
+                                          setHintTier(prev => prev + 1);
+                                          window.dispatchEvent(new CustomEvent('acadevance_particle_bonus', { 
+                                            detail: { emoji: '💡', type: 'reaction' } 
+                                          }));
+                                        }
+                                      }}
+                                      disabled={hintTier >= 2}
+                                      className={`px-4 py-2 border-2 border-black font-black uppercase tracking-widest text-[9px] rounded transition-all shadow-[2px_2px_0_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none flex items-center gap-2 ${
+                                        hintTier >= 2
+                                          ? 'bg-slate-800 text-slate-500 border-slate-700 cursor-not-allowed shadow-none'
+                                          : 'bg-yellow-500 hover:bg-yellow-400 text-black'
+                                      }`}
+                                    >
+                                      💡 Request Hint {hintTier > 0 && `(Level ${hintTier}/2)`}
+                                    </button>
+                                    {hintTier > 0 && (
+                                      <span className="text-[9px] font-black text-yellow-500 uppercase tracking-widest animate-pulse">
+                                        Hint Tier {hintTier} unlocked!
+                                      </span>
+                                    )}
+                                  </div>
+
+                                  {hintTier > 0 && (
+                                    <motion.div
+                                      initial={{ opacity: 0, height: 0 }}
+                                      animate={{ opacity: 1, height: 'auto' }}
+                                      className="p-4 bg-yellow-500/10 border-2 border-yellow-500/30 text-yellow-200 text-xs font-semibold rounded leading-relaxed space-y-2"
+                                    >
+                                      {hintTier >= 1 && (
+                                        <div>
+                                          <span className="block text-[8px] font-black text-yellow-500 uppercase tracking-wider mb-1">Tier 1: Formula / Axiom Reference</span>
+                                          <p className="font-mono text-[11px]">{getQuestionHint(q, subject, 1)}</p>
+                                        </div>
+                                      )}
+                                      {hintTier >= 2 && (
+                                        <div className="pt-2 border-t border-yellow-500/20">
+                                          <span className="block text-[8px] font-black text-yellow-500 uppercase tracking-wider mb-1">Tier 2: Solve-along Step Suggestion</span>
+                                          <p className="font-sans text-[11px]">{getQuestionHint(q, subject, 2)}</p>
+                                        </div>
+                                      )}
+                                    </motion.div>
+                                  )}
+                                </div>
+                              )}
 
                               <div className="grid grid-cols-1 gap-3 pt-2">
                                 {q.options.map((opt, optIdx) => {
