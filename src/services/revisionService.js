@@ -1,5 +1,6 @@
 import { dataService } from './dataService';
 import { authService } from './authService';
+import { BOSSES } from './gamificationService';
 
 export const revisionService = {
   // Calculates the revision queue: chapters where the user scored < 80% on quizzes

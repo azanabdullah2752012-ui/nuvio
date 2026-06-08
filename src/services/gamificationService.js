@@ -129,12 +129,12 @@ export const DEFAULT_BOSS_PROGRESS = {
 // ─────────────────────────────────────────────────────────────
 const applyAchievementRewards = (user, achievements) => {
   let totalXp = user.xp || 0;
-  let totalCoins = user.tokens || 0;
+  let totalCoins = user.era_tokens || 0;
   achievements.forEach(ach => {
     totalXp += (ach.xp || 0);
     totalCoins += (ach.coins || 0);
   });
-  return { ...user, xp: totalXp, tokens: totalCoins };
+  return { ...user, xp: totalXp, era_tokens: totalCoins };
 };
 
 // ─────────────────────────────────────────────────────────────
@@ -193,7 +193,7 @@ export const gamificationService = {
         [statName]: newVal,
         achievements: updated.achievements,
         xp: updated.xp,
-        tokens: updated.tokens,
+        era_tokens: updated.era_tokens,
       }).eq('id', user.id);
     } catch (err) {
       console.warn(`Stat ${statName} increment sync delayed`);
@@ -237,7 +237,7 @@ export const gamificationService = {
         await supabase.from('profiles').update({
           achievements: user.achievements,
           xp: user.xp,
-          tokens: user.tokens,
+          era_tokens: user.era_tokens,
         }).eq('id', user.id);
       } catch (err) {
         console.warn('Achievements sync delayed');
@@ -334,7 +334,7 @@ export const gamificationService = {
       ...user,
       boss_chapter_progress: progress,
       xp: (user.xp || 0) + rewards.xp,
-      tokens: (user.tokens || 0) + rewards.coins,
+      era_tokens: (user.era_tokens || 0) + rewards.coins,
       stats_boss_defeated: (user.stats_boss_defeated || 0) + 1,
     };
 
@@ -359,7 +359,7 @@ export const gamificationService = {
       await supabase.from('profiles').update({
         boss_chapter_progress: progress,
         xp: updated.xp,
-        tokens: updated.tokens,
+        era_tokens: updated.era_tokens,
         stats_boss_defeated: updated.stats_boss_defeated,
         achievements: updated.achievements,
       }).eq('id', user.id);

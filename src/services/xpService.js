@@ -87,8 +87,59 @@ export const xpService = {
 
       return { updatedUser, leveledUp, amount: finalAmount, reason };
     } catch (err) {
-      console.error("XP SYNC FAILURE:", err);
-      return null;
+      console.error("XP SYNC FAILURE, ATTEMPTING CLIENT-SIDE FALLBACK SYNC:", err);
+      
+      const currentUser = authService.me();
+      if (!currentUser) return null;
+
+      const prevXp = currentUser.xp || 0;
+      const prevLevel = currentUser.level || 1;
+      
+      const newXp = prevXp + finalAmount;
+      const newLevel = xpService.getLevel(newXp);
+      const leveledUp = newLevel > prevLevel;
+
+      const updatedUser = {
+        ...currentUser,
+        xp: newXp,
+        level: newLevel,
+        last_activity_date: new Date().toISOString()
+      };
+
+      // 1. Sync Local State
+      localStorage.setItem('acadevance_user', JSON.stringify(updatedUser));
+
+      // 2. Emit events for UI
+      window.dispatchEvent(new CustomEvent('acadevance_stats_update', { detail: updatedUser }));
+      window.dispatchEvent(new CustomEvent('acadevance_xp_awarded', { detail: { amount: finalAmount, reason } }));
+
+      if (leveledUp) {
+        window.dispatchEvent(new CustomEvent('acadevance_notification', { 
+          detail: { title: "Level Up! 🎉", message: `You reached Level ${updatedUser.level}!`, type: 'success' } 
+        }));
+      }
+
+      // 3. Fallback Database Sync
+      (async () => {
+        try {
+          await supabase.from('profiles').update({
+            xp: newXp,
+            level: newLevel,
+            last_activity_date: updatedUser.last_activity_date
+          }).eq('id', currentUser.id);
+
+          await supabase.from('xp_logs').insert([{
+            user_id: currentUser.id,
+            amount: finalAmount,
+            reason: reason + (isBoostActive ? ' (2x Boost)' : ''),
+            category: category
+          }]);
+        } catch (syncErr) {
+          console.warn("CLIENT-SIDE FALLBACK DB SYNC DELAYED:", syncErr.message);
+        }
+      })();
+
+      return { updatedUser, leveledUp, amount: finalAmount, reason };
     }
   },
 

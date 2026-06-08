@@ -12,6 +12,7 @@ import { authService } from '../services/authService';
 import { dataService } from '../services/dataService';
 import { notificationService } from '../services/notificationService';
 import { gamificationService } from '../services/gamificationService';
+import { xpService } from '../services/xpService';
 import { supabase } from '../lib/supabase';
 
 const Profile = () => {
@@ -178,7 +179,7 @@ const Profile = () => {
   // Progression calculation
   const currentXp = user?.xp || 0;
   const currentLevel = user?.level || 1;
-  const xpNeededForNextLevel = currentLevel * 500;
+  const xpNeededForNextLevel = xpService.getNextLevelXp(currentLevel);
   const xpPercent = Math.min(100, Math.floor((currentXp / xpNeededForNextLevel) * 100));
 
   // Custom gamified achievements

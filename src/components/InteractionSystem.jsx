@@ -1,9 +1,50 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Zap, Heart, Star, Cloud, MousePointer2 } from 'lucide-react';
 import { xpService } from '../services/xpService';
 
 import MiniProfileCard from './MiniProfileCard';
+
+// --- CURSOR SPOTLIGHT ---
+const CursorSpotlight = () => {
+  const glowRef = useRef(null);
+  const rafRef = useRef(null);
+  const posRef = useRef({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+  const targetRef = useRef({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+
+  useEffect(() => {
+    const onMouseMove = (e) => {
+      targetRef.current = { x: e.clientX, y: e.clientY };
+    };
+    window.addEventListener('mousemove', onMouseMove, { passive: true });
+
+    const animate = () => {
+      const dx = targetRef.current.x - posRef.current.x;
+      const dy = targetRef.current.y - posRef.current.y;
+      posRef.current.x += dx * 0.1;
+      posRef.current.y += dy * 0.1;
+      if (glowRef.current) {
+        glowRef.current.style.left = `${posRef.current.x}px`;
+        glowRef.current.style.top  = `${posRef.current.y}px`;
+      }
+      rafRef.current = requestAnimationFrame(animate);
+    };
+    rafRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      window.removeEventListener('mousemove', onMouseMove);
+      cancelAnimationFrame(rafRef.current);
+    };
+  }, []);
+
+  return (
+    <div
+      ref={glowRef}
+      className="nv-cursor-glow"
+      style={{ left: '50%', top: '50%' }}
+    />
+  );
+};
 
 // --- PARTICLE SYSTEM ---
 const ParticleBurst = ({ x, y, onComplete }) => {
@@ -19,7 +60,7 @@ const ParticleBurst = ({ x, y, onComplete }) => {
 
   return (
     <AnimatePresence>
-      {particles.map(p => (
+      {particles.map((p, i) => (
         <motion.div
           key={p.id}
           initial={{ x: p.ix, y: p.iy, opacity: 1, scale: 0.5 }}
@@ -127,6 +168,7 @@ const InteractionSystem = () => {
 
   return (
     <div className="fixed inset-0 pointer-events-none z-[9999]">
+      <CursorSpotlight />
       {bursts.map(b => (
         <ParticleBurst key={b.id} x={b.x} y={b.y} onComplete={() => setBursts(prev => prev.filter(p => p.id !== b.id))} />
       ))}

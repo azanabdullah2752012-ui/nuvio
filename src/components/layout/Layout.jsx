@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
 import UniversalHeader from './UniversalHeader';
 import SideDrawer from './SideDrawer';
 import { authService } from '../../services/authService';
 import QuestFAB from './QuestFAB';
+import AnimatedBackground from '../AnimatedBackground';
+import PageTransition from '../PageTransition';
 
 const Layout = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -18,14 +21,20 @@ const Layout = () => {
     let mounted = true;
 
     const init = async () => {
-      // Step 1: Check local buffer (instant)
-      let profile = authService.me();
+      // Step 1: Show whatever is cached in localStorage immediately (instant render)
+      const cachedProfile = authService.me();
+      if (cachedProfile && mounted) {
+        setUser(cachedProfile);
+        setLoading(false);
+      }
+
+      // Step 2: Verify session and sync in the background
       const session = await authService.getSession();
       
       if (session?.user) {
-        // ALWAYS sync to verify role updates or recover from DB wipe
+        // Sync to verify role updates or recover from DB wipe (background)
         await authService.syncProfile(session.user);
-        profile = authService.me();
+        let profile = authService.me();
 
         // Fallback: build profile from session if Supabase table fails
         if (!profile) {
@@ -39,7 +48,6 @@ const Layout = () => {
             xp: 0, 
             era_tokens: 500, 
             role: isAdmin ? 'admin' : 'student',
-            // Retention Features Defaults
             achievements: [],
             stats_focus_sessions: 0,
             stats_flashcards_reviewed: 0,
@@ -59,19 +67,15 @@ const Layout = () => {
           };
           localStorage.setItem('acadevance_user', JSON.stringify(profile));
         }
+
+        if (mounted) setUser(profile);
+      } else if (!cachedProfile) {
+        // No session and no cache — redirect to landing
+        if (!isAuthPage && mounted) navigate('/', { replace: true });
       }
 
-      if (!mounted) return;
-
-      if (profile) {
-        setUser(profile);
-        // Already on a protected route — just show it
-      } else if (!isAuthPage) {
-        // Truly no session anywhere — send to landing
-        navigate('/', { replace: true });
-      }
-
-      setLoading(false);
+      // Ensure loading is cleared even if no session
+      if (mounted) setLoading(false);
     };
 
     init();
@@ -107,6 +111,9 @@ const Layout = () => {
 
   return (
     <div className="min-h-screen bg-background-base text-text-primary">
+      {/* Global animated background layer */}
+      <AnimatedBackground />
+
       <UniversalHeader 
         onMenuClick={() => setIsDrawerOpen(true)} 
         user={user}
@@ -118,9 +125,14 @@ const Layout = () => {
         user={user}
       />
 
-      <main className="max-w-[1100px] mx-auto px-4 py-6 md:px-8 md:py-10 nv-page-transition">
-        <Outlet context={{ user, setUser }} />
-      </main>
+      {/* Page transitions — keyed by pathname */}
+      <AnimatePresence mode="wait">
+        <PageTransition key={location.pathname}>
+          <main className="max-w-[1100px] mx-auto px-4 py-6 md:px-8 md:py-10">
+            <Outlet context={{ user, setUser }} />
+          </main>
+        </PageTransition>
+      </AnimatePresence>
 
       {/* Global Quests */}
       <QuestFAB />

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   BookOpen, ChevronRight, Search, 
   GraduationCap, Book, Layers, 
@@ -6,13 +6,15 @@ import {
   ArrowRight, CheckCircle2, Star,
   Swords, Play, Copy, Check, RotateCcw,
   Compass, Lock, Trophy, HelpCircle, FileText,
-  X, Info, ChevronLeft, ArrowLeft
+  X, Info, ChevronLeft, ArrowLeft, Volume2, VolumeX
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import confetti from 'canvas-confetti';
 import { dataService } from '../services/dataService';
 import { authService } from '../services/authService';
 import { xpService } from '../services/xpService';
+import { notificationService } from '../services/notificationService';
 import { gamificationService, BOSSES } from '../services/gamificationService';
 import { CURRICULUM_DATA } from '../services/curriculumData';
 
@@ -25,20 +27,11 @@ const CLASSES = [
   { id: '6', name: 'Class 6', subjects: ['Mathematics', 'Science', 'Social Science', 'English', 'Hindi'] },
   { id: '7', name: 'Class 7', subjects: ['Mathematics', 'Science', 'Social Science', 'English', 'Hindi'] },
   { id: '8', name: 'Class 8', subjects: ['Mathematics', 'Science', 'Social Science', 'English', 'Hindi'] },
-  { id: '9', name: 'Class 9', subjects: ['Mathematics', 'Science', 'Social Science', 'English', 'Hindi', 'IT'] },
-  { id: '10', name: 'Class 10', subjects: ['Mathematics', 'Science', 'Social Science', 'English', 'Hindi', 'IT'] },
+  { id: '9', name: 'Class 9', subjects: ['Mathematics', 'Science', 'English'] },
+  { id: '10', name: 'Class 10', subjects: ['Mathematics', 'Science', 'English'] },
   { id: '11-sci', name: 'Class 11 Science', subjects: ['Physics', 'Chemistry', 'Mathematics', 'Biology', 'English', 'CS'] },
   { id: '12-sci', name: 'Class 12 Science', subjects: ['Physics', 'Chemistry', 'Mathematics', 'Biology', 'English', 'CS'] },
 ];
-
-const SubjectIcon = ({ name }) => {
-  const s = name.toLowerCase();
-  if (s.includes('math')) return <div className="w-12 h-12 rounded-2xl bg-blue-500/10 border-2 border-blue-500/30 flex items-center justify-center text-blue-400 font-bold text-xl shadow-[4px_4px_0_#000]">∑</div>;
-  if (s.includes('sci') || s.includes('phys') || s.includes('chem') || s.includes('bio')) return <div className="w-12 h-12 rounded-2xl bg-green-500/10 border-2 border-green-500/30 flex items-center justify-center text-green-400 font-bold text-xl shadow-[4px_4px_0_#000]">⚛</div>;
-  if (s.includes('social') || s.includes('hist') || s.includes('geo')) return <div className="w-12 h-12 rounded-2xl bg-orange-500/10 border-2 border-orange-500/30 flex items-center justify-center text-orange-400 font-bold text-xl shadow-[4px_4px_0_#000]">🌍</div>;
-  if (s.includes('english')) return <div className="w-12 h-12 rounded-2xl bg-purple-500/10 border-2 border-purple-500/30 flex items-center justify-center text-purple-400 font-bold text-xl shadow-[4px_4px_0_#000]">A</div>;
-  return <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border-2 border-amber-500/30 flex items-center justify-center text-amber-400 font-bold text-xl shadow-[4px_4px_0_#000]">🎴</div>;
-};
 
 // Shuffles an array safely
 const shuffleArray = (arr) => {
@@ -87,211 +80,82 @@ const generateOptions = (questionObj, allQnasOfChapter) => {
   return shuffleArray(optionsList);
 };
 
-// MOCK HIGH-FIDELITY CURRICULUM DATA FOR OTHER GRADES
-const MOCK_CURRICULUM = {
-  "10": {
-    "Mathematics": {
-      chapters: [
-        {
-          title: "Real Numbers",
-          summary: "Explore divisibility of integers, the Fundamental Theorem of Arithmetic, and irrationality proofs of √2, √3, √5.",
-          keyIdeas: [
-            "Every composite number can be uniquely expressed as a product of primes.",
-            "If p is a prime and p divides a², then p divides a, where a is a positive integer.",
-            "Real numbers consist of rational and irrational numbers."
-          ],
-          formulas: ["LCM(a, b) × HCF(a, b) = a × b"],
-          flashcards: [
-            { front: "Fundamental Theorem of Arithmetic", back: "Every composite number can be expressed as a product of primes, uniquely apart from the order." },
-            { front: "Is π rational or irrational?", back: "Irrational. Decimal representation is non-terminating and non-repeating." },
-            { front: "Proof technique for irrationality of √2", back: "Proof by Contradiction, assuming √2 = p/q where p and q are co-prime." }
-          ],
-          qna: [
-            { q: "If HCF(a, b) = 1, then a and b are called...", a: "Co-prime", options: ["Co-prime", "Prime", "Composite", "Equal"] },
-            { q: "What is the product of LCM and HCF of 12 and 15?", a: "180", options: ["180", "60", "3", "120"] },
-            { q: "Which of the following is irrational?", a: "√9", options: ["√2", "√3", "√5", "√9"] }
-          ]
-        },
-        {
-          title: "Trigonometry",
-          summary: "Introduction to trigonometric ratios (sine, cosine, tangent) and standard trigonometric identities.",
-          keyIdeas: [
-            "Trigonometric ratios are defined for acute angles in a right-angled triangle.",
-            "Standard values for 0°, 30°, 45°, 60°, and 90° are essential for calculation.",
-            "Identities help simplify complex geometry calculations."
-          ],
-          formulas: ["sin²θ + cos²θ = 1", "1 + tan²θ = sec²θ", "1 + cot²θ = cosec²θ", "tanθ = sinθ/cosθ"],
-          flashcards: [
-            { front: "sin θ in right triangle", back: "Perpendicular / Hypotenuse (Opposite / Hypotenuse)." },
-            { front: "Value of tan 45°", back: "Exactly 1." },
-            { front: "Complement of sin(90° - θ)", back: "cos θ" }
-          ],
-          qna: [
-            { q: "What is sin² 30° + cos² 30°?", a: "1", options: ["0.5", "1", "0.25", "1.5"] },
-            { q: "If sin θ = 3/5, what is cos θ?", a: "4/5", options: ["4/5", "3/4", "5/4", "3/5"] },
-            { q: "What is the value of tan 60°?", a: "√3", options: ["1/√3", "√3", "1", "2"] }
-          ]
-        }
-      ]
-    },
-    "Science": {
-      chapters: [
-        {
-          title: "Chemical Reactions",
-          summary: "Diving into chemical changes, balanced equations, combination, decomposition, displacement, and redox reactions.",
-          keyIdeas: [
-            "A balanced chemical equation has equal atoms on both reactant and product sides.",
-            "Combination reactions form a single product; decomposition reactions break one reactant down.",
-            "Redox reactions involve simultaneous reduction and oxidation."
-          ],
-          formulas: ["Reactants → Products"],
-          flashcards: [
-            { front: "What is a balanced equation?", back: "An equation where the number of atoms of each element is equal on both sides." },
-            { front: "Rusting of iron is which type of reaction?", back: "Oxidation / Redox reaction." },
-            { front: "What is a precipitate?", back: "An insoluble solid substance formed during a liquid chemical reaction." }
-          ],
-          qna: [
-            { q: "What type of reaction is the burning of coal?", a: "Combination", options: ["Combination", "Decomposition", "Displacement", "Endothermic"] },
-            { q: "Which gas is released when calcium carbonate is heated?", a: "Carbon Dioxide", options: ["Oxygen", "Hydrogen", "Carbon Dioxide", "Nitrogen"] },
-            { q: "What is the color of copper sulfate crystals?", a: "Blue", options: ["Green", "Blue", "White", "Red"] }
-          ]
-        },
-        {
-          title: "Acids, Bases & Salts",
-          summary: "Properties of acidic and basic solutions, pH scale indicators, and key salts like baking soda and washing soda.",
-          keyIdeas: [
-            "Acids release H+ ions in water; bases release OH- ions.",
-            "pH scale ranges from 0 to 14, where <7 is acidic, 7 is neutral, and >7 is basic.",
-            "Salts are formed by neutralization: Acid + Base → Salt + Water."
-          ],
-          formulas: ["pH = -log[H+]"],
-          flashcards: [
-            { front: "Litmus indicator in Acid", back: "Turns red." },
-            { front: "Litmus indicator in Base", back: "Turns blue." },
-            { front: "Chemical formula of Baking Soda", back: "Sodium Hydrogen Carbonate (NaHCO₃)." }
-          ],
-          qna: [
-            { q: "What is the pH of pure water?", a: "7", options: ["0", "5.6", "7", "14"] },
-            { q: "Which acid is present in lemon juice?", a: "Citric acid", options: ["Citric acid", "Lactic acid", "Acetic acid", "Methanoic acid"] },
-            { q: "What is the common name of Calcium Oxychloride?", a: "Bleaching powder", options: ["Baking soda", "Washing soda", "Bleaching powder", "Gypsum"] }
-          ]
-        }
-      ]
+// Retro synthetic arcade sound generator using Web Audio API
+const playSynthSound = (type, isMuted) => {
+  if (isMuted) return;
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    if (type === 'correct') {
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+      osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.08); // E5
+      osc.frequency.setValueAtTime(783.99, ctx.currentTime + 0.16); // G5
+      gain.gain.setValueAtTime(0.08, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.005, ctx.currentTime + 0.25);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.25);
+    } else if (type === 'incorrect') {
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(160, ctx.currentTime);
+      osc.frequency.linearRampToValueAtTime(100, ctx.currentTime + 0.35);
+      gain.gain.setValueAtTime(0.12, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.005, ctx.currentTime + 0.35);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.35);
+    } else if (type === 'boss_hit') {
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(240, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(60, ctx.currentTime + 0.25);
+      gain.gain.setValueAtTime(0.18, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.005, ctx.currentTime + 0.25);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.25);
+    } else if (type === 'complete') {
+      const playTone = (freq, start, duration) => {
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.connect(g);
+        g.connect(ctx.destination);
+        o.frequency.setValueAtTime(freq, ctx.currentTime + start);
+        g.gain.setValueAtTime(0.06, ctx.currentTime + start);
+        g.gain.exponentialRampToValueAtTime(0.005, ctx.currentTime + start + duration);
+        o.start(ctx.currentTime + start);
+        o.stop(ctx.currentTime + start + duration);
+      };
+      playTone(523.25, 0, 0.12);
+      playTone(659.25, 0.12, 0.12);
+      playTone(783.99, 0.24, 0.12);
+      playTone(1046.50, 0.36, 0.3);
     }
-  },
-  "11-sci": {
-    "Physics": {
-      chapters: [
-        {
-          title: "Units & Measurements",
-          summary: "Introduction to physical quantities, SI base units, dimensional analysis, errors, and significant figures.",
-          keyIdeas: [
-            "SI has 7 base units (meter, kilogram, second, ampere, kelvin, mole, candela).",
-            "Dimensional analysis helps check the correctness of physical equations.",
-            "Significant figures represent the precision of scientific measurements."
-          ],
-          formulas: ["Percentage Error = (Δa / a_mean) × 100%"],
-          flashcards: [
-            { front: "What are the 7 base units in SI?", back: "Meter, Kilogram, Second, Ampere, Kelvin, Mole, Candela." },
-            { front: "Dimension of Force", back: "[MLT⁻²] (Mass × Acceleration)." },
-            { front: "What does accuracy indicate?", back: "How close a measured value is to the true value of the quantity." }
-          ],
-          qna: [
-            { q: "What are the dimensions of work done?", a: "[ML²T⁻²]", options: ["[MLT⁻¹]", "[ML²T⁻²]", "[MLT⁻²]", "[ML²T⁻¹]"] },
-            { q: "Which of the following is NOT a fundamental SI unit?", a: "Newton", options: ["Meter", "Kelvin", "Ampere", "Newton"] },
-            { q: "How many significant figures are in 0.0075?", a: "2", options: ["1", "2", "4", "5"] }
-          ]
-        },
-        {
-          title: "Laws of Motion",
-          summary: "Study of force and inertia, Galileo's experiments, and Newton's three laws of motion.",
-          keyIdeas: [
-            "Inertia is the resistance of any physical object to any change in its velocity.",
-            "F = dp/dt: Force is the rate of change of momentum.",
-            "Every action has an equal and opposite reaction acting on different bodies."
-          ],
-          formulas: ["F = ma", "p = mv", "Friction (f) = μ × N"],
-          flashcards: [
-            { front: "State Newton's First Law", back: "An object remains at rest or in uniform motion unless acted on by an external force." },
-            { front: "SI unit of momentum", back: "kg·m/s." },
-            { front: "What is impulse?", back: "The product of average force and time interval: Impulse = F × Δt = Δp." }
-          ],
-          qna: [
-            { q: "What is the force acting on an object of mass 10kg accelerating at 5 m/s²?", a: "50 N", options: ["2 N", "15 N", "50 N", "25 N"] },
-            { q: "Is inertia a vector or scalar quantity?", a: "Neither (it is a property, proportional to mass)", options: ["Vector", "Scalar", "Neither", "Both"] },
-            { q: "A man pushes a wall with 100 N. The wall pushes the man with:", a: "100 N", options: ["0 N", "50 N", "100 N", "200 N"] }
-          ]
-        }
-      ]
-    }
+  } catch (e) {
+    console.warn("Synth audio blocked or not supported by browser security policy.");
   }
 };
 
-// Generates dynamic chapters for grades/subjects not in static records
-const generateGenericCurriculum = (grade, subject) => {
-  return {
-    chapters: [
-      {
-        title: `${subject} Foundation`,
-        summary: `An introductory module outlining the basic principles and core building blocks of Class ${grade} ${subject}.`,
-        keyIdeas: [
-          `Understanding the basic terminology of Class ${grade} ${subject}.`,
-          "Connecting textbook knowledge to practical everyday observations.",
-          "Building mathematical or scientific reasoning skills."
-        ],
-        formulas: subject.toLowerCase().includes('math') || subject.toLowerCase().includes('phys') ? ["Base Formula: Yield = Input × Efficiency"] : [],
-        flashcards: [
-          { front: `What is the primary goal of Class ${grade} ${subject}?`, back: "To build a strong foundation and understand key syllabus concepts." },
-          { front: "What is active recall?", back: "A highly effective study method where you test your memory instead of just rereading." },
-          { front: "How do you earn XP?", back: "By completing quizzes, reviewing flashcards, and defeating subject bosses!" }
-        ],
-        qna: [
-          { q: `What is the first step in mastering Class ${grade} ${subject}?`, a: "Active revision", options: ["Rereading notes", "Active revision", "Highlighting text", "Skipping modules"] },
-          { q: "Which active study technique is built into Acadevance?", a: "Flashcards and mini-quizzes", options: ["Cramming overnight", "Passive reading", "Flashcards and mini-quizzes", "Ignoring exercises"] },
-          { q: "How do you damage the Subject Boss?", a: "By answering quiz questions correctly", options: ["By sleeping", "By answering quiz questions correctly", "By logging out", "By waiting"] }
-        ]
-      },
-      {
-        title: `Advanced ${subject} Concepts`,
-        summary: `Deepen your comprehension with standard NCERT syllabus concepts for Class ${grade} ${subject}.`,
-        keyIdeas: [
-          "Applying fundamental concepts to solve complex analytical problems.",
-          "Improving problem-solving accuracy and velocity.",
-          "Syllabus-aligned mastery and self-assessment."
-        ],
-        formulas: [],
-        flashcards: [
-          { front: "What does HOTS stand for?", back: "Higher Order Thinking Skills." },
-          { front: "Why are concept checks important?", back: "They expose gaps in understanding before exams." }
-        ],
-        qna: [
-          { q: "What should you do when you get a question wrong?", a: "Review the explanation and try again", options: ["Give up", "Review the explanation and try again", "Ignore it", "Skip the chapter"] },
-          { q: "What is the reward for completing this module?", a: "XP, Coins, and Boss Damage", options: ["Nothing", "XP, Coins, and Boss Damage", "Only a badge", "Only coins"] }
-        ]
-      }
-    ]
-  };
-};
-
-const getCurriculumData = (grade, subject) => {
-  if (grade === '9' && CURRICULUM_DATA['9']?.[subject]) {
-    return CURRICULUM_DATA['9'][subject];
-  }
-  if (MOCK_CURRICULUM[grade]?.[subject]) {
-    return MOCK_CURRICULUM[grade][subject];
-  }
-  return generateGenericCurriculum(grade, subject);
+const SubjectIcon = ({ name }) => {
+  const s = name.toLowerCase();
+  if (s.includes('math')) return <div className="w-12 h-12 rounded-xl bg-blue-500/10 border-2 border-blue-500 flex items-center justify-center text-blue-400 font-black text-xl shadow-[3px_3px_0_#000]">∑</div>;
+  if (s.includes('science') || s.includes('physics') || s.includes('chemistry') || s.includes('biology')) return <div className="w-12 h-12 rounded-xl bg-green-500/10 border-2 border-green-500 flex items-center justify-center text-green-400 font-black text-xl shadow-[3px_3px_0_#000]">⚛</div>;
+  if (s.includes('social') || s.includes('history') || s.includes('geography')) return <div className="w-12 h-12 rounded-xl bg-orange-500/10 border-2 border-orange-500 flex items-center justify-center text-orange-400 font-black text-xl shadow-[3px_3px_0_#000]">🌍</div>;
+  if (s.includes('english')) return <div className="w-12 h-12 rounded-xl bg-purple-500/10 border-2 border-purple-500 flex items-center justify-center text-purple-400 font-black text-xl shadow-[3px_3px_0_#000]">A</div>;
+  return <div className="w-12 h-12 rounded-xl bg-amber-500/10 border-2 border-amber-500 flex items-center justify-center text-amber-400 font-black text-xl shadow-[3px_3px_0_#000]">🎴</div>;
 };
 
 const CurriculumHub = () => {
   const [selectedClass, setSelectedClass] = useState('9');
   const [searchQuery, setSearchQuery] = useState('');
   const [user, setUser] = useState(authService.me());
+  const [soundMuted, setSoundMuted] = useState(false);
   
-  // Dashboard & Navigation states
+  // Navigation & details states
   const [activeSubject, setActiveSubject] = useState(null);
   const [expandedChapter, setExpandedChapter] = useState(null);
-  const [studyTab, setStudyTab] = useState('learn'); // 'learn' | 'recall' | 'practice'
+  const [studyTab, setStudyTab] = useState('learn'); // 'learn' | 'recall' | 'practice' | 'prep'
 
   // Interactive Flashcard Player State
   const [cardIdx, setCardIdx] = useState(0);
@@ -315,9 +179,30 @@ const CurriculumHub = () => {
   // Mastery Completion State
   const [completedChapters, setCompletedChapters] = useState({});
 
-  const navigate = useNavigate();
+  // Game UI & Visual Sandbox states
+  const [eli5Mode, setEli5Mode] = useState(false);
+  const [plottedPoint, setPlottedPoint] = useState({ x: 2, y: 3 });
+  const [motionPercent, setMotionPercent] = useState(0); // Physics motion slider
+  const [isDriving, setIsDriving] = useState(false);
+  const [drivingDir, setDrivingDir] = useState('forward'); // 'forward' | 'backward'
+  const [maxDistanceReached, setMaxDistanceReached] = useState(0);
+  
+  // Floating combat feedback
+  const [combatEffects, setCombatEffects] = useState([]);
+  const [bossShake, setBossShake] = useState(false);
 
-  // Load completed chapters list on start
+  // PYQ marking checksheets state
+  const [pyqChecks, setPyqChecks] = useState({
+    def: false,
+    formula: false,
+    diagram: false,
+    steps: false,
+    units: false
+  });
+
+  const navigate = useNavigate();
+  const synthTimerRef = useRef(null);
+
   useEffect(() => {
     try {
       const stored = localStorage.getItem('acadevance_mastered_chapters');
@@ -335,11 +220,89 @@ const CurriculumHub = () => {
     return () => window.removeEventListener('acadevance_stats_update', handleUserUpdate);
   }, []);
 
+  // Keyboard controls for Flashcards
+  useEffect(() => {
+    if (studyTab !== 'recall' || !expandedChapter || flashcardDeckComplete) return;
+
+    const handleKeyDown = (e) => {
+      if (e.code === 'Space') {
+        e.preventDefault();
+        setIsFlipped(prev => !prev);
+      } else if (e.code === 'ArrowRight' && isFlipped) {
+        e.preventDefault();
+        nextFlashcard('easy');
+      } else if (e.code === 'ArrowLeft' && isFlipped) {
+        e.preventDefault();
+        nextFlashcard('hard');
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [studyTab, expandedChapter, cardIdx, isFlipped, flashcardDeckComplete]);
+
+  // Physics motion simulation effect
+  useEffect(() => {
+    let timer;
+    if (isDriving) {
+      timer = setInterval(() => {
+        setMotionPercent(prev => {
+          if (drivingDir === 'forward') {
+            const next = prev + 2;
+            if (next >= 100) {
+              setIsDriving(false);
+              setMaxDistanceReached(100);
+              return 100;
+            }
+            return next;
+          } else {
+            const next = prev - 2;
+            if (next <= 0) {
+              setIsDriving(false);
+              return 0;
+            }
+            return next;
+          }
+        });
+      }, 35);
+    }
+    return () => clearInterval(timer);
+  }, [isDriving, drivingDir]);
+
+  // Trigger floating combat damage indicators
+  const spawnDamageEffect = (amount) => {
+    const id = Date.now() + Math.random();
+    const nextEffect = {
+      id,
+      text: `-${amount} HP 💥`,
+      x: Math.floor(Math.random() * 80) + 10,
+      y: Math.floor(Math.random() * 40) + 10
+    };
+    setCombatEffects(prev => [...prev, nextEffect]);
+    setBossShake(true);
+    playSynthSound('boss_hit', soundMuted);
+
+    setTimeout(() => {
+      setBossShake(false);
+    }, 400);
+
+    setTimeout(() => {
+      setCombatEffects(prev => prev.filter(e => e.id !== id));
+    }, 1200);
+  };
+
   // Filter grade subjects
   const currentClass = CLASSES.find(c => c.id === selectedClass);
   const filteredSubjects = currentClass?.subjects.filter(s => 
     s.toLowerCase().includes(searchQuery.toLowerCase())
   ) || [];
+
+  const getCurriculumData = (grade, subject) => {
+    if (CURRICULUM_DATA[grade]?.[subject]) {
+      return CURRICULUM_DATA[grade][subject];
+    }
+    return { chapters: [] };
+  };
 
   // Active Subject details
   const subjectData = activeSubject ? getCurriculumData(selectedClass, activeSubject) : { chapters: [] };
@@ -361,16 +324,17 @@ const CurriculumHub = () => {
 
   // Fetch subject-boss status
   const getSubjectBoss = (subName) => {
+    if (!subName) return null;
     const subLower = subName.toLowerCase();
     const progress = user?.boss_chapter_progress || {};
     
     let activeBossId = null;
     if (subLower.includes('math') || subLower.includes('algebra') || subLower.includes('geometry')) {
-      activeBossId = ['dragon', 'algebra', 'geometry'].find(id => progress[id]?.status === 'active') || 'geometry';
-    } else if (subLower.includes('sci') || subLower.includes('phys') || subLower.includes('chem') || subLower.includes('bio')) {
-      activeBossId = ['cell', 'motion', 'atom'].find(id => progress[id]?.status === 'active') || 'atom';
-    } else if (subLower.includes('social') || subLower.includes('hist') || subLower.includes('geo')) {
-      activeBossId = ['empire', 'leviathan'].find(id => progress[id]?.status === 'active') || 'leviathan';
+      activeBossId = ['dragon', 'algebra', 'geometry'].find(id => progress[id]?.status === 'active') || 'dragon';
+    } else if (subLower.includes('science') || subLower.includes('physics') || subLower.includes('chemistry') || subLower.includes('biology')) {
+      activeBossId = ['cell', 'motion', 'atom'].find(id => progress[id]?.status === 'active') || 'cell';
+    } else if (subLower.includes('social') || subLower.includes('history') || subLower.includes('geography')) {
+      activeBossId = ['empire', 'leviathan'].find(id => progress[id]?.status === 'active') || 'empire';
     }
 
     if (!activeBossId) return null;
@@ -395,6 +359,14 @@ const CurriculumHub = () => {
     setFlashcardDeckComplete(false);
     setQuizActive(false);
     setQuizComplete(false);
+    setEli5Mode(false);
+    setPyqChecks({
+      def: false,
+      formula: false,
+      diagram: false,
+      steps: false,
+      units: false
+    });
   };
 
   // Launch Quiz Mode
@@ -425,12 +397,13 @@ const CurriculumHub = () => {
     
     if (isCorrect) {
       setQuizScore(prev => prev + 1);
-      // Deal 100 damage to subject boss!
-      gamificationService.dealDamage(activeSubject, 100);
-      xpService.awardXp(10, `Quiz correct answer: ${currentQuestion.q.substring(0, 15)}...`);
+      spawnDamageEffect(100);
+      xpService.awardXp(10, `Quiz Correct Answer: ${currentQuestion.q.substring(0, 15)}...`);
+      playSynthSound('correct', soundMuted);
     } else {
+      playSynthSound('incorrect', soundMuted);
       window.dispatchEvent(new CustomEvent('acadevance_notification', {
-        detail: { title: `Wrong! ❌`, message: `Correct: ${currentQuestion.a}`, type: 'warning' }
+        detail: { title: `Practice Check ❌`, message: `Correct Answer: ${currentQuestion.a}`, type: 'warning' }
       }));
     }
   };
@@ -441,13 +414,18 @@ const CurriculumHub = () => {
       setSelectedOpt(null);
       setQuizSubmitted(false);
     } else {
-      // Quiz complete!
       setQuizComplete(true);
+      playSynthSound('complete', soundMuted);
+      confetti({
+        particleCount: 80,
+        spread: 60,
+        origin: { y: 0.7 }
+      });
       
       const xpEarned = quizScore * 20;
       const coinsEarned = quizScore * 5;
       
-      if (xpEarned > 0) xpService.awardXp(xpEarned, `Mastered ${expandedChapter.title} Quiz`);
+      if (xpEarned > 0) xpService.awardXp(xpEarned, `Mastered Quiz: ${expandedChapter.title}`);
       if (coinsEarned > 0) authService.addTokens(coinsEarned);
 
       // Log stats
@@ -455,10 +433,9 @@ const CurriculumHub = () => {
       
       const subLower = activeSubject.toLowerCase();
       if (subLower.includes('math')) gamificationService.incrementStat('stats_math_completed', 1);
-      else if (subLower.includes('sci') || subLower.includes('phys')) gamificationService.incrementStat('stats_science_completed', 1);
-      else if (subLower.includes('social') || subLower.includes('hist')) gamificationService.incrementStat('stats_social_completed', 1);
+      else if (subLower.includes('science') || subLower.includes('physics')) gamificationService.incrementStat('stats_science_completed', 1);
 
-      // Save chapter completed to state & local
+      // Check if perfect score -> complete chapter
       if (quizScore === quizQuestions.length) {
         const key = `${selectedClass}_${activeSubject}_${expandedChapter.title}`;
         const updated = { ...completedChapters, [key]: true };
@@ -466,9 +443,9 @@ const CurriculumHub = () => {
         localStorage.setItem('acadevance_mastered_chapters', JSON.stringify(updated));
         
         notificationService.send(
-          'Chapter Mastered! 🏆',
-          `Perfect recall in ${expandedChapter.title}! Added to syllabus index.`,
-          'celebration'
+          'Syllabus Topic Mastered! 🏆',
+          `100% recall in ${expandedChapter.title}! Added to syllabus index.`,
+          'success'
         );
       }
     }
@@ -476,12 +453,11 @@ const CurriculumHub = () => {
 
   // Flashcards navigation
   const nextFlashcard = (type) => {
-    // Stat increment
     gamificationService.incrementStat('stats_flashcards_reviewed', 1);
     
-    // XP reward based on assessment
     const xpReward = type === 'easy' ? 5 : 2;
-    xpService.awardXp(xpReward, `Flashcard self-assessment: ${type}`);
+    xpService.awardXp(xpReward, `Flashcard Rating: ${type}`);
+    playSynthSound('correct', soundMuted);
     
     setIsFlipped(false);
     
@@ -490,9 +466,16 @@ const CurriculumHub = () => {
         setCardIdx(prev => prev + 1);
       } else {
         setFlashcardDeckComplete(true);
-        xpService.awardXp(15, `Reviewed full deck: ${expandedChapter.title}`);
+        playSynthSound('complete', soundMuted);
+        xpService.awardXp(15, `Reviewed Full Deck: ${expandedChapter.title}`);
       }
     }, 200);
+  };
+
+  // Calculate PYQ Checklist grade score
+  const getPyqScore = () => {
+    const checkedCount = Object.values(pyqChecks).filter(Boolean).length;
+    return Math.round((checkedCount / 5) * 100);
   };
 
   // Extract subject formulas
@@ -514,36 +497,55 @@ const CurriculumHub = () => {
   return (
     <div className="min-h-screen pb-32 nv-page-transition bg-background-base text-text-primary">
       {/* 🏛️ CBSE HEADER SECTION */}
-      <div className="border-b-4 border-black bg-slate-900 p-8 md:p-12 mb-10 shadow-[8px_8px_0_#000]">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-8">
+      <div className="border-b-4 border-black bg-slate-900 p-8 md:p-12 mb-10 shadow-[8px_8px_0_#000] relative overflow-hidden">
+        {/* Decorative Grid Line */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] opacity-30 pointer-events-none" />
+        
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-8 relative z-10">
           <div className="space-y-3">
-            <div className="flex items-center gap-3 text-cyan-400 font-black uppercase tracking-widest text-xs">
-              <GraduationCap className="w-5 h-5" /> Interactive CBSE Hub
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="flex items-center gap-1.5 text-cyan-400 font-black uppercase tracking-widest text-xs">
+                <GraduationCap className="w-5 h-5 animate-pulse" /> Interactive CBSE Hub
+              </span>
+              <span className="nv-badge bg-purple-500 text-black text-[8px] font-black tracking-widest px-2 py-0.5">
+                NCERT 2026 ALIGNED
+              </span>
             </div>
-            <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-white">
-              Curriculum <span className="text-purple-500 text-shadow-nb">Matrix</span>
+            <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-white">
+              CBSE <span className="text-purple-500 text-shadow-nb">Scholar</span> Matrix
             </h1>
-            <p className="text-text-secondary font-medium text-sm">
-              Conquer CBSE modules, flip flashcards, and run quizzes to damage subject bosses!
+            <p className="text-text-secondary font-semibold text-sm max-w-xl">
+              Conquer NCERT syllabus modules, practice recall flashcards, and run quizzes to defeat subject bosses!
             </p>
           </div>
 
-          <div className="relative w-full md:w-96 group">
-            <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted group-focus-within:text-purple-400 transition-colors" />
-            <input 
-              type="text"
-              placeholder="Search syllabus or chapters..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="nv-input pl-16 h-16"
-            />
+          <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
+            {/* Audio Toggle */}
+            <button 
+              onClick={() => setSoundMuted(!soundMuted)}
+              className="px-4 h-16 bg-slate-800 border-2 border-black rounded-[4px] flex items-center justify-center text-text-secondary hover:text-white shadow-[2px_2px_0_#000] active:translate-y-[2px]"
+            >
+              {soundMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5 text-purple-400" />}
+            </button>
+
+            {/* Global Search */}
+            <div className="relative w-full sm:w-80 group">
+              <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted group-focus-within:text-purple-400 transition-colors" />
+              <input 
+                type="text"
+                placeholder="Search syllabus..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="nv-input pl-16 h-16 font-semibold"
+              />
+            </div>
           </div>
         </div>
       </div>
 
       <div className="max-w-6xl mx-auto px-6 space-y-12">
         {/* 🧭 CLASS SELECTOR BAR */}
-        <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar border-b border-white/5">
+        <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar border-b-2 border-black/20">
           {CLASSES.map(c => (
             <button
               key={c.id}
@@ -552,10 +554,10 @@ const CurriculumHub = () => {
                 setActiveSubject(null);
                 setExpandedChapter(null);
               }}
-              className={`flex-shrink-0 px-6 py-3 border-2 border-black rounded-[4px] text-xs font-black uppercase tracking-widest transition-all ${
+              className={`flex-shrink-0 px-6 py-3.5 border-2 border-black rounded-[4px] text-xs font-black uppercase tracking-widest transition-all ${
                 selectedClass === c.id 
                   ? 'bg-purple-500 text-black shadow-[4px_4px_0_#000] scale-105' 
-                  : 'bg-slate-900 text-text-secondary hover:bg-slate-800'
+                  : 'bg-slate-900 text-text-secondary hover:bg-slate-800 hover:text-white'
               }`}
             >
               {c.name}
@@ -566,12 +568,12 @@ const CurriculumHub = () => {
         {/* 📚 CONDITIONAL VIEW: SUBJECT LIST VS SUBJECT CONTROL DECK */}
         <AnimatePresence mode="wait">
           {!activeSubject ? (
-            // SUBJECT GRID VIEW
+            // SUBJECT GRID MATRIX VIEW
             <motion.div
               key="grid"
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
+              exit={{ opacity: 0, y: -15 }}
               className="space-y-8"
             >
               <div className="flex items-center gap-3">
@@ -580,9 +582,16 @@ const CurriculumHub = () => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {filteredSubjects.map((subject, idx) => {
+                {filteredSubjects.map((subject) => {
                   const mastery = getSubjectMastery(subject);
                   const boss = getSubjectBoss(subject);
+                  
+                  // Dynamically resolve neubrutalist hover styles
+                  let subjectColor = "hover:border-purple-500";
+                  if (subject.toLowerCase().includes('math')) subjectColor = "hover:border-blue-500";
+                  if (subject.toLowerCase().includes('sci') || subject.toLowerCase().includes('phys') || subject.toLowerCase().includes('chem')) subjectColor = "hover:border-green-500";
+                  if (subject.toLowerCase().includes('social')) subjectColor = "hover:border-orange-500";
+
                   return (
                     <motion.div
                       key={subject}
@@ -590,17 +599,19 @@ const CurriculumHub = () => {
                         setActiveSubject(subject);
                         setExpandedChapter(null);
                       }}
-                      className="nv-card bg-slate-900/60 border-3 border-black p-8 hover:translate-y-[-4px] hover:shadow-[12px_12px_0_#000] transition-all cursor-pointer group relative overflow-hidden flex flex-col justify-between min-h-[260px]"
+                      className={`nv-card bg-slate-900/60 border-3 border-black p-8 hover:translate-y-[-4px] hover:shadow-[12px_12px_0_#000] ${subjectColor} transition-all cursor-pointer group relative overflow-hidden flex flex-col justify-between min-h-[280px]`}
                     >
                       <div>
                         <div className="flex items-start justify-between mb-6">
                           <SubjectIcon name={subject} />
-                          <div className="nv-badge bg-black/40 text-text-muted border border-black">
-                            Verified CBSE
+                          <div className="nv-badge bg-black/40 text-text-muted border border-black font-black text-[8px] px-2 py-0.5">
+                            NCERT standard
                           </div>
                         </div>
 
-                        <h3 className="text-2xl font-black text-white uppercase tracking-tight mb-2 group-hover:text-purple-400 transition-colors">{subject}</h3>
+                        <h3 className="text-2xl font-black text-white uppercase tracking-tight mb-2 group-hover:text-purple-400 transition-colors">
+                          {subject}
+                        </h3>
                         
                         {/* Mastery status */}
                         <div className="mt-4 space-y-2">
@@ -608,44 +619,52 @@ const CurriculumHub = () => {
                             <span>Syllabus Mastery</span>
                             <span>{mastery}%</span>
                           </div>
-                          <div className="h-2 w-full bg-black border border-white/10 rounded-full overflow-hidden">
+                          <div className="h-3.5 w-full bg-black border-2 border-black rounded-full overflow-hidden p-0.5">
                             <div className="h-full bg-purple-500 rounded-full" style={{ width: `${mastery}%` }} />
                           </div>
                         </div>
                       </div>
 
                       {/* Boss Indicator */}
-                      <div className="mt-6 pt-4 border-t border-white/5 flex items-center justify-between">
+                      <div className="mt-6 pt-4 border-t-2 border-black/40 flex items-center justify-between">
                         {boss ? (
                           <div className="flex items-center gap-2">
-                            <span className="text-xl animate-pulse">{boss.emoji}</span>
-                            <span className="text-[9px] font-black text-rose-400 uppercase tracking-wider">
-                              Boss: {boss.name}
-                            </span>
+                            <span className="text-xl animate-pulse shrink-0">{boss.emoji}</span>
+                            <div className="text-[9px] text-left">
+                              <span className="block font-bold text-slate-500 uppercase tracking-widest">Active Boss</span>
+                              <span className="block font-black text-rose-400 uppercase leading-none">{boss.name}</span>
+                            </div>
                           </div>
                         ) : (
                           <span className="text-[9px] font-black text-text-muted uppercase">No boss gate</span>
                         )}
-                        <span className="flex items-center gap-1 text-[9px] font-black text-purple-400 uppercase group-hover:gap-2 transition-all">
-                          Enter Deck <ArrowRight className="w-3 h-3" />
+                        <span className="flex items-center gap-1 text-[10px] font-black text-purple-400 uppercase group-hover:gap-2 transition-all shrink-0">
+                          Enter Deck <ArrowRight className="w-4 h-4" />
                         </span>
                       </div>
                     </motion.div>
                   );
                 })}
+
+                {filteredSubjects.length === 0 && (
+                  <div className="col-span-full text-center py-20 bg-slate-900/20 border-3 border-dashed border-black/20 rounded-[4px]">
+                    <HelpCircle className="w-12 h-12 text-text-muted mx-auto mb-4" />
+                    <p className="text-sm text-text-secondary font-semibold">No subjects match the search query.</p>
+                  </div>
+                )}
               </div>
             </motion.div>
           ) : (
-            // SUBJECT CONTROL DECK (FULL INTERACTIVE DESKTOP)
+            // SUBJECT CONTROL DECK (FULL INTERACTIVE STUDY HUB)
             <motion.div
               key="deck"
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
+              exit={{ opacity: 0, y: -15 }}
               className="space-y-8"
             >
               {/* Top navigation row */}
-              <div className="flex flex-wrap items-center justify-between gap-4 bg-slate-900 p-4 border-2 border-black rounded-[4px]">
+              <div className="flex flex-wrap items-center justify-between gap-4 bg-slate-900 p-6 border-3 border-black rounded-[4px] shadow-[4px_4px_0_#000]">
                 <button 
                   onClick={() => setActiveSubject(null)}
                   className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-purple-400 hover:text-white transition-colors"
@@ -653,22 +672,22 @@ const CurriculumHub = () => {
                   <ArrowLeft className="w-4 h-4" /> Back to Matrix
                 </button>
                 <div className="flex items-center gap-3">
-                  <span className="nv-badge bg-purple-500 text-black">
+                  <span className="nv-badge bg-purple-500 text-black text-[9px]">
                     Class {selectedClass}
                   </span>
-                  <span className="text-xl font-black uppercase text-white">
+                  <span className="text-2xl font-black uppercase text-white tracking-tight">
                     {activeSubject}
                   </span>
                 </div>
                 
                 {/* Cheatsheet activator */}
                 {(activeSubject.toLowerCase().includes('math') || 
-                  activeSubject.toLowerCase().includes('sci') || 
-                  activeSubject.toLowerCase().includes('phys') || 
-                  activeSubject.toLowerCase().includes('chem')) && (
+                  activeSubject.toLowerCase().includes('science') || 
+                  activeSubject.toLowerCase().includes('physics') || 
+                  activeSubject.toLowerCase().includes('chemistry')) && (
                   <button 
                     onClick={() => setShowCheatsheet(true)}
-                    className="flex items-center gap-2 px-4 py-2 bg-slate-800 border-2 border-black hover:bg-slate-700 rounded-[4px] text-[10px] font-black uppercase tracking-wider transition-colors shadow-[2px_2px_0_#000]"
+                    className="flex items-center gap-2 px-5 py-3 bg-slate-800 border-2 border-black hover:bg-slate-700 hover:text-white rounded-[4px] text-[10px] font-black uppercase tracking-widest transition-colors shadow-[2px_2px_0_#000] active:translate-y-[2px]"
                   >
                     <Book className="w-4 h-4 text-purple-400" /> Formulas Cheatsheet
                   </button>
@@ -676,88 +695,121 @@ const CurriculumHub = () => {
               </div>
 
               {/* Main Deck layout: Stats / Boss on left, Chapters on right */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
                 
                 {/* LEFT BLOCK: SUBJECT SUMMARY & BOSS CARD */}
-                <div className="space-y-6">
+                <div className="lg:col-span-4 space-y-6">
                   {/* Subject progress panel */}
-                  <div className="nv-card bg-slate-900 border-3 border-black space-y-4">
+                  <div className="nv-card bg-slate-900 border-3 border-black space-y-4 shadow-[6px_6px_0_#000]">
                     <h3 className="text-lg font-black uppercase text-white border-b-2 border-black pb-3">Syllabus Status</h3>
                     
                     <div className="grid grid-cols-2 gap-4">
                       <div className="bg-black/30 p-4 border border-white/5 rounded-[4px]">
-                        <span className="block text-[8px] font-bold text-text-muted uppercase">Chapters</span>
-                        <span className="text-xl font-black text-purple-400">{subjectData.chapters.length}</span>
+                        <span className="block text-[8px] font-bold text-slate-500 uppercase tracking-widest">Chapters</span>
+                        <span className="text-2xl font-black text-purple-400">{subjectData.chapters.length}</span>
                       </div>
                       <div className="bg-black/30 p-4 border border-white/5 rounded-[4px]">
-                        <span className="block text-[8px] font-bold text-text-muted uppercase">Subject Mastery</span>
-                        <span className="text-xl font-black text-green-400">{getSubjectMastery(activeSubject)}%</span>
+                        <span className="block text-[8px] font-bold text-slate-500 uppercase tracking-widest">Mastery</span>
+                        <span className="text-2xl font-black text-green-400">{getSubjectMastery(activeSubject)}%</span>
                       </div>
                     </div>
 
                     <div className="space-y-2 pt-2">
-                      <div className="h-3 w-full bg-black border border-black rounded-full overflow-hidden">
+                      <div className="h-4 w-full bg-black border-2 border-black rounded-full overflow-hidden p-0.5">
                         <div className="h-full bg-gradient-to-r from-purple-500 to-cyan-400 rounded-full" style={{ width: `${getSubjectMastery(activeSubject)}%` }} />
                       </div>
-                      <span className="block text-[9px] text-text-muted text-center font-bold">Complete chapter recall quizzes to master topics!</span>
+                      <span className="block text-[9px] text-text-muted text-center font-bold uppercase tracking-wider">
+                        Complete quizzes to master chapters!
+                      </span>
                     </div>
                   </div>
 
-                  {/* Subject Boss panel */}
+                  {/* RPG Subject Boss fight card */}
                   {(() => {
                     const boss = getSubjectBoss(activeSubject);
                     if (!boss) return null;
                     return (
-                      <div className="nv-card bg-slate-900 border-3 border-black border-l-rose-500 border-l-[6px] space-y-4 relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-24 h-24 bg-rose-500/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-lg pointer-events-none" />
-                        
-                        <div className="flex items-center justify-between border-b-2 border-black pb-3">
-                          <span className="text-[10px] font-black text-rose-400 uppercase tracking-wider">Subject Guardian</span>
-                          <span className="nv-badge bg-rose-500 text-black">Active Target</span>
+                      <motion.div 
+                        animate={bossShake ? {
+                          x: [0, -10, 10, -10, 10, 0],
+                          rotate: [0, -1, 1, -1, 1, 0]
+                        } : {}}
+                        transition={{ duration: 0.4 }}
+                        className="nv-card bg-slate-900 border-3 border-black border-l-rose-500 border-l-[8px] space-y-5 relative overflow-hidden shadow-[6px_6px_0_#000]"
+                      >
+                        {/* Combat Floating Numbers overlay */}
+                        <div className="absolute inset-0 pointer-events-none z-30">
+                          {combatEffects.map(effect => (
+                            <motion.span
+                              key={effect.id}
+                              initial={{ opacity: 1, y: 120, scale: 0.6 }}
+                              animate={{ opacity: 0, y: 30, scale: 1.4 }}
+                              transition={{ duration: 1 }}
+                              className="absolute font-black text-rose-500 text-2xl uppercase tracking-tighter text-shadow-nb select-none"
+                              style={{ left: `${effect.x}%`, top: `${effect.y}%` }}
+                            >
+                              {effect.text}
+                            </motion.span>
+                          ))}
                         </div>
 
-                        <div className="flex items-center gap-4">
-                          <div className="text-4xl animate-bounce">{boss.emoji}</div>
+                        <div className="flex items-center justify-between border-b-2 border-black pb-3">
+                          <span className="text-[10px] font-black text-rose-400 uppercase tracking-widest">Syllabus Boss gate</span>
+                          <span className="nv-badge bg-rose-500 text-black text-[8px] font-black px-2 py-0.5">
+                            Active target
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-4 relative">
+                          <div className={`text-5xl select-none ${boss.hp > 0 ? 'animate-bounce' : 'opacity-40 filter grayscale'}`}>
+                            {boss.emoji}
+                          </div>
                           <div>
-                            <h4 className="text-md font-black text-white">{boss.name}</h4>
-                            <p className="text-[10px] text-text-secondary font-semibold">HP: {boss.hp} / {boss.max}</p>
+                            <h4 className="text-xl font-black text-white uppercase tracking-tight">{boss.name}</h4>
+                            <p className="text-[10px] text-text-secondary font-bold uppercase tracking-wider">
+                              HP: {boss.hp} / {boss.max}
+                            </p>
                           </div>
                         </div>
 
                         <div className="space-y-2">
-                          <div className="h-3.5 w-full bg-black border-2 border-black rounded-[4px] overflow-hidden p-0.5">
+                          <div className="h-4.5 w-full bg-black border-2 border-black rounded-[4px] overflow-hidden p-0.5">
                             <div 
-                              className="h-full bg-rose-500 rounded-[2px] transition-all duration-500" 
+                              className="h-full bg-rose-500 rounded-[2px] transition-all duration-300" 
                               style={{ width: `${(boss.hp / boss.max) * 100}%` }} 
                             />
                           </div>
-                          <div className="flex justify-between text-[8px] font-bold text-text-muted uppercase">
-                            <span>Boss health bar</span>
-                            {boss.hp === 0 ? <span className="text-green-400">Defeated 🎉</span> : <span>Damage multiplier x1.2</span>}
+                          <div className="flex justify-between text-[8px] font-black text-slate-500 uppercase tracking-wider">
+                            <span>Guardian Health Bar</span>
+                            {boss.hp === 0 ? (
+                              <span className="text-green-400 font-bold">DEFEATED 🎉</span>
+                            ) : (
+                              <span>Damage multiplier x1.2</span>
+                            )}
                           </div>
                         </div>
 
                         <div className="pt-2">
                           <button
                             onClick={() => navigate('/boss-raid')}
-                            className="w-full py-3 bg-rose-600 border-2 border-black text-black font-black uppercase tracking-widest text-[9px] rounded-[4px] hover:bg-rose-500 shadow-[3px_3px_0_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all flex items-center justify-center gap-2"
+                            className="w-full py-4 bg-rose-600 border-2 border-black text-black font-black uppercase tracking-widest text-[10px] rounded-[4px] hover:bg-rose-500 shadow-[3px_3px_0_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all flex items-center justify-center gap-2"
                           >
-                            <Swords className="w-4 h-4" /> Go to Raid Arena
+                            <Swords className="w-5 h-5 shrink-0" /> Enter Boss Arena
                           </button>
                         </div>
-                      </div>
+                      </motion.div>
                     );
                   })()}
                 </div>
 
-                {/* RIGHT BLOCK: CHAPTERS TIMELINE PATH */}
-                <div className="lg:col-span-2 space-y-6">
-                  <div className="flex items-center gap-3 mb-2">
-                    <BookOpen className="w-6 h-6 text-purple-400" />
-                    <h2 className="text-xl font-black uppercase text-white">Chapter Modules</h2>
+                {/* RIGHT BLOCK: CHAPTERS TIMELINE ROADMAP */}
+                <div className="lg:col-span-8 space-y-6">
+                  <div className="flex items-center gap-3">
+                    <BookOpen className="w-6 h-6 text-purple-400 animate-pulse" />
+                    <h2 className="text-2xl font-black uppercase text-white">Syllabus Timeline path</h2>
                   </div>
 
-                  <div className="space-y-4 relative pl-4 border-l-2 border-black">
+                  <div className="space-y-6 relative pl-6 border-l-4 border-black">
                     {subjectData.chapters.map((ch, idx) => {
                       const chapterKey = `${selectedClass}_${activeSubject}_${ch.title}`;
                       const isChapterCompleted = completedChapters[chapterKey];
@@ -765,58 +817,58 @@ const CurriculumHub = () => {
 
                       return (
                         <div key={idx} className="relative">
-                          {/* Circle dot on path line */}
-                          <div className={`absolute w-5 h-5 rounded-full border-2 border-black left-[-25px] top-6 flex items-center justify-center text-[8px] font-black ${
+                          {/* Node circle dot on path line */}
+                          <div className={`absolute w-7 h-7 rounded-full border-3 border-black left-[-39px] top-6 flex items-center justify-center text-[10px] font-black transition-all ${
                             isChapterCompleted 
                               ? 'bg-green-500 text-black' 
                               : isExpanded 
-                                ? 'bg-purple-500 text-black' 
-                                : 'bg-slate-900 text-text-muted'
+                                ? 'bg-purple-500 text-black ring-4 ring-purple-500/20' 
+                                : 'bg-slate-900 text-text-muted border-dashed'
                           }`}>
                             {isChapterCompleted ? '✓' : idx + 1}
                           </div>
 
                           <div className={`nv-card bg-slate-900/40 border-2 border-black p-6 transition-all ${
-                            isExpanded ? 'shadow-[8px_8px_0_#000]' : 'hover:translate-x-1'
+                            isExpanded ? 'shadow-[8px_8px_0_#000] border-purple-500' : 'hover:translate-x-1 hover:border-black/80'
                           }`}>
                             
-                            {/* Card header */}
-                            <div className="flex items-start justify-between gap-4">
+                            {/* Card Header Info */}
+                            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                               <div className="space-y-1">
                                 <h3 className="text-xl font-black text-white uppercase tracking-tight">{ch.title}</h3>
-                                <p className="text-xs text-text-secondary leading-relaxed max-w-xl">{ch.summary}</p>
+                                <p className="text-xs text-text-secondary leading-relaxed max-w-xl font-medium">{ch.summary}</p>
                               </div>
                               
-                              <div className="flex items-center gap-2 flex-shrink-0">
+                              <div className="flex items-center gap-2 flex-shrink-0 self-start sm:self-center">
                                 {isChapterCompleted && (
-                                  <span className="nv-badge bg-green-500 text-black flex items-center gap-1 text-[8px]">
+                                  <span className="nv-badge bg-green-500 text-black flex items-center gap-1 text-[8px] px-2 py-0.5">
                                     ✓ Mastered
                                   </span>
                                 )}
                                 <button
                                   onClick={() => isExpanded ? setExpandedChapter(null) : selectChapter(ch)}
-                                  className="px-4 py-2 border-2 border-black bg-slate-800 text-[9px] font-black uppercase tracking-wider rounded-[4px] hover:bg-slate-700"
+                                  className="px-4 py-2 border-2 border-black bg-slate-800 hover:bg-slate-700 text-[9px] font-black uppercase tracking-wider rounded-[4px] text-text-secondary hover:text-white transition-colors"
                                 >
-                                  {isExpanded ? 'Hide' : 'Expand'}
+                                  {isExpanded ? 'Collapse' : 'Expand Topic'}
                                 </button>
                               </div>
                             </div>
 
-                            {/* Expanded Control deck */}
+                            {/* Expanded Interactive Control Deck */}
                             {isExpanded && (
                               <div className="mt-8 pt-6 border-t-2 border-black space-y-6">
                                 {/* Tab selector */}
-                                <div className="flex border-b border-black pb-2 gap-2 overflow-x-auto no-scrollbar">
+                                <div className="flex border-b-2 border-black pb-2 gap-2 overflow-x-auto no-scrollbar">
                                   {[
-                                    { id: 'learn', label: '1. Learn Ideas', icon: BookOpen },
-                                    { id: 'recall', label: '2. Memorize Cards', icon: Zap },
-                                    { id: 'practice', label: '3. Practice Quiz', icon: HelpCircle }
+                                    { id: 'learn', label: '1. Interactive Study', icon: BookOpen },
+                                    { id: 'recall', label: '2. 3D Flashcards', icon: Zap },
+                                    { id: 'prep', label: '3. Board Exam PYQs', icon: FileText },
+                                    { id: 'practice', label: '4. Practice Quiz', icon: HelpCircle }
                                   ].map(tab => (
                                     <button
                                       key={tab.id}
                                       onClick={() => {
                                         setStudyTab(tab.id);
-                                        // Reset flashcard decks or start quiz
                                         if (tab.id === 'recall') {
                                           setCardIdx(0);
                                           setIsFlipped(false);
@@ -825,50 +877,295 @@ const CurriculumHub = () => {
                                           startQuiz(ch);
                                         }
                                       }}
-                                      className={`px-4 py-2 border-2 border-black rounded-[4px] text-[9px] font-black uppercase tracking-widest transition-all ${
+                                      className={`px-4 py-2.5 border-2 border-black rounded-[4px] text-[9px] font-black uppercase tracking-widest transition-all ${
                                         studyTab === tab.id 
                                           ? 'bg-purple-500 text-black shadow-[2px_2px_0_#000]' 
-                                          : 'bg-slate-900 text-text-secondary hover:bg-slate-800'
+                                          : 'bg-slate-900 text-text-secondary hover:bg-slate-800 hover:text-white'
                                       }`}
                                     >
-                                      <tab.icon className="w-3.5 h-3.5 inline mr-1.5" />
+                                      <tab.icon className="w-3.5 h-3.5 inline mr-1.5 shrink-0" />
                                       {tab.label}
                                     </button>
                                   ))}
                                 </div>
 
-                                {/* TAB 1: LEARN CORE IDEAS */}
+                                {/* TAB 1: INTERACTIVE LEARNING & SCHOLAR SANDBOXES */}
                                 {studyTab === 'learn' && (
                                   <motion.div
                                     initial={{ opacity: 0, y: 5 }}
                                     animate={{ opacity: 1, y: 0 }}
-                                    className="space-y-4"
+                                    className="space-y-6"
                                   >
-                                    <h4 className="text-xs font-black uppercase text-purple-400 tracking-wider">Key Curriculum Ideas</h4>
-                                    <div className="space-y-3">
+                                    <div className="flex items-center justify-between border-b border-white/5 pb-2">
+                                      <h4 className="text-xs font-black uppercase text-purple-400 tracking-widest">NCERT Syllabus Matrix Notes</h4>
+                                      
+                                      {/* ELI5 Analogies Switch */}
+                                      <button
+                                        onClick={() => setEli5Mode(!eli5Mode)}
+                                        className={`px-3 py-1 border-2 border-black rounded-[4px] text-[8px] font-black uppercase tracking-wider transition-all shadow-[2px_2px_0_#000] active:translate-y-[1px] ${
+                                          eli5Mode ? 'bg-green-500 text-black' : 'bg-slate-800 text-purple-400 hover:bg-slate-700'
+                                        }`}
+                                      >
+                                        {eli5Mode ? '🤖 Academic Terms' : '👶 Explain Like I\'m 5'}
+                                      </button>
+                                    </div>
+
+                                    {/* Key Syllabus Ideas Carousel/List */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                       {ch.keyIdeas?.map((idea, i) => (
-                                        <div key={i} className="bg-black/30 p-4 border border-white/5 rounded-[4px] flex items-start gap-3">
-                                          <div className="w-6 h-6 rounded-full bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 text-xs font-black shrink-0">
+                                        <div key={i} className="bg-slate-950 p-5 border-2 border-black rounded-[4px] flex items-start gap-3 shadow-[3px_3px_0_#000]">
+                                          <div className="w-6 h-6 rounded bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 text-[10px] font-black shrink-0 shadow-[1px_1px_0_#000]">
                                             {i + 1}
                                           </div>
-                                          <p className="text-xs text-text-secondary leading-relaxed font-medium">{idea}</p>
+                                          <div className="space-y-1">
+                                            <span className="block text-[8px] font-black text-slate-500 uppercase tracking-widest">
+                                              Concept Point
+                                            </span>
+                                            <p className="text-xs text-slate-300 leading-relaxed font-semibold">
+                                              {eli5Mode ? (
+                                                idea.toLowerCase().includes('quadrant') 
+                                                  ? "The coordinate plane is cut into 4 quarters, like slicing a pizza into four large slices!"
+                                                  : idea.toLowerCase().includes('origin')
+                                                    ? "The origin is the starting point on your map (0,0), like home base in a game!"
+                                                    : idea.toLowerCase().includes('displacement')
+                                                      ? "Distance is the total footsteps you walked, while displacement is just a straight line from start to end!"
+                                                      : idea.toLowerCase().includes('velocity')
+                                                        ? "Velocity is how fast you run PLUS which direction you are running, like sprinting North at 10km/h!"
+                                                        : idea.split(':')[1] || idea
+                                              ) : idea}
+                                            </p>
+                                          </div>
                                         </div>
                                       ))}
                                     </div>
+
+                                    {/* DYNAMIC CBSE EXPERIMENT & SANDBOX DIAGRAMS */}
+                                    <div className="pt-6 border-t border-black/40 space-y-6">
+                                      <h5 className="text-xs font-black uppercase text-cyan-400 tracking-widest">
+                                        Interactive Diagram Sandboxes
+                                      </h5>
+
+                                      {/* MATH SANDBOX: Live Cartesian coordinates plotter */}
+                                      {ch.title.toLowerCase().includes('geometry') && (
+                                        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 bg-slate-950 p-6 border-2 border-black rounded-[4px] shadow-[4px_4px_0_#000]">
+                                          <div className="md:col-span-6 flex flex-col justify-center items-center">
+                                            <span className="text-[9px] font-black text-purple-400 uppercase tracking-widest mb-4">
+                                              Click Grid Intersections to Plot Coordinate Points
+                                            </span>
+                                            
+                                            {/* Coordinate Grid */}
+                                            <div className="relative w-64 h-64 bg-slate-900 border-3 border-black rounded flex items-center justify-center shadow-[4px_4px_0_#000]">
+                                              <div className="absolute inset-0 grid grid-cols-11 grid-rows-11">
+                                                {(() => {
+                                                  const cells = [];
+                                                  for (let y = 5; y >= -5; y--) {
+                                                    for (let x = -5; x <= 5; x++) {
+                                                      cells.push({ x, y });
+                                                    }
+                                                  }
+                                                  return cells.map((cell, cidx) => {
+                                                    const isX = cell.y === 0;
+                                                    const isY = cell.x === 0;
+                                                    const isSelected = cell.x === plottedPoint.x && cell.y === plottedPoint.y;
+                                                    return (
+                                                      <div
+                                                        key={cidx}
+                                                        onClick={() => setPlottedPoint({ x: cell.x, y: cell.y })}
+                                                        className={`relative flex items-center justify-center border border-slate-900/10 cursor-pointer hover:bg-purple-500/20 transition-colors ${
+                                                          isX ? 'border-b-2 border-b-slate-500' : ''
+                                                        } ${
+                                                          isY ? 'border-r-2 border-r-slate-500' : ''
+                                                        }`}
+                                                      >
+                                                        {cell.x === 0 && cell.y === 0 && (
+                                                          <div className="absolute w-2 h-2 bg-yellow-500 rounded-full z-10" />
+                                                        )}
+                                                        {isSelected && (
+                                                          <div className="absolute w-4.5 h-4.5 bg-purple-500 rounded-full border-2 border-black flex items-center justify-center shadow-lg z-20">
+                                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+                                                          </div>
+                                                        )}
+                                                      </div>
+                                                    );
+                                                  });
+                                                })()}
+                                              </div>
+                                            </div>
+                                          </div>
+
+                                          <div className="md:col-span-6 flex flex-col justify-between space-y-4">
+                                            <div className="p-4 bg-slate-900 border-2 border-black rounded-[4px] space-y-2">
+                                              <span className="block text-[8px] font-black text-slate-500 uppercase tracking-widest">
+                                                Plot Diagnostic Console
+                                              </span>
+                                              <div className="flex justify-between border-b border-black pb-1.5 text-sm">
+                                                <span className="text-slate-400">Current Position</span>
+                                                <strong className="text-purple-400">P({plottedPoint.x}, {plottedPoint.y})</strong>
+                                              </div>
+                                              <div className="flex justify-between border-b border-black pb-1.5 text-xs">
+                                                <span className="text-slate-400">Quadrant Location</span>
+                                                <strong className="text-yellow-400">
+                                                  {(() => {
+                                                    const { x, y } = plottedPoint;
+                                                    if (x === 0 && y === 0) return "Origin";
+                                                    if (x === 0) return "Y-Axis Boundary";
+                                                    if (y === 0) return "X-Axis Boundary";
+                                                    if (x > 0 && y > 0) return "Quadrant I (+, +)";
+                                                    if (x < 0 && y > 0) return "Quadrant II (-, +)";
+                                                    if (x < 0 && y < 0) return "Quadrant III (-, -)";
+                                                    return "Quadrant IV (+, -)";
+                                                  })()}
+                                                </strong>
+                                              </div>
+                                              <div className="flex justify-between text-xs">
+                                                <span className="text-slate-400">Distance from (0,0)</span>
+                                                <strong className="font-mono text-green-400">
+                                                  √({plottedPoint.x}² + {plottedPoint.y}²) = {Math.sqrt(plottedPoint.x*plottedPoint.x + plottedPoint.y*plottedPoint.y).toFixed(2)} units
+                                                </strong>
+                                              </div>
+                                            </div>
+
+                                            <div className="p-4 bg-blue-950/20 border border-blue-500/30 rounded-[4px] text-xs leading-relaxed text-slate-400">
+                                              <strong className="text-blue-400 block mb-1">💡 Baudhayana-Pythagoras link:</strong>
+                                              The Distance formula uses right angles to compute absolute displacement. The Baudhāyana-Pythagoras Theorem was documented in Indian Sulba Sutras as early as 800 BCE to construct geometric brick layout systems.
+                                            </div>
+                                          </div>
+                                        </div>
+                                      )}
+
+                                      {/* SCIENCE SANDBOX: Live motion distance vs displacement vector simulator */}
+                                      {ch.title.toLowerCase().includes('motion') && (
+                                        <div className="bg-slate-950 p-6 border-2 border-black rounded-[4px] space-y-6 shadow-[4px_4px_0_#000]">
+                                          <div className="text-center space-y-1">
+                                            <span className="block text-[8px] font-black text-purple-400 uppercase tracking-widest">
+                                              Live Physics Simulator
+                                            </span>
+                                            <h6 className="text-sm font-black uppercase text-white">Distance vs Displacement Simulation</h6>
+                                            <p className="text-slate-400 text-[10px]">
+                                              Simulate driving a vehicle to the target flag (100m) and back home (0m) to study how vectors behave.
+                                            </p>
+                                          </div>
+
+                                          {/* Visual Animation Track */}
+                                          <div className="relative h-16 bg-slate-900 border-2 border-black rounded flex items-center px-4 overflow-hidden">
+                                            <div className="absolute left-4 w-3.5 h-3.5 rounded-full bg-blue-500 shadow-lg border border-black flex items-center justify-center text-[7px] font-black text-white">A</div>
+                                            <div className="absolute right-4 w-3.5 h-3.5 rounded-full bg-red-500 shadow-lg border border-black flex items-center justify-center text-[7px] font-black text-white">B</div>
+                                            
+                                            {/* Connecting track line */}
+                                            <div className="absolute left-8 right-8 h-1.5 bg-black rounded" />
+
+                                            {/* Driving Car Indicator */}
+                                            <div 
+                                              className="absolute text-2xl select-none transition-all duration-75"
+                                              style={{ left: `calc(${motionPercent}% - 12px)` }}
+                                            >
+                                              🚗
+                                            </div>
+                                          </div>
+
+                                          {/* Control Panel buttons */}
+                                          <div className="flex flex-wrap items-center justify-between gap-4">
+                                            <div className="flex gap-2">
+                                              <button
+                                                disabled={isDriving || motionPercent >= 100}
+                                                onClick={() => {
+                                                  setDrivingDir('forward');
+                                                  setIsDriving(true);
+                                                }}
+                                                className="px-4 py-2 border-2 border-black bg-green-500 disabled:opacity-40 text-black text-[9px] font-black uppercase tracking-wider rounded shadow-[2px_2px_0_#000] active:translate-y-[1px]"
+                                              >
+                                                Drive to B ➔
+                                              </button>
+                                              <button
+                                                disabled={isDriving || motionPercent <= 0}
+                                                onClick={() => {
+                                                  setDrivingDir('backward');
+                                                  setIsDriving(true);
+                                                }}
+                                                className="px-4 py-2 border-2 border-black bg-blue-500 disabled:opacity-40 text-black text-[9px] font-black uppercase tracking-wider rounded shadow-[2px_2px_0_#000] active:translate-y-[1px]"
+                                              >
+                                                ➔ Drive back to A
+                                              </button>
+                                              <button
+                                                onClick={() => {
+                                                  setIsDriving(false);
+                                                  setMotionPercent(0);
+                                                  setMaxDistanceReached(0);
+                                                }}
+                                                className="px-4 py-2 border-2 border-black bg-slate-800 text-slate-300 text-[9px] font-black uppercase tracking-wider rounded shadow-[2px_2px_0_#000] active:translate-y-[1px]"
+                                              >
+                                                Reset
+                                              </button>
+                                            </div>
+
+                                            {/* Live Telemetry details */}
+                                            <div className="flex gap-4 bg-slate-900 px-4 py-2 border border-black rounded text-[11px] font-semibold">
+                                              <div>
+                                                <span className="text-slate-500 uppercase tracking-widest text-[8px] block">Distance</span>
+                                                <strong className="text-green-400">
+                                                  {drivingDir === 'forward' 
+                                                    ? Math.max(maxDistanceReached, motionPercent) 
+                                                    : 100 + (100 - motionPercent)}m
+                                                </strong>
+                                              </div>
+                                              <div className="h-6 w-[1px] bg-slate-800" />
+                                              <div>
+                                                <span className="text-slate-500 uppercase tracking-widest text-[8px] block">Displacement</span>
+                                                <strong className="text-cyan-400">{motionPercent}m East</strong>
+                                              </div>
+                                            </div>
+                                          </div>
+
+                                          <div className="p-4 bg-purple-950/20 border border-purple-500/30 rounded-[4px] text-xs leading-relaxed text-slate-400">
+                                            <strong>💡 Educational Insight:</strong>
+                                            If you drive to B (100m) and drive straight back to A, your odometer reads **200m** of actual road traveled. However, your net shift in position is **0m** since you ended exactly where you started!
+                                          </div>
+                                        </div>
+                                      )}
+
+                                      {/* GENERAL/LITERATURE ROADMAP CHART */}
+                                      {ch.title.toLowerCase().includes('grandmother') && (
+                                        <div className="bg-slate-950 p-6 border-2 border-black rounded-[4px] space-y-4 shadow-[4px_4px_0_#000]">
+                                          <div className="text-center">
+                                            <span className="block text-[8px] font-black text-purple-400 uppercase tracking-widest">
+                                              Literature Chapter Concept Map
+                                            </span>
+                                            <h6 className="text-sm font-black uppercase text-white">Narrative Core Arc</h6>
+                                          </div>
+
+                                          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-4 relative">
+                                            {[
+                                              { title: "Sudha Murty", desc: "12-year-old narrator, acting as guide & guru." },
+                                              { title: "Krishtakka", desc: "62-year-old grandmother, determined student." },
+                                              { title: "Kashi Yatre", desc: "The serialized novel setting her determination." },
+                                              { title: "Humility Arc", desc: "Bowing to the teacher on Dassara festival." }
+                                            ].map((node, nidx) => (
+                                              <div key={nidx} className="flex-1 bg-slate-900 border border-black p-4 rounded relative hover:shadow-[3px_3px_0_#000] transition-all">
+                                                <span className="absolute -top-3 -left-2 w-6 h-6 rounded bg-purple-500 text-black font-black flex items-center justify-center text-[10px] border border-black shadow">
+                                                  {nidx + 1}
+                                                </span>
+                                                <h5 className="text-xs font-black uppercase text-white mt-1">{node.title}</h5>
+                                                <p className="text-[10px] text-slate-400 leading-normal font-semibold mt-1">{node.desc}</p>
+                                              </div>
+                                            ))}
+                                          </div>
+                                        </div>
+                                      )}
+                                    </div>
                                     
-                                    {/* Launch Study Library bridge */}
-                                    <div className="pt-4 flex justify-end">
+                                    {/* Launch Immersive Study Library Link */}
+                                    <div className="pt-6 flex justify-end">
                                       <button 
                                         onClick={() => navigate('/subject-library', { state: { subject: activeSubject, grade: selectedClass } })}
-                                        className="px-6 py-3 bg-purple-500 border-2 border-black text-black font-black uppercase tracking-widest text-[9px] rounded-[4px] hover:bg-purple-400 transition-all flex items-center gap-2"
+                                        className="px-6 py-4 bg-purple-500 border-2 border-black text-black font-black uppercase tracking-widest text-[9px] rounded-[4px] hover:bg-purple-400 transition-all flex items-center gap-2 shadow-[3px_3px_0_#000]"
                                       >
-                                        Launch Immersive Study Library <ArrowRight className="w-4 h-4" />
+                                        Immersive Study Library <ArrowRight className="w-4 h-4 shrink-0" />
                                       </button>
                                     </div>
                                   </motion.div>
                                 )}
 
-                                {/* TAB 2: MEMORIZE FLASHCARDS PLAYER */}
+                                {/* TAB 2: ACTIVE RECALL 3D FLASHCARDS PLAYER */}
                                 {studyTab === 'recall' && (
                                   <motion.div
                                     initial={{ opacity: 0, y: 5 }}
@@ -880,10 +1177,10 @@ const CurriculumHub = () => {
                                         No flashcards available for this chapter.
                                       </div>
                                     ) : flashcardDeckComplete ? (
-                                      <div className="text-center p-8 bg-purple-500/10 border-2 border-purple-500/30 rounded-[4px] space-y-4">
+                                      <div className="text-center p-8 bg-purple-500/10 border-2 border-purple-500/30 rounded-[4px] space-y-4 max-w-sm mx-auto shadow-[4px_4px_0_#000]">
                                         <Trophy className="w-12 h-12 text-yellow-400 mx-auto animate-bounce" />
-                                        <h4 className="text-lg font-black text-white uppercase">Deck Review Complete!</h4>
-                                        <p className="text-xs text-text-secondary max-w-sm mx-auto">
+                                        <h4 className="text-xl font-black text-white uppercase">Deck Review Complete!</h4>
+                                        <p className="text-xs text-slate-350 max-w-xs mx-auto leading-relaxed">
                                           Awesome memory workout! You reviewed all {ch.flashcards.length} cards and earned +15 XP!
                                         </p>
                                         <button
@@ -892,20 +1189,20 @@ const CurriculumHub = () => {
                                             setFlashcardDeckComplete(false);
                                             setIsFlipped(false);
                                           }}
-                                          className="px-6 py-2.5 bg-purple-500 border-2 border-black text-black font-black uppercase tracking-wider text-[9px] rounded-[4px] hover:bg-purple-400"
+                                          className="px-6 py-2.5 bg-purple-500 border-2 border-black text-black font-black uppercase tracking-wider text-[9px] rounded-[4px] hover:bg-purple-400 shadow-[2px_2px_0_#000]"
                                         >
                                           Restart Deck
                                         </button>
                                       </div>
                                     ) : (
                                       <div className="max-w-md mx-auto space-y-6">
-                                        {/* Card index */}
+                                        {/* Card index status */}
                                         <div className="flex justify-between items-center text-[10px] font-black uppercase text-text-muted">
                                           <span>Flashcard Deck</span>
                                           <span>Card {cardIdx + 1} of {ch.flashcards.length}</span>
                                         </div>
 
-                                        {/* 3D Flip Card */}
+                                        {/* 3D Flip Card Container */}
                                         <div 
                                           onClick={() => setIsFlipped(!isFlipped)}
                                           className="w-full h-56 perspective-1000 cursor-pointer"
@@ -919,13 +1216,15 @@ const CurriculumHub = () => {
                                               className="absolute inset-0 backface-hidden nv-card bg-slate-900 border-3 border-black p-8 flex flex-col justify-between"
                                               style={{ backfaceVisibility: 'hidden' }}
                                             >
-                                              <span className="text-[8px] font-bold text-purple-400 uppercase tracking-widest">Question / Term</span>
+                                              <span className="text-[8px] font-black text-purple-400 uppercase tracking-widest">Question / Term</span>
                                               <div className="flex-1 flex items-center justify-center">
-                                                <h4 className="text-md md:text-lg font-black text-white text-center leading-snug">
+                                                <h4 className="text-base md:text-lg font-black text-white text-center leading-snug">
                                                   {ch.flashcards[cardIdx].front}
                                                 </h4>
                                               </div>
-                                              <span className="text-[8px] font-bold text-center text-text-muted uppercase">Click card to reveal answer</span>
+                                              <span className="text-[8px] font-bold text-center text-slate-500 uppercase tracking-widest">
+                                                Click or Press SPACE to reveal answer
+                                              </span>
                                             </div>
 
                                             {/* Back Side */}
@@ -933,13 +1232,15 @@ const CurriculumHub = () => {
                                               className="absolute inset-0 backface-hidden nv-card bg-slate-800 border-3 border-black p-8 flex flex-col justify-between"
                                               style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
                                             >
-                                              <span className="text-[8px] font-bold text-green-400 uppercase tracking-widest">Explanation / Answer</span>
+                                              <span className="text-[8px] font-black text-green-400 uppercase tracking-widest">Explanation / Answer</span>
                                               <div className="flex-1 flex items-center justify-center">
-                                                <p className="text-sm font-medium text-text-primary text-center leading-relaxed">
+                                                <p className="text-xs md:text-sm font-semibold text-text-primary text-center leading-relaxed">
                                                   {ch.flashcards[cardIdx].back}
                                                 </p>
                                               </div>
-                                              <span className="text-[8px] font-bold text-center text-text-muted uppercase">Click card to view question</span>
+                                              <span className="text-[8px] font-bold text-center text-slate-500 uppercase tracking-widest">
+                                                Press SPACE to view question
+                                              </span>
                                             </div>
                                           </div>
                                         </div>
@@ -955,15 +1256,15 @@ const CurriculumHub = () => {
                                             >
                                               <button
                                                 onClick={() => nextFlashcard('hard')}
-                                                className="py-3 bg-slate-800 border-2 border-black text-text-primary font-black uppercase tracking-widest text-[9px] rounded-[4px] hover:bg-slate-700 transition-all shadow-[2px_2px_0_#000]"
+                                                className="py-3.5 bg-slate-800 border-2 border-black text-text-primary font-black uppercase tracking-widest text-[9px] rounded-[4px] hover:bg-slate-700 transition-all shadow-[2px_2px_0_#000] active:translate-y-[1px]"
                                               >
-                                                🧠 Hard (+2 XP)
+                                                🧠 Hard (←)
                                               </button>
                                               <button
                                                 onClick={() => nextFlashcard('easy')}
-                                                className="py-3 bg-green-500 border-2 border-black text-black font-black uppercase tracking-widest text-[9px] rounded-[4px] hover:bg-green-400 transition-all shadow-[2px_2px_0_#000]"
+                                                className="py-3.5 bg-green-500 border-2 border-black text-black font-black uppercase tracking-widest text-[9px] rounded-[4px] hover:bg-green-400 transition-all shadow-[2px_2px_0_#000] active:translate-y-[1px]"
                                               >
-                                                😊 Easy (+5 XP)
+                                                😊 Easy (→)
                                               </button>
                                             </motion.div>
                                           )}
@@ -973,7 +1274,89 @@ const CurriculumHub = () => {
                                   </motion.div>
                                 )}
 
-                                {/* TAB 3: PRACTICE QUIZ ARENA */}
+                                {/* TAB 3: BOARD EXAM PYQ & MARKING CRITERIA CHECKLIST */}
+                                {studyTab === 'prep' && (
+                                  <motion.div
+                                    initial={{ opacity: 0, y: 5 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="space-y-6"
+                                  >
+                                    <div className="border-b border-white/5 pb-2">
+                                      <h4 className="text-xs font-black uppercase text-purple-400 tracking-widest">CBSE Exam PYQ Evaluation</h4>
+                                      <p className="text-slate-400 text-[10px] mt-1">
+                                        Test your self-written answers against the real CBSE NCERT marking rubrics.
+                                      </p>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+                                      <div className="md:col-span-7 space-y-4">
+                                        <h5 className="text-sm font-black uppercase text-white">Board Exam Marking Rubric Checklist</h5>
+                                        
+                                        <div className="space-y-3">
+                                          {[
+                                            { id: 'def', label: '1. Defined Key Definitions / Terms accurately', desc: 'Checks fundamental factual criteria.' },
+                                            { id: 'formula', label: '2. Wrote the standard algebraic formulas first', desc: 'Ensures structural formula steps score.' },
+                                            { id: 'diagram', label: '3. Drew clean diagrams / flowcharts if requested', desc: 'Validates visual presentation points.' },
+                                            { id: 'steps', label: '4. Laid out calculations/arguments step-by-step', desc: 'Earns marks for mathematical logic flow.' },
+                                            { id: 'units', label: '5. Wrote correct SI units in the final statement', desc: 'Avoids minor calculation deduction errors.' }
+                                          ].map(item => (
+                                            <label 
+                                              key={item.id}
+                                              className="flex items-start gap-3 p-4 bg-slate-950 border-2 border-black rounded-[4px] cursor-pointer hover:bg-slate-900 transition-colors shadow-[2px_2px_0_#000]"
+                                            >
+                                              <input
+                                                type="checkbox"
+                                                checked={pyqChecks[item.id]}
+                                                onChange={(e) => setPyqChecks(prev => ({ ...prev, [item.id]: e.target.checked }))}
+                                                className="mt-1 accent-purple-500 w-4 h-4 rounded border-2 border-black"
+                                              />
+                                              <div className="space-y-0.5">
+                                                <span className="block text-xs font-black text-white">{item.label}</span>
+                                                <span className="block text-[9px] text-slate-500 uppercase tracking-wider">{item.desc}</span>
+                                              </div>
+                                            </label>
+                                          ))}
+                                        </div>
+                                      </div>
+
+                                      <div className="md:col-span-5 space-y-6">
+                                        {/* Score Diagnostic Panel */}
+                                        <div className="p-6 bg-slate-900 border-2 border-black rounded-[4px] text-center space-y-4 shadow-[4px_4px_0_#000]">
+                                          <h5 className="text-[10px] font-black text-purple-400 uppercase tracking-widest">Syllabus Evaluation Score</h5>
+                                          
+                                          <div className="py-2">
+                                            <span className="text-5xl font-black text-purple-400 font-mono">{getPyqScore()}%</span>
+                                            <span className="block text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-2">
+                                              Rubric Alignment index
+                                            </span>
+                                          </div>
+
+                                          <p className="text-[11px] text-slate-400 leading-relaxed font-semibold">
+                                            {getPyqScore() === 100 
+                                              ? "🏆 Perfect! Your answers align exactly with standard CBSE guidelines to unlock full scoring potential."
+                                              : "Complete all rubric checks to optimize answers for full marks in exams."}
+                                          </p>
+
+                                          <div className="h-3.5 w-full bg-black border border-black rounded-full overflow-hidden p-0.5">
+                                            <div className="h-full bg-purple-500 rounded-full" style={{ width: `${getPyqScore()}%` }} />
+                                          </div>
+                                        </div>
+
+                                        {/* CBSE Guidance Patterns */}
+                                        <div className="p-5 bg-slate-900 border border-white/5 rounded text-xs space-y-3 font-semibold text-slate-400">
+                                          <div className="flex items-center gap-2 text-cyan-400 font-black uppercase text-[10px] tracking-wider">
+                                            <Info className="w-4 h-4" /> CBSE PYQ Patterns
+                                          </div>
+                                          <p className="leading-relaxed">
+                                            CBSE awards marks step-by-step. Even if your final calculation is wrong, writing formulas, drawing diagrams, and stating parameters will secure up to 80% of the question's marks.
+                                          </p>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </motion.div>
+                                )}
+
+                                {/* TAB 4: PRACTICE QUIZ ARENA */}
                                 {studyTab === 'practice' && quizActive && (
                                   <motion.div
                                     initial={{ opacity: 0, y: 5 }}
@@ -985,18 +1368,18 @@ const CurriculumHub = () => {
                                         No questions available for a quiz in this chapter.
                                       </div>
                                     ) : quizComplete ? (
-                                      <div className="text-center p-8 bg-purple-500/10 border-2 border-purple-500/30 rounded-[4px] space-y-4 max-w-md mx-auto">
+                                      <div className="text-center p-8 bg-purple-500/10 border-2 border-purple-500/30 rounded-[4px] space-y-4 max-w-md mx-auto shadow-[4px_4px_0_#000]">
                                         <Trophy className="w-12 h-12 text-yellow-400 mx-auto animate-bounce" />
-                                        <h4 className="text-xl font-black text-white uppercase">Recall Quiz Complete!</h4>
+                                        <h4 className="text-2xl font-black text-white uppercase">Recall Quiz Complete!</h4>
                                         
                                         <div className="py-2">
                                           <div className="text-[10px] font-bold text-text-muted uppercase">Final Score</div>
-                                          <div className="text-4xl font-black text-purple-400">
+                                          <div className="text-4xl font-black text-purple-400 font-mono">
                                             {quizScore} / {quizQuestions.length}
                                           </div>
                                         </div>
 
-                                        <p className="text-xs text-text-secondary leading-relaxed">
+                                        <p className="text-xs text-slate-350 leading-relaxed font-semibold">
                                           {quizScore === quizQuestions.length 
                                             ? "🎉 Perfect score! You have completely mastered this chapter. Dealt massive damage to the Subject Boss!"
                                             : "Good attempt! Keep reviewing to achieve perfect syllabus mastery."}
@@ -1004,18 +1387,18 @@ const CurriculumHub = () => {
 
                                         <div className="bg-black/40 p-4 border border-white/5 rounded-[4px] grid grid-cols-2 gap-4 text-center">
                                           <div>
-                                            <span className="block text-[8px] font-bold text-text-muted uppercase">XP Gained</span>
-                                            <span className="text-md font-black text-purple-400">+{quizScore * 20} XP</span>
+                                            <span className="block text-[8px] font-bold text-slate-500 uppercase tracking-widest">XP Gained</span>
+                                            <span className="text-sm font-black text-purple-400">+{quizScore * 20} XP</span>
                                           </div>
                                           <div>
-                                            <span className="block text-[8px] font-bold text-text-muted uppercase">Coins Earned</span>
-                                            <span className="text-md font-black text-amber-400">+{quizScore * 5} Coins</span>
+                                            <span className="block text-[8px] font-bold text-slate-500 uppercase tracking-widest">Coins Earned</span>
+                                            <span className="text-sm font-black text-amber-400">+{quizScore * 5} Coins</span>
                                           </div>
                                         </div>
 
                                         <button
                                           onClick={() => startQuiz(ch)}
-                                          className="w-full py-3 bg-purple-500 border-2 border-black text-black font-black uppercase tracking-widest text-[9px] rounded-[4px] hover:bg-purple-400"
+                                          className="w-full py-3 bg-purple-500 border-2 border-black text-black font-black uppercase tracking-widest text-[9px] rounded-[4px] hover:bg-purple-400 shadow-[3px_3px_0_#000]"
                                         >
                                           Try Again
                                         </button>
@@ -1029,8 +1412,8 @@ const CurriculumHub = () => {
                                         </div>
 
                                         {/* Question card */}
-                                        <div className="nv-card bg-slate-900 border-2 border-black p-6">
-                                          <h4 className="text-sm font-black text-white leading-relaxed">
+                                        <div className="nv-card bg-slate-900 border-2 border-black p-6 shadow-[4px_4px_0_#000]">
+                                          <h4 className="text-sm font-bold text-white leading-relaxed">
                                             {quizQuestions[quizIdx]?.q}
                                           </h4>
                                         </div>
@@ -1050,18 +1433,18 @@ const CurriculumHub = () => {
                                                 onClick={() => submitQuizAnswer(opt)}
                                                 className={`w-full p-4 border-2 border-black rounded-[4px] text-xs font-black uppercase tracking-wide text-left transition-all ${
                                                   shouldShowCorrect
-                                                    ? 'bg-green-500 text-black shadow-none'
+                                                    ? 'bg-green-500 text-black shadow-none border-green-500'
                                                     : shouldShowIncorrect
-                                                      ? 'bg-rose-500 text-black shadow-none'
+                                                      ? 'bg-rose-500 text-black shadow-none border-rose-500'
                                                       : isSelected
-                                                        ? 'bg-purple-500 text-black shadow-none'
-                                                        : 'bg-slate-900/60 text-text-secondary hover:bg-slate-800'
+                                                        ? 'bg-purple-500 text-black shadow-none border-purple-500'
+                                                        : 'bg-slate-900/60 text-text-secondary hover:bg-slate-800 hover:text-white shadow-[2px_2px_0_#000]'
                                                 }`}
                                               >
                                                 <div className="flex items-center justify-between">
                                                   <span>{opt}</span>
-                                                  {shouldShowCorrect && <span className="font-bold text-xs">✓ Correct</span>}
-                                                  {shouldShowIncorrect && <span className="font-bold text-xs">✗ Incorrect</span>}
+                                                  {shouldShowCorrect && <span className="font-bold text-[10px] uppercase bg-black text-green-400 px-2 py-0.5 rounded border border-black shadow">✓ Correct</span>}
+                                                  {shouldShowIncorrect && <span className="font-bold text-[10px] uppercase bg-black text-rose-400 px-2 py-0.5 rounded border border-black shadow">✗ Incorrect</span>}
                                                 </div>
                                               </button>
                                             );
@@ -1075,9 +1458,9 @@ const CurriculumHub = () => {
                                             animate={{ opacity: 1, y: 0 }}
                                             className="space-y-4"
                                           >
-                                            {/* Explanatory text */}
+                                            {/* Explanatory notes box */}
                                             {quizQuestions[quizIdx].explanation && (
-                                              <div className="p-4 bg-slate-900 border border-white/5 text-[10px] font-semibold text-text-secondary rounded-[4px] leading-relaxed">
+                                              <div className="p-4 bg-slate-900 border border-white/5 text-[10px] font-semibold text-slate-400 rounded-[4px] leading-relaxed">
                                                 <span className="block text-[8px] font-bold text-purple-400 uppercase tracking-widest mb-1">Concept Guidance</span>
                                                 {quizQuestions[quizIdx].explanation}
                                               </div>
@@ -1085,7 +1468,7 @@ const CurriculumHub = () => {
                                             
                                             <button
                                               onClick={nextQuizQuestion}
-                                              className="w-full py-3.5 bg-purple-500 border-2 border-black text-black font-black uppercase tracking-widest text-[9px] rounded-[4px] hover:bg-purple-400 shadow-[3px_3px_0_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all flex items-center justify-center gap-2"
+                                              className="w-full py-4 bg-purple-500 border-2 border-black text-black font-black uppercase tracking-widest text-[10px] rounded-[4px] hover:bg-purple-400 shadow-[3px_3px_0_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all flex items-center justify-center gap-2"
                                             >
                                               {quizIdx + 1 === quizQuestions.length ? 'Finish Quiz 🏆' : 'Next Question ➔'}
                                             </button>
@@ -1114,7 +1497,6 @@ const CurriculumHub = () => {
       <AnimatePresence>
         {showCheatsheet && activeSubject && (
           <div className="fixed inset-0 z-50 flex justify-end">
-            {/* Backdrop filter */}
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -1123,7 +1505,6 @@ const CurriculumHub = () => {
               className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             />
 
-            {/* Slide Drawer Content */}
             <motion.div
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
@@ -1132,14 +1513,14 @@ const CurriculumHub = () => {
               className="relative w-full max-w-md h-full bg-slate-950 border-l-4 border-black p-8 shadow-2xl flex flex-col justify-between z-10 text-text-primary"
             >
               <div className="space-y-6 flex-1 flex flex-col overflow-hidden">
-                <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                <div className="flex items-center justify-between border-b-2 border-black pb-4">
                   <div className="flex items-center gap-2 text-purple-400">
-                    <Book className="w-5 h-5" />
-                    <h3 className="text-lg font-black uppercase">Formula Cheatsheet</h3>
+                    <Book className="w-5 h-5 animate-pulse" />
+                    <h3 className="text-xl font-black uppercase tracking-tight">Formula Matrix Cheatsheet</h3>
                   </div>
                   <button 
                     onClick={() => setShowCheatsheet(false)}
-                    className="p-2 bg-slate-900 border border-black hover:bg-slate-800 text-text-muted hover:text-white rounded-[4px]"
+                    className="p-2.5 bg-slate-900 border-2 border-black hover:bg-slate-800 text-text-muted hover:text-white rounded-[4px]"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -1150,10 +1531,10 @@ const CurriculumHub = () => {
                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
                   <input
                     type="text"
-                    placeholder="Search equations or chapters..."
+                    placeholder="Search equations..."
                     value={cheatsheetSearch}
                     onChange={(e) => setCheatsheetSearch(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-slate-900 border-2 border-black text-xs placeholder:text-text-muted focus:border-purple-500 focus:outline-none rounded-[4px]"
+                    className="w-full pl-10 pr-4 py-3 bg-slate-900 border-2 border-black text-xs font-semibold placeholder:text-text-muted focus:border-purple-500 focus:outline-none rounded-[4px]"
                   />
                 </div>
 
@@ -1165,16 +1546,16 @@ const CurriculumHub = () => {
                     </div>
                   ) : (
                     filteredFormulas.map((item, idx) => (
-                      <div key={idx} className="bg-slate-900 border border-white/5 p-4 rounded-[4px] space-y-2 relative overflow-hidden group">
-                        <span className="block text-[8px] font-black uppercase text-purple-400">
+                      <div key={idx} className="bg-slate-900 border-2 border-black p-4 rounded-[4px] space-y-2 relative overflow-hidden group shadow-[3px_3px_0_#000]">
+                        <span className="block text-[8px] font-black uppercase text-purple-400 tracking-widest">
                           {item.chapterTitle}
                         </span>
-                        <div className="bg-black/40 p-3 rounded font-mono text-[11px] text-green-400 border border-black/40 select-all leading-normal">
+                        <div className="bg-slate-950 p-3 rounded font-mono text-[11px] text-green-400 border border-black/40 select-all leading-normal">
                           {item.formula}
                         </div>
                         <button
                           onClick={() => copyToClipboard(item.formula)}
-                          className="absolute top-3 right-3 p-1.5 bg-slate-800 border border-black/60 rounded hover:bg-slate-700 hover:text-white text-text-muted transition-colors opacity-0 group-hover:opacity-100"
+                          className="absolute top-3 right-3 p-1.5 bg-slate-800 border border-black rounded hover:bg-slate-700 hover:text-white text-text-muted transition-colors opacity-0 group-hover:opacity-100"
                         >
                           {copiedFormula === item.formula ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
                         </button>
@@ -1185,8 +1566,8 @@ const CurriculumHub = () => {
               </div>
 
               {/* Bottom footer bar */}
-              <div className="pt-4 border-t border-white/10 text-center text-[10px] text-text-muted font-bold">
-                Formula values retrieved directly from NCERT textbook curriculum guidelines.
+              <div className="pt-4 border-t-2 border-black text-center text-[10px] text-text-muted font-black uppercase tracking-wider">
+                Retrieved directly from official NCERT guidelines.
               </div>
             </motion.div>
           </div>

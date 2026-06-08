@@ -253,24 +253,30 @@ export const authService = {
       return { status: 'increment' };
     }
 
-    // Check daily login reward trigger
-    const lastReward = user.last_login_reward_date ? new Date(user.last_login_reward_date) : null;
-    const isNewDay = !lastReward || now.toDateString() !== lastReward.toDateString();
-    if (isNewDay) {
-      let streakCount = user.login_streak || 1;
-      if (lastReward) {
-        const diffHours = (now - lastReward) / (1000 * 60 * 60);
-        if (diffHours > 48) {
-          streakCount = 1;
-        } else if (diffHours > 24 || now.getDate() !== lastReward.getDate()) {
-          streakCount = (streakCount % 7) + 1;
+    // Check daily login reward trigger — only fire once per browser session
+    const rewardShownKey = 'acadevance_reward_shown_session';
+    if (!sessionStorage.getItem(rewardShownKey)) {
+      // Re-read user fresh in case a claim happened earlier this session
+      const freshUser = authService.me() || user;
+      const lastReward = freshUser.last_login_reward_date ? new Date(freshUser.last_login_reward_date) : null;
+      const isNewDay = !lastReward || now.toDateString() !== lastReward.toDateString();
+      if (isNewDay) {
+        sessionStorage.setItem(rewardShownKey, '1');
+        let streakCount = freshUser.login_streak || 1;
+        if (lastReward) {
+          const rewardDiffHours = (now - lastReward) / (1000 * 60 * 60);
+          if (rewardDiffHours > 48) {
+            streakCount = 1;
+          } else if (rewardDiffHours > 24 || now.getDate() !== lastReward.getDate()) {
+            streakCount = (streakCount % 7) + 1;
+          }
         }
+        setTimeout(() => {
+          window.dispatchEvent(new CustomEvent('acadevance_show_login_reward', {
+            detail: { day: streakCount }
+          }));
+        }, 1500);
       }
-      setTimeout(() => {
-        window.dispatchEvent(new CustomEvent('acadevance_show_login_reward', {
-          detail: { day: streakCount }
-        }));
-      }, 1500);
     }
 
     // Keep the local timestamp moving forward as the user is actively navigating

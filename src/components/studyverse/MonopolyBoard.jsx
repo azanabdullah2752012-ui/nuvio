@@ -38,10 +38,63 @@ const MonopolyBoard = ({ onWin }) => {
       const randomDeck = decks[Math.floor(Math.random() * decks.length)];
       if (randomDeck.cards && randomDeck.cards.length > 0) {
         const card = randomDeck.cards[Math.floor(Math.random() * randomDeck.cards.length)];
+        
+        const correct = String(card.back).trim();
+        const distractors = new Set();
+        
+        // 1. If it's a number, make numeric offsets
+        const num = parseFloat(correct);
+        if (!isNaN(num) && String(num) === correct) {
+          distractors.add(String(num + 1));
+          distractors.add(String(num - 1));
+          distractors.add(String(num * 2));
+          distractors.add(String(num + 2));
+        } else {
+          // If it contains a number pattern
+          const numMatch = correct.match(/(-?\d+(?:\.\d+)?)/);
+          if (numMatch) {
+            const originalNumStr = numMatch[1];
+            const originalNum = parseFloat(originalNumStr);
+            const offsets = [originalNum + 1, originalNum - 1, originalNum * 2, originalNum + 2];
+            offsets.forEach(offset => {
+              const formatted = Number.isInteger(offset) ? String(offset) : offset.toFixed(1);
+              const replaced = correct.replace(originalNumStr, formatted);
+              if (replaced !== correct) {
+                distractors.add(replaced);
+              }
+            });
+          }
+        }
+        
+        // 2. Add other cards' answers from the same deck
+        randomDeck.cards.forEach(c => {
+          if (c.back && c.back.trim() !== correct && c.back.trim().length < 80) {
+            distractors.add(c.back.trim());
+          }
+        });
+        
+        // 3. Fallbacks
+        const fallbacks = [
+          "Not covered in current lesson plan.",
+          "Requires further experimental verification.",
+          "Depends on standard textbook axioms.",
+          "None of the mentioned statements.",
+          "Value depends on context parameters."
+        ];
+        let idx = 0;
+        while (distractors.size < 3 && idx < fallbacks.length) {
+          const val = fallbacks[idx];
+          if (val !== correct) distractors.add(val);
+          idx++;
+        }
+        
+        distractors.delete(correct);
+        const opts = [correct, ...Array.from(distractors).slice(0, 3)].sort(() => Math.random() - 0.5);
+
         return {
           q: card.front,
           a: card.back,
-          opts: [card.back, "Option B", "Option C", "Option D"].sort(() => Math.random() - 0.5),
+          opts: opts,
           subject: randomDeck.title || randomDeck.name || 'Flashcard'
         };
       }
@@ -65,21 +118,68 @@ const MonopolyBoard = ({ onWin }) => {
       }
 
       if (item) {
+        const correct = String(item.a).trim();
         const allAnswers = [];
         chapters.forEach(ch => {
           if (ch.qna) ch.qna.forEach(q => allAnswers.push(q.a));
           if (ch.flashcards) ch.flashcards.forEach(f => allAnswers.push(f.back));
         });
-        const otherAnswers = Array.from(new Set(allAnswers.filter(ans => ans !== item.a)));
-        const distractors = otherAnswers.sort(() => Math.random() - 0.5).slice(0, 3);
-        while (distractors.length < 3) {
-          distractors.push(`Distractor Option ${distractors.length + 1}`);
+        
+        const distractors = new Set();
+        
+        // 1. If it's a number, make numeric offsets
+        const num = parseFloat(correct);
+        if (!isNaN(num) && String(num) === correct) {
+          distractors.add(String(num + 1));
+          distractors.add(String(num - 1));
+          distractors.add(String(num * 2));
+          distractors.add(String(num + 2));
+        } else {
+          // If it contains a number pattern
+          const numMatch = correct.match(/(-?\d+(?:\.\d+)?)/);
+          if (numMatch) {
+            const originalNumStr = numMatch[1];
+            const originalNum = parseFloat(originalNumStr);
+            const offsets = [originalNum + 1, originalNum - 1, originalNum * 2, originalNum + 2];
+            offsets.forEach(offset => {
+              const formatted = Number.isInteger(offset) ? String(offset) : offset.toFixed(1);
+              const replaced = correct.replace(originalNumStr, formatted);
+              if (replaced !== correct) {
+                distractors.add(replaced);
+              }
+            });
+          }
         }
         
+        // 2. Add other answers from the same chapter/subject
+        allAnswers.forEach(ans => {
+          if (ans && ans.trim() !== correct && ans.trim().length < 80) {
+            distractors.add(ans.trim());
+          }
+        });
+        
+        // 3. Fallbacks
+        const fallbacks = [
+          "It is a constant of the coordinate space.",
+          "Cannot be determined under current definitions.",
+          "Value remains conserved globally.",
+          "None of the mentioned statements.",
+          "Both statements are true depending on parameters."
+        ];
+        let idx = 0;
+        while (distractors.size < 3 && idx < fallbacks.length) {
+          const val = fallbacks[idx];
+          if (val !== correct) distractors.add(val);
+          idx++;
+        }
+        
+        distractors.delete(correct);
+        const opts = [correct, ...Array.from(distractors).slice(0, 3)].sort(() => Math.random() - 0.5);
+
         return {
           q: item.q,
           a: item.a,
-          opts: [item.a, ...distractors].sort(() => Math.random() - 0.5),
+          opts: opts,
           subject: randomSubject
         };
       }

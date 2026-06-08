@@ -1,207 +1,466 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  GraduationCap, 
-  ArrowRight, 
-  Globe, 
-  Users, 
-  Zap, 
-  CheckCircle2,
-  Mail,
-  Lock,
-  Loader2
+  GraduationCap, ArrowRight, Globe, Users, Zap, CheckCircle2,
+  Mail, Lock, Loader2, Sparkles, Trophy, Brain, Target,
+  BookOpen, Star, Shield, TrendingUp, Gamepad2, ChevronRight,
+  Flame, Clock
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
 import { authService } from '../services/authService';
 import { supabase } from '../lib/supabase';
 import GoogleAuthButton from '../components/auth/GoogleAuthButton';
+import AnimatedBackground from '../components/AnimatedBackground';
 
+/* ── Animated counter hook ─────────────────────────────────── */
+const useCounter = (target, duration = 2000, start = false) => {
+  const [value, setValue] = useState(0);
+  useEffect(() => {
+    if (!start) return;
+    let startTime = null;
+    const step = (ts) => {
+      if (!startTime) startTime = ts;
+      const p = Math.min((ts - startTime) / duration, 1);
+      setValue(Math.floor(p * target));
+      if (p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }, [target, duration, start]);
+  return value;
+};
+
+/* ── Floating glass stat card ───────────────────────────────── */
+const StatCard = ({ icon: Icon, value, label, color, delay, started }) => {
+  const count = useCounter(value, 2000, started);
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+      className="nv-card flex flex-col items-center gap-2 p-5 min-w-[140px]"
+    >
+      <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${color}`}>
+        <Icon className="w-5 h-5 text-white" />
+      </div>
+      <div className="nv-stat-number text-3xl font-black">{count.toLocaleString()}+</div>
+      <div className="text-[10px] font-black uppercase tracking-widest text-text-muted text-center leading-tight">{label}</div>
+    </motion.div>
+  );
+};
+
+/* ── Feature card ───────────────────────────────────────────── */
+const FeatureCard = ({ icon: Icon, title, desc, color, delay }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 24 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, margin: '-30px' }}
+    transition={{ delay, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+    whileHover={{ y: -8, scale: 1.02 }}
+    className="nv-card group cursor-default p-6"
+  >
+    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 ${color} transition-transform duration-300 group-hover:scale-110`}>
+      <Icon className="w-6 h-6 text-white" />
+    </div>
+    <h3 className="text-white font-black uppercase tracking-tight text-base mb-2">{title}</h3>
+    <p className="text-text-muted text-sm font-medium leading-relaxed">{desc}</p>
+  </motion.div>
+);
+
+/* ── Scrolling badge ticker ──────────────────────────────────── */
+const BadgeTicker = () => {
+  const badges = [
+    '🔥 XP System', '⚡ Boss Raids', '🧠 Active Recall', '🎯 Spaced Repetition',
+    '🏆 Leaderboards', '🎮 StudyVerse', '📚 CBSE Curriculum', '🚀 Journey Map',
+    '💎 Seasonal Pass', '🌙 Focus Timer', '📝 Essay Forge', '🔔 Daily Missions'
+  ];
+  return (
+    <div className="relative w-full overflow-hidden py-3 my-8">
+      <div className="absolute left-0 top-0 h-full w-20 z-10 pointer-events-none"
+           style={{ background: 'linear-gradient(to right, #020308, transparent)' }} />
+      <div className="absolute right-0 top-0 h-full w-20 z-10 pointer-events-none"
+           style={{ background: 'linear-gradient(to left, #020308, transparent)' }} />
+      <motion.div
+        className="flex gap-4 w-max"
+        animate={{ x: [0, -1800] }}
+        transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
+      >
+        {[...badges, ...badges].map((b, i) => (
+          <span key={i} className="nv-pill px-4 py-2 text-[10px] font-black uppercase tracking-widest whitespace-nowrap flex-shrink-0">
+            {b}
+          </span>
+        ))}
+      </motion.div>
+    </div>
+  );
+};
+
+/* ── Main Landing Page ──────────────────────────────────────── */
 const Landing = () => {
   const [loading, setLoading] = useState(false);
   const [showLoginForm, setShowLoginForm] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [countersStarted, setCountersStarted] = useState(false);
+  const statsRef = useRef(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Session detection moved to global AuthOrchestrator in App.jsx
-    // This hook is now reserved for page-specific lifecycle events
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setCountersStarted(true); observer.disconnect(); } },
+      { threshold: 0.3 }
+    );
+    if (statsRef.current) observer.observe(statsRef.current);
+    return () => observer.disconnect();
   }, []);
 
   const handleGoogleSignIn = async () => {
     setLoading(true);
-    try {
-      await authService.signInWithGoogle();
-    } catch (err) {
-      console.error(err);
-      setLoading(false);
-    }
+    try { await authService.signInWithGoogle(); }
+    catch (err) { console.error(err); setLoading(false); }
   };
 
   const handleCredentialLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
-    
     try {
       const user = await authService.login(email, password);
-      if (user.role === 'admin') {
-        navigate('/admin');
-      } else if (user.onboarding_completed) {
-        navigate('/dashboard');
-      } else {
-        navigate('/onboarding');
-      }
+      if (user.role === 'admin') navigate('/admin');
+      else if (user.onboarding_completed) navigate('/dashboard');
+      else navigate('/onboarding');
     } catch (err) {
-      setError(err.message || 'Authentication failed. Check your login credentials.');
-    } finally {
-      setLoading(false);
-    }
+      setError(err.message || 'Authentication failed. Check your credentials.');
+    } finally { setLoading(false); }
   };
 
-  return (
-    <div className="min-h-screen bg-background-base text-text-primary overflow-x-hidden relative">
-      {/* Background Glow */}
-      <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-nuvio-purple-500/10 blur-[150px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-5%] w-[40%] h-[40%] bg-nuvio-blue/10 blur-[120px] rounded-full pointer-events-none" />
+  const features = [
+    { icon: Brain, title: 'Active Recall', desc: 'Quest-based flashcard journeys that encode concepts deeply into long-term memory.', color: 'bg-nuvio-purple-500/90', delay: 0.3 },
+    { icon: Gamepad2, title: 'StudyVerse', desc: 'A multiplayer universe with boss raids, trivia battles, and cooperative challenges.', color: 'bg-nuvio-cyan/90', delay: 0.35 },
+    { icon: Target, title: 'Spaced Repetition', desc: 'Leitner box algorithm that schedules reviews at the scientifically optimal moment.', color: 'bg-nuvio-blue/90', delay: 0.4 },
+    { icon: TrendingUp, title: 'XP & Levels', desc: 'Every task, quiz, and session awards XP, pushing you up a global ranking ladder.', color: 'bg-nuvio-green/90', delay: 0.45 },
+    { icon: BookOpen, title: 'CBSE Curriculum', desc: 'Full Chapter → Topic → Subtopic breakdown for all core 9th grade subjects.', color: 'bg-nuvio-yellow/90', delay: 0.5 },
+    { icon: Trophy, title: 'Leaderboards', desc: 'Compete with peers school-wide and globally. Rise through the ERA rankings.', color: 'bg-nuvio-red/90', delay: 0.55 },
+  ];
 
-      {/* Nav */}
-      <nav className="relative z-10 flex items-center justify-between px-6 py-8 md:px-12 max-w-7xl mx-auto">
-        <div className="flex items-center gap-2">
-          <div className="w-10 h-10 bg-nuvio-purple-500 rounded-xl flex items-center justify-center shadow-lg shadow-nuvio-purple-500/20">
-            <GraduationCap className="text-white w-6 h-6" />
+  return (
+    <div className="min-h-screen text-text-primary overflow-x-hidden relative" style={{ background: 'var(--bg-base)' }}>
+
+      {/* Rich animated background for landing */}
+      <AnimatedBackground variant="hero" />
+
+      {/* Extra hero-specific floating shapes */}
+      <div aria-hidden="true" style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0, overflow: 'hidden' }}>
+        {/* Rotating hex shapes */}
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 80, repeat: Infinity, ease: 'linear' }}
+          style={{
+            position: 'absolute', top: '15%', right: '8%',
+            width: 200, height: 200, opacity: 0.04,
+            border: '1px solid rgba(168,85,247,0.8)',
+            borderRadius: '30% 70% 70% 30% / 30% 30% 70% 70%',
+          }}
+        />
+        <motion.div
+          animate={{ rotate: -360 }}
+          transition={{ duration: 60, repeat: Infinity, ease: 'linear' }}
+          style={{
+            position: 'absolute', top: '20%', right: '10%',
+            width: 120, height: 120, opacity: 0.06,
+            border: '1px solid rgba(6,182,212,0.8)',
+            borderRadius: '50%',
+          }}
+        />
+        <motion.div
+          animate={{ y: [0, -30, 0], rotate: [0, 15, 0] }}
+          transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
+          style={{
+            position: 'absolute', top: '60%', left: '5%',
+            width: 80, height: 80, opacity: 0.05,
+            background: 'rgba(236,72,153,0.4)',
+            borderRadius: '16px',
+            transform: 'rotate(45deg)',
+          }}
+        />
+        <motion.div
+          animate={{ y: [0, 20, 0], x: [0, 10, 0] }}
+          transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut', delay: 3 }}
+          style={{
+            position: 'absolute', bottom: '20%', right: '15%',
+            width: 60, height: 60, opacity: 0.06,
+            border: '2px solid rgba(168,85,247,0.6)',
+            borderRadius: '12px',
+          }}
+        />
+      </div>
+
+      {/* ── NAV ───────────────────────────────────────────────── */}
+      <motion.nav
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="sticky top-0 z-50 flex items-center justify-between px-6 py-4 md:px-12 max-w-7xl mx-auto"
+        style={{
+          background: 'rgba(2, 3, 8, 0.8)',
+          backdropFilter: 'blur(20px)',
+          borderBottom: '1px solid rgba(255,255,255,0.06)',
+        }}
+      >
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center"
+               style={{ background: 'linear-gradient(135deg, #a855f7, #06b6d4)' }}>
+            <GraduationCap className="text-white w-5 h-5" />
           </div>
-          <span className="text-2xl font-black uppercase tracking-tighter">Acadevance</span>
+          <span className="text-xl font-black uppercase tracking-tighter"
+                style={{ background: 'linear-gradient(135deg, #ffffff 30%, #d8b4fe 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            Acadevance
+          </span>
         </div>
-        <div className="hidden md:flex items-center gap-8 lowercase text-sm font-bold text-text-secondary">
-          <a href="#" className="hover:text-nuvio-purple-400 transition-colors">features</a>
-          <a href="#" className="hover:text-nuvio-purple-400 transition-colors">games</a>
-          <a href="#" className="hover:text-nuvio-purple-400 transition-colors">pricing</a>
+
+        <div className="hidden md:flex items-center gap-8 text-sm font-semibold text-text-muted">
+          {['Features', 'Games', 'Curriculum', 'Leaderboard'].map(l => (
+            <a key={l} href="#" className="hover:text-text-primary transition-colors duration-200">{l}</a>
+          ))}
         </div>
-        <button 
+
+        <button
           onClick={() => setShowLoginForm(true)}
-          className="nv-btn-secondary px-6 md:px-8 py-2 min-h-[44px] text-xs uppercase font-black"
+          className="nv-btn-secondary px-5 py-2.5 text-xs"
         >
           Sign In
         </button>
-      </nav>
+      </motion.nav>
 
-      {/* Hero */}
-      <main className="relative z-10 max-w-7xl mx-auto px-6 pt-16 md:pt-24 pb-32 flex flex-col items-center text-center">
+      {/* ── HERO ─────────────────────────────────────────────── */}
+      <main className="relative z-10 max-w-7xl mx-auto px-6 pt-20 md:pt-28 pb-16 flex flex-col items-center text-center">
+
+        {/* Status badge */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.1, duration: 0.5 }}
+          className="nv-pill inline-flex items-center gap-2 px-4 py-2 text-[10px] font-black uppercase tracking-widest mb-10"
+        >
+          <div className="w-2 h-2 rounded-full bg-nuvio-green animate-pulse" />
+          StudyVerse Alpha 2.0 — Now Live
+          <ChevronRight className="w-3 h-3 opacity-60" />
+        </motion.div>
+
+        {/* Headline */}
+        <motion.h1
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="text-5xl sm:text-7xl md:text-8xl lg:text-[96px] font-black uppercase tracking-tighter leading-[0.88] mb-8 nv-shimmer-text"
+        >
+          Study like it&apos;s<br />
+          a video game
+        </motion.h1>
+
+        {/* Sub */}
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.35, duration: 0.7 }}
+          className="max-w-2xl text-text-secondary text-base md:text-lg font-medium leading-relaxed mb-12"
+        >
+          Acadevance transforms your study sessions into epic quests. Earn XP, battle in boss raids, 
+          master CBSE curriculum, and climb global leaderboards — all in one platform.
+        </motion.p>
+
+        {/* CTA buttons */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.45, duration: 0.6 }}
+          className="flex flex-col sm:flex-row items-center gap-4 w-full max-w-md mb-8"
+        >
+          <motion.div whileHover={{ scale: 1.03, y: -2 }} whileTap={{ scale: 0.97 }} className="w-full">
+            <GoogleAuthButton onClick={handleGoogleSignIn} disabled={loading} />
+          </motion.div>
+        </motion.div>
+
+        {/* Dev bypass */}
+        {(window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && (
+          <motion.button
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.55 }}
+            onClick={() => {
+              const devProfile = {
+                id: 'dev-guest-id', email: 'azanabdullah27.5.2012@gmail.com',
+                full_name: 'Dev Guest', avatar_emoji: '🛠️', level: 9, xp: 999,
+                era_tokens: 5000, role: 'admin', grade_level: '9th',
+                onboarding_completed: true, last_activity_date: new Date().toISOString()
+              };
+              localStorage.setItem('acadevance_user', JSON.stringify(devProfile));
+              window.dispatchEvent(new CustomEvent('acadevance_auth_change', { detail: devProfile }));
+              navigate('/dashboard');
+            }}
+            className="w-full max-w-md py-3.5 px-8 border border-nuvio-purple-500/40 bg-nuvio-purple-500/08 hover:bg-nuvio-purple-500/15 text-nuvio-purple-300 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all"
+            style={{ background: 'rgba(168,85,247,0.06)' }}
+          >
+            ⚡ Enter Developer Sandbox (Local Bypass)
+          </motion.button>
+        )}
+
+        {/* Trustmarks */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.65 }}
+          className="mt-6 flex items-center gap-6 text-[11px] font-black uppercase tracking-[0.2em] text-text-muted"
+        >
+          <span className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-nuvio-green" />No credit card</span>
+          <span className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-nuvio-green" />100% free beta</span>
+          <span className="flex items-center gap-2"><Shield className="w-4 h-4 text-nuvio-cyan" />Secure auth</span>
+        </motion.div>
+
+        {/* Badge ticker */}
+        <div className="w-full max-w-5xl mt-12">
+          <BadgeTicker />
+        </div>
+      </main>
+
+      {/* ── STATS ─────────────────────────────────────────────── */}
+      <section ref={statsRef} className="relative z-10 max-w-7xl mx-auto px-6 pb-20">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-full mb-8"
-        >
-          <div className="w-2 h-2 rounded-full bg-nuvio-green animate-pulse" />
-          <span className="text-[10px] font-black uppercase tracking-widest text-text-muted">StudyVerse Alpha 2.0 now live</span>
-        </motion.div>
-
-        <motion.h1 
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="text-5xl md:text-8xl font-black uppercase tracking-tighter leading-[0.9] md:leading-[0.85] mb-8"
-        >
-          Study like it's <br /> 
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-nuvio-purple-400 to-nuvio-blue drop-shadow-sm">a video game</span>
-        </motion.h1>
-
-        <motion.p 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="max-w-2xl text-text-secondary text-lg md:text-xl font-medium leading-relaxed mb-12"
+          className="text-center mb-12"
         >
-          Acadevance is a gamified learning platform that helps students advance academically 
-          through structured learning, productivity tools, challenges, rewards, and measurable progress.
-        </motion.p>
-
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.3 }}
-          className="flex flex-col items-center gap-4 w-full max-w-md"
-        >
-          <GoogleAuthButton 
-            onClick={handleGoogleSignIn}
-            disabled={loading}
-          />
-
-          {(window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && (
-            <button
-              onClick={() => {
-                const devProfile = {
-                  id: 'dev-guest-id',
-                  email: 'azanabdullah27.5.2012@gmail.com',
-                  full_name: 'Dev Guest',
-                  avatar_emoji: '🛠️',
-                  level: 9,
-                  xp: 999,
-                  era_tokens: 5000,
-                  role: 'admin',
-                  grade_level: '9th',
-                  onboarding_completed: true,
-                  last_activity_date: new Date().toISOString()
-                };
-                localStorage.setItem('acadevance_user', JSON.stringify(devProfile));
-                window.dispatchEvent(new CustomEvent('acadevance_auth_change', { detail: devProfile }));
-                navigate('/dashboard');
-              }}
-              className="w-full py-4 px-8 border border-nuvio-purple-500/50 bg-nuvio-purple-500/10 hover:bg-nuvio-purple-500/20 text-nuvio-purple-300 rounded-full font-black uppercase tracking-widest text-[10px] shadow-lg shadow-nuvio-purple-500/10 transition-all active:scale-[0.98]"
-            >
-              ⚡ Enter Developer Sandbox (Local Bypass)
-            </button>
-          )}
+          <div className="nv-divider mb-8 mx-auto max-w-xs" />
+          <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter mb-3"
+              style={{ background: 'linear-gradient(135deg, #ffffff 30%, #d8b4fe 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            Built for serious students
+          </h2>
+          <p className="text-text-muted text-sm font-medium">Numbers that speak for themselves</p>
         </motion.div>
 
-        <motion.div 
-           initial={{ opacity: 0 }}
-           animate={{ opacity: 1 }}
-           transition={{ delay: 0.5 }}
-           className="mt-8 flex items-center gap-8 text-[11px] font-black uppercase tracking-[0.2em] text-text-muted"
+        <div className="flex flex-wrap gap-4 justify-center">
+          <StatCard icon={Users} value={1200} label="Active Learners" color="bg-nuvio-purple-500/80" delay={0.1} started={countersStarted} />
+          <StatCard icon={Zap} value={48000} label="XP Earned Today" color="bg-nuvio-yellow/80" delay={0.15} started={countersStarted} />
+          <StatCard icon={Trophy} value={320} label="Boss Raids Won" color="bg-nuvio-cyan/80" delay={0.2} started={countersStarted} />
+          <StatCard icon={Brain} value={9600} label="Flashcards Reviewed" color="bg-nuvio-green/80" delay={0.25} started={countersStarted} />
+          <StatCard icon={Flame} value={87} label="Day Streak Record" color="bg-nuvio-red/80" delay={0.3} started={countersStarted} />
+        </div>
+      </section>
+
+      {/* ── FEATURES ─────────────────────────────────────────── */}
+      <section className="relative z-10 max-w-7xl mx-auto px-6 pb-24">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center mb-14"
         >
-          <span className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-nuvio-green" /> no credit card</span>
-          <span className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-nuvio-green" /> 100% free beta</span>
+          <div className="nv-divider mb-8 mx-auto max-w-xs" />
+          <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter mb-4"
+              style={{ background: 'linear-gradient(135deg, #ffffff 30%, #67e8f9 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            Everything you need
+          </h2>
+          <p className="text-text-muted text-sm font-medium max-w-lg mx-auto leading-relaxed">
+            A complete academic ecosystem built around proven learning science and addictive game design.
+          </p>
         </motion.div>
 
-      </main>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {features.map(f => <FeatureCard key={f.title} {...f} />)}
+        </div>
+      </section>
 
-      {/* Login Modal */}
+      {/* ── FINAL CTA ──────────────────────────────────────────── */}
+      <section className="relative z-10 max-w-3xl mx-auto px-6 pb-24 text-center">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.96 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          className="nv-card nv-card-glow p-10 md:p-16"
+        >
+          <div className="w-16 h-16 rounded-3xl mx-auto mb-6 flex items-center justify-center"
+               style={{ background: 'linear-gradient(135deg, #a855f7, #06b6d4)' }}>
+            <Sparkles className="w-8 h-8 text-white" />
+          </div>
+          <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter mb-4"
+              style={{ background: 'linear-gradient(135deg, #ffffff 30%, #d8b4fe 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            Ready to level up?
+          </h2>
+          <p className="text-text-muted text-base font-medium mb-8 max-w-lg mx-auto leading-relaxed">
+            Join thousands of students already turning study time into the most productive — and fun — part of their day.
+          </p>
+          <button
+            onClick={() => setShowLoginForm(true)}
+            className="nv-btn-primary mx-auto"
+          >
+            Start for Free <ArrowRight className="w-5 h-5" />
+          </button>
+          <p className="mt-6 text-text-muted text-[11px] font-black uppercase tracking-widest">
+            No credit card required · Free during beta
+          </p>
+        </motion.div>
+      </section>
+
+      {/* ── FOOTER ─────────────────────────────────────────────── */}
+      <footer className="relative z-10 border-t border-white/5 py-10 px-6">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-lg flex items-center justify-center"
+                 style={{ background: 'linear-gradient(135deg, #a855f7, #06b6d4)' }}>
+              <GraduationCap className="text-white w-4 h-4" />
+            </div>
+            <span className="font-black uppercase tracking-tight text-sm text-text-muted">Acadevance</span>
+          </div>
+          <p className="text-text-muted text-[11px] font-bold uppercase tracking-widest">
+            © 2026 Acadevance. Built for learners.
+          </p>
+          <div className="flex items-center gap-4 text-text-muted text-[11px] font-bold uppercase tracking-widest">
+            <a href="#" className="hover:text-text-primary transition-colors">Privacy</a>
+            <a href="#" className="hover:text-text-primary transition-colors">Terms</a>
+          </div>
+        </div>
+      </footer>
+
+      {/* ── LOGIN MODAL ─────────────────────────────────────────── */}
       <AnimatePresence>
         {showLoginForm && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
-            <motion.div 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
-              exit={{ opacity: 0 }} 
+            <motion.div
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setShowLoginForm(false)}
-              className="absolute inset-0 bg-background-base/80 backdrop-blur-xl" 
+              className="absolute inset-0"
+              style={{ background: 'rgba(2,3,8,0.85)', backdropFilter: 'blur(24px)' }}
             />
-            <motion.div 
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 24 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="nv-card w-full max-w-md p-10 space-y-8 relative z-10 border-nuvio-purple-500/30"
+              exit={{ scale: 0.9, opacity: 0, y: 24 }}
+              transition={{ type: 'spring', damping: 28, stiffness: 340 }}
+              className="nv-card w-full max-w-md p-10 space-y-8 relative z-10"
             >
               <div className="space-y-2 text-center">
-                <h2 className="text-3xl font-black text-white uppercase tracking-tighter">Welcome Back</h2>
-                <p className="text-text-secondary text-sm font-bold uppercase tracking-widest leading-none opacity-60">Enter your credentials to continue</p>
+                <div className="w-12 h-12 rounded-2xl mx-auto mb-4 flex items-center justify-center"
+                     style={{ background: 'linear-gradient(135deg, #a855f7, #06b6d4)' }}>
+                  <GraduationCap className="w-6 h-6 text-white" />
+                </div>
+                <h2 className="text-2xl font-black uppercase tracking-tighter"
+                    style={{ background: 'linear-gradient(135deg, #ffffff 30%, #d8b4fe 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                  Welcome Back
+                </h2>
+                <p className="text-text-muted text-xs font-bold uppercase tracking-widest">Enter your credentials to continue</p>
               </div>
 
-              <form onSubmit={handleCredentialLogin} className="space-y-6">
+              <form onSubmit={handleCredentialLogin} className="space-y-5">
                 <div className="space-y-2">
                   <label className="nv-label">Email Address</label>
                   <div className="relative">
-                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" />
-                    <input 
-                      type="email" 
-                      required 
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white focus:border-nuvio-purple-500 outline-none transition-all placeholder:text-white/10"
-                      placeholder="student@nuvio.edu"
+                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+                    <input
+                      type="email" required value={email}
+                      onChange={e => setEmail(e.target.value)}
+                      className="nv-input pl-12"
+                      placeholder="student@acadevance.app"
                     />
                   </div>
                 </div>
@@ -212,13 +471,11 @@ const Landing = () => {
                     <button type="button" className="text-[10px] uppercase font-black text-nuvio-purple-400 hover:text-nuvio-purple-300">Forgot?</button>
                   </div>
                   <div className="relative">
-                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" />
-                    <input 
-                      type="password" 
-                      required 
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white focus:border-nuvio-purple-500 outline-none transition-all placeholder:text-white/10"
+                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+                    <input
+                      type="password" required value={password}
+                      onChange={e => setPassword(e.target.value)}
+                      className="nv-input pl-12"
                       placeholder="••••••••"
                     />
                   </div>
@@ -226,28 +483,16 @@ const Landing = () => {
 
                 {error && <div className="text-nuvio-red text-[10px] font-black uppercase text-center">{error}</div>}
 
-                <div className="pt-4">
-                  <button 
-                    type="submit" 
-                    disabled={loading}
-                    className="nv-btn-primary w-full py-5 text-lg shadow-xl shadow-nuvio-purple-500/20 flex items-center justify-center gap-3 group"
-                  >
-                    {loading ? (
-                      <Loader2 className="w-6 h-6 animate-spin" />
-                    ) : (
-                      <>
-                        Sign In <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                      </>
-                    )}
-                  </button>
-                </div>
+                <button type="submit" disabled={loading} className="nv-btn-primary w-full mt-2">
+                  {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <><span>Sign In</span><ArrowRight className="w-4 h-4" /></>}
+                </button>
               </form>
 
-              <div className="text-center pt-2">
-                <button 
-                  onClick={() => setShowLoginForm(false)}
-                  className="text-xs font-black text-text-muted uppercase hover:text-text-primary transition-colors"
-                >
+              <div className="nv-divider" />
+
+              <div className="text-center">
+                <button onClick={() => setShowLoginForm(false)}
+                  className="text-xs font-black text-text-muted uppercase hover:text-text-primary transition-colors">
                   Back to Landing
                 </button>
               </div>
