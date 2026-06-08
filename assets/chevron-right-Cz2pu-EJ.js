@@ -1,0 +1,1 @@
+import{r as e}from"./authService-3kJ5ktTf.js";var t=e(`chevron-right`,[[`path`,{d:`m9 18 6-6-6-6`,key:`mthhwq`}]]);export{t};
