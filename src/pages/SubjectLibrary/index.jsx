@@ -584,6 +584,7 @@ const getChapterExpandedData = (ch) => {
                       quiz={chData.quiz}
                       chapterTitle={selectedChapter.title}
                       subject={subject}
+                      grade={grade}
                     />
                   )}
 
@@ -592,6 +593,7 @@ const getChapterExpandedData = (ch) => {
                       key="step3"
                       subject={subject}
                       chapter={selectedChapter}
+                      grade={grade}
                     />
                   )}
 

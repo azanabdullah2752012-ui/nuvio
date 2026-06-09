@@ -7,14 +7,22 @@ import NarrativeMap from './Sandboxes/NarrativeMap';
 import CellExplorer from './Sandboxes/CellExplorer';
 import AtomExplorer from './Sandboxes/AtomExplorer';
 import HeronExplorer from './Sandboxes/HeronExplorer';
+import Class6MathSandbox from './Sandboxes/Class6MathSandbox';
+import Class6ScienceSandbox from './Sandboxes/Class6ScienceSandbox';
 import './styles.css';
 
-const LearningBlocks = ({ subject, chapter }) => {
+const LearningBlocks = ({ subject, chapter, grade = "9" }) => {
   const sLower = subject.toLowerCase();
   const cTitle = chapter.title.toLowerCase();
 
   // Pick visual block
   const renderInteractiveBlock = () => {
+    if (grade === "6" && sLower.includes('math')) {
+      return <Class6MathSandbox chapterTitle={chapter.title} activeConcept={null} />;
+    }
+    if (grade === "6" && sLower.includes('science')) {
+      return <Class6ScienceSandbox chapterTitle={chapter.title} activeConcept={null} />;
+    }
     if (cTitle.includes('cell')) {
       return <CellExplorer />;
     }

@@ -26,6 +26,10 @@ const Layout = () => {
       if (cachedProfile && mounted) {
         setUser(cachedProfile);
         setLoading(false);
+        if (!cachedProfile.onboarding_completed && !isAuthPage) {
+          navigate('/onboarding', { replace: true });
+          return;
+        }
       }
 
       // Step 2: Verify session and sync in the background
@@ -48,6 +52,7 @@ const Layout = () => {
             xp: 0, 
             era_tokens: 500, 
             role: isAdmin ? 'admin' : 'student',
+            onboarding_completed: false,
             achievements: [],
             stats_focus_sessions: 0,
             stats_flashcards_reviewed: 0,
@@ -69,6 +74,9 @@ const Layout = () => {
         }
 
         if (mounted) setUser(profile);
+        if (profile && !profile.onboarding_completed && !isAuthPage) {
+          if (mounted) navigate('/onboarding', { replace: true });
+        }
       } else if (!cachedProfile) {
         // No session and no cache — redirect to landing
         if (!isAuthPage && mounted) navigate('/', { replace: true });

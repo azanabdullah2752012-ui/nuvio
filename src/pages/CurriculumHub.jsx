@@ -19,11 +19,6 @@ import { gamificationService, BOSSES } from '../services/gamificationService';
 import { CURRICULUM_DATA } from '../services/curriculumData';
 
 const CLASSES = [
-  { id: '1', name: 'Class 1', subjects: ['Mathematics', 'English', 'EVS', 'Hindi'] },
-  { id: '2', name: 'Class 2', subjects: ['Mathematics', 'English', 'EVS', 'Hindi'] },
-  { id: '3', name: 'Class 3', subjects: ['Mathematics', 'Science', 'Social Science', 'English', 'Hindi'] },
-  { id: '4', name: 'Class 4', subjects: ['Mathematics', 'Science', 'Social Science', 'English', 'Hindi'] },
-  { id: '5', name: 'Class 5', subjects: ['Mathematics', 'Science', 'Social Science', 'English', 'Hindi'] },
   { id: '6', name: 'Class 6', subjects: ['Mathematics', 'Science', 'Social Science', 'English', 'Hindi'] },
   { id: '7', name: 'Class 7', subjects: ['Mathematics', 'Science', 'Social Science', 'English', 'Hindi'] },
   { id: '8', name: 'Class 8', subjects: ['Mathematics', 'Science', 'Social Science', 'English', 'Hindi'] },

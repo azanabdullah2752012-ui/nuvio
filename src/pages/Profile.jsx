@@ -318,7 +318,7 @@ const Profile = () => {
                 {user?.role === 'admin' ? 'SYSTEM ADMINISTRATOR' : 'SCHOLAR'}
               </span>
               <span className="px-4 py-2 bg-white/5 border border-white/10 text-nuvio-green rounded-xl text-[10px] font-black uppercase tracking-widest font-mono">
-                9th Grade CBSE
+                {user?.grade_level || '9th'} Grade CBSE
               </span>
               <button 
                 onClick={isEditing ? handleSave : () => setIsEditing(true)}

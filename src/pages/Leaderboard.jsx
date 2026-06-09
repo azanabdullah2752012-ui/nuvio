@@ -97,7 +97,7 @@ const Leaderboard = () => {
                className="bg-transparent text-[10px] font-black text-white uppercase tracking-widest outline-none border-none cursor-pointer"
              >
                <option value="All">All Grades</option>
-               {['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th', '11th', '12th'].map(g => (
+               {['6th', '7th', '8th', '9th', '10th', '11th', '12th'].map(g => (
                  <option key={g} value={g} className="bg-background-card">Class {g}</option>
                ))}
              </select>

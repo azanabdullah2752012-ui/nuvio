@@ -1,5 +1,3231 @@
 export const EXPANDED_CURRICULUM = {
+  "6": {
+    "Mathematics": {
+      "Patterns in Mathematics": {
+        "difficulty": "Easy",
+        "studyTime": "35 mins",
+        "pyqPattern": "Mainly focuses on finding the next elements in number sequences, visualising sequences geometrically, and explaining simple number rules (2-4 marks).",
+        "overview": {
+          "intro": "Mathematics is the creative search for patterns and explanations for why they exist. Patterns occur all around us: in nature, at home, and in the movement of stars.",
+          "realWorld": "Understanding orbital mechanics, weather forecasting, and computer coding all start with recognizing patterns in data.",
+          "whyItMatters": "Finding and explaining patterns helps us build equations that can solve real-world problems far beyond the original context."
+        },
+        "concepts": [
+          {
+            "id": "what-is-mathematics",
+            "title": "What is Mathematics?",
+            "definition": "The search for patterns and the explanations as to why they exist.",
+            "explanation": "Mathematicians look at the universe to find repeating designs or patterns. They then try to explain why these designs occur so we can use them in science and daily life.",
+            "memoryTrick": "Math is like a detective story where patterns are the clues and explanations are the solution!",
+            "commonMistake": "Thinking that math is just memorizing steps and calculations. It is actually about discovery and pattern-seeking.",
+            "visualType": "formula-showcase"
+          },
+          {
+            "id": "number-sequences",
+            "title": "Number Sequences",
+            "definition": "An ordered list of numbers that follows a specific mathematical rule.",
+            "explanation": "A sequence is a string of numbers. Some basic sequences include counting numbers, even numbers, odd numbers, squares, cubes, and triangular numbers.",
+            "memoryTrick": "Triangular numbers grow like triangles: 1, 3, 6, 10... (add 2, then 3, then 4, then 5). Squares grow like grids: 1, 4, 9, 16... (n multiplied by itself).",
+            "commonMistake": "Assuming every sequence increases by the same amount. Sequences can grow in various ways (multiplication, cumulative addition, etc.).",
+            "visualType": "formula-showcase"
+          },
+          {
+            "id": "visualising-sequences",
+            "title": "Visualising Sequences",
+            "definition": "Representing abstract number patterns using physical shapes and dots.",
+            "explanation": "Triangular numbers (1, 3, 6, 10...) form triangles. Square numbers (1, 4, 9, 16...) form grids. Hexagonal numbers (1, 7, 19, 37...) form hexagons. Cubes (1, 8, 27...) form 3D shapes.",
+            "memoryTrick": "Draw them! Seeing dots form a square or a triangle makes the math rule completely obvious.",
+            "commonMistake": "Forgetting that some numbers like 36 belong to multiple groups. 36 is both a triangular and square number!",
+            "visualType": "formula-showcase"
+          },
+          {
+            "id": "sum-of-odds",
+            "title": "Sum of Odd Numbers",
+            "definition": "Adding consecutive odd numbers starting from 1 always results in a square number.",
+            "explanation": "Adding consecutive odd numbers gives perfect squares: 1 = 1, 1+3 = 4 (2²), 1+3+5 = 9 (3²), 1+3+5+7 = 16 (4²). This happens because we can build a square grid of size n by adding L-shaped layers of odd counts.",
+            "memoryTrick": "The sum of the first n odd numbers is always n squared (n²). For example, the sum of first 10 odds is 100.",
+            "commonMistake": "Including even numbers in the sum. The pattern only works when adding consecutive odd numbers starting from 1.",
+            "visualType": "formula-showcase"
+          }
+        ],
+        "examples": [
+          {
+            "level": "Easy",
+            "title": "Next Numbers in a Sequence",
+            "problem": "Write the next three numbers of the sequence: 1, 3, 6, 10, 15, ... and state the rule.",
+            "solution": [
+              "Observe the differences between consecutive terms:",
+              "3 - 1 = 2",
+              "6 - 3 = 3",
+              "10 - 6 = 4",
+              "15 - 10 = 5",
+              "The difference increases by 1 each time. This is the sequence of triangular numbers.",
+              "To find the next term, add 6 to 15: 15 + 6 = **21**.",
+              "Next term: add 7 to 21: 21 + 7 = **28**.",
+              "Next term: add 8 to 28: 28 + 8 = **36**.",
+              "The next three numbers are 21, 28, and 36."
+            ],
+            "hint": "Find the difference between each term to identify the adding pattern."
+          },
+          {
+            "level": "Medium",
+            "title": "Sum of First 100 Odd Numbers",
+            "problem": "Without actual addition, find the value of the sum of the first 100 odd numbers: 1 + 3 + 5 + ... + 199.",
+            "solution": [
+              "We know that the sum of the first n odd numbers is equal to n squared (n²).",
+              "Here, we want to sum the first 100 odd numbers, so n = 100.",
+              "Apply the rule: Sum = 100² = 100 * 100 = **10,000**.",
+              "The sum of the first 100 odd numbers is 10,000."
+            ],
+            "hint": "Recall that adding the first n odd numbers gives n²."
+          }
+        ],
+        "quiz": [
+          {
+            "type": "mcq",
+            "q": "What do you get when you add the first 10 odd numbers starting from 1?",
+            "options": ["50", "100", "90", "110"],
+            "answer": "100",
+            "explanation": "The sum of the first n odd numbers is n². For the first 10 odd numbers, the sum is 10² = 100."
+          },
+          {
+            "type": "mcq",
+            "q": "Which of these numbers is both a triangular number and a square number?",
+            "options": ["16", "25", "36", "49"],
+            "answer": "36",
+            "explanation": "36 can be arranged as a square of 6x6 dots (6² = 36) and also as a triangle: 1+2+3+4+5+6+7+8 = 36 dots, which makes it both a square and a triangular number."
+          },
+          {
+            "type": "mcq",
+            "q": "What is the next number in the Virahānka (Fibonacci) sequence: 1, 2, 3, 5, 8, 13, 21, ...?",
+            "options": ["29", "34", "25", "42"],
+            "answer": "34",
+            "explanation": "In the Virahānka sequence, each term is the sum of the preceding two terms. Therefore, the next number is 13 + 21 = 34."
+          }
+        ],
+        "recap": [
+          "Mathematics studies **patterns and their explanations**.",
+          "**Number sequences** can be visualised as dots forming shapes.",
+          "Sum of **first n odd numbers** is **n²**.",
+          "Adding counting numbers **up and down** also gives squares (e.g. 1+2+3+2+1 = 9)."
+        ]
+      },
+      "Lines and Angles": {
+        "difficulty": "Medium",
+        "studyTime": "40 mins",
+        "pyqPattern": "Focuses on identifying points, lines, rays, line segments, naming angles correctly, and classifying/measuring angles in degrees (3-5 marks).",
+        "overview": {
+          "intro": "Geometry studies patterns in shapes. Points, lines, rays, line segments, and angles form the fundamental building blocks of geometry.",
+          "realWorld": "Architects, carpenters, and surveyors use angles and lines to design stable houses, cut wood pieces, and build straight roads.",
+          "whyItMatters": "Understanding angle sizes as amounts of rotation is essential for working with navigation compasses, mechanical tools, and physics."
+        },
+        "concepts": [
+          {
+            "id": "point-line-segment",
+            "title": "Points and Line Segments",
+            "definition": "A point marks a precise location. A line segment is the shortest route connecting two points.",
+            "explanation": "A point has no length, width, or height. It is represented by a thin dot and labeled with a capital letter. A line segment is a straight path between two points, which are its endpoints.",
+            "memoryTrick": "A point is a zero-dimensional dot. Connect two dots with the shortest straight path, and you get a line segment!",
+            "commonMistake": "Drawing a curved line segment. A line segment must be completely straight.",
+            "visualType": "formula-showcase"
+          },
+          {
+            "id": "line-and-ray",
+            "title": "Lines and Rays",
+            "definition": "A line extends endlessly in both directions. A ray starts at one point and extends endlessly in one direction.",
+            "explanation": "If you take a line segment and extend it forever on both sides, you get a line. If you start at a point and draw a line endlessly in just one direction (like a torch beam), you get a ray.",
+            "memoryTrick": "A ray has one endpoint (starting point) and one arrow. A line has two arrows extending forever. A segment has two solid endpoints.",
+            "commonMistake": "Writing ray AB as BA. The starting point must always be written first.",
+            "visualType": "formula-showcase"
+          },
+          {
+            "id": "angle-vertex-arms",
+            "title": "Angles and Rotation",
+            "definition": "An angle is formed by two rays sharing a common starting point called the vertex.",
+            "explanation": "The two rays are the arms of the angle, and the common point is the vertex. The size of an angle represents the amount of rotation needed to turn one arm to the other.",
+            "memoryTrick": "In naming an angle (like ∠ABC), the vertex letter (B) is ALWAYS in the middle!",
+            "commonMistake": "Thinking that longer arms make a bigger angle. The angle size depends only on the rotation, not arm length.",
+            "visualType": "axes-demo"
+          },
+          {
+            "id": "types-of-angles",
+            "title": "Classification of Angles",
+            "definition": "Categorizing angles based on their size in degrees.",
+            "explanation": "Angles are classified as:\n- **Acute angle**: Size is less than a right angle (< 90°).\n- **Right angle**: Exactly half of a straight angle (90°).\n- **Obtuse angle**: Greater than 90° but less than a straight angle (180°).\n- **Straight angle**: The arms lie in a straight line (180°).",
+            "memoryTrick": "Acute is 'a-cute' little sharp angle! Obtuse is a big, wide, blunt angle.",
+            "commonMistake": "Confusing straight angles (180°) with perpendicular lines (90°).",
+            "visualType": "formula-showcase"
+          }
+        ],
+        "examples": [
+          {
+            "level": "Easy",
+            "title": "Lines through Points",
+            "problem": "How many lines can pass through a single point P? How many lines can pass through two distinct points P and Q?",
+            "solution": [
+              "Through a single point P, you can draw lines in any direction. Therefore, **infinitely many** lines can pass through one point.",
+              "Between two distinct points P and Q, there is only one straight path. Therefore, **exactly one unique line** can pass through two distinct points."
+            ],
+            "hint": "Try drawing lines on a piece of paper passing through one dot, and then try drawing lines that touch two dots."
+          },
+          {
+            "level": "Medium",
+            "title": "Angle Bisectors in Folding",
+            "problem": "If a straight angle AOB is bisected, what is the measure of each resulting angle?",
+            "solution": [
+              "A straight angle AOB measures exactly 180°.",
+              "To bisect an angle means to divide it into two equal parts.",
+              "Divide 180° by 2: 180° / 2 = **90°**.",
+              "Each of the equal angles formed is a right angle (90°)."
+            ],
+            "hint": "Bisect means to cut exactly in half."
+          }
+        ],
+        "quiz": [
+          {
+            "type": "mcq",
+            "q": "What is the size of a straight angle in degrees?",
+            "options": ["90°", "180°", "360°", "45°"],
+            "answer": "180°",
+            "explanation": "A straight angle is formed by a half turn, which is exactly half of a full 360° turn. Therefore, it measures 180°."
+          },
+          {
+            "type": "mcq",
+            "q": "Which of these geometric objects has two distinct endpoints?",
+            "options": ["Line Segment", "Line", "Ray", "Point"],
+            "answer": "Line Segment",
+            "explanation": "A line segment has two fixed endpoints. A line extends forever in both directions (no endpoints), a ray has one starting point and extends forever in the other direction (one endpoint), and a point has no dimension."
+          },
+          {
+            "type": "mcq",
+            "q": "An angle of size 125° is classified as which type of angle?",
+            "options": ["Acute angle", "Right angle", "Obtuse angle", "Straight angle"],
+            "answer": "Obtuse angle",
+            "explanation": "An angle greater than 90° but less than 180° is classified as an obtuse angle. Since 125° falls in this range, it is an obtuse angle."
+          }
+        ],
+        "recap": [
+          "A **point** determines location; a **line segment** has two endpoints.",
+          "A **line** extends endlessly; a **ray** has one starting point.",
+          "An **angle** size is measured by the amount of **rotation** about the vertex.",
+          "Angles: **Acute** (< 90°), **Right** (90°), **Obtuse** (90°-180°), **Straight** (180°)."
+        ]
+      },
+      "Number Play": {
+        "difficulty": "Easy to Medium",
+        "studyTime": "35 mins",
+        "pyqPattern": "Focuses on palindromic numbers, Kaprekar constants, grid-based supercells, and simple sequence patterns like the Collatz Conjecture (3-5 marks).",
+        "overview": {
+          "intro": "Number Play explores numbers through patterns, puzzles, and mathematical riddles, building logic and critical thinking rather than simple calculations.",
+          "realWorld": "Palindromic sequences are crucial in DNA analysis, while estimation and grid optimization are used every day in logistics and game coding.",
+          "whyItMatters": "Puzzles like the Collatz Conjecture show that simple rules can lead to deeply complex and unsolved mathematical mysteries."
+        },
+        "concepts": [
+          {
+            "id": "palindromes",
+            "title": "Palindromic Numbers",
+            "definition": "Numbers that read the same forwards and backwards.",
+            "explanation": "A palindrome is symmetrical. For example, 121, 343, and 12321 are palindromes. You can create a palindrome from almost any number by repeatedly adding it to its reversed digits (e.g. 57 + 75 = 132; 132 + 231 = 363, a palindrome!).",
+            "memoryTrick": "Palindrome is like a mirror—look at it from left or right, it looks exactly the same!",
+            "commonMistake": "Thinking all symmetrical-looking numbers are palindromes. They must match exactly when reversed digit-by-digit.",
+            "visualType": "formula-showcase"
+          },
+          {
+            "id": "supercells",
+            "title": "Grid Supercells",
+            "definition": "A cell in a grid that contains a value strictly greater than all its adjacent neighbors.",
+            "explanation": "In a 2D grid, a cell has up to 8 neighbors (horizontal, vertical, and diagonal). If a cell's number is larger than all 8 neighbors, it is called a supercell.",
+            "memoryTrick": "Supercell is the king of the hill—everyone around it is smaller!",
+            "commonMistake": "Forgetting diagonal neighbors when checking if a cell is a supercell.",
+            "visualType": "formula-showcase"
+          },
+          {
+            "id": "collatz-conjecture",
+            "title": "The Collatz Conjecture (3n + 1)",
+            "definition": "An unsolved mathematical conjecture starting with any positive integer n: if even, divide by 2; if odd, multiply by 3 and add 1.",
+            "explanation": "No matter which positive starting number you pick, repeating these rules eventually pulls the number into the loop: 4 → 2 → 1. Although it works for every number tested, it has never been mathematically proven to work for *all* numbers.",
+            "memoryTrick": "Even? Slice it in half. Odd? Triple it and add 1. It always crashes back to 1!",
+            "commonMistake": "Dividing odd numbers by 2 or multiplying even numbers by 3. Be careful to apply the correct rule depending on parity.",
+            "visualType": "formula-showcase"
+          },
+          {
+            "id": "kaprekar-constant",
+            "title": "Kaprekar's Constants",
+            "definition": "Special constants reached by repeatedly subtracting the smallest digit arrangement of a number from its largest digit arrangement.",
+            "explanation": "For any 3-digit number (not all digits same), this process always leads to the constant **495**. For any 4-digit number, it leads to **6174** (Kaprekar's Constant).",
+            "memoryTrick": "Sort digits descending, sort digits ascending, subtract. The loop always converges to the magic number 495 or 6174!",
+            "commonMistake": "Using numbers where all digits are the same (like 222 or 7777). The subtraction will result in 0, so the loop doesn't work.",
+            "visualType": "formula-showcase"
+          }
+        ],
+        "examples": [
+          {
+            "level": "Easy",
+            "title": "Palindromic Number Creation",
+            "problem": "Create a palindromic number starting from 48 by reversing and adding.",
+            "solution": [
+              "Start with the number 48.",
+              "Reverse the digits of 48 to get 84.",
+              "Add the original number and reversed number: 48 + 84 = **132** (not a palindrome).",
+              "Reverse the digits of 132 to get 231.",
+              "Add: 132 + 231 = **363**.",
+              "Since 363 reads the same forwards and backwards, it is a palindrome.",
+              "The resulting palindrome is 363."
+            ],
+            "hint": "Keep reversing the digits and adding the result to the previous sum until the number becomes symmetrical."
+          },
+          {
+            "level": "Medium",
+            "title": "Collatz Conjecture Steps",
+            "problem": "Show the step-by-step Collatz sequence starting from the number 5.",
+            "solution": [
+              "Step 1: Start with n = 5 (odd). Multiply by 3 and add 1: (5 * 3) + 1 = **16**.",
+              "Step 2: 16 is even. Divide by 2: 16 / 2 = **8**.",
+              "Step 3: 8 is even. Divide by 2: 8 / 2 = **4**.",
+              "Step 4: 4 is even. Divide by 2: 4 / 2 = **2**.",
+              "Step 5: 2 is even. Divide by 2: 2 / 2 = **1**.",
+              "The sequence is: 5 → 16 → 8 → 4 → 2 → 1."
+            ],
+            "hint": "Check if the current number is even or odd, apply the corresponding rule, and repeat until you reach 1."
+          }
+        ],
+        "quiz": [
+          {
+            "type": "mcq",
+            "q": "What is the Kaprekar constant for a 3-digit number?",
+            "options": ["495", "6174", "999", "121"],
+            "answer": "495",
+            "explanation": "For any 3-digit number where not all digits are identical, arranging the digits in descending and ascending order and subtracting will eventually converge to the constant 495."
+          },
+          {
+            "type": "mcq",
+            "q": "Which of the following represents a palindromic number?",
+            "options": ["123", "343", "567", "1010"],
+            "answer": "343",
+            "explanation": "343 reversed is 343, which makes it a palindrome. 123 reversed is 321, 567 reversed is 765, and 1010 reversed is 0101, none of which are symmetrical."
+          },
+          {
+            "type": "mcq",
+            "q": "If n = 7 in the Collatz Conjecture sequence, what is the next number?",
+            "options": ["22", "14", "3", "21"],
+            "answer": "22",
+            "explanation": "Since 7 is an odd number, we apply the odd rule: 3n + 1. Substituting n = 7: (3 * 7) + 1 = 22."
+          }
+        ],
+        "recap": [
+          "**Palindromes** read the same forwards and backwards.",
+          "**Supercells** are larger than all horizontal, vertical, and diagonal neighbors.",
+          "**Collatz Conjecture** applies 3n+1 to odds and n/2 to evens, always hitting 1.",
+          "**Kaprekar Constant** is 495 for 3-digit numbers and 6174 for 4-digit numbers."
+        ]
+      },
+      "Data Handling and Presentation": {
+        "difficulty": "Easy",
+        "studyTime": "30 mins",
+        "pyqPattern": "Focuses on making frequency distribution tables with tally marks, reading/making pictographs, and creating bar charts (3-4 marks).",
+        "overview": {
+          "intro": "Data Handling teaches us how to collect observations from the real world, organize them cleanly, and show them using graphs.",
+          "realWorld": "Companies, hospitals, and sports teams use graphs and charts to track sales, understand health trends, and check player performance.",
+          "whyItMatters": "Presenting data clearly helps people make smart choices, but scales must be chosen carefully to prevent the graphs from being misleading."
+        },
+        "concepts": [
+          {
+            "id": "tally-marks",
+            "title": "Tally Marks & Frequency Tables",
+            "definition": "A quick tallying system where vertical lines represent counts, grouped in bundles of 5.",
+            "explanation": "When collecting raw data, we count occurrences by drawing a vertical line (|) for each count. To make it easy to read, every fifth line is drawn diagonally across the first four. A frequency table lists the categories, tally marks, and total counts.",
+            "memoryTrick": "Count: |, ||, |||, ||||. Five is a diagonal gate: ||||\\.",
+            "commonMistake": "Drawing five vertical lines instead of crossing them at the fifth. Bundling in fives is key to fast counting.",
+            "visualType": "formula-showcase"
+          },
+          {
+            "id": "pictographs",
+            "title": "Pictographs & Scaling Keys",
+            "definition": "Data charts that represent quantities using icons or pictures.",
+            "explanation": "A pictograph uses symbols to represent data. The 'key' tells us what quantity each symbol represents (e.g. 1 picture of a wheel = 5 cars).",
+            "memoryTrick": "Key is critical! Always check what one picture represents before counting the symbols.",
+            "commonMistake": "Assuming one icon equals one item when a scale key is present.",
+            "visualType": "formula-showcase"
+          },
+          {
+            "id": "bar-graphs",
+            "title": "Bar Charts",
+            "definition": "Visual graphs using vertical or horizontal rectangular bars of equal width, with lengths proportional to the values they represent.",
+            "explanation": "Bar graphs are used to compare categories (e.g. favorite sports). The categories are marked on one axis, and the scale is marked on the other. The height or length of the bars shows the count.",
+            "memoryTrick": "Bars are like pillars—the taller the pillar, the bigger the count!",
+            "commonMistake": "Drawing bars with unequal widths or spacing. The gaps and bar widths must be consistent.",
+            "visualType": "axes-demo"
+          }
+        ],
+        "examples": [
+          {
+            "level": "Easy",
+            "title": "Creating a Frequency Table",
+            "problem": "Create a frequency table for the favorite fruits of 10 students: Apple, Banana, Apple, Orange, Banana, Apple, Apple, Orange, Banana, Apple.",
+            "solution": [
+              "List the categories: Apple, Banana, Orange.",
+              "Tally the raw data:",
+              "Apple: Count = 5 -> Tally = ||||\\",
+              "Banana: Count = 3 -> Tally = |||",
+              "Orange: Count = 2 -> Tally = ||",
+              "Create the frequency table:",
+              "| Fruit | Tallies | Count |",
+              "|---|---|---|",
+              "| Apple | ||||\\ | 5 |",
+              "| Banana | ||| | 3 |",
+              "| Orange | || | 2 |",
+              "Total count is 10 students."
+            ],
+            "hint": "Go through the list item-by-item, add a tally mark for each fruit, and then write down the total counts."
+          },
+          {
+            "level": "Medium",
+            "title": "Interpreting a Pictograph",
+            "problem": "A pictograph shows the number of trees planted in a school. The key states '1 tree icon = 4 trees'. If Class 6 has 5 tree icons, how many trees did they plant?",
+            "solution": [
+              "Identify the number of icons for Class 6: 5 icons.",
+              "Identify the value of each icon from the key: 1 icon = 4 trees.",
+              "Calculate the total number of trees: 5 * 4 = **20 trees**.",
+              "Class 6 planted 20 trees."
+            ],
+            "hint": "Multiply the number of icons by the value defined in the key."
+          }
+        ],
+        "quiz": [
+          {
+            "type": "mcq",
+            "q": "How many items are represented by a tally mark group of ||||\\ ||?",
+            "options": ["5", "7", "6", "8"],
+            "answer": "7",
+            "explanation": "A crossed bundle of tallies represents 5 items. The two separate vertical lines represent 2 items. Therefore, the total is 5 + 2 = 7."
+          },
+          {
+            "type": "mcq",
+            "q": "In a bar graph, if the scale is '1 unit length = 10 students', what height of bar represents 45 students?",
+            "options": ["4.5 units", "45 units", "4 units", "5 units"],
+            "answer": "4.5 units",
+            "explanation": "Since 1 unit represents 10 students, we divide the count by the unit value: 45 / 10 = 4.5 units height."
+          },
+          {
+            "type": "mcq",
+            "q": "Which of these is the most appropriate chart to compare the favorite colors of students in a class?",
+            "options": ["Line graph", "Bar graph", "Formula chart", "Scatter plot"],
+            "answer": "Bar graph",
+            "explanation": "A bar graph is excellent for comparing discrete, non-numerical categories (like favorite colors) side-by-side."
+          }
+        ],
+        "recap": [
+          "**Tally marks** group raw counts in bundles of **5**.",
+          "**Pictographs** use symbols; check the **key** for the unit value.",
+          "**Bar graphs** compare categories using equal-width bars and a **grid scale**.",
+          "Choosing a **proper axis scale** prevents misleading graphs."
+        ]
+      },
+      "Prime Time": {
+        "difficulty": "Medium",
+        "studyTime": "40 mins",
+        "pyqPattern": "Focuses on divisibility rules (especially for 6 and 11), finding prime factorizations, and computing HCF and LCM for practical word problems (e.g., repeating events or sorting items into equal groups) (3-5 marks).",
+        "overview": {
+          "intro": "Prime Time explores prime numbers as the fundamental building blocks of numbers, and teaches how numbers break down into their prime parts.",
+          "realWorld": "Cryptographic security on the internet (like HTTPS/SSL encryption) relies on the mathematical properties of extremely large prime numbers to keep data safe.",
+          "whyItMatters": "Knowing divisibility, factors, HCF, and LCM allows us to divide resources efficiently, solve timing puzzles, and understand how numbers are built."
+        },
+        "concepts": [
+          {
+            "id": "prime-composite",
+            "title": "Prime and Composite Numbers",
+            "definition": "Primes have exactly two factors: 1 and themselves. Composites have more than two factors.",
+            "explanation": "A prime number (like 5) cannot be divided evenly into smaller groups other than 1 group of 5 or 5 groups of 1. A composite number (like 6) can be divided into smaller equal groups (like 2 groups of 3). The number 1 is unique—it is neither prime nor composite.",
+            "memoryTrick": "2 is the only even prime number! All other even numbers can be divided by 2, making them composite.",
+            "commonMistake": "Thinking that all odd numbers are prime. For example, 9 and 15 are odd but composite because they have factors other than 1 and themselves (like 3 and 5).",
+            "visualType": "formula-showcase"
+          },
+          {
+            "id": "divisibility-rules",
+            "title": "Divisibility Rules",
+            "definition": "Shortcuts to check if a number can be divided by another without actually carrying out division.",
+            "explanation": "Rules help check division quickly: a number is divisible by 3 if the sum of its digits is divisible by 3; by 6 if it is divisible by both 2 and 3; and by 11 if the difference between the sum of digits at odd positions and even positions is 0 or divisible by 11.",
+            "memoryTrick": "To test for 3: add the digits! If the sum is in the 3 times table, the whole number is divisible by 3.",
+            "commonMistake": "Confusing the rule of 3 with the rule of 4. For 4, we only check if the last two digits are divisible by 4, not the sum of digits.",
+            "visualType": "formula-showcase"
+          },
+          {
+            "id": "hcf-lcm",
+            "title": "HCF and LCM",
+            "definition": "HCF is the largest number that divides given numbers. LCM is the smallest number that is a multiple of them.",
+            "explanation": "Highest Common Factor (HCF) is used when we want to split things into the largest possible equal parts. Lowest Common Multiple (LCM) is used to find when repeating cycles will line up or happen at the same time again.",
+            "memoryTrick": "HCF divides (it's smaller or equal). LCM is divided (it's larger or equal).",
+            "commonMistake": "Mixing up when to use HCF or LCM in word problems. If you are splitting/sharing, use HCF. If you are repeating/meeting, use LCM.",
+            "visualType": "formula-showcase"
+          }
+        ],
+        "examples": [
+          {
+            "level": "Easy",
+            "title": "Finding Prime Factorization",
+            "problem": "Find the prime factorization of 36 using a factor tree.",
+            "solution": [
+              "Step 1: Write down 36 and split it into any two factors, e.g., 6 * 6.",
+              "Step 2: Split each 6 into its factors: 2 * 3 and 2 * 3.",
+              "Step 3: Since 2 and 3 are prime numbers, we stop.",
+              "Step 4: Collect all the prime factors: 2 * 2 * 3 * 3.",
+              "We write the prime factorization as: 2² * 3² = 2 * 2 * 3 * 3 = 36."
+            ],
+            "hint": "Keep splitting composite factors until only prime numbers remain at the ends of your tree."
+          },
+          {
+            "level": "Medium",
+            "title": "HCF vs. LCM Word Problem",
+            "problem": "Two bells toll together at intervals of 9 minutes and 12 minutes respectively. If they toll together now, after how many minutes will they toll together again?",
+            "solution": [
+              "Step 1: The bells repeat at intervals, so we need to find when their patterns align. This requires the Lowest Common Multiple (LCM) of 9 and 12.",
+              "Step 2: List prime factors of 9: 3 * 3 = 3².",
+              "Step 3: List prime factors of 12: 2 * 2 * 3 = 2² * 3.",
+              "Step 4: Find the LCM by taking the highest power of each prime: 2² * 3² = 4 * 9 = 36.",
+              "They will toll together again after 36 minutes."
+            ],
+            "hint": "Since the events are recurring and we want to find the next aligned event, find the LCM."
+          }
+        ],
+        "quiz": [
+          {
+            "type": "mcq",
+            "q": "Which of the following numbers is divisible by 11?",
+            "options": ["121", "123", "111", "131"],
+            "answer": "121",
+            "explanation": "For 121, the sum of digits at odd places is 1+1=2, and the even place digit is 2. The difference is 2-2=0. Since the difference is 0, 121 is divisible by 11."
+          },
+          {
+            "type": "mcq",
+            "q": "What is the HCF of 15 and 25?",
+            "options": ["3", "5", "15", "75"],
+            "answer": "5",
+            "explanation": "Factors of 15 are 1, 3, 5, 15. Factors of 25 are 1, 5, 25. The highest common factor is 5."
+          },
+          {
+            "type": "mcq",
+            "q": "Which number is neither a prime nor a composite number?",
+            "options": ["0", "1", "2", "3"],
+            "answer": "1",
+            "explanation": "By definition, 1 has only one factor (itself), whereas primes must have exactly two distinct factors. Therefore, 1 is neither prime nor composite."
+          }
+        ],
+        "recap": [
+          "**Prime numbers** have exactly two factors, while **composite numbers** have more.",
+          "**2** is the smallest prime number and the only even prime.",
+          "Use **HCF** when dividing or splitting items into equal groups.",
+          "Use **LCM** to find when recurring events line up or happen together again."
+        ]
+      },
+      "Perimeter and Area": {
+        "difficulty": "Medium",
+        "studyTime": "45 mins",
+        "pyqPattern": "Focuses on computing the perimeter of regular polygons, calculating the cost of fencing or flooring, and finding the area of rectangular fields on a grid (3-5 marks).",
+        "overview": {
+          "intro": "Perimeter and Area introduces the measurement of 2D shapes, focusing on the boundary length (perimeter) and the flat surface space inside (area).",
+          "realWorld": "Architects and farmers use perimeter to fence lands and area to buy carpets, paint walls, or calculate crop yield sizes.",
+          "whyItMatters": "Distinguishing boundary measurement from interior space prevents costly measurement mistakes in construction and design."
+        },
+        "concepts": [
+          {
+            "id": "perimeter-basics",
+            "title": "Perimeter of Shapes",
+            "definition": "The total length of the outer boundary of a closed geometric figure.",
+            "explanation": "To find perimeter, we sum the lengths of all sides. For regular polygons (where all sides are equal), perimeter = number of sides * side length. For a rectangle, perimeter = 2 * (length + width).",
+            "memoryTrick": "Perimeter is like walking along the fence around a park. You walk the outer border!",
+            "commonMistake": "Using incorrect formulas for regular polygons. Always multiply side length by the exact number of sides (e.g. 6 sides for a hexagon).",
+            "visualType": "formula-showcase"
+          },
+          {
+            "id": "area-basics",
+            "title": "Area of Shapes",
+            "definition": "The measure of the region or surface enclosed by a closed flat figure.",
+            "explanation": "Area measures how many unit squares fit inside a shape. For a square, Area = side * side. For a rectangle, Area = length * width. Area is measured in square units (e.g. sq cm, sq m).",
+            "memoryTrick": "Area is the amount of grass in a field, while perimeter is the fence surrounding it.",
+            "commonMistake": "Writing area in linear units (like cm) instead of square units (like sq cm or cm²). Area is always 2D!",
+            "visualType": "formula-showcase"
+          }
+        ],
+        "examples": [
+          {
+            "level": "Easy",
+            "title": "Perimeter of a Regular Hexagon",
+            "problem": "Find the perimeter of a regular hexagon with each side measuring 8 cm.",
+            "solution": [
+              "Step 1: Identify the type of polygon: regular hexagon (6 equal sides).",
+              "Step 2: Recall the perimeter formula: Perimeter = 6 * side length.",
+              "Step 3: Substitute the value: Perimeter = 6 * 8 = 48 cm.",
+              "The perimeter of the regular hexagon is 48 cm."
+            ],
+            "hint": "A hexagon has 6 sides, and since it is regular, all sides are equal."
+          },
+          {
+            "level": "Medium",
+            "title": "Fencing vs. Flooring Cost",
+            "problem": "A rectangular park is 20 m long and 15 m wide. Find the cost of fencing it at ₹12 per meter, and the cost of turfing it with grass at ₹5 per square meter.",
+            "solution": [
+              "Step 1: Fencing goes around the boundary. Calculate Perimeter = 2 * (length + width) = 2 * (20 + 15) = 2 * 35 = 70 m.",
+              "Step 2: Cost of fencing = Perimeter * rate = 70 * 12 = ₹840.",
+              "Step 3: Turfing covers the inside. Calculate Area = length * width = 20 * 15 = 300 sq m.",
+              "Step 4: Cost of turfing = Area * rate = 300 * 5 = ₹1,500.",
+              "The fencing cost is ₹840 and the turfing cost is ₹1,500."
+            ],
+            "hint": "Use perimeter for fencing because it is boundary work. Use area for turfing because it covers the flat surface."
+          }
+        ],
+        "quiz": [
+          {
+            "type": "mcq",
+            "q": "A square shape has a perimeter of 40 cm. What is the length of one of its sides?",
+            "options": ["10 cm", "20 cm", "5 cm", "8 cm"],
+            "answer": "10 cm",
+            "explanation": "For a square, Perimeter = 4 * side. Therefore, side = Perimeter / 4 = 40 / 4 = 10 cm."
+          },
+          {
+            "type": "mcq",
+            "q": "What is the area of a rectangular cardboard sheet of length 12 cm and width 5 cm?",
+            "options": ["34 sq cm", "60 sq cm", "17 sq cm", "30 sq cm"],
+            "answer": "60 sq cm",
+            "explanation": "Area of a rectangle = length * width = 12 cm * 5 cm = 60 sq cm."
+          },
+          {
+            "type": "mcq",
+            "q": "If you double both the length and width of a rectangle, how does its area change?",
+            "options": ["It doubles", "It triples", "It becomes 4 times", "It remains the same"],
+            "answer": "It becomes 4 times",
+            "explanation": "Original Area = l * w. New Area = (2l) * (2w) = 4 * l * w. Therefore, the area becomes 4 times the original area."
+          }
+        ],
+        "recap": [
+          "**Perimeter** measures the boundary length, and **Area** measures the flat space inside.",
+          "Perimeter of rectangle = **2 * (l + w)**; Area of rectangle = **l * w**.",
+          "Perimeter of square = **4 * side**; Area of square = **side * side**.",
+          "Area is always written in **square units** (sq cm, sq m, or units²)."
+        ]
+      },
+      "Fractions": {
+        "difficulty": "Medium",
+        "studyTime": "40 mins",
+        "pyqPattern": "Focuses on converting improper fractions to mixed numbers, creating equivalent fractions, comparing unlike fractions, and performing basic addition/subtraction (2-4 marks).",
+        "overview": {
+          "intro": "Fractions teach us to represent values that are parts of a whole or shares of a collection.",
+          "realWorld": "Baking recipes, cutting pizza slices, and sharing financial bills all use fractions to ensure precise splits.",
+          "whyItMatters": "Fractions are the stepping stones to decimals, percentages, and algebraic ratios used in science and everyday life."
+        },
+        "concepts": [
+          {
+            "id": "fraction-types",
+            "title": "Proper, Improper, and Mixed Fractions",
+            "definition": "Classification of fractions based on the relationship between numerator and denominator.",
+            "explanation": "In proper fractions (like 3/4), numerator < denominator, so value < 1. In improper fractions (like 5/3), numerator >= denominator, so value >= 1. Mixed fractions combine a whole number and a proper fraction (like 1 2/3).",
+            "memoryTrick": "Proper fractions are head-light: numerator is smaller. Improper fractions are top-heavy: numerator is bigger!",
+            "commonMistake": "Writing a mixed number incorrectly. For example, 7/3 = 2 1/3, not 1 4/3.",
+            "visualType": "formula-showcase"
+          },
+          {
+            "id": "equivalent-fractions",
+            "title": "Equivalent Fractions & Simplest Form",
+            "definition": "Fractions that look different but represent the exact same portion or value.",
+            "explanation": "Equivalent fractions are created by multiplying or dividing both the numerator and the denominator by the same non-zero number. A fraction is in its simplest form if its numerator and denominator have no common factor other than 1.",
+            "memoryTrick": "Whatever you do to the top (numerator), you must also do to the bottom (denominator) to keep the value equal!",
+            "commonMistake": "Adding the same number to top and bottom. E.g. (1+2)/(2+2) = 3/4, which is not equivalent to 1/2. You must multiply or divide!",
+            "visualType": "formula-showcase"
+          },
+          {
+            "id": "unlike-fractions",
+            "title": "Adding & Subtracting Fractions",
+            "definition": "Performing arithmetic on fractions with like or unlike denominators.",
+            "explanation": "Like fractions (same denominator) are added/subtracted by operating on the numerators. Unlike fractions must first be converted into like fractions by finding the LCM of their denominators.",
+            "memoryTrick": "You cannot add apples and oranges! Convert unlike denominators to a common denominator before adding.",
+            "commonMistake": "Adding numerators and denominators directly (e.g. 1/2 + 1/3 = 2/5). This is mathematically incorrect!",
+            "visualType": "formula-showcase"
+          }
+        ],
+        "examples": [
+          {
+            "level": "Easy",
+            "title": "Convert Improper to Mixed",
+            "problem": "Convert the improper fraction 17/5 into a mixed number.",
+            "solution": [
+              "Step 1: Divide the numerator (17) by the denominator (5).",
+              "Step 2: 17 divided by 5 is 3 with a remainder of 2.",
+              "Step 3: The quotient (3) is the whole number. The remainder (2) is the new numerator. The denominator (5) remains the same.",
+              "Write the result: 3 2/5."
+            ],
+            "hint": "Divide 17 by 5: 5 * 3 = 15, remainder = 2. So the mixed fraction is 3 2/5."
+          },
+          {
+            "level": "Medium",
+            "title": "Adding Unlike Fractions",
+            "problem": "Find the sum: 2/3 + 1/4.",
+            "solution": [
+              "Step 1: The denominators are 3 and 4. Since they are unlike, find the LCM of 3 and 4, which is 12.",
+              "Step 2: Convert 2/3 to an equivalent fraction with denominator 12: (2 * 4) / (3 * 4) = 8/12.",
+              "Step 3: Convert 1/4 to an equivalent fraction with denominator 12: (1 * 3) / (4 * 3) = 3/12.",
+              "Step 4: Now add the like fractions: 8/12 + 3/12 = (8 + 3) / 12 = 11/12.",
+              "The sum is 11/12."
+            ],
+            "hint": "Convert both fractions to have a denominator of 12 before adding."
+          }
+        ],
+        "quiz": [
+          {
+            "type": "mcq",
+            "q": "Which of the following is equivalent to 3/5?",
+            "options": ["6/10", "9/15", "12/20", "All of the above"],
+            "answer": "All of the above",
+            "explanation": "Multiplying 3/5 numerator and denominator by 2 gives 6/10; by 3 gives 9/15; by 4 gives 12/20. All represent the same value."
+          },
+          {
+            "type": "mcq",
+            "q": "What is the simplest form of 18/24?",
+            "options": ["9/12", "3/4", "6/8", "2/3"],
+            "answer": "3/4",
+            "explanation": "The highest common factor of 18 and 24 is 6. Dividing both by 6 gives (18 / 6) / (24 / 6) = 3/4."
+          },
+          {
+            "type": "mcq",
+            "q": "Solve: 5/7 - 2/7",
+            "options": ["3/7", "3/0", "7/7", "3/14"],
+            "answer": "3/7",
+            "explanation": "Since denominators are identical (7), we subtract numerators directly: (5 - 2) / 7 = 3/7."
+          }
+        ],
+        "recap": [
+          "A **fraction** represents a part of a whole, written as **numerator / denominator**.",
+          "In **proper fractions**, value < 1. In **improper fractions**, value >= 1.",
+          "Generate **equivalent fractions** by multiplying/dividing both numerator and denominator by the same non-zero number.",
+          "To add/subtract **unlike fractions**, first find the **LCM** of the denominators."
+        ]
+      },
+      "Playing with Constructions": {
+        "difficulty": "Medium to Hard",
+        "studyTime": "35 mins",
+        "pyqPattern": "Focuses on describing the steps for constructing perpendicular bisectors, copying line segments, and creating angles of specific degrees using ruler and compasses (4-6 marks).",
+        "overview": {
+          "intro": "Playing with Constructions teaches the art of drawing geometric lines, circles, and angles using classical tools.",
+          "realWorld": "Carpenters, engineers, and digital designers use geometric construction principles to build straight frameworks and balanced arches.",
+          "whyItMatters": "Constructing shapes by hand builds deep geometric intuition about angles, symmetry, and distances."
+        },
+        "concepts": [
+          {
+            "id": "construction-tools",
+            "title": "Geometric Instruments",
+            "definition": "Tools used to draw and measure shapes: ruler, compasses, divider, set-squares, and protractor.",
+            "explanation": "The ruler draws straight lines. Compasses draw circles and copy distances. The divider checks segments. Set-squares draw parallel/perpendicular lines. Protractors measure angles.",
+            "memoryTrick": "A compass is for tracing arcs and circles, never just for drawing straight lines!",
+            "commonMistake": "Using a dull pencil in a compass. For precise constructions, always use a sharp, thin pencil tip.",
+            "visualType": "formula-showcase"
+          },
+          {
+            "id": "perpendicular-bisector",
+            "title": "Perpendicular Bisector",
+            "definition": "A line that divides a line segment into two equal halves at a right angle (90°).",
+            "explanation": "To construct it, place the compass needle at endpoint A, draw arcs above and below the line with radius > half of AB. Repeat from endpoint B. Connect the arc intersections.",
+            "memoryTrick": "Radius must be greater than half the length! Otherwise, the arcs won't intersect.",
+            "commonMistake": "Changing the compass radius setting mid-construction. The radius must remain identical when drawing from A and B.",
+            "visualType": "axes-demo"
+          },
+          {
+            "id": "angle-construction",
+            "title": "Constructing Standard Angles",
+            "definition": "Drawing specific angles (like 60°, 120°, 90°, 45°) using only a ruler and compasses.",
+            "explanation": "Draw a base line and a semi-circle arc. Without changing radius, mark an arc on the semi-circle from the base intersection; this makes 60°. A second mark makes 120°. Bisecting between 60° and 120° yields 90°.",
+            "memoryTrick": "The first arc mark on a semi-circle is always 60° because it forms an imaginary equilateral triangle!",
+            "commonMistake": "Using a protractor when the question specifies 'using ruler and compasses only'. Protractors are only for checking or when allowed.",
+            "visualType": "formula-showcase"
+          }
+        ],
+        "examples": [
+          {
+            "level": "Easy",
+            "title": "Copying a Line Segment",
+            "problem": "Describe the steps to copy a line segment AB onto a line 'l' using compasses without measuring.",
+            "solution": [
+              "Step 1: Fix the compass pointer on point A and open the pencil point to touch B. The width represents AB.",
+              "Step 2: Draw a line 'l' and mark a point P on it.",
+              "Step 3: Without changing the compass width, place the pointer at P and cut an arc on line 'l'. Let this point be Q.",
+              "PQ is the exact copy of the line segment AB."
+            ],
+            "hint": "Use the compass to lock the distance from A to B, then project it onto the new line."
+          },
+          {
+            "level": "Medium",
+            "title": "Constructing a 90° Angle",
+            "problem": "Outline the steps to construct a 90-degree angle at a point P on a line.",
+            "solution": [
+              "Step 1: Place compass pointer at P and draw a semi-circle cutting the line at A and B.",
+              "Step 2: From A, draw an arc on the semi-circle (this is 60°). From that mark, draw another arc (this is 120°).",
+              "Step 3: Using the 60° and 120° marks as centers, draw two arcs intersecting above the semi-circle at point Q.",
+              "Step 4: Join PQ. The angle QPA is exactly 90 degrees."
+            ],
+            "hint": "The 90-degree angle lies exactly halfway between 60 degrees and 120 degrees."
+          }
+        ],
+        "quiz": [
+          {
+            "type": "mcq",
+            "q": "When constructing a perpendicular bisector of segment AB, why must the compass radius be greater than half of AB?",
+            "options": ["To make the drawing neat", "Otherwise the arcs will not intersect", "To make the angle exactly 90°", "To make the line straight"],
+            "answer": "Otherwise the arcs will not intersect",
+            "explanation": "If the radius is less than half of AB, the two arcs drawn from A and B will not reach each other, so they won't intersect."
+          },
+          {
+            "type": "mcq",
+            "q": "Which angle is constructed by bisecting the angle between 0° and 60°?",
+            "options": ["45°", "30°", "15°", "90°"],
+            "answer": "30°",
+            "explanation": "Bisecting means dividing into two equal parts: 60° / 2 = 30°."
+          },
+          {
+            "type": "mcq",
+            "q": "What instrument is used to draw circles of a specific radius?",
+            "options": ["Protractor", "Set-square", "Compasses", "Ruler"],
+            "answer": "Compasses",
+            "explanation": "Compasses have a fixed point and a pencil arm, which is perfect for tracing equal distances around a center point."
+          }
+        ],
+        "recap": [
+          "A **perpendicular bisector** divides a line segment in half at exactly **90°**.",
+          "Keep **compass radius locked** when drawing arcs from different endpoints to ensure symmetry.",
+          "The first arc mark on a semi-circle from the base is **60°**; the second is **120°**.",
+          "**Bisecting** divides any angle into two equal halves."
+        ]
+      },
+      "Symmetry": {
+        "difficulty": "Easy",
+        "studyTime": "25 mins",
+        "pyqPattern": "Focuses on identifying lines of symmetry in everyday letters/shapes and completing drawings across a mirror line (2-3 marks).",
+        "overview": {
+          "intro": "Symmetry explores balance and reflection, looking at how shapes can be folded or reflected to match perfectly.",
+          "realWorld": "Architects design temples and buildings with symmetry for structural balance and aesthetic beauty. Nature uses symmetry in butterfly wings and flowers.",
+          "whyItMatters": "Understanding symmetry helps in geometry, art, architecture, and recognizing patterns in nature."
+        },
+        "concepts": [
+          {
+            "id": "line-symmetry",
+            "title": "Line of Symmetry",
+            "definition": "An imaginary line that divides a shape into two halves that match exactly when folded.",
+            "explanation": "If you fold a paper shape along its line of symmetry, the two halves overlap perfectly. A shape can have zero, one, or multiple lines of symmetry.",
+            "memoryTrick": "Think of the line of symmetry as a fold crease. If folded, do the edges match perfectly?",
+            "commonMistake": "Assuming all triangles have lines of symmetry. A scalene triangle has 0 lines of symmetry because all its sides are different.",
+            "visualType": "formula-showcase"
+          },
+          {
+            "id": "reflection-symmetry",
+            "title": "Reflection & Mirror Lines",
+            "definition": "Symmetry where one half is the mirror reflection of the other.",
+            "explanation": "An object and its image are symmetrical with respect to the mirror line. The distance of the object from the mirror line is equal to the distance of the image from it.",
+            "memoryTrick": "In a mirror reflection, left becomes right (lateral inversion), but distances from the line stay proportional.",
+            "commonMistake": "Forgetting that reflection flips directions. A shape pointing right will point left in its reflection.",
+            "visualType": "formula-showcase"
+          }
+        ],
+        "examples": [
+          {
+            "level": "Easy",
+            "title": "Symmetry of Alphabets",
+            "problem": "Identify which of these uppercase English letters have horizontal lines of symmetry: A, B, C, T, M, E.",
+            "solution": [
+              "Step 1: Check letter A: folding horizontally does not match (it has vertical symmetry).",
+              "Step 2: Check letter B: folding horizontally matches top and bottom. (Horizontal symmetry).",
+              "Step 3: Check letter C: folding horizontally matches top and bottom. (Horizontal symmetry).",
+              "Step 4: Check letters T, M: they have vertical symmetry, not horizontal.",
+              "Step 5: Check letter E: folding horizontally matches top and bottom. (Horizontal symmetry).",
+              "Letters with horizontal symmetry are B, C, and E."
+            ],
+            "hint": "Imagine cutting the letter horizontally through the middle. Does the top look like the bottom?"
+          },
+          {
+            "level": "Medium",
+            "title": "Symmetry in Regular Polygons",
+            "problem": "How many lines of symmetry do a square, an equilateral triangle, and a regular pentagon have?",
+            "solution": [
+              "Step 1: A square is a regular 4-sided polygon. It has 4 lines of symmetry.",
+              "Step 2: An equilateral triangle is a regular 3-sided polygon. It has 3 lines of symmetry.",
+              "Step 3: A regular pentagon is a regular 5-sided polygon. It has 5 lines of symmetry.",
+              "Rule: Any regular polygon of 'n' sides has exactly 'n' lines of symmetry."
+            ],
+            "hint": "Recall that for regular shapes, the number of lines of symmetry matches the number of sides."
+          }
+        ],
+        "quiz": [
+          {
+            "type": "mcq",
+            "q": "How many lines of symmetry does a circle have?",
+            "options": ["1", "2", "4", "Infinitely many"],
+            "answer": "Infinitely many",
+            "explanation": "Any straight line passing through the center of a circle divides it into two symmetrical halves. Since there are infinite such lines, a circle has infinitely many lines of symmetry."
+          },
+          {
+            "type": "mcq",
+            "q": "Which of the following letters has both vertical and horizontal lines of symmetry?",
+            "options": ["A", "B", "H", "Y"],
+            "answer": "H",
+            "explanation": "Letter H can be folded vertically down the center or horizontally across the middle, and both folds match perfectly."
+          },
+          {
+            "type": "mcq",
+            "q": "What is the number of lines of symmetry in a scalene triangle?",
+            "options": ["0", "1", "2", "3"],
+            "answer": "0",
+            "explanation": "Since all three sides and angles of a scalene triangle are unequal, there is no line along which it can be folded to match halves."
+          }
+        ],
+        "recap": [
+          "A figure has **line symmetry** if a line divides it into matching halves.",
+          "A **regular polygon** of n sides has exactly **n lines of symmetry**.",
+          "**Reflection symmetry** is mirror balance; distances from the mirror line are identical.",
+          "A **circle** is perfectly symmetrical and has **infinite lines of symmetry**."
+        ]
+      },
+      "The Other Side of Zero": {
+        "difficulty": "Medium",
+        "studyTime": "35 mins",
+        "pyqPattern": "Focuses on ordering integers, adding/subtracting positive and negative numbers on a number line, and solving word problems on temperature drops or height changes (3-5 marks).",
+        "overview": {
+          "intro": "The Other Side of Zero introduces negative numbers, creating the set of integers to model opposite directions and values.",
+          "realWorld": "Submarines use negative numbers for depth below sea level, accountants use them for debts, and weather reporters use them for sub-zero temperatures.",
+          "whyItMatters": "Using integers allows us to represent negative change and subtraction without hitting a dead end at zero."
+        },
+        "concepts": [
+          {
+            "id": "integer-basics",
+            "title": "Positive and Negative Integers",
+            "definition": "Whole numbers greater than zero (positive), less than zero (negative), and zero itself.",
+            "explanation": "Positive numbers are to the right of 0 on the number line; negative numbers are to the left. Zero is neutral: it is neither positive nor negative. The further left a number is, the smaller it is (e.g. -10 is smaller than -2).",
+            "memoryTrick": "Think of negative numbers as debt. Having a debt of ₹2 (-2) is better than a debt of ₹10 (-10). So, -2 > -10!",
+            "commonMistake": "Believing that -5 is greater than -2 because 5 is greater than 2. On the negative side, the ordering is reversed!",
+            "visualType": "formula-showcase"
+          },
+          {
+            "id": "integer-arithmetic",
+            "title": "Adding & Subtracting Integers",
+            "definition": "Combining integers using sign rules or number line movements.",
+            "explanation": "On a number line, to add a positive integer, move right. To add a negative integer, move left. Subtracting a negative integer is the same as adding its positive opposite (e.g. 5 - (-3) = 5 + 3 = 8).",
+            "memoryTrick": "Double negatives cancel out! Subtracting a debt (- -) is like getting money (+).",
+            "commonMistake": "Adding values and ignoring the signs. E.g. -3 + 2 is -1, not -5.",
+            "visualType": "axes-demo"
+          }
+        ],
+        "examples": [
+          {
+            "level": "Easy",
+            "title": "Ordering Negative Integers",
+            "problem": "Arrange these integers in ascending order: -3, 5, 0, -8, 2.",
+            "solution": [
+              "Step 1: Identify the negative numbers: -3 and -8. Since -8 is further left, it is the smallest: -8 < -3.",
+              "Step 2: Zero is larger than all negative integers: -8 < -3 < 0.",
+              "Step 3: Order the positive numbers: 2 < 5.",
+              "Step 4: Combine the lists in ascending order: -8, -3, 0, 2, 5."
+            ],
+            "hint": "The number that is furthest left on the number line is the smallest."
+          },
+          {
+            "level": "Medium",
+            "title": "Real-world Elevation Change",
+            "problem": "A diver starts at 15 m below sea level. They then descend another 10 m, and finally ascend 12 m. What is their final position represented as an integer?",
+            "solution": [
+              "Step 1: Represent starting position (below sea level) as -15.",
+              "Step 2: Descending another 10 m means subtracting 10: -15 - 10 = -25.",
+              "Step 3: Ascending 12 m means adding 12: -25 + 12 = -13.",
+              "The diver's final position is 13 m below sea level, represented as -13."
+            ],
+            "hint": "Use negative numbers for depth/descent and positive numbers for ascent."
+          }
+        ],
+        "quiz": [
+          {
+            "type": "mcq",
+            "q": "What is the value of -7 + 10?",
+            "options": ["-17", "3", "-3", "17"],
+            "answer": "3",
+            "explanation": "Starting at -7 and moving 10 units to the right on the number line lands on 3."
+          },
+          {
+            "type": "mcq",
+            "q": "Which of these statements is correct?",
+            "options": ["-5 > -2", "0 < -1", "-8 < -4", "-3 > 3"],
+            "answer": "-8 < -4",
+            "explanation": "-8 lies to the left of -4 on the number line, which means it is smaller."
+          },
+          {
+            "type": "mcq",
+            "q": "Calculate: 4 - (-6)",
+            "options": ["-2", "10", "2", "-10"],
+            "answer": "10",
+            "explanation": "Subtracting a negative number is equivalent to adding its positive opposite: 4 - (-6) = 4 + 6 = 10."
+          }
+        ],
+        "recap": [
+          "**Integers** include positive integers, negative integers, and zero.",
+          "On a number line, values **increase to the right** and **decrease to the left**.",
+          "To add a negative number, **move left**. To subtract a negative number, **move right**.",
+          "**Zero** is greater than any negative integer, but less than any positive integer."
+        ]
+      }
+    },
+    "Science": {
+      "The Wonderful World of Science": {
+        "difficulty": "Easy",
+        "studyTime": "25 mins",
+        "pyqPattern": "Focuses on identifying steps of the scientific method and applying it to everyday problems (2-3 marks).",
+        "overview": {
+          "intro": "Science is an adventure of questioning, observing, and experimenting to solve the mysteries of our universe.",
+          "realWorld": "A mechanic diagnosing a flat tire or a cook finding out why food boiled over are both applying scientific logic.",
+          "whyItMatters": "The scientific method gives us a logical pathway to solve any complex problem in life or engineering."
+        },
+        "concepts": [
+          {
+            "id": "scientific-thinking",
+            "title": "Scientific Thinking & Curiosity",
+            "definition": "Approaching our surroundings with curiosity, asking questions, and systematically finding answers.",
+            "explanation": "Curiosity is the start of science. By observing closely and asking 'Why?', we can uncover how things function, from tiny grains of sand to massive galaxies.",
+            "memoryTrick": "Be a 'Whys' person! Never stop wondering about things around you.",
+            "commonMistake": "Thinking science is only for labs. Everyday questioning is science too.",
+            "visualType": "formula-showcase"
+          },
+          {
+            "id": "scientific-method-steps",
+            "title": "Steps of the Scientific Method",
+            "definition": "A systematic 5-step process used to investigate and solve problems.",
+            "explanation": "The process flows as: 1. Observe and wonder, 2. Formulate a question, 3. Guess a hypothesis, 4. Test through experiments or observations, 5. Analyze results to draw conclusions.",
+            "memoryTrick": "O-Q-H-E-A: Observe, Question, Hypothesis, Experiment, Analyze!",
+            "commonMistake": "Skipping testing. A guess must always be verified by an experiment.",
+            "visualType": "formula-showcase"
+          }
+        ],
+        "examples": [
+          {
+            "level": "Easy",
+            "title": "Solving the Dried Ink Problem",
+            "problem": "A student's pen stops writing. How can they apply the scientific method to fix it?",
+            "solution": [
+              "1. **Observation**: The pen is not leaving ink on the paper.",
+              "2. **Question**: 'Why did my pen stop writing?'",
+              "3. **Hypothesis**: The refill is empty.",
+              "4. **Experiment**: Open the pen and check the refill level.",
+              "5. **Analysis**: If empty, replace it. If full, form a new hypothesis (e.g., ink dried at tip) and test again."
+            ],
+            "hint": "Start with a simple observation, guess the cause, and test it."
+          }
+        ],
+        "quiz": [
+          {
+            "type": "mcq",
+            "q": "What is an educated guess to a scientific question called?",
+            "options": ["Observation", "Conclusion", "Hypothesis", "Experiment"],
+            "answer": "Hypothesis",
+            "explanation": "A hypothesis is a proposed, testable explanation for an observed phenomenon."
+          }
+        ],
+        "recap": [
+          "Science is a process of **observing, questioning, and experimenting**.",
+          "The **scientific method** consists of 5 logical steps.",
+          "Anyone who systematically investigates a problem is working like a **scientist**."
+        ]
+      },
+      "Diversity in the Living World": {
+        "difficulty": "Medium",
+        "studyTime": "35 mins",
+        "pyqPattern": "Focuses on classifying plants, identifying leaf venations, root types, and explaining adaptations (3-5 marks).",
+        "overview": {
+          "intro": "The variety of living organisms in a region forms its biodiversity, where every species plays a distinct role.",
+          "realWorld": "Observing how mountain deodars shed snow or how desert cacti store water reveals nature's engineering.",
+          "whyItMatters": "Protecting biodiversity is critical because plants and animals depend on each other for survival."
+        },
+        "concepts": [
+          {
+            "id": "plant-classification",
+            "title": "Herbs, Shrubs, and Trees",
+            "definition": "Grouping plants based on height, stem nature, and branching patterns.",
+            "explanation": "Herbs are short with soft green stems. Shrubs are medium-sized with thin, hard stems branching near the base. Trees are tall with thick, woody brown trunks branching higher up.",
+            "memoryTrick": "Herbs = Soft/Green; Shrubs = Woody/Bushy; Trees = Tall/Trunk.",
+            "commonMistake": "Classifying banana plants as trees. They actually have soft stems, making them large herbs!",
+            "visualType": "formula-showcase"
+          },
+          {
+            "id": "leaves-and-roots",
+            "title": "Leaf Venation and Root Systems",
+            "definition": "The patterns of veins on leaves and their corresponding root structures.",
+            "explanation": "Parallel venation (veins run parallel) matches fibrous roots (bunch of thin roots). Reticulate venation (net-like pattern) matches taproots (one main root with lateral branches).",
+            "memoryTrick": "Parallel = Fibrous (like grass); Reticulate = Taproot (like mustard).",
+            "commonMistake": "Assuming all roots look identical. Grass and beans have entirely different root architectures.",
+            "visualType": "formula-showcase"
+          },
+          {
+            "id": "seeds-classification",
+            "title": "Monocots and Dicots",
+            "definition": "Classifying plants based on the number of cotyledons (seed leaves) in their seeds.",
+            "explanation": "Monocots have one cotyledon (e.g. maize, wheat) and show parallel venation. Dicots have two cotyledons (e.g. gram, pea) and show reticulate venation.",
+            "memoryTrick": "Mono = 1 cotyledon, parallel, fibrous; Di = 2 cotyledons, reticulate, taproot.",
+            "commonMistake": "Forgetting that maize cannot be split into two halves like gram or peas.",
+            "visualType": "formula-showcase"
+          },
+          {
+            "id": "habitat-adaptation",
+            "title": "Habitat and Adaptation",
+            "definition": "Adaptation is the presence of specific features that allow an organism to live and survive in a particular habitat.",
+            "explanation": "Fish have streamlined bodies and fins for aquatic life. Cacti have fleshy stems to store water in hot deserts. Deodars are conical to let snow slide off in cold mountains.",
+            "memoryTrick": "Adaptations are survival tools tailor-made for the habitat.",
+            "commonMistake": "Believing adaptations happen instantly. They develop over generations.",
+            "visualType": "formula-showcase"
+          }
+        ],
+        "examples": [
+          {
+            "level": "Medium",
+            "title": "Identifying Plant Types",
+            "problem": "You find a plant with parallel leaf venation. Predict its root type and seed structure.",
+            "solution": [
+              "Observe the leaf venation: it is parallel.",
+              "Recall the general rule: plants with parallel venation possess a fibrous root system.",
+              "Recall the seed rule: parallel venation and fibrous roots correspond to monocotyledonous seeds.",
+              "Therefore, the plant has fibrous roots and monocot seeds (e.g., grass, wheat, maize)."
+            ],
+            "hint": "Parallel venation is linked to fibrous roots and monocots."
+          }
+        ],
+        "quiz": [
+          {
+            "type": "mcq",
+            "q": "Which type of plant has a soft, green stem and is usually short?",
+            "options": ["Herb", "Shrub", "Tree", "Climber"],
+            "answer": "Herb",
+            "explanation": "Herbs are defined as small plants with soft, tender, and green stems."
+          },
+          {
+            "type": "mcq",
+            "q": "What features are found in a dicot plant?",
+            "options": [
+              "Parallel venation and fibrous roots",
+              "Reticulate venation and taproots",
+              "Parallel venation and taproots",
+              "Reticulate venation and fibrous roots"
+            ],
+            "answer": "Reticulate venation and taproots",
+            "explanation": "Dicot plants generally show reticulate leaf venation and a taproot system."
+          }
+        ],
+        "recap": [
+          "Plants are categorized into **herbs, shrubs, and trees**.",
+          "**Parallel venation** links to **fibrous roots** and **monocots**.",
+          "**Reticulate venation** links to **taproots** and **dicots**.",
+          "**Adaptations** are structural features facilitating survival in a specific **habitat**."
+        ]
+      },
+      "Mindful Eating: A Path to a Healthy Body": {
+        "difficulty": "Easy",
+        "studyTime": "30 mins",
+        "pyqPattern": "Focuses on identifying nutrients, testing for food components, and building a balanced diet (2-4 marks).",
+        "overview": {
+          "intro": "Food gives us life and strength. A balanced diet contains the right quantities of all nutrients needed by our body.",
+          "realWorld": "Different states in India grow different crops, which explains the wonderful variety of regional cuisines.",
+          "whyItMatters": "Eating mindfully and avoiding junk food keeps our body free of deficiency diseases."
+        },
+        "concepts": [
+          {
+            "id": "nutrient-types",
+            "title": "Carbs, Proteins, Fats, and Vitamins",
+            "definition": "The five essential chemical groups in food needed for energy, growth, and repair.",
+            "explanation": "Carbohydrates and fats are energy-giving foods. Proteins are body-building foods. Vitamins and minerals are protective foods that guard against sickness.",
+            "memoryTrick": "Carbs = Energy; Proteins = Muscle growth; Vitamins = Armor.",
+            "commonMistake": "Thinking fats are bad. Moderate healthy fats are essential to store energy and protect organs.",
+            "visualType": "formula-showcase"
+          },
+          {
+            "id": "balanced-diet",
+            "title": "Components of a Balanced Diet",
+            "definition": "A diet supplying all essential nutrients in proper ratios, along with water and roughage.",
+            "explanation": "A balanced diet must not only have proteins, carbs, and fats but also roughage (dietary fiber) to prevent constipation and plenty of water for chemical transport.",
+            "memoryTrick": "Fill your plate with colors: grains, pulses, fresh greens, and water!",
+            "commonMistake": "Replacing natural fruits with vitamin pills. Natural foods provide roughage which pills lack.",
+            "visualType": "formula-showcase"
+          }
+        ],
+        "examples": [
+          {
+            "level": "Easy",
+            "title": "Constructing a Healthy Lunch",
+            "problem": "Select ingredients to construct a balanced lunch for a school-going child.",
+            "solution": [
+              "**Carbohydrates**: Rice or chapatis (energy).",
+              "**Proteins**: Dal, paneer, or fish (growth).",
+              "**Vitamins & Minerals**: Green leafy vegetables or salad (protection).",
+              "**Fats**: A small dollop of ghee or butter.",
+              "**Roughage & Water**: Cucumber salad and a glass of buttermilk/water."
+            ],
+            "hint": "Ensure the meal covers energy-giving, body-building, and protective food groups."
+          }
+        ],
+        "quiz": [
+          {
+            "type": "mcq",
+            "q": "Which nutrient group is responsible for the growth and repair of cells?",
+            "options": ["Carbohydrates", "Proteins", "Fats", "Vitamins"],
+            "answer": "Proteins",
+            "explanation": "Proteins are body-building foods that help in building muscles and repairing damaged tissues."
+          }
+        ],
+        "recap": [
+          "**Carbs and fats** provide energy. **Proteins** build and repair the body.",
+          "**Vitamins and minerals** protect against diseases.",
+          "**Balanced diets** contain all nutrients in correct portions, plus **roughage** and **water**."
+        ]
+      },
+      "Exploring Magnets": {
+        "difficulty": "Easy to Medium",
+        "studyTime": "30 mins",
+        "pyqPattern": "Focuses on identifying magnetic properties, laws of poles, and compass operation (3-4 marks).",
+        "overview": {
+          "intro": "Magnets possess invisible magnetic forces that attract iron and point in Earth's North-South direction.",
+          "realWorld": "Maglev trains glide without touching the track by exploiting magnetic repulsion.",
+          "whyItMatters": "Magnets are vital in power generators, computer disks, compasses, and medical scanners."
+        },
+        "concepts": [
+          {
+            "id": "magnetic-materials",
+            "title": "Magnetic vs Non-magnetic",
+            "definition": "Classification of substances based on attraction to magnets.",
+            "explanation": "Materials like iron, cobalt, and nickel are strongly attracted and are called magnetic. Wood, plastic, aluminum, and paper are non-magnetic.",
+            "memoryTrick": "Fe-Co-Ni: Iron (Ferrum), Cobalt, Nickel form the magnetic trio!",
+            "commonMistake": "Thinking all metals are magnetic. Copper, brass, and aluminum do not attract magnets.",
+            "visualType": "formula-showcase"
+          },
+          {
+            "id": "laws-of-magnetism",
+            "title": "Magnetic Poles & Directions",
+            "definition": "The properties of magnetic poles and their interactions.",
+            "explanation": "Every magnet has two poles: North (N) and South (S). Like poles repel (N-N, S-S) and unlike poles attract (N-S). A freely suspended magnet aligns North-South because of Earth's magnetic core.",
+            "memoryTrick": "Opposites attract! Like poles push away.",
+            "commonMistake": "Thinking a single isolated pole (monopole) can exist. Cutting a magnet creates two smaller magnets.",
+            "visualType": "formula-showcase"
+          }
+        ],
+        "examples": [
+          {
+            "level": "Easy",
+            "title": "Solving a Navigation Problem",
+            "problem": "A hiker is lost in a thick forest on a cloudy day. How can they find geographic East?",
+            "solution": [
+              "Take out a magnetic compass and let the needle settle.",
+              "The needle's painted/marked tip will point to geographic North.",
+              "Face North. Geographic East will be directly on the right-hand side.",
+              "Geographic West is on the left, and South is behind."
+            ],
+            "hint": "A compass aligns along the North-South axis."
+          }
+        ],
+        "quiz": [
+          {
+            "type": "mcq",
+            "q": "What happens when the North Pole of one magnet is brought near the North Pole of another?",
+            "options": ["They attract", "They repel", "Nothing happens", "They turn into wood"],
+            "answer": "They repel",
+            "explanation": "The law of magnetism states that like poles repel each other."
+          }
+        ],
+        "recap": [
+          "Magnets attract **iron, cobalt, and nickel**.",
+          "All magnets have a **North Pole** and a **South Pole**.",
+          "**Like poles repel**; **unlike poles attract**.",
+          "Suspended magnets align **North-South** due to Earth's magnetic field."
+        ]
+      },
+      "Measurement of Length and Motion": {
+        "difficulty": "Medium",
+        "studyTime": "35 mins",
+        "pyqPattern": "Focuses on converting units, accurate ruler placement, and identifying types of motion (3-5 marks).",
+        "overview": {
+          "intro": "Standard measurements allow scientists around the world to agree on sizes. Moving objects show different types of motion.",
+          "realWorld": "The flight of a mosquito shows irregular motion, while a clock pendulum shows periodic motion.",
+          "whyItMatters": "Accurate measurements prevent costly errors in construction, cooking, and manufacturing."
+        },
+        "concepts": [
+          {
+            "id": "standard-measurement",
+            "title": "SI Units and Measurement",
+            "definition": "Standard systems used to ensure measurement accuracy across the world.",
+            "explanation": "Non-standard units like cubits or hand-spans vary from person to person. The SI unit for length is the meter (m). When measuring, the scale must be straight and eye position must be perpendicular to prevent parallax errors.",
+            "memoryTrick": "1 meter = 100 cm = 1000 mm. Look straight down at the markings!",
+            "commonMistake": "Measuring from a broken ruler edge. Start from 1 cm and subtract 1 from the final reading.",
+            "visualType": "formula-showcase"
+          },
+          {
+            "id": "motion-types",
+            "title": "Rectilinear, Circular, and Periodic Motion",
+            "definition": "Categorizing the pathways taken by moving bodies.",
+            "explanation": "Rectilinear motion is in a straight line (a car on a straight road). Circular motion is in a circular path (blades of a fan). Periodic motion repeats itself in equal time intervals (swing of a pendulum).",
+            "memoryTrick": "Rect = Straight; Circle = Round; Periodic = Back & Forth.",
+            "commonMistake": "Thinking a rolling ball only has rectilinear motion. It has both rectilinear (forward path) and circular (rotation) motion.",
+            "visualType": "formula-showcase"
+          }
+        ],
+        "examples": [
+          {
+            "level": "Easy",
+            "title": "Broken Ruler Calculation",
+            "problem": "A student measures a box. The ruler zero mark is broken, so they align the left edge with the 2.0 cm mark. The right edge reads 18.5 cm. What is the length?",
+            "solution": [
+              "Record the start reading: 2.0 cm.",
+              "Record the end reading: 18.5 cm.",
+              "Calculate the actual length by subtracting the start reading from the end reading:",
+              "Length = 18.5 cm - 2.0 cm = **16.5 cm**.",
+              "The box length is 16.5 cm."
+            ],
+            "hint": "Subtract the starting offset from the final scale reading."
+          }
+        ],
+        "quiz": [
+          {
+            "type": "mcq",
+            "q": "What type of motion is exhibited by a giant wheel at an amusement park?",
+            "options": ["Rectilinear", "Circular", "Periodic", "Oscillatory"],
+            "answer": "Circular",
+            "explanation": "A giant wheel rotates around a fixed center point, displaying circular motion."
+          }
+        ],
+        "recap": [
+          "Standard units like the **meter** prevent human errors.",
+          "Always measure **perpendicularly** to avoid parallax errors.",
+          "**Rectilinear motion** is straight; **circular** is rotational; **periodic** is repeating."
+        ]
+      },
+      "Materials Around Us": {
+        "difficulty": "Easy",
+        "studyTime": "30 mins",
+        "pyqPattern": "Focuses on sorting objects and identifying physical properties like transparency and solubility (2-4 marks).",
+        "overview": {
+          "intro": "Grouping materials based on physical properties helps us select the right material for the job.",
+          "realWorld": "We make windows from transparent glass to let light in, but tea cups from opaque clay to block heat.",
+          "whyItMatters": "Sorting makes inventory management in kitchens, shops, and chemical factories efficient."
+        },
+        "concepts": [
+          {
+            "id": "sorting-properties",
+            "title": "Appearance, Hardness, and Solubility",
+            "definition": "Sorting materials using physical properties.",
+            "explanation": "Appearance can be lustrous (shiny like metals) or dull. Hardness determines if a material scratches easily. Solubility determines if a solute dissolves in water.",
+            "memoryTrick": "Luster = Shiny; Soluble = Dissolves; Density = Float/Sink.",
+            "commonMistake": "Thinking chalk dissolves. It turns water cloudy and settles, meaning it is insoluble.",
+            "visualType": "formula-showcase"
+          },
+          {
+            "id": "light-transmission",
+            "title": "Transparent, Translucent, and Opaque",
+            "definition": "Sorting based on how light passes through a material.",
+            "explanation": "Transparent materials allow light to pass fully (clear glass). Translucent materials allow light to pass partially, giving a blurry view (butter paper). Opaque materials block light completely (wood).",
+            "memoryTrick": "Clear = Transparent; Blurry = Translucent; Dark = Opaque.",
+            "commonMistake": "Assuming all plastic is transparent. Colored plastics are opaque.",
+            "visualType": "formula-showcase"
+          }
+        ],
+        "examples": [
+          {
+            "level": "Easy",
+            "title": "Choosing Materials for a Cup",
+            "problem": "Why can we not build a tea cup using cloth fabric?",
+            "solution": [
+              "Evaluate the primary purpose of a cup: to hold hot liquid tea.",
+              "Observe the property of cloth fabric: it is porous (has tiny holes) and highly flexible.",
+              "Liquid tea would immediately leak out through the pores of the cloth.",
+              "Therefore, we must use an impermeable material that can hold liquids and handle heat, like ceramic, clay, or metal."
+            ],
+            "hint": "Analyze the properties needed to hold liquid without leaking."
+          }
+        ],
+        "quiz": [
+          {
+            "type": "mcq",
+            "q": "Which of these materials is translucent?",
+            "options": ["Clear glass", "Wooden plank", "Oily paper sheet", "Steel plate"],
+            "answer": "Oily paper sheet",
+            "explanation": "An oily paper sheet allows light to pass only partially, making objects appear blurred."
+          }
+        ],
+        "recap": [
+          "**Lustrous** materials look shiny (metals).",
+          "**Soluble** materials dissolve in water; **insoluble** do not.",
+          "**Transparent** lets light through; **translucent** bends it; **opaque** blocks it."
+        ]
+      },
+      "Temperature and its Measurement": {
+        "difficulty": "Medium",
+        "studyTime": "35 mins",
+        "pyqPattern": "Focuses on differences between thermometers, safe handling, and reading clinical scales (3-5 marks).",
+        "overview": {
+          "intro": "Temperature defines how hot or cold an object is. Thermometers measure this temperature using the expansion of liquid mercury.",
+          "realWorld": "Doctors use clinical thermometers with a kink to measure fever, so the mercury doesn't fall before they read it.",
+          "whyItMatters": "Precise temperature readings are critical in medicine, baking, and steel casting."
+        },
+        "concepts": [
+          {
+            "id": "temperature-definitions",
+            "title": "Sensory Limits and Temperature",
+            "definition": "A reliable measurement of hotness using thermometer scales.",
+            "explanation": "Our sense of touch is deceptive. Ice-cold water makes warm tap water feel hot. Temperature is the objective measure of thermal state, recorded using Celsius (°C) or Fahrenheit (°F).",
+            "memoryTrick": "Don't trust fingers! Trust thermometers.",
+            "commonMistake": "Confounding heat with temperature. Heat is energy; temperature is thermal hotness.",
+            "visualType": "formula-showcase"
+          },
+          {
+            "id": "thermometer-structures",
+            "title": "Clinical vs Laboratory Thermometers",
+            "definition": "Different thermometer builds matching their scientific roles.",
+            "explanation": "Clinical thermometers measure body temperature (35°C to 42°C) and have a kink to lock the mercury. Laboratory thermometers measure fluid temperatures (-10°C to 110°C) and have no kink, so they must be read while in the fluid.",
+            "memoryTrick": "Clinical = Narrow range + Kink; Lab = Wide range + No kink.",
+            "commonMistake": "Washing a clinical thermometer in boiling water. It will expand past 42°C and burst.",
+            "visualType": "formula-showcase"
+          }
+        ],
+        "examples": [
+          {
+            "level": "Medium",
+            "title": "Choosing the Right Thermometer",
+            "problem": "Can you use a clinical thermometer to find the temperature of boiling milk?",
+            "solution": [
+              "Observe the boiling point of milk: approximately 100°C.",
+              "Observe the scale range of a clinical thermometer: 35°C to 42°C.",
+              "If placed in boiling milk, the mercury will expand rapidly beyond the maximum limit of 42°C.",
+              "This excessive pressure will cause the glass bulb to burst, making it highly dangerous.",
+              "Therefore, you must use a laboratory thermometer (range up to 110°C) instead."
+            ],
+            "hint": "Check if the liquid temperature falls within the scale limits."
+          }
+        ],
+        "quiz": [
+          {
+            "type": "mcq",
+            "q": "What is the normal body temperature of a healthy human being?",
+            "options": ["35°C", "37°C", "40°C", "42°C"],
+            "answer": "37°C",
+            "explanation": "Normal body temperature for a healthy human is 37 degrees Celsius (or 98.6 degrees Fahrenheit)."
+          }
+        ],
+        "recap": [
+          "**Touch is deceptive** for checking thermal states.",
+          "**Clinical thermometers** have a **kink** to lock the mercury reading.",
+          "**Laboratory thermometers** do not have a kink and have a **wider scale range**."
+        ]
+      },
+      "A Journey through States of Water": {
+        "difficulty": "Easy to Medium",
+        "studyTime": "30 mins",
+        "pyqPattern": "Focuses on processes like evaporation, condensation, transpiration, and the water cycle (3-4 marks).",
+        "overview": {
+          "intro": "Water is a magical substance that cycles through solid, liquid, and gas phases to sustain global life.",
+          "realWorld": "Wet clothes drying on a line or steam rising from a kettle are everyday phase changes of water.",
+          "whyItMatters": "The water cycle naturally purifies water, providing fresh water to agriculture and cities."
+        },
+        "concepts": [
+          {
+            "id": "states-interconversion",
+            "title": "Solid, Liquid, and Gas Interconversion",
+            "definition": "The transition of water states driven by heating or cooling.",
+            "explanation": "Ice (solid) melts to water (liquid) on heating. Water boils to steam/vapor (gas) on further heating. Vapor condenses to water on cooling. Water freezes to ice on further cooling.",
+            "memoryTrick": "Heat = Melts/Evaporates; Cool = Condenses/Freezes.",
+            "commonMistake": "Thinking steam and water vapor are different. Steam is visible water droplets; vapor is invisible gas.",
+            "visualType": "formula-showcase"
+          },
+          {
+            "id": "water-cycle-mechanisms",
+            "title": "Evaporation, Condensation, and Rain",
+            "definition": "The cyclic flow of water through land, atmosphere, and oceans.",
+            "explanation": "Heat from the Sun evaporates water from oceans. Plants release water through transpiration. The vapor rises, cools, and condenses to form cloud droplets. These droplets group and fall as precipitation (rain or snow).",
+            "memoryTrick": "Evaporate (Rise) -> Condense (Cloud) -> Precipitate (Rain).",
+            "commonMistake": "Believing rain only comes from ocean evaporation. Land transpiration contributes up to 10% of rain vapor.",
+            "visualType": "formula-showcase"
+          }
+        ],
+        "examples": [
+          {
+            "level": "Easy",
+            "title": "Explaining Dew Drops",
+            "problem": "On cold winter mornings, dew drops appear on grass and leaves. Where do they come from?",
+            "solution": [
+              "Observe the surrounding air: it contains invisible water vapor.",
+              "Observe the cold winter nights: the surface temperature of grass drops significantly.",
+              "When warm air touches the cold grass, the water vapor in it cools down.",
+              "This cooling turns the gaseous vapor back into liquid water (condensation).",
+              "These condensed droplets collect on the leaves as dew."
+            ],
+            "hint": "Gas cools to form liquid droplets on cold surfaces."
+          }
+        ],
+        "quiz": [
+          {
+            "type": "mcq",
+            "q": "What is the process of water turning into water vapor called?",
+            "options": ["Condensation", "Evaporation", "Freezing", "Precipitation"],
+            "answer": "Evaporation",
+            "explanation": "Evaporation is the transition of liquid water into gaseous water vapor."
+          }
+        ],
+        "recap": [
+          "Water exists in **three states**: solid, liquid, and gas.",
+          "**Evaporation** and **transpiration** supply vapor to the clouds.",
+          "**Condensation** forms clouds when vapor cools.",
+          "**Precipitation** returns water to the soil as rain."
+        ]
+      },
+      "Methods of Separation in Everyday Life": {
+        "difficulty": "Medium",
+        "studyTime": "35 mins",
+        "pyqPattern": "Focuses on choosing separation techniques for mixtures of varying properties (3-5 marks).",
+        "overview": {
+          "intro": "Mixtures in nature contain useful parts mixed with impurities. Separating them relies on differences in density, weight, and size.",
+          "realWorld": "Filtering tea leaves using a strainer or separating mud from water are daily separation methods.",
+          "whyItMatters": "Purifying tap water or extracting medicinal compounds from herbs requires systematic separation."
+        },
+        "concepts": [
+          {
+            "id": "dry-separation",
+            "title": "Threshing, Winnowing, and Sieving",
+            "definition": "Methods to separate dry solids.",
+            "explanation": "Threshing beats stalks to loosen grains. Winnowing uses wind to separate heavy grains from light husk. Sieving uses a mesh screen to let small particles pass while trapping large stones.",
+            "memoryTrick": "Thresh = Beat; Winnow = Wind; Sieve = Mesh.",
+            "commonMistake": "Using winnowing for materials of equal weight. It requires one component to be light.",
+            "visualType": "formula-showcase"
+          },
+          {
+            "id": "wet-separation",
+            "title": "Sedimentation, Decantation, and Filtration",
+            "definition": "Separating insoluble solids from liquids.",
+            "explanation": "Sedimentation lets heavy mud settle at the bottom. Decantation is pouring off the clear water above it. Filtration passes the liquid through a filter to catch fine residues.",
+            "memoryTrick": "Settle (Sediment) -> Pour (Decant) -> Strain (Filter).",
+            "commonMistake": "Thinking decantation removes all dirt. Fine particles remain suspended and require filtration.",
+            "visualType": "formula-showcase"
+          }
+        ],
+        "examples": [
+          {
+            "level": "Medium",
+            "title": "Reclaiming Salt from Muddy Brine",
+            "problem": "How can you separate a mixture of sand, salt, and water to get dry salt and clean sand?",
+            "solution": [
+              "**Step 1: Dissolution**: Mix thoroughly. Salt dissolves, but sand is insoluble.",
+              "**Step 2: Filtration**: Pass the mixture through a filter paper. Sand stays on the filter as residue.",
+              "**Step 3: Evaporation**: Heat the remaining salt water. Water boils away as steam, leaving dry salt crystal residues.",
+              "Result: Sand is reclaimed from the filter, and salt from the evaporating dish."
+            ],
+            "hint": "Use solubility to separate salt from sand, then evaporate the liquid."
+          }
+        ],
+        "quiz": [
+          {
+            "type": "mcq",
+            "q": "Which method is best for separating light husk from heavy wheat grains?",
+            "options": ["Hand-picking", "Winnowing", "Sieving", "Filtration"],
+            "answer": "Winnowing",
+            "explanation": "Winnowing uses wind to blow away the lighter husk while the heavier grains fall straight down."
+          }
+        ],
+        "recap": [
+          "**Winnowing** separates components by weight using wind.",
+          "**Sedimentation** settles mud; **decantation** pours off the water.",
+          "**Filtration** captures solid particles that pass through a screen.",
+          "**Evaporation** recovers dissolved solutes by boiling off solvents."
+        ]
+      },
+      "Living Creatures: Exploring their Characteristics": {
+        "difficulty": "Medium",
+        "studyTime": "35 mins",
+        "pyqPattern": "Focuses on identifying life processes, breathing vs respiration, and responses to stimuli (3-5 marks).",
+        "overview": {
+          "intro": "Living creatures carry out essential life processes that set them apart from non-living things like rocks or toys.",
+          "realWorld": "A sunflower turning toward the sun or a seedling growing into a plant show life in action.",
+          "whyItMatters": "Understanding these characteristics helps us protect ecosystem habitats and explore cellular biology."
+        },
+        "concepts": [
+          {
+            "id": "living-characteristics",
+            "title": "Characteristics of Life",
+            "definition": "The common life processes shared by all living organisms.",
+            "explanation": "All living things need nutrition, grow over time, respire to release energy, respond to stimuli, excrete toxic wastes, reproduce young ones, and have a finite lifespan.",
+            "memoryTrick": "G-R-E-N-S-R-N: Growth, Respiration, Excretion, Nutrition, Stimuli, Reproduction, Nutrition.",
+            "commonMistake": "Thinking fire is alive because it grows and consumes oxygen. Fire lacks cells, DNA, and reproduction.",
+            "visualType": "formula-showcase"
+          },
+          {
+            "id": "breathing-respiration",
+            "title": "Breathing vs Respiration",
+            "definition": "Distinguishing mechanical gas exchange from chemical energy release.",
+            "explanation": "Breathing is the physical act of inhaling oxygen and exhaling carbon dioxide. Respiration is the chemical breakdown of glucose inside cells to release energy, releasing carbon dioxide as a waste product.",
+            "memoryTrick": "Breathing = Mechanical lungs; Respiration = Chemical cells.",
+            "commonMistake": "Believing plants do not respire. Plants respire 24/7, even while performing photosynthesis.",
+            "visualType": "formula-showcase"
+          }
+        ],
+        "examples": [
+          {
+            "level": "Medium",
+            "title": "Response to Stimuli Example",
+            "problem": "Explain what happens when your hand accidentally touches a hot plate.",
+            "solution": [
+              "Identify the stimulus: the high heat of the hot plate.",
+              "Observe the response: your hand pulls back immediately.",
+              "Explain the mechanism: sensory nerves detect the heat and send a reflex signal to muscle cells.",
+              "The muscle cells contract, pulling the hand away to prevent injury.",
+              "This demonstrates how living creatures respond to stimuli to protect themselves."
+            ],
+            "hint": "Identify the environmental trigger and the immediate protective response."
+          }
+        ],
+        "quiz": [
+          {
+            "type": "mcq",
+            "q": "Which of these is a chemical process that releases energy inside cells?",
+            "options": ["Breathing", "Excretion", "Respiration", "Digestion"],
+            "answer": "Respiration",
+            "explanation": "Respiration is the cellular process of breaking down food with oxygen to release energy."
+          }
+        ],
+        "recap": [
+          "All living things **grow, respire, excrete, and reproduce**.",
+          "**Breathing** is mechanical; **respiration** is chemical.",
+          "**Stimuli** are environmental changes that trigger a physical **response**."
+        ]
+      },
+      "Nature's Treasures": {
+        "difficulty": "Easy",
+        "studyTime": "30 mins",
+        "pyqPattern": "Focuses on classifying resources, explaining soil erosion, and describing conservation methods (2-4 marks).",
+        "overview": {
+          "intro": "Earth provides water, air, soil, and minerals. We must protect these resources to ensure sustainable development.",
+          "realWorld": "Forest sacred groves protected by local communities in India preserve rare medicinal plants.",
+          "whyItMatters": "Deforestation exposes soil to heavy wind and water, causing erosion that ruins farming lands."
+        },
+        "concepts": [
+          {
+            "id": "resources-classification",
+            "title": "Renewable vs Non-renewable Resources",
+            "definition": "Sorting natural assets based on replenishment rate.",
+            "explanation": "Renewable resources replenish fast (solar radiation, wind, water). Non-renewable resources have fixed deposits and take millions of years to form (coal, petroleum, minerals).",
+            "memoryTrick": "Renewable = Clean/Infinite; Non-renewable = Fossil/Finite.",
+            "commonMistake": "Thinking water is infinite. Fresh drinking water is limited and can be polluted beyond use.",
+            "visualType": "formula-showcase"
+          },
+          {
+            "id": "soil-erosion-prevention",
+            "title": "Soil Erosion and Conservation",
+            "definition": "The removal of fertile topsoil and the methods used to protect it.",
+            "explanation": "Tree roots bind soil particles together. Deforestation removes this root binding, allowing rain and wind to wash away topsoil. Terracing, afforestation, and planting grass prevent erosion.",
+            "memoryTrick": "Roots = Soil anchors. Afforestation keeps land stable.",
+            "commonMistake": "Thinking erosion only affects forests. It washes away crop nutrients on farms, causing crop failure.",
+            "visualType": "formula-showcase"
+          }
+        ],
+        "examples": [
+          {
+            "level": "Easy",
+            "title": "Hillside Deforestation Impact",
+            "problem": "What happens to a hillside village if the surrounding forest is completely cut down?",
+            "solution": [
+              "Forest trees act as windbreaks and bind the slope soil with their roots.",
+              "If cut down, heavy rains will wash away the exposed topsoil without resistance.",
+              "This can cause landslides, block village paths, and ruin downstream farm lands with silt.",
+              "To prevent this, the village must plant grass cover and restore forest trees (afforestation)."
+            ],
+            "hint": "Analyze the role of roots in binding soil and slowing down rain runoff."
+          }
+        ],
+        "quiz": [
+          {
+            "type": "mcq",
+            "q": "Which of these is a non-renewable natural resource?",
+            "options": ["Solar energy", "Wind power", "Coal deposits", "Water currents"],
+            "answer": "Coal deposits",
+            "explanation": "Coal deposits are limited and take millions of years of heat and pressure to form."
+          }
+        ],
+        "recap": [
+          "**Renewable resources** regenerate quickly; **non-renewable** deplete.",
+          "**Tree roots** anchor topsoil, preventing **soil erosion**.",
+          "**Conservation** ensures resources are preserved for future generations."
+        ]
+      },
+      "Beyond Earth": {
+        "difficulty": "Easy to Medium",
+        "studyTime": "30 mins",
+        "pyqPattern": "Focuses on solar system components, moon phases, and key space missions like Chandrayaan (2-4 marks).",
+        "overview": {
+          "intro": "Looking beyond Earth reveals the solar system, stars, constellations, and space exploration achievements.",
+          "realWorld": "ISRO's Mangalyaan reached Mars on its first attempt, showing India's space engineering capabilities.",
+          "whyItMatters": "Space exploration helps us understand the origin of Earth and monitor weather patterns using satellites."
+        },
+        "concepts": [
+          {
+            "id": "solar-system-structures",
+            "title": "The Solar System and Planets",
+            "definition": "The Sun and the celestial bodies orbiting it.",
+            "explanation": "The Sun is a medium star that holds 8 planets in orbit using gravity. Inner rocky planets (Mercury, Venus, Earth, Mars) are followed by outer gas giants (Jupiter, Saturn, Uranus, Neptune).",
+            "memoryTrick": "My Very Educated Mother Just Showed Us Neptune!",
+            "commonMistake": "Thinking moons shine by themselves. They reflect light from the Sun.",
+            "visualType": "formula-showcase"
+          },
+          {
+            "id": "moon-phases-geometry",
+            "title": "Moon Phases and Orbits",
+            "definition": "The changing appearances of the Moon from Earth.",
+            "explanation": "As the Moon orbits Earth, different fractions of its sunlit side are visible to us. This geometry creates the phases: New Moon (Amawasya), Crescent, Half, Gibbous, and Full Moon (Poornima).",
+            "memoryTrick": "The lit portion grows (waxes) to Full Moon, then shrinks (wanes) to New Moon.",
+            "commonMistake": "Thinking Earth's shadow causes daily moon phases. Earth's shadow only cuts across during rare lunar eclipses.",
+            "visualType": "formula-showcase"
+          }
+        ],
+        "examples": [
+          {
+            "level": "Easy",
+            "title": "Twinkling Star Explanation",
+            "problem": "Why do stars twinkle at night, while planets shine steadily?",
+            "solution": [
+              "Observe the distance: stars are light-years away, looking like point-sized light sources.",
+              "Planets are much closer, looking like larger disks of light.",
+              "As star beams pass through shifting air layers, they bend (refract) back and forth, looking like they twinkle.",
+              "The light from different parts of a planet disk averages out, keeping the overall light steady."
+            ],
+            "hint": "Analyze the size of the source and its distance from Earth."
+          }
+        ],
+        "quiz": [
+          {
+            "type": "mcq",
+            "q": "What is India's Mars Orbiter Mission called?",
+            "options": ["Chandrayaan", "Mangalyaan", "Gaganyaan", "Aditya-L1"],
+            "answer": "Mangalyaan",
+            "explanation": "Mangalyaan is India's Mars Orbiter Mission, launched by ISRO in 2013."
+          }
+        ],
+        "recap": [
+          "The **Solar System** consists of the Sun and **eight planets**.",
+          "**Moon phases** are caused by the Moon reflecting light as it orbits Earth.",
+          "**Stars twinkle** due to atmospheric refraction; closer **planets shine steadily**."
+        ]
+      }
+    },
+    "Social Science": {
+    "Introduction: Why Social Science?": {
+        "difficulty": "Easy",
+        "studyTime": "20 mins",
+        "pyqPattern": "Tests basic definitions, identification of parameters, and practical daily connections (2-3 marks in term exams).",
+        "overview": {
+            "intro": "Social Science helps us observe and understand human societies, their diversity, challenges, and how we can work together to protect our environment and live in peace.",
+            "realWorld": "Helps students understand how their surrounding neighborhood, local services, and country operate on a daily basis.",
+            "whyItMatters": "Essential for scoring high in school term exams and building a strong foundation in geography, history, civics, and economic life."
+        },
+        "concepts": [
+            {
+                "id": "soc-introducti-0",
+                "title": "Concept 1",
+                "definition": "Social Science studies how human societies function, interact, and evolve.",
+                "explanation": "This covers the detailed study of concept 1. Understanding this is critical to mastering the NCERT syllabus guidelines and applying it to social studies questions.",
+                "memoryTrick": "Remember: Concept 1 refers directly to the core idea of Social Science studies how hum...",
+                "commonMistake": "Confusing Concept 1 with other similar social terms or boundaries.",
+                "visualType": "formula-showcase"
+            },
+            {
+                "id": "soc-introducti-1",
+                "title": "Concept 2",
+                "definition": "Human societies are highly diverse and complex, requiring multiple scientific viewpoints (history, geography, economics, civics) to understand.",
+                "explanation": "This covers the detailed study of concept 2. Understanding this is critical to mastering the NCERT syllabus guidelines and applying it to social studies questions.",
+                "memoryTrick": "Remember: Concept 2 refers directly to the core idea of Human societies are highly div...",
+                "commonMistake": "Confusing Concept 2 with other similar social terms or boundaries.",
+                "visualType": "formula-showcase"
+            },
+            {
+                "id": "soc-introducti-2",
+                "title": "Concept 3",
+                "definition": "Living in the 21st century presents massive possibilities alongside global challenges like environment stress and social tensions.",
+                "explanation": "This covers the detailed study of concept 3. Understanding this is critical to mastering the NCERT syllabus guidelines and applying it to social studies questions.",
+                "memoryTrick": "Remember: Concept 3 refers directly to the core idea of Living in the 21st century pre...",
+                "commonMistake": "Confusing Concept 3 with other similar social terms or boundaries.",
+                "visualType": "formula-showcase"
+            }
+        ],
+        "examples": [
+            {
+                "level": "Easy",
+                "title": "Solved Practice Question 1",
+                "problem": "What is the primary objective of studying Social Science?",
+                "solution": [
+                    "To understand the social world, recognize diversity, and learn to live in peace and harmony while protecting our shared environment."
+                ],
+                "hint": "Read the question carefully, identify what sector or historical source it relates to, and state the answer in points."
+            },
+            {
+                "level": "Medium",
+                "title": "Solved Practice Question 2",
+                "problem": "Why is it important to learn from the past?",
+                "solution": [
+                    "We can fully understand the present and make better decisions for the future only in the light of historical events."
+                ],
+                "hint": "Read the question carefully, identify what sector or historical source it relates to, and state the answer in points."
+            }
+        ],
+        "quiz": [
+            {
+                "type": "mcq",
+                "q": "What is the primary objective of studying Social Science?",
+                "options": [
+                    "To understand the social world, recognize diversity, and learn to live in peace and harmony while protecting our shared environment.",
+                    "It depends on individual choices and settings.",
+                    "A standard format followed in other nations.",
+                    "None of the mentioned statements."
+                ],
+                "answer": "To understand the social world, recognize diversity, and learn to live in peace and harmony while protecting our shared environment.",
+                "explanation": "This is direct from the textbook: To understand the social world, recognize diversity, and learn to live in peace and harmony while protecting our shared environment."
+            },
+            {
+                "type": "mcq",
+                "q": "Why is it important to learn from the past?",
+                "options": [
+                    "We can fully understand the present and make better decisions for the future only in the light of historical events.",
+                    "It depends on individual choices and settings.",
+                    "A standard format followed in other nations.",
+                    "None of the mentioned statements."
+                ],
+                "answer": "We can fully understand the present and make better decisions for the future only in the light of historical events.",
+                "explanation": "This is direct from the textbook: We can fully understand the present and make better decisions for the future only in the light of historical events."
+            }
+        ],
+        "recap": [
+            "Social Science studies how human societies function, interact, and evolve.",
+            "Human societies are highly diverse and complex, requiring multiple scientific viewpoints (history, geography, economics, civics) to understand.",
+            "Living in the 21st century presents massive possibilities alongside global challenges like environment stress and social tensions."
+        ]
+    },
+    "Locating Places on the Earth": {
+        "difficulty": "Medium to Hard",
+        "studyTime": "40 mins",
+        "pyqPattern": "Mainly focuses on plotting coordinates using grid lines, understanding directions, calculating time zone differences, and defining latitudes/longitudes (3-5 marks).",
+        "overview": {
+            "intro": "Introduction to maps, coordinates, latitudes, longitudes, and time zones, which allow us to locate any place precisely on the Earth's surface.",
+            "realWorld": "Helps students understand how their surrounding neighborhood, local services, and country operate on a daily basis.",
+            "whyItMatters": "Essential for scoring high in school term exams and building a strong foundation in geography, history, civics, and economic life."
+        },
+        "concepts": [
+            {
+                "id": "soc-locating-p-0",
+                "title": "Concept 1",
+                "definition": "Maps are drawings representing areas of the Earth, utilizing distance, direction, and symbols as key components.",
+                "explanation": "This covers the detailed study of concept 1. Understanding this is critical to mastering the NCERT syllabus guidelines and applying it to social studies questions.",
+                "memoryTrick": "Remember: Concept 1 refers directly to the core idea of Maps are drawings representing...",
+                "commonMistake": "Confusing Concept 1 with other similar social terms or boundaries.",
+                "visualType": "formula-showcase"
+            },
+            {
+                "id": "soc-locating-p-1",
+                "title": "Concept 2",
+                "definition": "Latitudes are imaginary horizontal lines parallel to the Equator (0\u00b0). The Equator is the longest parallel.",
+                "explanation": "This covers the detailed study of concept 2. Understanding this is critical to mastering the NCERT syllabus guidelines and applying it to social studies questions.",
+                "memoryTrick": "Remember: Concept 2 refers directly to the core idea of Latitudes are imaginary horizo...",
+                "commonMistake": "Confusing Concept 2 with other similar social terms or boundaries.",
+                "visualType": "formula-showcase"
+            },
+            {
+                "id": "soc-locating-p-2",
+                "title": "Concept 3",
+                "definition": "Longitudes are imaginary vertical lines running from pole to pole, with the Prime Meridian (0\u00b0) passing through Greenwich.",
+                "explanation": "This covers the detailed study of concept 3. Understanding this is critical to mastering the NCERT syllabus guidelines and applying it to social studies questions.",
+                "memoryTrick": "Remember: Concept 3 refers directly to the core idea of Longitudes are imaginary verti...",
+                "commonMistake": "Confusing Concept 3 with other similar social terms or boundaries.",
+                "visualType": "formula-showcase"
+            }
+        ],
+        "examples": [
+            {
+                "level": "Easy",
+                "title": "Solved Practice Question 1",
+                "problem": "What are the three main components of a map?",
+                "solution": [
+                    "Distance (scale), Direction (cardinal points), and Symbols."
+                ],
+                "hint": "Read the question carefully, identify what sector or historical source it relates to, and state the answer in points."
+            },
+            {
+                "level": "Medium",
+                "title": "Solved Practice Question 2",
+                "problem": "Why do we need a Standard Time in India?",
+                "solution": [
+                    "Because longitudes differ across the country, causing local time differences of about 2 hours between west and east. A standard meridian prevents confusion."
+                ],
+                "hint": "Read the question carefully, identify what sector or historical source it relates to, and state the answer in points."
+            }
+        ],
+        "quiz": [
+            {
+                "type": "mcq",
+                "q": "What are the three main components of a map?",
+                "options": [
+                    "Distance (scale), Direction (cardinal points), and Symbols.",
+                    "It depends on individual choices and settings.",
+                    "A standard format followed in other nations.",
+                    "None of the mentioned statements."
+                ],
+                "answer": "Distance (scale), Direction (cardinal points), and Symbols.",
+                "explanation": "This is direct from the textbook: Distance (scale), Direction (cardinal points), and Symbols."
+            },
+            {
+                "type": "mcq",
+                "q": "Why do we need a Standard Time in India?",
+                "options": [
+                    "Because longitudes differ across the country, causing local time differences of about 2 hours between west and east. A standard meridian prevents confusion.",
+                    "It depends on individual choices and settings.",
+                    "A standard format followed in other nations.",
+                    "None of the mentioned statements."
+                ],
+                "answer": "Because longitudes differ across the country, causing local time differences of about 2 hours between west and east. A standard meridian prevents confusion.",
+                "explanation": "This is direct from the textbook: Because longitudes differ across the country, causing local time differences of about 2 hours between west and east. A standard meridian prevents confusion."
+            },
+            {
+                "type": "mcq",
+                "q": "How does crossing the International Date Line affect the date?",
+                "options": [
+                    "Going west across the line adds a day, while going east subtracts a day.",
+                    "It depends on individual choices and settings.",
+                    "A standard format followed in other nations.",
+                    "None of the mentioned statements."
+                ],
+                "answer": "Going west across the line adds a day, while going east subtracts a day.",
+                "explanation": "This is direct from the textbook: Going west across the line adds a day, while going east subtracts a day."
+            }
+        ],
+        "recap": [
+            "Maps are drawings representing areas of the Earth, utilizing distance, direction, and symbols as key components.",
+            "Latitudes are imaginary horizontal lines parallel to the Equator (0\u00b0). The Equator is the longest parallel.",
+            "Longitudes are imaginary vertical lines running from pole to pole, with the Prime Meridian (0\u00b0) passing through Greenwich."
+        ]
+    },
+    "Oceans and Continents": {
+        "difficulty": "Medium",
+        "studyTime": "30 mins",
+        "pyqPattern": "Tests basic definitions, identification of parameters, and practical daily connections (2-3 marks in term exams).",
+        "overview": {
+            "intro": "Exploring the distribution of Earth's vast water bodies (oceans) and large landmasses (continents), their interconnected nature, and their vital role in shaping climate and supporting life.",
+            "realWorld": "Helps students understand how their surrounding neighborhood, local services, and country operate on a daily basis.",
+            "whyItMatters": "Essential for scoring high in school term exams and building a strong foundation in geography, history, civics, and economic life."
+        },
+        "concepts": [
+            {
+                "id": "soc-oceans-and-0",
+                "title": "Concept 1",
+                "definition": "Earth is often called the 'Blue Planet' because water covers almost three-fourths (71%) of its surface.",
+                "explanation": "This covers the detailed study of concept 1. Understanding this is critical to mastering the NCERT syllabus guidelines and applying it to social studies questions.",
+                "memoryTrick": "Remember: Concept 1 refers directly to the core idea of Earth is often called the 'Blu...",
+                "commonMistake": "Confusing Concept 1 with other similar social terms or boundaries.",
+                "visualType": "formula-showcase"
+            },
+            {
+                "id": "soc-oceans-and-1",
+                "title": "Concept 2",
+                "definition": "Continents are large continuous expanses of land. The standard division identifies seven continents.",
+                "explanation": "This covers the detailed study of concept 2. Understanding this is critical to mastering the NCERT syllabus guidelines and applying it to social studies questions.",
+                "memoryTrick": "Remember: Concept 2 refers directly to the core idea of Continents are large continuou...",
+                "commonMistake": "Confusing Concept 2 with other similar social terms or boundaries.",
+                "visualType": "formula-showcase"
+            },
+            {
+                "id": "soc-oceans-and-2",
+                "title": "Concept 3",
+                "definition": "Oceans are large, interconnected salt-water bodies that regulate the global climate and support marine life.",
+                "explanation": "This covers the detailed study of concept 3. Understanding this is critical to mastering the NCERT syllabus guidelines and applying it to social studies questions.",
+                "memoryTrick": "Remember: Concept 3 refers directly to the core idea of Oceans are large, interconnect...",
+                "commonMistake": "Confusing Concept 3 with other similar social terms or boundaries.",
+                "visualType": "formula-showcase"
+            }
+        ],
+        "examples": [
+            {
+                "level": "Easy",
+                "title": "Solved Practice Question 1",
+                "problem": "What is the difference between an ocean and a continent?",
+                "solution": [
+                    "An ocean is a vast expanse of water, whereas a continent is a massive continuous expanse of land."
+                ],
+                "hint": "Read the question carefully, identify what sector or historical source it relates to, and state the answer in points."
+            },
+            {
+                "level": "Medium",
+                "title": "Solved Practice Question 2",
+                "problem": "How do oceans affect global climate?",
+                "solution": [
+                    "They absorb heat, distribute it around the globe via currents, and provide moisture for rainfall."
+                ],
+                "hint": "Read the question carefully, identify what sector or historical source it relates to, and state the answer in points."
+            }
+        ],
+        "quiz": [
+            {
+                "type": "mcq",
+                "q": "What is the difference between an ocean and a continent?",
+                "options": [
+                    "An ocean is a vast expanse of water, whereas a continent is a massive continuous expanse of land.",
+                    "It depends on individual choices and settings.",
+                    "A standard format followed in other nations.",
+                    "None of the mentioned statements."
+                ],
+                "answer": "An ocean is a vast expanse of water, whereas a continent is a massive continuous expanse of land.",
+                "explanation": "This is direct from the textbook: An ocean is a vast expanse of water, whereas a continent is a massive continuous expanse of land."
+            },
+            {
+                "type": "mcq",
+                "q": "How do oceans affect global climate?",
+                "options": [
+                    "They absorb heat, distribute it around the globe via currents, and provide moisture for rainfall.",
+                    "It depends on individual choices and settings.",
+                    "A standard format followed in other nations.",
+                    "None of the mentioned statements."
+                ],
+                "answer": "They absorb heat, distribute it around the globe via currents, and provide moisture for rainfall.",
+                "explanation": "This is direct from the textbook: They absorb heat, distribute it around the globe via currents, and provide moisture for rainfall."
+            },
+            {
+                "type": "mcq",
+                "q": "Why is ocean pollution a serious threat?",
+                "options": [
+                    "Plastics and chemical wastes poison marine life, disrupt food chains, and reduce the ocean's capacity to produce oxygen.",
+                    "It depends on individual choices and settings.",
+                    "A standard format followed in other nations.",
+                    "None of the mentioned statements."
+                ],
+                "answer": "Plastics and chemical wastes poison marine life, disrupt food chains, and reduce the ocean's capacity to produce oxygen.",
+                "explanation": "This is direct from the textbook: Plastics and chemical wastes poison marine life, disrupt food chains, and reduce the ocean's capacity to produce oxygen."
+            }
+        ],
+        "recap": [
+            "Earth is often called the 'Blue Planet' because water covers almost three-fourths (71%) of its surface.",
+            "Continents are large continuous expanses of land. The standard division identifies seven continents.",
+            "Oceans are large, interconnected salt-water bodies that regulate the global climate and support marine life."
+        ]
+    },
+    "Landforms and Life": {
+        "difficulty": "Medium",
+        "studyTime": "30 mins",
+        "pyqPattern": "Tests basic definitions, identification of parameters, and practical daily connections (2-3 marks in term exams).",
+        "overview": {
+            "intro": "A study of the three major landforms\u2014mountains, plateaus, and plains\u2014their distinct physical characteristics, and their profound impact on human lifestyles, occupations, and culture.",
+            "realWorld": "Helps students understand how their surrounding neighborhood, local services, and country operate on a daily basis.",
+            "whyItMatters": "Essential for scoring high in school term exams and building a strong foundation in geography, history, civics, and economic life."
+        },
+        "concepts": [
+            {
+                "id": "soc-landforms--0",
+                "title": "Concept 1",
+                "definition": "Mountains are elevated lands with steep slopes and sharp peaks, usually grouped in ranges (e.g. Himalayas).",
+                "explanation": "This covers the detailed study of concept 1. Understanding this is critical to mastering the NCERT syllabus guidelines and applying it to social studies questions.",
+                "memoryTrick": "Remember: Concept 1 refers directly to the core idea of Mountains are elevated lands w...",
+                "commonMistake": "Confusing Concept 1 with other similar social terms or boundaries.",
+                "visualType": "formula-showcase"
+            },
+            {
+                "id": "soc-landforms--1",
+                "title": "Concept 2",
+                "definition": "Plateaus are elevated flat lands, often rich in mineral resources (e.g. Deccan Plateau).",
+                "explanation": "This covers the detailed study of concept 2. Understanding this is critical to mastering the NCERT syllabus guidelines and applying it to social studies questions.",
+                "memoryTrick": "Remember: Concept 2 refers directly to the core idea of Plateaus are elevated flat lan...",
+                "commonMistake": "Confusing Concept 2 with other similar social terms or boundaries.",
+                "visualType": "formula-showcase"
+            },
+            {
+                "id": "soc-landforms--2",
+                "title": "Concept 3",
+                "definition": "Plains are fertile, flat expanses of land, highly suited for farming and supporting dense human populations.",
+                "explanation": "This covers the detailed study of concept 3. Understanding this is critical to mastering the NCERT syllabus guidelines and applying it to social studies questions.",
+                "memoryTrick": "Remember: Concept 3 refers directly to the core idea of Plains are fertile, flat expan...",
+                "commonMistake": "Confusing Concept 3 with other similar social terms or boundaries.",
+                "visualType": "formula-showcase"
+            }
+        ],
+        "examples": [
+            {
+                "level": "Easy",
+                "title": "Solved Practice Question 1",
+                "problem": "Why are plains the most densely populated regions?",
+                "solution": [
+                    "Because flat land is ideal for agriculture, building houses, laying roads, and setting up industries, and water is easily available."
+                ],
+                "hint": "Read the question carefully, identify what sector or historical source it relates to, and state the answer in points."
+            },
+            {
+                "level": "Medium",
+                "title": "Solved Practice Question 2",
+                "problem": "What is the key difference between a mountain and a plateau?",
+                "solution": [
+                    "A mountain has steep slopes and a sharp peak, while a plateau is elevated but has a flat, table-like top."
+                ],
+                "hint": "Read the question carefully, identify what sector or historical source it relates to, and state the answer in points."
+            }
+        ],
+        "quiz": [
+            {
+                "type": "mcq",
+                "q": "Why are plains the most densely populated regions?",
+                "options": [
+                    "Because flat land is ideal for agriculture, building houses, laying roads, and setting up industries, and water is easily available.",
+                    "It depends on individual choices and settings.",
+                    "A standard format followed in other nations.",
+                    "None of the mentioned statements."
+                ],
+                "answer": "Because flat land is ideal for agriculture, building houses, laying roads, and setting up industries, and water is easily available.",
+                "explanation": "This is direct from the textbook: Because flat land is ideal for agriculture, building houses, laying roads, and setting up industries, and water is easily available."
+            },
+            {
+                "type": "mcq",
+                "q": "What is the key difference between a mountain and a plateau?",
+                "options": [
+                    "A mountain has steep slopes and a sharp peak, while a plateau is elevated but has a flat, table-like top.",
+                    "It depends on individual choices and settings.",
+                    "A standard format followed in other nations.",
+                    "None of the mentioned statements."
+                ],
+                "answer": "A mountain has steep slopes and a sharp peak, while a plateau is elevated but has a flat, table-like top.",
+                "explanation": "This is direct from the textbook: A mountain has steep slopes and a sharp peak, while a plateau is elevated but has a flat, table-like top."
+            },
+            {
+                "type": "mcq",
+                "q": "What do the Tamil Sangam 'tinais' show about ancient Indian ecology?",
+                "options": [
+                    "They illustrate how human occupations, deities, and emotions were deeply linked to specific landscapes and ecosystems.",
+                    "It depends on individual choices and settings.",
+                    "A standard format followed in other nations.",
+                    "None of the mentioned statements."
+                ],
+                "answer": "They illustrate how human occupations, deities, and emotions were deeply linked to specific landscapes and ecosystems.",
+                "explanation": "This is direct from the textbook: They illustrate how human occupations, deities, and emotions were deeply linked to specific landscapes and ecosystems."
+            }
+        ],
+        "recap": [
+            "Mountains are elevated lands with steep slopes and sharp peaks, usually grouped in ranges (e.g. Himalayas).",
+            "Plateaus are elevated flat lands, often rich in mineral resources (e.g. Deccan Plateau).",
+            "Plains are fertile, flat expanses of land, highly suited for farming and supporting dense human populations."
+        ]
+    },
+    "Timeline and Sources of History": {
+        "difficulty": "Medium",
+        "studyTime": "30 mins",
+        "pyqPattern": "Tests basic definitions, identification of parameters, and practical daily connections (2-3 marks in term exams).",
+        "overview": {
+            "intro": "Understanding historical time measurements, methods of studying the human past, and the progression of early human societies from hunter-gatherers to agriculture-based villages.",
+            "realWorld": "Helps students understand how their surrounding neighborhood, local services, and country operate on a daily basis.",
+            "whyItMatters": "Essential for scoring high in school term exams and building a strong foundation in geography, history, civics, and economic life."
+        },
+        "concepts": [
+            {
+                "id": "soc-timeline-a-0",
+                "title": "Concept 1",
+                "definition": "History is the systematic study of the human past, helping us understand the present.",
+                "explanation": "This covers the detailed study of concept 1. Understanding this is critical to mastering the NCERT syllabus guidelines and applying it to social studies questions.",
+                "memoryTrick": "Remember: Concept 1 refers directly to the core idea of History is the systematic stud...",
+                "commonMistake": "Confusing Concept 1 with other similar social terms or boundaries.",
+                "visualType": "formula-showcase"
+            },
+            {
+                "id": "soc-timeline-a-1",
+                "title": "Concept 2",
+                "definition": "Historical time is measured using timelines in terms of years, decades, centuries (100 years), and millenniums (1000 years).",
+                "explanation": "This covers the detailed study of concept 2. Understanding this is critical to mastering the NCERT syllabus guidelines and applying it to social studies questions.",
+                "memoryTrick": "Remember: Concept 2 refers directly to the core idea of Historical time is measured us...",
+                "commonMistake": "Confusing Concept 2 with other similar social terms or boundaries.",
+                "visualType": "formula-showcase"
+            },
+            {
+                "id": "soc-timeline-a-2",
+                "title": "Concept 3",
+                "definition": "Archaeologists and historians reconstruct history using material remains (coins, tools, statues) and written sources (manuscripts).",
+                "explanation": "This covers the detailed study of concept 3. Understanding this is critical to mastering the NCERT syllabus guidelines and applying it to social studies questions.",
+                "memoryTrick": "Remember: Concept 3 refers directly to the core idea of Archaeologists and historians ...",
+                "commonMistake": "Confusing Concept 3 with other similar social terms or boundaries.",
+                "visualType": "formula-showcase"
+            }
+        ],
+        "examples": [
+            {
+                "level": "Easy",
+                "title": "Solved Practice Question 1",
+                "problem": "What is the difference between CE and BCE in a timeline?",
+                "solution": [
+                    "CE counts forward from year 1, while BCE counts backward from year 1. For example, 500 BCE is older than 200 BCE."
+                ],
+                "hint": "Read the question carefully, identify what sector or historical source it relates to, and state the answer in points."
+            },
+            {
+                "level": "Medium",
+                "title": "Solved Practice Question 2",
+                "problem": "Name three archaeological sources of history.",
+                "solution": [
+                    "Coins, inscriptions on rocks/metals, ruins of buildings, and ancient tools or pottery."
+                ],
+                "hint": "Read the question carefully, identify what sector or historical source it relates to, and state the answer in points."
+            }
+        ],
+        "quiz": [
+            {
+                "type": "mcq",
+                "q": "What is the difference between CE and BCE in a timeline?",
+                "options": [
+                    "CE counts forward from year 1, while BCE counts backward from year 1. For example, 500 BCE is older than 200 BCE.",
+                    "It depends on individual choices and settings.",
+                    "A standard format followed in other nations.",
+                    "None of the mentioned statements."
+                ],
+                "answer": "CE counts forward from year 1, while BCE counts backward from year 1. For example, 500 BCE is older than 200 BCE.",
+                "explanation": "This is direct from the textbook: CE counts forward from year 1, while BCE counts backward from year 1. For example, 500 BCE is older than 200 BCE."
+            },
+            {
+                "type": "mcq",
+                "q": "Name three archaeological sources of history.",
+                "options": [
+                    "Coins, inscriptions on rocks/metals, ruins of buildings, and ancient tools or pottery.",
+                    "It depends on individual choices and settings.",
+                    "A standard format followed in other nations.",
+                    "None of the mentioned statements."
+                ],
+                "answer": "Coins, inscriptions on rocks/metals, ruins of buildings, and ancient tools or pottery.",
+                "explanation": "This is direct from the textbook: Coins, inscriptions on rocks/metals, ruins of buildings, and ancient tools or pottery."
+            },
+            {
+                "type": "mcq",
+                "q": "How did agriculture change the way early humans lived?",
+                "options": [
+                    "It forced them to settle in one place to look after crops, leading to the creation of permanent homes, storage pots, and eventually villages.",
+                    "It depends on individual choices and settings.",
+                    "A standard format followed in other nations.",
+                    "None of the mentioned statements."
+                ],
+                "answer": "It forced them to settle in one place to look after crops, leading to the creation of permanent homes, storage pots, and eventually villages.",
+                "explanation": "This is direct from the textbook: It forced them to settle in one place to look after crops, leading to the creation of permanent homes, storage pots, and eventually villages."
+            }
+        ],
+        "recap": [
+            "History is the systematic study of the human past, helping us understand the present.",
+            "Historical time is measured using timelines in terms of years, decades, centuries (100 years), and millenniums (1000 years).",
+            "Archaeologists and historians reconstruct history using material remains (coins, tools, statues) and written sources (manuscripts)."
+        ]
+    },
+    "India, That Is Bharat": {
+        "difficulty": "Medium",
+        "studyTime": "30 mins",
+        "pyqPattern": "Tests basic definitions, identification of parameters, and practical daily connections (2-3 marks in term exams).",
+        "overview": {
+            "intro": "Exploring the historical names of the Indian Subcontinent, the natural boundaries that define it, and how natural geography and cultural exchange shaped its identity.",
+            "realWorld": "Helps students understand how their surrounding neighborhood, local services, and country operate on a daily basis.",
+            "whyItMatters": "Essential for scoring high in school term exams and building a strong foundation in geography, history, civics, and economic life."
+        },
+        "concepts": [
+            {
+                "id": "soc-india,-tha-0",
+                "title": "The Indian Subcontinent is defined by clear natural boundaries",
+                "definition": "the Himalayas in the north and seas on other sides.",
+                "explanation": "This covers the detailed study of the indian subcontinent is defined by clear natural boundaries. Understanding this is critical to mastering the NCERT syllabus guidelines and applying it to social studies questions.",
+                "memoryTrick": "Remember: The Indian Subcontinent is defined by clear natural boundaries refers directly to the core idea of the Himalayas in the north and...",
+                "commonMistake": "Confusing The Indian Subcontinent is defined by clear natural boundaries with other similar social terms or boundaries.",
+                "visualType": "formula-showcase"
+            },
+            {
+                "id": "soc-india,-tha-1",
+                "title": "Concept 2",
+                "definition": "Ancient names used by inhabitants include 'Jambudv\u012bpa' (land of the Jambu tree) and 'Bh\u0101rata' (land of the Bharatas).",
+                "explanation": "This covers the detailed study of concept 2. Understanding this is critical to mastering the NCERT syllabus guidelines and applying it to social studies questions.",
+                "memoryTrick": "Remember: Concept 2 refers directly to the core idea of Ancient names used by inhabita...",
+                "commonMistake": "Confusing Concept 2 with other similar social terms or boundaries.",
+                "visualType": "formula-showcase"
+            },
+            {
+                "id": "soc-india,-tha-2",
+                "title": "Concept 3",
+                "definition": "The name 'Sapta Sindhava' (land of seven rivers) is used in the Rig Veda for the northwest region.",
+                "explanation": "This covers the detailed study of concept 3. Understanding this is critical to mastering the NCERT syllabus guidelines and applying it to social studies questions.",
+                "memoryTrick": "Remember: Concept 3 refers directly to the core idea of The name 'Sapta Sindhava' (lan...",
+                "commonMistake": "Confusing Concept 3 with other similar social terms or boundaries.",
+                "visualType": "formula-showcase"
+            }
+        ],
+        "examples": [
+            {
+                "level": "Easy",
+                "title": "Solved Practice Question 1",
+                "problem": "How did the name 'India' originate?",
+                "solution": [
+                    "It comes from the river Indus (called Sindhu in Sanskrit). The Greeks called the region 'Indoi' and the Romans named it 'India'."
+                ],
+                "hint": "Read the question carefully, identify what sector or historical source it relates to, and state the answer in points."
+            },
+            {
+                "level": "Medium",
+                "title": "Solved Practice Question 2",
+                "problem": "What are the natural geographical boundaries of the Indian Subcontinent?",
+                "solution": [
+                    "The Himalayas in the north, the Arabian Sea in the west, the Bay of Bengal in the east, and the Indian Ocean in the south."
+                ],
+                "hint": "Read the question carefully, identify what sector or historical source it relates to, and state the answer in points."
+            }
+        ],
+        "quiz": [
+            {
+                "type": "mcq",
+                "q": "How did the name 'India' originate?",
+                "options": [
+                    "It comes from the river Indus (called Sindhu in Sanskrit). The Greeks called the region 'Indoi' and the Romans named it 'India'.",
+                    "It depends on individual choices and settings.",
+                    "A standard format followed in other nations.",
+                    "None of the mentioned statements."
+                ],
+                "answer": "It comes from the river Indus (called Sindhu in Sanskrit). The Greeks called the region 'Indoi' and the Romans named it 'India'.",
+                "explanation": "This is direct from the textbook: It comes from the river Indus (called Sindhu in Sanskrit). The Greeks called the region 'Indoi' and the Romans named it 'India'."
+            },
+            {
+                "type": "mcq",
+                "q": "What are the natural geographical boundaries of the Indian Subcontinent?",
+                "options": [
+                    "The Himalayas in the north, the Arabian Sea in the west, the Bay of Bengal in the east, and the Indian Ocean in the south.",
+                    "It depends on individual choices and settings.",
+                    "A standard format followed in other nations.",
+                    "None of the mentioned statements."
+                ],
+                "answer": "The Himalayas in the north, the Arabian Sea in the west, the Bay of Bengal in the east, and the Indian Ocean in the south.",
+                "explanation": "This is direct from the textbook: The Himalayas in the north, the Arabian Sea in the west, the Bay of Bengal in the east, and the Indian Ocean in the south."
+            },
+            {
+                "type": "mcq",
+                "q": "Why was India called 'Tianzhu' or 'heavenly master' in ancient China?",
+                "options": [
+                    "Out of deep reverence for India as the sacred land where Buddhism and the Buddha originated.",
+                    "It depends on individual choices and settings.",
+                    "A standard format followed in other nations.",
+                    "None of the mentioned statements."
+                ],
+                "answer": "Out of deep reverence for India as the sacred land where Buddhism and the Buddha originated.",
+                "explanation": "This is direct from the textbook: Out of deep reverence for India as the sacred land where Buddhism and the Buddha originated."
+            }
+        ],
+        "recap": [
+            "The Indian Subcontinent is defined by clear natural boundaries: the Himalayas in the north and seas on other sides.",
+            "Ancient names used by inhabitants include 'Jambudv\u012bpa' (land of the Jambu tree) and 'Bh\u0101rata' (land of the Bharatas).",
+            "The name 'Sapta Sindhava' (land of seven rivers) is used in the Rig Veda for the northwest region."
+        ]
+    },
+    "The Beginnings of Indian Civilisation": {
+        "difficulty": "Medium to Hard",
+        "studyTime": "40 mins",
+        "pyqPattern": "Heavily tests city features (Dholavira, Lothal), water drainage systems, craft items, and reasons for decline (3-5 marks).",
+        "overview": {
+            "intro": "An in-depth study of the Harappan, Indus, or Sindhu-Sarasvat\u012b Civilisation\u2014one of the oldest in the world\u2014highlighting city planning, trade, and its eventual decline.",
+            "realWorld": "Helps students understand how their surrounding neighborhood, local services, and country operate on a daily basis.",
+            "whyItMatters": "Essential for scoring high in school term exams and building a strong foundation in geography, history, civics, and economic life."
+        },
+        "concepts": [
+            {
+                "id": "soc-the-beginn-0",
+                "title": "Concept 1",
+                "definition": "The Harappan or Sindhu-Sarasvat\u012b Civilisation is the oldest urban civilisation in the Indian Subcontinent (dating from c. 2600 BCE).",
+                "explanation": "This covers the detailed study of concept 1. Understanding this is critical to mastering the NCERT syllabus guidelines and applying it to social studies questions.",
+                "memoryTrick": "Remember: Concept 1 refers directly to the core idea of The Harappan or Sindhu-Sarasva...",
+                "commonMistake": "Confusing Concept 1 with other similar social terms or boundaries.",
+                "visualType": "formula-showcase"
+            },
+            {
+                "id": "soc-the-beginn-1",
+                "title": "Concept 2",
+                "definition": "Harappan cities (like Dholavira, Lothal, and Harappa) featured grid-based streets, baked brick houses, and drainage systems.",
+                "explanation": "This covers the detailed study of concept 2. Understanding this is critical to mastering the NCERT syllabus guidelines and applying it to social studies questions.",
+                "memoryTrick": "Remember: Concept 2 refers directly to the core idea of Harappan cities (like Dholavir...",
+                "commonMistake": "Confusing Concept 2 with other similar social terms or boundaries.",
+                "visualType": "formula-showcase"
+            },
+            {
+                "id": "soc-the-beginn-2",
+                "title": "Concept 3",
+                "definition": "The civilisation had advanced crafts (beads, seals, metal tools), an undeciphered script, and active trade routes.",
+                "explanation": "This covers the detailed study of concept 3. Understanding this is critical to mastering the NCERT syllabus guidelines and applying it to social studies questions.",
+                "memoryTrick": "Remember: Concept 3 refers directly to the core idea of The civilisation had advanced ...",
+                "commonMistake": "Confusing Concept 3 with other similar social terms or boundaries.",
+                "visualType": "formula-showcase"
+            }
+        ],
+        "examples": [
+            {
+                "level": "Easy",
+                "title": "Solved Practice Question 1",
+                "problem": "State three key features of Harappan town planning.",
+                "solution": [
+                    "Grid-like straight streets intersecting at right angles, houses made of uniform baked bricks, and advanced covered drainage systems."
+                ],
+                "hint": "Read the question carefully, identify what sector or historical source it relates to, and state the answer in points."
+            },
+            {
+                "level": "Medium",
+                "title": "Solved Practice Question 2",
+                "problem": "What evidence suggests that Harappans traded with distant lands?",
+                "solution": [
+                    "Harappan seals and beads have been found in Mesopotamia (modern Iraq), and Lothal had a dockyard connecting to the sea."
+                ],
+                "hint": "Read the question carefully, identify what sector or historical source it relates to, and state the answer in points."
+            }
+        ],
+        "quiz": [
+            {
+                "type": "mcq",
+                "q": "State three key features of Harappan town planning.",
+                "options": [
+                    "Grid-like straight streets intersecting at right angles, houses made of uniform baked bricks, and advanced covered drainage systems.",
+                    "It depends on individual choices and settings.",
+                    "A standard format followed in other nations.",
+                    "None of the mentioned statements."
+                ],
+                "answer": "Grid-like straight streets intersecting at right angles, houses made of uniform baked bricks, and advanced covered drainage systems.",
+                "explanation": "This is direct from the textbook: Grid-like straight streets intersecting at right angles, houses made of uniform baked bricks, and advanced covered drainage systems."
+            },
+            {
+                "type": "mcq",
+                "q": "What evidence suggests that Harappans traded with distant lands?",
+                "options": [
+                    "Harappan seals and beads have been found in Mesopotamia (modern Iraq), and Lothal had a dockyard connecting to the sea.",
+                    "It depends on individual choices and settings.",
+                    "A standard format followed in other nations.",
+                    "None of the mentioned statements."
+                ],
+                "answer": "Harappan seals and beads have been found in Mesopotamia (modern Iraq), and Lothal had a dockyard connecting to the sea.",
+                "explanation": "This is direct from the textbook: Harappan seals and beads have been found in Mesopotamia (modern Iraq), and Lothal had a dockyard connecting to the sea."
+            },
+            {
+                "type": "mcq",
+                "q": "Why did the Harappan cities decline and get abandoned?",
+                "options": [
+                    "Mainly due to climatic changes causing reduced rainfall (drier phase) and the drying up of the Sarasvat\u012b River.",
+                    "It depends on individual choices and settings.",
+                    "A standard format followed in other nations.",
+                    "None of the mentioned statements."
+                ],
+                "answer": "Mainly due to climatic changes causing reduced rainfall (drier phase) and the drying up of the Sarasvat\u012b River.",
+                "explanation": "This is direct from the textbook: Mainly due to climatic changes causing reduced rainfall (drier phase) and the drying up of the Sarasvat\u012b River."
+            }
+        ],
+        "recap": [
+            "The Harappan or Sindhu-Sarasvat\u012b Civilisation is the oldest urban civilisation in the Indian Subcontinent (dating from c. 2600 BCE).",
+            "Harappan cities (like Dholavira, Lothal, and Harappa) featured grid-based streets, baked brick houses, and drainage systems.",
+            "The civilisation had advanced crafts (beads, seals, metal tools), an undeciphered script, and active trade routes."
+        ]
+    },
+    "India\u2019s Cultural Roots": {
+        "difficulty": "Medium to Hard",
+        "studyTime": "40 mins",
+        "pyqPattern": "Tests basic definitions, identification of parameters, and practical daily connections (2-3 marks in term exams).",
+        "overview": {
+            "intro": "Exploring the origins of Indian philosophy and culture through the Vedas, Upanishads, Buddhism, Jainism, and the rich folk and tribal traditions.",
+            "realWorld": "Helps students understand how their surrounding neighborhood, local services, and country operate on a daily basis.",
+            "whyItMatters": "Essential for scoring high in school term exams and building a strong foundation in geography, history, civics, and economic life."
+        },
+        "concepts": [
+            {
+                "id": "soc-india\u2019s-cu-0",
+                "title": "Concept 1",
+                "definition": "The Vedas are India's oldest texts, containing spiritual hymns and leading to schools of thought like Vedanta and Yoga.",
+                "explanation": "This covers the detailed study of concept 1. Understanding this is critical to mastering the NCERT syllabus guidelines and applying it to social studies questions.",
+                "memoryTrick": "Remember: Concept 1 refers directly to the core idea of The Vedas are India's oldest t...",
+                "commonMistake": "Confusing Concept 1 with other similar social terms or boundaries.",
+                "visualType": "formula-showcase"
+            },
+            {
+                "id": "soc-india\u2019s-cu-1",
+                "title": "Concept 2",
+                "definition": "Buddhism, founded by Gautama Buddha, and Jainism, associated with Mah\u0101v\u012bra, focused on ending suffering through moral conduct.",
+                "explanation": "This covers the detailed study of concept 2. Understanding this is critical to mastering the NCERT syllabus guidelines and applying it to social studies questions.",
+                "memoryTrick": "Remember: Concept 2 refers directly to the core idea of Buddhism, founded by Gautama B...",
+                "commonMistake": "Confusing Concept 2 with other similar social terms or boundaries.",
+                "visualType": "formula-showcase"
+            },
+            {
+                "id": "soc-india\u2019s-cu-2",
+                "title": "Concept 3",
+                "definition": "Central values shared across Indian traditions include non-violence (Ahi\u1e43s\u0101), truth (Satya), and self-reflection.",
+                "explanation": "This covers the detailed study of concept 3. Understanding this is critical to mastering the NCERT syllabus guidelines and applying it to social studies questions.",
+                "memoryTrick": "Remember: Concept 3 refers directly to the core idea of Central values shared across I...",
+                "commonMistake": "Confusing Concept 3 with other similar social terms or boundaries.",
+                "visualType": "formula-showcase"
+            }
+        ],
+        "examples": [
+            {
+                "level": "Easy",
+                "title": "Solved Practice Question 1",
+                "problem": "What is the core message of Buddhism?",
+                "solution": [
+                    "Life involves suffering, which is caused by desire. By following the Eightfold Path (right view, right conduct, etc.), one can overcome desire and reach Nirvana."
+                ],
+                "hint": "Read the question carefully, identify what sector or historical source it relates to, and state the answer in points."
+            },
+            {
+                "level": "Medium",
+                "title": "Solved Practice Question 2",
+                "problem": "What is the significance of Ahi\u1e43s\u0101 in Jainism?",
+                "solution": [
+                    "Jainism places extreme emphasis on non-injury to all living creatures, including insects and plants, advocating a lifestyle of minimal harm."
+                ],
+                "hint": "Read the question carefully, identify what sector or historical source it relates to, and state the answer in points."
+            }
+        ],
+        "quiz": [
+            {
+                "type": "mcq",
+                "q": "What is the core message of Buddhism?",
+                "options": [
+                    "Life involves suffering, which is caused by desire. By following the Eightfold Path (right view, right conduct, etc.), one can overcome desire and reach Nirvana.",
+                    "It depends on individual choices and settings.",
+                    "A standard format followed in other nations.",
+                    "None of the mentioned statements."
+                ],
+                "answer": "Life involves suffering, which is caused by desire. By following the Eightfold Path (right view, right conduct, etc.), one can overcome desire and reach Nirvana.",
+                "explanation": "This is direct from the textbook: Life involves suffering, which is caused by desire. By following the Eightfold Path (right view, right conduct, etc.), one can overcome desire and reach Nirvana."
+            },
+            {
+                "type": "mcq",
+                "q": "What is the significance of Ahi\u1e43s\u0101 in Jainism?",
+                "options": [
+                    "Jainism places extreme emphasis on non-injury to all living creatures, including insects and plants, advocating a lifestyle of minimal harm.",
+                    "It depends on individual choices and settings.",
+                    "A standard format followed in other nations.",
+                    "None of the mentioned statements."
+                ],
+                "answer": "Jainism places extreme emphasis on non-injury to all living creatures, including insects and plants, advocating a lifestyle of minimal harm.",
+                "explanation": "This is direct from the textbook: Jainism places extreme emphasis on non-injury to all living creatures, including insects and plants, advocating a lifestyle of minimal harm."
+            },
+            {
+                "type": "mcq",
+                "q": "How do tribal traditions view nature?",
+                "options": [
+                    "They consider trees, hills, rivers, and forests sacred and protect them, maintaining a balanced relation with the environment.",
+                    "It depends on individual choices and settings.",
+                    "A standard format followed in other nations.",
+                    "None of the mentioned statements."
+                ],
+                "answer": "They consider trees, hills, rivers, and forests sacred and protect them, maintaining a balanced relation with the environment.",
+                "explanation": "This is direct from the textbook: They consider trees, hills, rivers, and forests sacred and protect them, maintaining a balanced relation with the environment."
+            }
+        ],
+        "recap": [
+            "The Vedas are India's oldest texts, containing spiritual hymns and leading to schools of thought like Vedanta and Yoga.",
+            "Buddhism, founded by Gautama Buddha, and Jainism, associated with Mah\u0101v\u012bra, focused on ending suffering through moral conduct.",
+            "Central values shared across Indian traditions include non-violence (Ahi\u1e43s\u0101), truth (Satya), and self-reflection."
+        ]
+    },
+    "Unity in Diversity, or \u2018Many in the One\u2019": {
+        "difficulty": "Medium",
+        "studyTime": "30 mins",
+        "pyqPattern": "Tests basic definitions, identification of parameters, and practical daily connections (2-3 marks in term exams).",
+        "overview": {
+            "intro": "Exploring how India's immense diversity of languages, cuisines, festivals, and customs is bound together by a strong underlying cultural unity.",
+            "realWorld": "Helps students understand how their surrounding neighborhood, local services, and country operate on a daily basis.",
+            "whyItMatters": "Essential for scoring high in school term exams and building a strong foundation in geography, history, civics, and economic life."
+        },
+        "concepts": [
+            {
+                "id": "soc-unity-in-d-0",
+                "title": "India has incredible diversity",
+                "definition": "325 languages, 25 scripts, diverse cuisines, clothing, and local customs.",
+                "explanation": "This covers the detailed study of india has incredible diversity. Understanding this is critical to mastering the NCERT syllabus guidelines and applying it to social studies questions.",
+                "memoryTrick": "Remember: India has incredible diversity refers directly to the core idea of 325 languages, 25 scripts, div...",
+                "commonMistake": "Confusing India has incredible diversity with other similar social terms or boundaries.",
+                "visualType": "formula-showcase"
+            },
+            {
+                "id": "soc-unity-in-d-1",
+                "title": "Concept 2",
+                "definition": "This diversity does not divide the country, but rather enriches its national fabric.",
+                "explanation": "This covers the detailed study of concept 2. Understanding this is critical to mastering the NCERT syllabus guidelines and applying it to social studies questions.",
+                "memoryTrick": "Remember: Concept 2 refers directly to the core idea of This diversity does not divide...",
+                "commonMistake": "Confusing Concept 2 with other similar social terms or boundaries.",
+                "visualType": "formula-showcase"
+            },
+            {
+                "id": "soc-unity-in-d-2",
+                "title": "Concept 3",
+                "definition": "Underlying unity is forged through shared epics (Ramayana, Mahabharata), festivals, and spiritual themes.",
+                "explanation": "This covers the detailed study of concept 3. Understanding this is critical to mastering the NCERT syllabus guidelines and applying it to social studies questions.",
+                "memoryTrick": "Remember: Concept 3 refers directly to the core idea of Underlying unity is forged thr...",
+                "commonMistake": "Confusing Concept 3 with other similar social terms or boundaries.",
+                "visualType": "formula-showcase"
+            }
+        ],
+        "examples": [
+            {
+                "level": "Easy",
+                "title": "Solved Practice Question 1",
+                "problem": "Give two examples showing India's underlying cultural unity.",
+                "solution": [
+                    "1. The celebration of harvest festivals under different names (Pongal, Bihu) at the same time. 2. The presence of regional versions of the Ramayana and Mahabharata in every state."
+                ],
+                "hint": "Read the question carefully, identify what sector or historical source it relates to, and state the answer in points."
+            },
+            {
+                "level": "Medium",
+                "title": "Solved Practice Question 2",
+                "problem": "How does geography shape diversity in food and clothing?",
+                "solution": [
+                    "Climate and soil dictate which crops grow (staple grains) and what clothes are comfortable (cotton in plains, wool in mountains)."
+                ],
+                "hint": "Read the question carefully, identify what sector or historical source it relates to, and state the answer in points."
+            }
+        ],
+        "quiz": [
+            {
+                "type": "mcq",
+                "q": "Give two examples showing India's underlying cultural unity.",
+                "options": [
+                    "1. The celebration of harvest festivals under different names (Pongal, Bihu) at the same time. 2. The presence of regional versions of the Ramayana and Mahabharata in every state.",
+                    "It depends on individual choices and settings.",
+                    "A standard format followed in other nations.",
+                    "None of the mentioned statements."
+                ],
+                "answer": "1. The celebration of harvest festivals under different names (Pongal, Bihu) at the same time. 2. The presence of regional versions of the Ramayana and Mahabharata in every state.",
+                "explanation": "This is direct from the textbook: 1. The celebration of harvest festivals under different names (Pongal, Bihu) at the same time. 2. The presence of regional versions of the Ramayana and Mahabharata in every state."
+            },
+            {
+                "type": "mcq",
+                "q": "How does geography shape diversity in food and clothing?",
+                "options": [
+                    "Climate and soil dictate which crops grow (staple grains) and what clothes are comfortable (cotton in plains, wool in mountains).",
+                    "It depends on individual choices and settings.",
+                    "A standard format followed in other nations.",
+                    "None of the mentioned statements."
+                ],
+                "answer": "Climate and soil dictate which crops grow (staple grains) and what clothes are comfortable (cotton in plains, wool in mountains).",
+                "explanation": "This is direct from the textbook: Climate and soil dictate which crops grow (staple grains) and what clothes are comfortable (cotton in plains, wool in mountains)."
+            },
+            {
+                "type": "mcq",
+                "q": "Why is the concept of 'Many in the One' unique to India?",
+                "options": [
+                    "It means unity is not built by erasing differences (uniformity), but by embracing and harmonizing them.",
+                    "It depends on individual choices and settings.",
+                    "A standard format followed in other nations.",
+                    "None of the mentioned statements."
+                ],
+                "answer": "It means unity is not built by erasing differences (uniformity), but by embracing and harmonizing them.",
+                "explanation": "This is direct from the textbook: It means unity is not built by erasing differences (uniformity), but by embracing and harmonizing them."
+            }
+        ],
+        "recap": [
+            "India has incredible diversity: 325 languages, 25 scripts, diverse cuisines, clothing, and local customs.",
+            "This diversity does not divide the country, but rather enriches its national fabric.",
+            "Underlying unity is forged through shared epics (Ramayana, Mahabharata), festivals, and spiritual themes."
+        ]
+    },
+    "Family and Community": {
+        "difficulty": "Easy",
+        "studyTime": "20 mins",
+        "pyqPattern": "Tests basic definitions, identification of parameters, and practical daily connections (2-3 marks in term exams).",
+        "overview": {
+            "intro": "Studying the family as the basic unit of society, the nature of communities, their role in rural and urban areas, and their mutual interdependence.",
+            "realWorld": "Helps students understand how their surrounding neighborhood, local services, and country operate on a daily basis.",
+            "whyItMatters": "Essential for scoring high in school term exams and building a strong foundation in geography, history, civics, and economic life."
+        },
+        "concepts": [
+            {
+                "id": "soc-family-and-0",
+                "title": "Concept 1",
+                "definition": "The family (joint or nuclear) is the fundamental and oldest unit of any human society.",
+                "explanation": "This covers the detailed study of concept 1. Understanding this is critical to mastering the NCERT syllabus guidelines and applying it to social studies questions.",
+                "memoryTrick": "Remember: Concept 1 refers directly to the core idea of The family (joint or nuclear) ...",
+                "commonMistake": "Confusing Concept 1 with other similar social terms or boundaries.",
+                "visualType": "formula-showcase"
+            },
+            {
+                "id": "soc-family-and-1",
+                "title": "Concept 2",
+                "definition": "Indian languages have rich terms showing detailed family relations (bua, chacha, mausi, etc.).",
+                "explanation": "This covers the detailed study of concept 2. Understanding this is critical to mastering the NCERT syllabus guidelines and applying it to social studies questions.",
+                "memoryTrick": "Remember: Concept 2 refers directly to the core idea of Indian languages have rich ter...",
+                "commonMistake": "Confusing Concept 2 with other similar social terms or boundaries.",
+                "visualType": "formula-showcase"
+            },
+            {
+                "id": "soc-family-and-2",
+                "title": "Concept 3",
+                "definition": "A community is a group of people who live together or share common interests, goals, and rules.",
+                "explanation": "This covers the detailed study of concept 3. Understanding this is critical to mastering the NCERT syllabus guidelines and applying it to social studies questions.",
+                "memoryTrick": "Remember: Concept 3 refers directly to the core idea of A community is a group of peop...",
+                "commonMistake": "Confusing Concept 3 with other similar social terms or boundaries.",
+                "visualType": "formula-showcase"
+            }
+        ],
+        "examples": [
+            {
+                "level": "Easy",
+                "title": "Solved Practice Question 1",
+                "problem": "What is the role of a family in a child's life?",
+                "solution": [
+                    "It provides emotional support, teaches basic values (dharma), teaches life skills, and ensures safety and care."
+                ],
+                "hint": "Read the question carefully, identify what sector or historical source it relates to, and state the answer in points."
+            },
+            {
+                "level": "Medium",
+                "title": "Solved Practice Question 2",
+                "problem": "What is a modern example of an urban community?",
+                "solution": [
+                    "A Residents' Welfare Association (RWA) which manages rules on waste, security, and cleanliness in housing societies."
+                ],
+                "hint": "Read the question carefully, identify what sector or historical source it relates to, and state the answer in points."
+            }
+        ],
+        "quiz": [
+            {
+                "type": "mcq",
+                "q": "What is the role of a family in a child's life?",
+                "options": [
+                    "It provides emotional support, teaches basic values (dharma), teaches life skills, and ensures safety and care.",
+                    "It depends on individual choices and settings.",
+                    "A standard format followed in other nations.",
+                    "None of the mentioned statements."
+                ],
+                "answer": "It provides emotional support, teaches basic values (dharma), teaches life skills, and ensures safety and care.",
+                "explanation": "This is direct from the textbook: It provides emotional support, teaches basic values (dharma), teaches life skills, and ensures safety and care."
+            },
+            {
+                "type": "mcq",
+                "q": "What is a modern example of an urban community?",
+                "options": [
+                    "A Residents' Welfare Association (RWA) which manages rules on waste, security, and cleanliness in housing societies.",
+                    "It depends on individual choices and settings.",
+                    "A standard format followed in other nations.",
+                    "None of the mentioned statements."
+                ],
+                "answer": "A Residents' Welfare Association (RWA) which manages rules on waste, security, and cleanliness in housing societies.",
+                "explanation": "This is direct from the textbook: A Residents' Welfare Association (RWA) which manages rules on waste, security, and cleanliness in housing societies."
+            },
+            {
+                "type": "mcq",
+                "q": "Why are communities considered interdependent?",
+                "options": [
+                    "No community is self-sufficient. For example, residential areas rely on farmers for food and municipal workers for waste management.",
+                    "It depends on individual choices and settings.",
+                    "A standard format followed in other nations.",
+                    "None of the mentioned statements."
+                ],
+                "answer": "No community is self-sufficient. For example, residential areas rely on farmers for food and municipal workers for waste management.",
+                "explanation": "This is direct from the textbook: No community is self-sufficient. For example, residential areas rely on farmers for food and municipal workers for waste management."
+            }
+        ],
+        "recap": [
+            "The family (joint or nuclear) is the fundamental and oldest unit of any human society.",
+            "Indian languages have rich terms showing detailed family relations (bua, chacha, mausi, etc.).",
+            "A community is a group of people who live together or share common interests, goals, and rules."
+        ]
+    },
+    "Grassroots Democracy \u2014 Part 1: Governance": {
+        "difficulty": "Medium",
+        "studyTime": "30 mins",
+        "pyqPattern": "Focuses on identifying the three organs of government, the three tiers of local bodies (Panchayati Raj or Municipal), and their distinct duties (2-4 marks).",
+        "overview": {
+            "intro": "Introduction to the concept of governance, the necessity of rules, the three organs of modern government, and the three tiers of administration in India.",
+            "realWorld": "Helps students understand how their surrounding neighborhood, local services, and country operate on a daily basis.",
+            "whyItMatters": "Essential for scoring high in school term exams and building a strong foundation in geography, history, civics, and economic life."
+        },
+        "concepts": [
+            {
+                "id": "soc-grassroots-0",
+                "title": "Concept 1",
+                "definition": "Governance is the process of taking decisions and organizing rules to maintain order and harmony in a society.",
+                "explanation": "This covers the detailed study of concept 1. Understanding this is critical to mastering the NCERT syllabus guidelines and applying it to social studies questions.",
+                "memoryTrick": "Remember: Concept 1 refers directly to the core idea of Governance is the process of t...",
+                "commonMistake": "Confusing Concept 1 with other similar social terms or boundaries.",
+                "visualType": "formula-showcase"
+            },
+            {
+                "id": "soc-grassroots-1",
+                "title": "A modern democratic government functions through three distinct organs",
+                "definition": "Legislative, Executive, and Judiciary.",
+                "explanation": "This covers the detailed study of a modern democratic government functions through three distinct organs. Understanding this is critical to mastering the NCERT syllabus guidelines and applying it to social studies questions.",
+                "memoryTrick": "Remember: A modern democratic government functions through three distinct organs refers directly to the core idea of Legislative, Executive, and Ju...",
+                "commonMistake": "Confusing A modern democratic government functions through three distinct organs with other similar social terms or boundaries.",
+                "visualType": "formula-showcase"
+            },
+            {
+                "id": "soc-grassroots-2",
+                "title": "Concept 3",
+                "definition": "The Legislative makes laws, the Executive implements them, and the Judiciary resolves disputes.",
+                "explanation": "This covers the detailed study of concept 3. Understanding this is critical to mastering the NCERT syllabus guidelines and applying it to social studies questions.",
+                "memoryTrick": "Remember: Concept 3 refers directly to the core idea of The Legislative makes laws, th...",
+                "commonMistake": "Confusing Concept 3 with other similar social terms or boundaries.",
+                "visualType": "formula-showcase"
+            }
+        ],
+        "examples": [
+            {
+                "level": "Easy",
+                "title": "Solved Practice Question 1",
+                "problem": "Why does a society need rules and a government?",
+                "solution": [
+                    "To prevent disagreements and disorder, protect citizens' rights, and manage common resources like roads, schools, and safety."
+                ],
+                "hint": "Read the question carefully, identify what sector or historical source it relates to, and state the answer in points."
+            },
+            {
+                "level": "Medium",
+                "title": "Solved Practice Question 2",
+                "problem": "What are the roles of the Legislative and Executive organs?",
+                "solution": [
+                    "The Legislative writes and passes the laws. The Executive makes sure those laws are actually put into action."
+                ],
+                "hint": "Read the question carefully, identify what sector or historical source it relates to, and state the answer in points."
+            }
+        ],
+        "quiz": [
+            {
+                "type": "mcq",
+                "q": "Why does a society need rules and a government?",
+                "options": [
+                    "To prevent disagreements and disorder, protect citizens' rights, and manage common resources like roads, schools, and safety.",
+                    "It depends on individual choices and settings.",
+                    "A standard format followed in other nations.",
+                    "None of the mentioned statements."
+                ],
+                "answer": "To prevent disagreements and disorder, protect citizens' rights, and manage common resources like roads, schools, and safety.",
+                "explanation": "This is direct from the textbook: To prevent disagreements and disorder, protect citizens' rights, and manage common resources like roads, schools, and safety."
+            },
+            {
+                "type": "mcq",
+                "q": "What are the roles of the Legislative and Executive organs?",
+                "options": [
+                    "The Legislative writes and passes the laws. The Executive makes sure those laws are actually put into action.",
+                    "It depends on individual choices and settings.",
+                    "A standard format followed in other nations.",
+                    "None of the mentioned statements."
+                ],
+                "answer": "The Legislative writes and passes the laws. The Executive makes sure those laws are actually put into action.",
+                "explanation": "This is direct from the textbook: The Legislative writes and passes the laws. The Executive makes sure those laws are actually put into action."
+            },
+            {
+                "type": "mcq",
+                "q": "What is the difference between direct democracy and representative democracy?",
+                "options": [
+                    "In direct democracy, citizens vote on laws themselves. In representative democracy, they elect leaders to make decisions on their behalf.",
+                    "It depends on individual choices and settings.",
+                    "A standard format followed in other nations.",
+                    "None of the mentioned statements."
+                ],
+                "answer": "In direct democracy, citizens vote on laws themselves. In representative democracy, they elect leaders to make decisions on their behalf.",
+                "explanation": "This is direct from the textbook: In direct democracy, citizens vote on laws themselves. In representative democracy, they elect leaders to make decisions on their behalf."
+            }
+        ],
+        "recap": [
+            "Governance is the process of taking decisions and organizing rules to maintain order and harmony in a society.",
+            "A modern democratic government functions through three distinct organs: Legislative, Executive, and Judiciary.",
+            "The Legislative makes laws, the Executive implements them, and the Judiciary resolves disputes."
+        ]
+    },
+    "Grassroots Democracy \u2014 Part 2: Local Government in Rural Areas": {
+        "difficulty": "Medium",
+        "studyTime": "30 mins",
+        "pyqPattern": "Focuses on identifying the three organs of government, the three tiers of local bodies (Panchayati Raj or Municipal), and their distinct duties (2-4 marks).",
+        "overview": {
+            "intro": "An analysis of rural self-governance in India through the three-tier Panchayati Raj system, the role of the Gram Sabha, and the functions of village Panchayats.",
+            "realWorld": "Helps students understand how their surrounding neighborhood, local services, and country operate on a daily basis.",
+            "whyItMatters": "Essential for scoring high in school term exams and building a strong foundation in geography, history, civics, and economic life."
+        },
+        "concepts": [
+            {
+                "id": "soc-grassroots-0",
+                "title": "Concept 1",
+                "definition": "Rural local governance is organized into a three-tier Panchayati Raj system.",
+                "explanation": "This covers the detailed study of concept 1. Understanding this is critical to mastering the NCERT syllabus guidelines and applying it to social studies questions.",
+                "memoryTrick": "Remember: Concept 1 refers directly to the core idea of Rural local governance is orga...",
+                "commonMistake": "Confusing Concept 1 with other similar social terms or boundaries.",
+                "visualType": "formula-showcase"
+            },
+            {
+                "id": "soc-grassroots-1",
+                "title": "Concept 2",
+                "definition": "The Gram Sabha is an assembly of all adult villagers, representing direct democracy.",
+                "explanation": "This covers the detailed study of concept 2. Understanding this is critical to mastering the NCERT syllabus guidelines and applying it to social studies questions.",
+                "memoryTrick": "Remember: Concept 2 refers directly to the core idea of The Gram Sabha is an assembly ...",
+                "commonMistake": "Confusing Concept 2 with other similar social terms or boundaries.",
+                "visualType": "formula-showcase"
+            },
+            {
+                "id": "soc-grassroots-2",
+                "title": "Concept 3",
+                "definition": "The Gram Panchayat (village council, headed by a Sarpanch) handles local issues like roads, water, and schools.",
+                "explanation": "This covers the detailed study of concept 3. Understanding this is critical to mastering the NCERT syllabus guidelines and applying it to social studies questions.",
+                "memoryTrick": "Remember: Concept 3 refers directly to the core idea of The Gram Panchayat (village co...",
+                "commonMistake": "Confusing Concept 3 with other similar social terms or boundaries.",
+                "visualType": "formula-showcase"
+            }
+        ],
+        "examples": [
+            {
+                "level": "Easy",
+                "title": "Solved Practice Question 1",
+                "problem": "Explain the three tiers of the Panchayati Raj system.",
+                "solution": [
+                    "1. Gram Panchayat at the village level. 2. Panchayat Samiti (or Block Samiti) at the block level. 3. Zilla Parishad at the district level."
+                ],
+                "hint": "Read the question carefully, identify what sector or historical source it relates to, and state the answer in points."
+            },
+            {
+                "level": "Medium",
+                "title": "Solved Practice Question 2",
+                "problem": "Why is the Gram Sabha important in a democracy?",
+                "solution": [
+                    "It gives every adult villager a direct voice in village development, reviewing Panchayat plans, and holding leaders accountable."
+                ],
+                "hint": "Read the question carefully, identify what sector or historical source it relates to, and state the answer in points."
+            }
+        ],
+        "quiz": [
+            {
+                "type": "mcq",
+                "q": "Explain the three tiers of the Panchayati Raj system.",
+                "options": [
+                    "1. Gram Panchayat at the village level. 2. Panchayat Samiti (or Block Samiti) at the block level. 3. Zilla Parishad at the district level.",
+                    "It depends on individual choices and settings.",
+                    "A standard format followed in other nations.",
+                    "None of the mentioned statements."
+                ],
+                "answer": "1. Gram Panchayat at the village level. 2. Panchayat Samiti (or Block Samiti) at the block level. 3. Zilla Parishad at the district level.",
+                "explanation": "This is direct from the textbook: 1. Gram Panchayat at the village level. 2. Panchayat Samiti (or Block Samiti) at the block level. 3. Zilla Parishad at the district level."
+            },
+            {
+                "type": "mcq",
+                "q": "Why is the Gram Sabha important in a democracy?",
+                "options": [
+                    "It gives every adult villager a direct voice in village development, reviewing Panchayat plans, and holding leaders accountable.",
+                    "It depends on individual choices and settings.",
+                    "A standard format followed in other nations.",
+                    "None of the mentioned statements."
+                ],
+                "answer": "It gives every adult villager a direct voice in village development, reviewing Panchayat plans, and holding leaders accountable.",
+                "explanation": "This is direct from the textbook: It gives every adult villager a direct voice in village development, reviewing Panchayat plans, and holding leaders accountable."
+            },
+            {
+                "type": "mcq",
+                "q": "Name three key functions of a village Panchayat.",
+                "options": [
+                    "1. Maintaining drinking water supplies. 2. Repairing village roads and drainage. 3. Managing primary school compounds and health facilities.",
+                    "It depends on individual choices and settings.",
+                    "A standard format followed in other nations.",
+                    "None of the mentioned statements."
+                ],
+                "answer": "1. Maintaining drinking water supplies. 2. Repairing village roads and drainage. 3. Managing primary school compounds and health facilities.",
+                "explanation": "This is direct from the textbook: 1. Maintaining drinking water supplies. 2. Repairing village roads and drainage. 3. Managing primary school compounds and health facilities."
+            }
+        ],
+        "recap": [
+            "Rural local governance is organized into a three-tier Panchayati Raj system.",
+            "The Gram Sabha is an assembly of all adult villagers, representing direct democracy.",
+            "The Gram Panchayat (village council, headed by a Sarpanch) handles local issues like roads, water, and schools."
+        ]
+    },
+    "Grassroots Democracy \u2014 Part 3: Local Government in Urban Areas": {
+        "difficulty": "Medium",
+        "studyTime": "30 mins",
+        "pyqPattern": "Focuses on identifying the three organs of government, the three tiers of local bodies (Panchayati Raj or Municipal), and their distinct duties (2-4 marks).",
+        "overview": {
+            "intro": "Studying urban local self-government, the structures of Municipal Corporations and Councils, their role in maintaining public utilities, and the importance of active civic duties.",
+            "realWorld": "Helps students understand how their surrounding neighborhood, local services, and country operate on a daily basis.",
+            "whyItMatters": "Essential for scoring high in school term exams and building a strong foundation in geography, history, civics, and economic life."
+        },
+        "concepts": [
+            {
+                "id": "soc-grassroots-0",
+                "title": "Concept 1",
+                "definition": "Urban areas require complex governance structures called urban local bodies to manage services.",
+                "explanation": "This covers the detailed study of concept 1. Understanding this is critical to mastering the NCERT syllabus guidelines and applying it to social studies questions.",
+                "memoryTrick": "Remember: Concept 1 refers directly to the core idea of Urban areas require complex go...",
+                "commonMistake": "Confusing Concept 1 with other similar social terms or boundaries.",
+                "visualType": "formula-showcase"
+            },
+            {
+                "id": "soc-grassroots-1",
+                "title": "Concept 2",
+                "definition": "Large cities are governed by Municipal Corporations (headed by a Mayor); smaller towns have Municipal Councils.",
+                "explanation": "This covers the detailed study of concept 2. Understanding this is critical to mastering the NCERT syllabus guidelines and applying it to social studies questions.",
+                "memoryTrick": "Remember: Concept 2 refers directly to the core idea of Large cities are governed by M...",
+                "commonMistake": "Confusing Concept 2 with other similar social terms or boundaries.",
+                "visualType": "formula-showcase"
+            },
+            {
+                "id": "soc-grassroots-2",
+                "title": "Concept 3",
+                "definition": "Urban local bodies have elected Ward Councillors representing different municipal divisions.",
+                "explanation": "This covers the detailed study of concept 3. Understanding this is critical to mastering the NCERT syllabus guidelines and applying it to social studies questions.",
+                "memoryTrick": "Remember: Concept 3 refers directly to the core idea of Urban local bodies have electe...",
+                "commonMistake": "Confusing Concept 3 with other similar social terms or boundaries.",
+                "visualType": "formula-showcase"
+            }
+        ],
+        "examples": [
+            {
+                "level": "Easy",
+                "title": "Solved Practice Question 1",
+                "problem": "What is the difference between a Municipal Corporation and a Municipal Council?",
+                "solution": [
+                    "A Municipal Corporation manages large cities with huge populations. A Municipal Council manages smaller towns."
+                ],
+                "hint": "Read the question carefully, identify what sector or historical source it relates to, and state the answer in points."
+            },
+            {
+                "level": "Medium",
+                "title": "Solved Practice Question 2",
+                "problem": "What are the key tasks of a Municipal Corporation?",
+                "solution": [
+                    "Providing clean drinking water, managing drainage and sewage, collecting garbage, running hospitals, and maintaining streetlights."
+                ],
+                "hint": "Read the question carefully, identify what sector or historical source it relates to, and state the answer in points."
+            }
+        ],
+        "quiz": [
+            {
+                "type": "mcq",
+                "q": "What is the difference between a Municipal Corporation and a Municipal Council?",
+                "options": [
+                    "A Municipal Corporation manages large cities with huge populations. A Municipal Council manages smaller towns.",
+                    "It depends on individual choices and settings.",
+                    "A standard format followed in other nations.",
+                    "None of the mentioned statements."
+                ],
+                "answer": "A Municipal Corporation manages large cities with huge populations. A Municipal Council manages smaller towns.",
+                "explanation": "This is direct from the textbook: A Municipal Corporation manages large cities with huge populations. A Municipal Council manages smaller towns."
+            },
+            {
+                "type": "mcq",
+                "q": "What are the key tasks of a Municipal Corporation?",
+                "options": [
+                    "Providing clean drinking water, managing drainage and sewage, collecting garbage, running hospitals, and maintaining streetlights.",
+                    "It depends on individual choices and settings.",
+                    "A standard format followed in other nations.",
+                    "None of the mentioned statements."
+                ],
+                "answer": "Providing clean drinking water, managing drainage and sewage, collecting garbage, running hospitals, and maintaining streetlights.",
+                "explanation": "This is direct from the textbook: Providing clean drinking water, managing drainage and sewage, collecting garbage, running hospitals, and maintaining streetlights."
+            },
+            {
+                "type": "mcq",
+                "q": "How can citizens help urban local bodies function better?",
+                "options": [
+                    "By segregating waste at home (dry and wet), avoiding plastic littering, paying property taxes, and reporting public safety issues.",
+                    "It depends on individual choices and settings.",
+                    "A standard format followed in other nations.",
+                    "None of the mentioned statements."
+                ],
+                "answer": "By segregating waste at home (dry and wet), avoiding plastic littering, paying property taxes, and reporting public safety issues.",
+                "explanation": "This is direct from the textbook: By segregating waste at home (dry and wet), avoiding plastic littering, paying property taxes, and reporting public safety issues."
+            }
+        ],
+        "recap": [
+            "Urban areas require complex governance structures called urban local bodies to manage services.",
+            "Large cities are governed by Municipal Corporations (headed by a Mayor); smaller towns have Municipal Councils.",
+            "Urban local bodies have elected Ward Councillors representing different municipal divisions."
+        ]
+    },
+    "The Value of Work": {
+        "difficulty": "Easy",
+        "studyTime": "20 mins",
+        "pyqPattern": "Tests basic definitions, identification of parameters, and practical daily connections (2-3 marks in term exams).",
+        "overview": {
+            "intro": "Exploring the diverse activities people perform, the distinction between economic and non-economic work, and their contributions to societal welfare and individual wellbeing.",
+            "realWorld": "Helps students understand how their surrounding neighborhood, local services, and country operate on a daily basis.",
+            "whyItMatters": "Essential for scoring high in school term exams and building a strong foundation in geography, history, civics, and economic life."
+        },
+        "concepts": [
+            {
+                "id": "soc-the-value--0",
+                "title": "Concept 1",
+                "definition": "Human activities are broadly classified into economic and non-economic categories.",
+                "explanation": "This covers the detailed study of concept 1. Understanding this is critical to mastering the NCERT syllabus guidelines and applying it to social studies questions.",
+                "memoryTrick": "Remember: Concept 1 refers directly to the core idea of Human activities are broadly c...",
+                "commonMistake": "Confusing Concept 1 with other similar social terms or boundaries.",
+                "visualType": "formula-showcase"
+            },
+            {
+                "id": "soc-the-value--1",
+                "title": "Concept 2",
+                "definition": "Economic activities create utility and monetary value (e.g. running a shop, writing software).",
+                "explanation": "This covers the detailed study of concept 2. Understanding this is critical to mastering the NCERT syllabus guidelines and applying it to social studies questions.",
+                "memoryTrick": "Remember: Concept 2 refers directly to the core idea of Economic activities create uti...",
+                "commonMistake": "Confusing Concept 2 with other similar social terms or boundaries.",
+                "visualType": "formula-showcase"
+            },
+            {
+                "id": "soc-the-value--2",
+                "title": "Concept 3",
+                "definition": "Non-economic activities do not generate money but contribute to health, happiness, and social welfare (e.g. hobbies, gardening).",
+                "explanation": "This covers the detailed study of concept 3. Understanding this is critical to mastering the NCERT syllabus guidelines and applying it to social studies questions.",
+                "memoryTrick": "Remember: Concept 3 refers directly to the core idea of Non-economic activities do not...",
+                "commonMistake": "Confusing Concept 3 with other similar social terms or boundaries.",
+                "visualType": "formula-showcase"
+            }
+        ],
+        "examples": [
+            {
+                "level": "Easy",
+                "title": "Solved Practice Question 1",
+                "problem": "What is the difference between economic and non-economic activities?",
+                "solution": [
+                    "Economic activities are done to earn money or generate monetary value. Non-economic activities are done for personal happiness, social welfare, or duty."
+                ],
+                "hint": "Read the question carefully, identify what sector or historical source it relates to, and state the answer in points."
+            },
+            {
+                "level": "Medium",
+                "title": "Solved Practice Question 2",
+                "problem": "Provide examples of economic and non-economic work done by the same person.",
+                "solution": [
+                    "A teacher teaching in a school for a salary is doing economic work. The same teacher teaching their own child at home is doing non-economic work."
+                ],
+                "hint": "Read the question carefully, identify what sector or historical source it relates to, and state the answer in points."
+            }
+        ],
+        "quiz": [
+            {
+                "type": "mcq",
+                "q": "What is the difference between economic and non-economic activities?",
+                "options": [
+                    "Economic activities are done to earn money or generate monetary value. Non-economic activities are done for personal happiness, social welfare, or duty.",
+                    "It depends on individual choices and settings.",
+                    "A standard format followed in other nations.",
+                    "None of the mentioned statements."
+                ],
+                "answer": "Economic activities are done to earn money or generate monetary value. Non-economic activities are done for personal happiness, social welfare, or duty.",
+                "explanation": "This is direct from the textbook: Economic activities are done to earn money or generate monetary value. Non-economic activities are done for personal happiness, social welfare, or duty."
+            },
+            {
+                "type": "mcq",
+                "q": "Provide examples of economic and non-economic work done by the same person.",
+                "options": [
+                    "A teacher teaching in a school for a salary is doing economic work. The same teacher teaching their own child at home is doing non-economic work.",
+                    "It depends on individual choices and settings.",
+                    "A standard format followed in other nations.",
+                    "None of the mentioned statements."
+                ],
+                "answer": "A teacher teaching in a school for a salary is doing economic work. The same teacher teaching their own child at home is doing non-economic work.",
+                "explanation": "This is direct from the textbook: A teacher teaching in a school for a salary is doing economic work. The same teacher teaching their own child at home is doing non-economic work."
+            },
+            {
+                "type": "mcq",
+                "q": "Why are non-economic activities valuable if they do not earn money?",
+                "options": [
+                    "Because they build social ties, improve mental and physical health, conserve nature, and enhance the overall quality of community life.",
+                    "It depends on individual choices and settings.",
+                    "A standard format followed in other nations.",
+                    "None of the mentioned statements."
+                ],
+                "answer": "Because they build social ties, improve mental and physical health, conserve nature, and enhance the overall quality of community life.",
+                "explanation": "This is direct from the textbook: Because they build social ties, improve mental and physical health, conserve nature, and enhance the overall quality of community life."
+            }
+        ],
+        "recap": [
+            "Human activities are broadly classified into economic and non-economic categories.",
+            "Economic activities create utility and monetary value (e.g. running a shop, writing software).",
+            "Non-economic activities do not generate money but contribute to health, happiness, and social welfare (e.g. hobbies, gardening)."
+        ]
+    },
+    "Economic Activities Around Us": {
+        "difficulty": "Medium",
+        "studyTime": "30 mins",
+        "pyqPattern": "Requires students to classify economic actions into primary, secondary, and tertiary sectors, and explain their interdependence with examples (3-5 marks).",
+        "overview": {
+            "intro": "Understanding the classification of economic activities into three major sectors\u2014primary, secondary, and tertiary\u2014and their deep interconnection and mutual interdependence.",
+            "realWorld": "Helps students understand how their surrounding neighborhood, local services, and country operate on a daily basis.",
+            "whyItMatters": "Essential for scoring high in school term exams and building a strong foundation in geography, history, civics, and economic life."
+        },
+        "concepts": [
+            {
+                "id": "soc-economic-a-0",
+                "title": "Economic activities are grouped into three main sectors based on their characteristics",
+                "definition": "Primary, Secondary, and Tertiary.",
+                "explanation": "This covers the detailed study of economic activities are grouped into three main sectors based on their characteristics. Understanding this is critical to mastering the NCERT syllabus guidelines and applying it to social studies questions.",
+                "memoryTrick": "Remember: Economic activities are grouped into three main sectors based on their characteristics refers directly to the core idea of Primary, Secondary, and Tertia...",
+                "commonMistake": "Confusing Economic activities are grouped into three main sectors based on their characteristics with other similar social terms or boundaries.",
+                "visualType": "formula-showcase"
+            },
+            {
+                "id": "soc-economic-a-1",
+                "title": "Concept 2",
+                "definition": "The Primary sector is directly dependent on natural resources (agriculture, fishing, mining).",
+                "explanation": "This covers the detailed study of concept 2. Understanding this is critical to mastering the NCERT syllabus guidelines and applying it to social studies questions.",
+                "memoryTrick": "Remember: Concept 2 refers directly to the core idea of The Primary sector is directly...",
+                "commonMistake": "Confusing Concept 2 with other similar social terms or boundaries.",
+                "visualType": "formula-showcase"
+            },
+            {
+                "id": "soc-economic-a-2",
+                "title": "Concept 3",
+                "definition": "The Secondary sector processes raw materials into manufactured goods (factories, construction).",
+                "explanation": "This covers the detailed study of concept 3. Understanding this is critical to mastering the NCERT syllabus guidelines and applying it to social studies questions.",
+                "memoryTrick": "Remember: Concept 3 refers directly to the core idea of The Secondary sector processes...",
+                "commonMistake": "Confusing Concept 3 with other similar social terms or boundaries.",
+                "visualType": "formula-showcase"
+            }
+        ],
+        "examples": [
+            {
+                "level": "Easy",
+                "title": "Solved Practice Question 1",
+                "problem": "Give one example of an activity in each of the three economic sectors.",
+                "solution": [
+                    "Primary: Growing wheat on a farm. Secondary: Milling wheat into flour in a factory. Tertiary: Transporting flour bags to shops in a truck."
+                ],
+                "hint": "Read the question carefully, identify what sector or historical source it relates to, and state the answer in points."
+            },
+            {
+                "level": "Medium",
+                "title": "Solved Practice Question 2",
+                "problem": "How is the Tertiary sector different from the other two?",
+                "solution": [
+                    "It does not produce any physical goods. Instead, it provides services that help produce, transport, and sell goods."
+                ],
+                "hint": "Read the question carefully, identify what sector or historical source it relates to, and state the answer in points."
+            }
+        ],
+        "quiz": [
+            {
+                "type": "mcq",
+                "q": "Give one example of an activity in each of the three economic sectors.",
+                "options": [
+                    "Primary: Growing wheat on a farm. Secondary: Milling wheat into flour in a factory. Tertiary: Transporting flour bags to shops in a truck.",
+                    "It depends on individual choices and settings.",
+                    "A standard format followed in other nations.",
+                    "None of the mentioned statements."
+                ],
+                "answer": "Primary: Growing wheat on a farm. Secondary: Milling wheat into flour in a factory. Tertiary: Transporting flour bags to shops in a truck.",
+                "explanation": "This is direct from the textbook: Primary: Growing wheat on a farm. Secondary: Milling wheat into flour in a factory. Tertiary: Transporting flour bags to shops in a truck."
+            },
+            {
+                "type": "mcq",
+                "q": "How is the Tertiary sector different from the other two?",
+                "options": [
+                    "It does not produce any physical goods. Instead, it provides services that help produce, transport, and sell goods.",
+                    "It depends on individual choices and settings.",
+                    "A standard format followed in other nations.",
+                    "None of the mentioned statements."
+                ],
+                "answer": "It does not produce any physical goods. Instead, it provides services that help produce, transport, and sell goods.",
+                "explanation": "This is direct from the textbook: It does not produce any physical goods. Instead, it provides services that help produce, transport, and sell goods."
+            },
+            {
+                "type": "mcq",
+                "q": "Explain how the three sectors are interdependent.",
+                "options": [
+                    "A farmer (Primary) needs tractor machinery (Secondary) and loan credit from a bank (Tertiary) to cultivate crops, which are then shipped (Tertiary) to food factories (Secondary).",
+                    "It depends on individual choices and settings.",
+                    "A standard format followed in other nations.",
+                    "None of the mentioned statements."
+                ],
+                "answer": "A farmer (Primary) needs tractor machinery (Secondary) and loan credit from a bank (Tertiary) to cultivate crops, which are then shipped (Tertiary) to food factories (Secondary).",
+                "explanation": "This is direct from the textbook: A farmer (Primary) needs tractor machinery (Secondary) and loan credit from a bank (Tertiary) to cultivate crops, which are then shipped (Tertiary) to food factories (Secondary)."
+            }
+        ],
+        "recap": [
+            "Economic activities are grouped into three main sectors based on their characteristics: Primary, Secondary, and Tertiary.",
+            "The Primary sector is directly dependent on natural resources (agriculture, fishing, mining).",
+            "The Secondary sector processes raw materials into manufactured goods (factories, construction)."
+        ]
+    }
+}
+  },
   "9": {
+
     "Mathematics": {
       "Coordinate Geometry": {
         "difficulty": "Easy to Medium",

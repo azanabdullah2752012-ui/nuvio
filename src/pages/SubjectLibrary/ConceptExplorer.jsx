@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ChevronDown, ChevronUp, AlertTriangle, Zap, HelpCircle, 
   BookOpen, Key, ArrowRight, CheckCircle2, RotateCcw, Brain, 
-  Sparkles, Award, PlayCircle, Eye, Activity, RefreshCw 
+  Sparkles, Award, PlayCircle, Eye, Activity, RefreshCw, Trophy
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { xpService } from '../../services/xpService';
@@ -16,10 +16,12 @@ import NarrativeMap from './Sandboxes/NarrativeMap';
 import CellExplorer from './Sandboxes/CellExplorer';
 import AtomExplorer from './Sandboxes/AtomExplorer';
 import HeronExplorer from './Sandboxes/HeronExplorer';
+import Class6MathSandbox from './Sandboxes/Class6MathSandbox';
+import Class6ScienceSandbox from './Sandboxes/Class6ScienceSandbox';
 
 import './styles.css';
 
-const ConceptExplorer = ({ concepts, quiz = [], chapterTitle = "", subject = "" }) => {
+const ConceptExplorer = ({ concepts, quiz = [], chapterTitle = "", subject = "", grade = "9" }) => {
   const [explorerMode, setExplorerMode] = useState('timeline'); // 'timeline' | 'quest'
   const [expandedId, setExpandedId] = useState(null);
   const [eli5States, setEli5States] = useState({}); // { [conceptId]: boolean }
@@ -84,20 +86,26 @@ const ConceptExplorer = ({ concepts, quiz = [], chapterTitle = "", subject = "" 
     const chLower = chapterTitle.toLowerCase();
     const subLower = subject.toLowerCase();
 
+    if (grade === "6" && subLower.includes('math')) {
+      return <Class6MathSandbox chapterTitle={chapterTitle} activeConcept={activeConcept} />;
+    }
+    if (grade === "6" && subLower.includes('science')) {
+      return <Class6ScienceSandbox chapterTitle={chapterTitle} activeConcept={activeConcept} />;
+    }
     if (chLower.includes('cell') || cTitle.includes('cell')) {
       return <CellExplorer />;
     }
     if (chLower.includes('atom') || cTitle.includes('atom')) {
       return <AtomExplorer />;
     }
+    if (chLower.includes('motion') || chLower.includes('force') || cTitle.includes('displacement') || cTitle.includes('speed')) {
+      return <MotionSimulator />;
+    }
     if (chLower.includes('heron') || cTitle.includes('heron')) {
       return <HeronExplorer />;
     }
     if (subLower.includes('math') || chLower.includes('geometry') || chLower.includes('algebra') || cTitle.includes('coordinate') || cTitle.includes('plane')) {
       return <CartesianPlotter />;
-    }
-    if (chLower.includes('motion') || chLower.includes('force') || cTitle.includes('displacement') || cTitle.includes('speed')) {
-      return <MotionSimulator />;
     }
     if (subLower.includes('english') || cTitle.includes('read') || cTitle.includes('narrative')) {
       return <NarrativeMap />;

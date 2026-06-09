@@ -107,16 +107,17 @@ const AuthOrchestrator = ({ children }) => {
         console.log("AUTH EVENT:", event);
         
         if (session?.user && (event === 'SIGNED_IN' || event === 'USER_UPDATED')) {
-          const profile = authService.me();
+          await authService.syncProfile(session.user);
+          const user = authService.me();
           
           // If we're on a public page but logged in, sync and move
           if (location.pathname === '/' || location.pathname === '/auth') {
-             await authService.syncProfile(session.user);
-             const user = authService.me();
              if (user?.role === 'admin') {
                navigate('/admin', { replace: true });
-             } else {
+             } else if (user?.onboarding_completed) {
                navigate('/dashboard', { replace: true });
+             } else {
+               navigate('/onboarding', { replace: true });
              }
           }
         }
@@ -128,7 +129,14 @@ const AuthOrchestrator = ({ children }) => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user && (location.pathname === '/' || location.pathname === '/auth')) {
         await authService.syncProfile(session.user);
-        navigate('/dashboard', { replace: true });
+        const user = authService.me();
+        if (user?.role === 'admin') {
+          navigate('/admin', { replace: true });
+        } else if (user?.onboarding_completed) {
+          navigate('/dashboard', { replace: true });
+        } else {
+          navigate('/onboarding', { replace: true });
+        }
       }
     };
     checkSession();
