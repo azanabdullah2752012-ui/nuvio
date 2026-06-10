@@ -419,6 +419,77 @@ export const authService = {
     return reward;
   },
 
+  loginAsDemo: async () => {
+    // 1. Try signing in anonymously via Supabase first, so they get a real real-time sync database session if supported
+    try {
+      const { data, error } = await supabase.auth.signInAnonymously({
+        options: {
+          data: {
+            full_name: 'Demo Scholar',
+            grade_level: '9th'
+          }
+        }
+      });
+      if (!error && data?.user) {
+        await authService.syncProfile(data.user);
+        const user = authService.me();
+        if (user) {
+          // If synced successfully, update onboarding completed
+          user.onboarding_completed = true;
+          user.avatar_emoji = '🔮';
+          user.full_name = 'Demo Scholar';
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+          window.dispatchEvent(new CustomEvent('acadevance_auth_change', { detail: user }));
+          return user;
+        }
+      }
+    } catch (e) {
+      console.warn("Supabase anonymous sign-in failed or not enabled, falling back to local sandbox:", e);
+    }
+
+    // 2. Fallback to Local Sandbox Demo User if anonymous login is disabled or fails
+    const demoProfile = {
+      id: 'demo-scholar-id',
+      email: 'demo@acadevance.app',
+      full_name: 'Demo Scholar',
+      avatar_emoji: '🔮',
+      level: 5,
+      xp: 1250,
+      era_tokens: 1500,
+      role: 'student',
+      grade_level: '9th',
+      onboarding_completed: true,
+      last_activity_date: new Date().toISOString(),
+      achievements: ['first_steps'],
+      stats_focus_sessions: 2,
+      stats_flashcards_reviewed: 15,
+      stats_quizzes_correct: 8,
+      stats_math_completed: 1,
+      stats_science_completed: 1,
+      stats_social_completed: 0,
+      stats_homework_completed: 2,
+      stats_boss_defeated: 0,
+      stats_quests_completed: 1,
+      login_streak: 3,
+      last_login_reward_date: new Date().toISOString(),
+      unlocked_avatars: ['⚡', '🔮', '🧙'],
+      claimed_season_tiers: [1],
+      boss_chapter_progress: {
+        dragon:    { hp: 1000, max: 1000,  status: 'active',  claimed: false },
+        algebra:   { hp: 2500, max: 2500,  status: 'locked',  claimed: false },
+        geometry:  { hp: 4000, max: 4000,  status: 'locked',  claimed: false },
+        cell:      { hp: 1500, max: 1500,  status: 'active',  claimed: false },
+        motion:    { hp: 3000, max: 3000,  status: 'locked',  claimed: false },
+        atom:      { hp: 5000, max: 5000,  status: 'locked',  claimed: false },
+        empire:    { hp: 2000, max: 2000,  status: 'active',  claimed: false },
+        leviathan: { hp: 6000, max: 6000,  status: 'locked',  claimed: false },
+      }
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(demoProfile));
+    window.dispatchEvent(new CustomEvent('acadevance_auth_change', { detail: demoProfile }));
+    return demoProfile;
+  },
+
   login: async (email, password) => {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,

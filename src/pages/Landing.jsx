@@ -134,6 +134,20 @@ const Landing = () => {
     } finally { setLoading(false); }
   };
 
+  const handleDemoLogin = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const user = await authService.loginAsDemo();
+      if (user.role === 'admin') navigate('/admin');
+      else navigate('/dashboard');
+    } catch (err) {
+      setError(err.message || 'Demo login failed.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const features = [
     { icon: Brain, title: 'Active Recall', desc: 'Quest-based flashcard journeys that encode concepts deeply into long-term memory.', color: 'bg-nuvio-purple-500/90', delay: 0.3 },
     { icon: Gamepad2, title: 'StudyVerse', desc: 'A multiplayer universe with boss raids, trivia battles, and cooperative challenges.', color: 'bg-nuvio-cyan/90', delay: 0.35 },
@@ -274,10 +288,18 @@ const Landing = () => {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.45, duration: 0.6 }}
-          className="flex flex-col sm:flex-row items-center gap-4 w-full max-w-md mb-8"
+          className="flex flex-col sm:flex-row items-center gap-4 w-full max-w-lg mb-8"
         >
-          <motion.div whileHover={{ scale: 1.03, y: -2 }} whileTap={{ scale: 0.97 }} className="w-full">
+          <motion.div whileHover={{ scale: 1.02, y: -1 }} whileTap={{ scale: 0.98 }} className="w-full flex flex-col sm:flex-row gap-4">
             <GoogleAuthButton onClick={handleGoogleSignIn} disabled={loading} />
+            <button
+              onClick={handleDemoLogin}
+              disabled={loading}
+              className="flex-1 py-3 px-6 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-2xl font-black uppercase tracking-widest text-[11px] flex items-center justify-center gap-2 transition-all shadow-lg"
+            >
+              <Sparkles className="w-4 h-4 text-nuvio-purple-400" />
+              <span>Explore Demo</span>
+            </button>
           </motion.div>
         </motion.div>
 
@@ -485,6 +507,20 @@ const Landing = () => {
 
                 <button type="submit" disabled={loading} className="nv-btn-primary w-full mt-2">
                   {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <><span>Sign In</span><ArrowRight className="w-4 h-4" /></>}
+                </button>
+                <div className="flex items-center gap-3 my-3">
+                  <div className="flex-1 h-px bg-white/10" />
+                  <span className="text-[9px] font-black text-text-muted uppercase tracking-widest">OR</span>
+                  <div className="flex-1 h-px bg-white/10" />
+                </div>
+                <button
+                  type="button"
+                  onClick={handleDemoLogin}
+                  disabled={loading}
+                  className="w-full py-3 px-6 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-2xl font-black uppercase tracking-widest text-[11px] flex items-center justify-center gap-2 transition-all"
+                >
+                  <Sparkles className="w-4 h-4 text-nuvio-purple-400" />
+                  <span>Try Demo Account</span>
                 </button>
               </form>
 

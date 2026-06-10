@@ -47,6 +47,7 @@ const navSections = [
   {
     label: "Social Hub",
     items: [
+      { name: "Classmates", path: "/classmates", icon: Users },
       { name: "Groups", path: "/learning-groups", icon: Users },
       { name: "Leaderboard", path: "/leaderboard", icon: Trophy },
       { name: "Messages", path: "/messages", icon: MessageCircle },

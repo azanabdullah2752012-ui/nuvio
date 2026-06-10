@@ -1537,6 +1537,14 @@ export const CURRICULUM_DATA = {
         {
           "title": "Exploring Mixtures & Separation",
           "summary": "From industrial processes like sugar production to life-saving medical tests like ORS and blood analysis.",
+          "keyIdeas": [
+            "Homogeneous vs Heterogeneous: Homogeneous mixtures (solutions) have uniform composition, whereas Heterogeneous mixtures have visible, non-uniform particles.",
+            "Concentration: The mass percentage of a solution is calculated as (Mass of Solute / Mass of Solution) × 100.",
+            "Crystallization: Separating a pure solid from a saturated solution by slow cooling.",
+            "Distillation: Separating miscible liquids with a boiling point difference of at least 25°C.",
+            "Sublimation: The transition of a solid directly into a vapour without passing through the liquid state.",
+            "Tyndall Effect: The scattering of a beam of light by particles in a colloid or suspension, making the path visible."
+          ],
           "flashcards": [
             { "front": "Homogeneous vs Heterogeneous", "back": "Homogeneous (solutions) have uniform composition; Heterogeneous (suspensions) have visible, non-uniform particles." },
             { "front": "Concentration (% m/m)", "back": "(Mass of Solute / Mass of Solution) × 100." },
@@ -1586,6 +1594,14 @@ export const CURRICULUM_DATA = {
         {
           "title": "Work, Energy & Simple Machines",
           "summary": "Exploring the capacity to do work, conservation of mechanical energy, and the building blocks of everyday machines.",
+          "keyIdeas": [
+            "Work: Work (W) is defined as Force (F) × Displacement (s) in the direction of the force.",
+            "Kinetic Energy: The energy possessed by an object due to its motion: K = ½mv².",
+            "Potential Energy: The energy stored in an object due to its position or height: U = mgh.",
+            "Conservation of Energy: The total mechanical energy (sum of kinetic and potential energy) remains constant in an isolated system.",
+            "Power: The rate at which work is done (P = W / t), measured in Watts (W).",
+            "Simple Machines: Devices like the pulley, inclined plane, and lever that reduce effort or change force direction to make work easier."
+          ],
           "flashcards": [
             { "front": "Scientific Definition of Work", "back": "Work (W) = Force (F) × Displacement (s) in the direction of the force." },
             { "front": "Kinetic Energy Formula", "back": "K = ½mv² (Energy due to an object's motion)." },
@@ -1624,6 +1640,13 @@ export const CURRICULUM_DATA = {
         {
           "title": "Atomic Foundations of Matter",
           "summary": "The laws of chemical combination, the logic of bonding, and the architecture of molecules and ionic lattices.",
+          "keyIdeas": [
+            "Conservation of Mass: Matter can neither be created nor destroyed in a chemical reaction.",
+            "Constant Proportions: In a chemical compound, the elements are always present in definite proportions by mass.",
+            "Chemical Bonding: Covalent bonds are formed by sharing electrons, while ionic bonds are formed by electrostatic attraction between oppositely charged ions.",
+            "Polyatomic Ions: A cluster of atoms behaving as a single unit with a fixed net charge.",
+            "Molecular Mass: The sum of atomic masses of all atoms present in a molecule."
+          ],
           "flashcards": [
             { "front": "Law of Conservation of Mass", "back": "Matter can neither be created nor destroyed in a chemical reaction (Lavoisier, 1789)." },
             { "front": "Law of Constant Proportions", "back": "In a compound, elements are always present in definite proportions by mass (Proust)." },
@@ -1662,6 +1685,13 @@ export const CURRICULUM_DATA = {
         {
           "title": "Reproduction: How Life Continues",
           "summary": "Exploring the biological mechanics of survival, from vegetative cloning in agriculture to the complex dance of human heredity.",
+          "keyIdeas": [
+            "Asexual vs Sexual Reproduction: Asexual reproduction involves a single parent (e.g. vegetative propagation), while sexual reproduction involves two parents and fusion of gametes.",
+            "Meiosis: A type of cell division that reduces the chromosome number by half to form haploid gametes.",
+            "Double Fertilisation: A complex process in flowering plants where one sperm cell fuses with the egg cell and another fuses with two polar nuclei.",
+            "Pollination: The transfer of pollen grains from the male anther to the female stigma.",
+            "Human Development: Fertilisation results in a single-celled zygote, which grows into an embryo and later a foetus."
+          ],
           "flashcards": [
             { "front": "Vegetative Propagation", "back": "Asexual reproduction where new plants grow from parts like stems (cutting), roots, or leaves (Bryophyllum)." },
             { "front": "Meiosis", "back": "A special cell division that reduces chromosome numbers by half to form haploid gametes (sperm/egg)." },
@@ -1682,6 +1712,12 @@ export const CURRICULUM_DATA = {
         {
           "title": "Patterns in Life: Diversity and Classification",
           "summary": "From the microscopic Monera to the majestic vertebrates of the Western Ghats, this module maps the tree of life.",
+          "keyIdeas": [
+            "Biodiversity: The wide variety of plant and animal life in a particular habitat or region.",
+            "Classification Systems: Organisms are categorized using Whittaker's Five Kingdom system or the modern Three Domains system based on genetic data.",
+            "Binomial Nomenclature: The formal system of naming species using two parts (Genus and Species).",
+            "Plant & Animal Diversity: Major groups include Angiosperms (flowering plants) and Arthropods (animals with jointed appendages)."
+          ],
           "flashcards": [
             { "front": "Biodiversity Hotspot", "back": "Regions like the Western Ghats or Himalayas with high species richness and endemic life." },
             { "front": "Five Kingdom Classification", "back": "Whittaker's system (1969): Monera, Protista, Fungi, Plantae, and Animalia." },
@@ -1702,6 +1738,13 @@ export const CURRICULUM_DATA = {
         {
           "title": "Earth as a System: Energy, Matter, and Life",
           "summary": "The grand finale: integrating energy flows, planetary cycles, and the delicate balance of Earth's five spheres.",
+          "keyIdeas": [
+            "Earth's Five Spheres: The interacting systems of Geosphere, Hydrosphere, Cryosphere, Atmosphere, and Biosphere.",
+            "Albedo Effect: The reflectivity of Earth's surface, affecting solar energy absorption and climate regulation.",
+            "Biogeochemical Cycles: The pathways by which essential elements (Carbon, Nitrogen, Oxygen, Water) circulate through the biotic and abiotic parts of Earth.",
+            "Greenhouse Effect: The natural trapping of heat in the atmosphere by greenhouse gases, which keeps the planet habitable but can cause warming when elevated.",
+            "Environmental Balance: Human actions can disrupt ecosystems (e.g. eutrophication), requiring sustainable habits like Mission LiFE."
+          ],
           "flashcards": [
             { "front": "Earth's Spheres", "back": "The Geosphere (rocks), Hydrosphere (water), Cryosphere (ice), Atmosphere (air), and Biosphere (life)." },
             { "front": "Albedo", "back": "The measure of a surface's reflectivity; high for snow/ice (stays cool), low for oceans (absorbs heat)." },

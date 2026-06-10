@@ -18,10 +18,12 @@ import AtomExplorer from './Sandboxes/AtomExplorer';
 import HeronExplorer from './Sandboxes/HeronExplorer';
 import Class6MathSandbox from './Sandboxes/Class6MathSandbox';
 import Class6ScienceSandbox from './Sandboxes/Class6ScienceSandbox';
+import SeparationLab from './Sandboxes/SeparationLab';
+import Class9ScienceSandbox from './Sandboxes/Class9ScienceSandbox';
 
 import './styles.css';
 
-const ConceptExplorer = ({ concepts, quiz = [], chapterTitle = "", subject = "", grade = "9" }) => {
+const ConceptExplorer = ({ concepts = [], quiz = [], chapterTitle = "", subject = "", grade = "9" }) => {
   const [explorerMode, setExplorerMode] = useState('timeline'); // 'timeline' | 'quest'
   const [expandedId, setExpandedId] = useState(null);
   const [eli5States, setEli5States] = useState({}); // { [conceptId]: boolean }
@@ -92,6 +94,20 @@ const ConceptExplorer = ({ concepts, quiz = [], chapterTitle = "", subject = "",
     if (grade === "6" && subLower.includes('science')) {
       return <Class6ScienceSandbox chapterTitle={chapterTitle} activeConcept={activeConcept} />;
     }
+    if (grade === "9" && subLower.includes('science')) {
+      const isCustomCh = chLower.includes('cell') || cTitle.includes('cell') ||
+                         chLower.includes('atom') || cTitle.includes('atom') ||
+                         chLower.includes('motion') || chLower.includes('force') || 
+                         cTitle.includes('displacement') || cTitle.includes('speed') ||
+                         chLower.includes('mixture') || chLower.includes('separation') || 
+                         cTitle.includes('mixtures') || cTitle.includes('separation');
+      if (!isCustomCh) {
+        return <Class9ScienceSandbox chapterTitle={chapterTitle} activeConcept={activeConcept} />;
+      }
+    }
+    if (chLower.includes('mixture') || chLower.includes('separation') || cTitle.includes('mixtures') || cTitle.includes('separation')) {
+      return <SeparationLab />;
+    }
     if (chLower.includes('cell') || cTitle.includes('cell')) {
       return <CellExplorer />;
     }
@@ -138,7 +154,7 @@ const ConceptExplorer = ({ concepts, quiz = [], chapterTitle = "", subject = "",
 
     setQuestXP(prev => prev + xp);
     setQuestCoins(prev => prev + coins);
-    xpService.awardXp(xp, `Recall Quest: ${activeConcept.title}`);
+    xpService.awardXp(xp, `Recall Quest: ${activeConcept?.title || ''}`);
     authService.addTokens(coins);
 
     setRecallRevealed(true);
@@ -214,7 +230,7 @@ const ConceptExplorer = ({ concepts, quiz = [], chapterTitle = "", subject = "",
         </h2>
         
         {/* Toggle Mode */}
-        {explorerMode === 'timeline' && (
+        {explorerMode === 'timeline' && concepts && concepts.length > 0 && (
           <div className="mt-4 flex bg-slate-900 p-1 border border-white/5 rounded-lg shrink-0 shadow-sm">
             <button
               onClick={() => setExplorerMode('timeline')}
@@ -242,9 +258,15 @@ const ConceptExplorer = ({ concepts, quiz = [], chapterTitle = "", subject = "",
             exit={{ opacity: 0, y: -10 }}
             className="space-y-4"
           >
-            {concepts.map((concept, idx) => {
-              const isExpanded = expandedId === concept.id;
-              const isEli5 = !!eli5States[concept.id];
+            {concepts.length === 0 ? (
+              <div className="glass-panel p-8 text-center text-slate-500 text-xs uppercase space-y-2 border border-white/5 rounded-xl">
+                <AlertTriangle className="w-8 h-8 text-yellow-500/60 mx-auto" />
+                <p>No concepts found for this chapter.</p>
+              </div>
+            ) : (
+              concepts.map((concept, idx) => {
+                const isExpanded = expandedId === concept.id;
+                const isEli5 = !!eli5States[concept.id];
 
               return (
                 <div
@@ -384,7 +406,7 @@ const ConceptExplorer = ({ concepts, quiz = [], chapterTitle = "", subject = "",
                   </AnimatePresence>
                 </div>
               );
-            })}
+            }))}
           </motion.div>
         ) : (
           /* ACTIVE RECALL GUIDED QUEST PLAYER */
@@ -439,7 +461,7 @@ const ConceptExplorer = ({ concepts, quiz = [], chapterTitle = "", subject = "",
             <div className="glass-panel p-6 sm:p-8 space-y-6 text-left border-purple-500/20 min-h-[380px] flex flex-col justify-between">
               <div className="space-y-4">
                 <span className="px-2.5 py-0.5 bg-purple-500/10 border border-purple-500/20 text-purple-400 text-[8px] font-black tracking-widest uppercase rounded">
-                  Topic Quest: {activeConcept.title}
+                  Topic Quest: {activeConcept?.title || ''}
                 </span>
 
                 <AnimatePresence mode="wait">
@@ -455,20 +477,20 @@ const ConceptExplorer = ({ concepts, quiz = [], chapterTitle = "", subject = "",
                       <h4 className="text-lg font-black text-white uppercase tracking-tight">Step 1: Understand Concept</h4>
                       
                       <div className="p-4 bg-slate-950/80 border border-white/5 rounded-xl text-xs font-bold leading-relaxed text-slate-200">
-                        {activeConcept.definition}
+                        {activeConcept?.definition}
                       </div>
 
                       <div className="p-4 bg-white/5 border border-white/5 rounded-xl text-xs leading-relaxed text-slate-350 font-semibold space-y-2">
                         <span className="text-[8px] font-black text-cyan-400 uppercase tracking-widest block flex items-center gap-1">
                           <Eye className="w-3.5 h-3.5" /> Explanation
                         </span>
-                        <p>{activeConcept.explanation}</p>
+                        <p>{activeConcept?.explanation}</p>
                       </div>
 
-                      {activeConcept.memoryTrick && (
+                      {activeConcept?.memoryTrick && (
                         <div className="p-4 bg-purple-500/5 border border-purple-500/20 rounded-xl text-[11px] leading-relaxed text-purple-300 font-bold flex items-start gap-2">
                           <Zap className="w-4 h-4 text-purple-400 fill-purple-400 shrink-0 mt-0.5" />
-                          <span><strong>Memory Aid:</strong> {activeConcept.memoryTrick}</span>
+                          <span><strong>Memory Aid:</strong> {activeConcept?.memoryTrick}</span>
                         </div>
                       )}
                     </motion.div>
@@ -493,9 +515,9 @@ const ConceptExplorer = ({ concepts, quiz = [], chapterTitle = "", subject = "",
                         <div className="space-y-3 text-xs leading-normal">
                           <div className="flex justify-between border-b border-white/5 pb-2">
                             <span className="text-slate-500">Visual Component:</span>
-                            <strong className="text-white uppercase tracking-tight font-black">{activeConcept.visualType || 'Generic Grid'}</strong>
+                            <strong className="text-white uppercase tracking-tight font-black">{activeConcept?.visualType || 'Generic Grid'}</strong>
                           </div>
-                          {activeConcept.keyTakeaways && activeConcept.keyTakeaways.length > 0 && (
+                          {activeConcept?.keyTakeaways && activeConcept.keyTakeaways.length > 0 && (
                             <div className="space-y-1.5">
                               <span className="text-[8px] text-slate-500 uppercase tracking-widest block font-bold">Key Elements:</span>
                               {activeConcept.keyTakeaways.slice(0, 2).map((takeaway, idx) => (
@@ -579,8 +601,8 @@ const ConceptExplorer = ({ concepts, quiz = [], chapterTitle = "", subject = "",
                             <span className="text-[8px] text-purple-400 uppercase tracking-widest block font-black flex items-center gap-1">
                               <Brain className="w-3.5 h-3.5" /> Core Reference Definition:
                             </span>
-                            <p className="text-xs font-bold text-white leading-relaxed">{activeConcept.definition}</p>
-                            <p className="text-[11px] text-slate-350 leading-relaxed font-medium mt-1">{activeConcept.explanation}</p>
+                            <p className="text-xs font-bold text-white leading-relaxed">{activeConcept?.definition}</p>
+                            <p className="text-[11px] text-slate-350 leading-relaxed font-medium mt-1">{activeConcept?.explanation}</p>
                           </div>
 
                           <div className="space-y-2 border-t border-white/5 pt-4">
@@ -694,7 +716,7 @@ const ConceptExplorer = ({ concepts, quiz = [], chapterTitle = "", subject = "",
                       <div className="space-y-1">
                         <h4 className="text-2xl font-black text-white uppercase tracking-tight">Quest Completed!</h4>
                         <p className="text-xs text-slate-400 font-semibold max-w-[240px] mx-auto leading-relaxed">
-                          You conquered "{activeConcept.title}" following the Acadevance formula.
+                          You conquered "{activeConcept?.title || ''}" following the Acadevance formula.
                         </p>
                       </div>
 
