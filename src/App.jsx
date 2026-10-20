@@ -38,7 +38,6 @@ const Classmates = lazy(() => import('./pages/Classmates'));
 const UserProfile = lazy(() => import('./pages/UserProfile'));
 
 import { authService } from './services/authService';
-import { supabase } from './lib/supabase';
 
 // Loading Spinner for Chunks
 const AppLoader = () => (
@@ -99,53 +98,6 @@ const RetentionEngine = ({ children }) => {
 };
 
 const AuthOrchestrator = ({ children }) => {
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  React.useEffect(() => {
-    // 1. Listen for Auth State Changes (OAuth Redirects)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        console.log("AUTH EVENT:", event);
-        
-        if (session?.user && (event === 'SIGNED_IN' || event === 'USER_UPDATED')) {
-          await authService.syncProfile(session.user);
-          const user = authService.me();
-          
-          // If we're on a public page but logged in, sync and move
-          if (location.pathname === '/' || location.pathname === '/auth') {
-             if (user?.role === 'admin') {
-               navigate('/admin', { replace: true });
-             } else if (user?.onboarding_completed) {
-               navigate('/dashboard', { replace: true });
-             } else {
-               navigate('/onboarding', { replace: true });
-             }
-          }
-        }
-      }
-    );
-
-    // 2. Initial Session Check (Standard Page Load)
-    const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user && (location.pathname === '/' || location.pathname === '/auth')) {
-        await authService.syncProfile(session.user);
-        const user = authService.me();
-        if (user?.role === 'admin') {
-          navigate('/admin', { replace: true });
-        } else if (user?.onboarding_completed) {
-          navigate('/dashboard', { replace: true });
-        } else {
-          navigate('/onboarding', { replace: true });
-        }
-      }
-    };
-    checkSession();
-
-    return () => subscription.unsubscribe();
-  }, [navigate]);
-
   return children;
 };
 

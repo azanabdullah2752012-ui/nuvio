@@ -26,14 +26,6 @@ const UniversalHeader = ({ onMenuClick, user }) => {
   }, []);
 
   useEffect(() => {
-    const handleSyncPulse = (e) => {
-      setIsSyncing(e.detail.syncing);
-    };
-    window.addEventListener('acadevance_sync_pulse', handleSyncPulse);
-    return () => window.removeEventListener('acadevance_sync_pulse', handleSyncPulse);
-  }, []);
-
-  useEffect(() => {
     const loadNotifications = () => {
       const list = notificationService.list();
       setNotifications(list);
@@ -136,22 +128,6 @@ const UniversalHeader = ({ onMenuClick, user }) => {
               ⚡ ACADEVANCE
             </motion.span>
           </motion.div>
-
-          {/* Sync badge */}
-          <AnimatePresence>
-            {isSyncing && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.7, x: -10 }}
-                animate={{ opacity: 1, scale: 1, x: 0 }}
-                exit={{ opacity: 0, scale: 0.7, x: -10 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                className="flex items-center gap-2 bg-nuvio-cyan/15 border border-nuvio-cyan/30 text-nuvio-cyan px-3 py-1 rounded-full font-black text-[9px] uppercase tracking-widest"
-              >
-                <div className="w-1.5 h-1.5 rounded-full bg-nuvio-cyan animate-pulse" />
-                Cloud Sync
-              </motion.div>
-            )}
-          </AnimatePresence>
         </div>
 
         <div className="flex items-center gap-2 md:gap-3">

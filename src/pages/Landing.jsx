@@ -2,14 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   GraduationCap, ArrowRight, Globe, Users, Zap, CheckCircle2,
-  Mail, Lock, Loader2, Sparkles, Trophy, Brain, Target,
+  Sparkles, Trophy, Brain, Target,
   BookOpen, Star, Shield, TrendingUp, Gamepad2, ChevronRight,
   Flame, Clock
 } from 'lucide-react';
-import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
-import { authService } from '../services/authService';
-import { supabase } from '../lib/supabase';
-import GoogleAuthButton from '../components/auth/GoogleAuthButton';
+import { motion } from 'framer-motion';
 import AnimatedBackground from '../components/AnimatedBackground';
 
 /* ── Animated counter hook ─────────────────────────────────── */
@@ -96,11 +93,6 @@ const BadgeTicker = () => {
 
 /* ── Main Landing Page ──────────────────────────────────────── */
 const Landing = () => {
-  const [loading, setLoading] = useState(false);
-  const [showLoginForm, setShowLoginForm] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
   const [countersStarted, setCountersStarted] = useState(false);
   const statsRef = useRef(null);
   const navigate = useNavigate();
@@ -113,40 +105,6 @@ const Landing = () => {
     if (statsRef.current) observer.observe(statsRef.current);
     return () => observer.disconnect();
   }, []);
-
-  const handleGoogleSignIn = async () => {
-    setLoading(true);
-    try { await authService.signInWithGoogle(); }
-    catch (err) { console.error(err); setLoading(false); }
-  };
-
-  const handleCredentialLogin = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-    try {
-      const user = await authService.login(email, password);
-      if (user.role === 'admin') navigate('/admin');
-      else if (user.onboarding_completed) navigate('/dashboard');
-      else navigate('/onboarding');
-    } catch (err) {
-      setError(err.message || 'Authentication failed. Check your credentials.');
-    } finally { setLoading(false); }
-  };
-
-  const handleDemoLogin = async () => {
-    setLoading(true);
-    setError('');
-    try {
-      const user = await authService.loginAsDemo();
-      if (user.role === 'admin') navigate('/admin');
-      else navigate('/dashboard');
-    } catch (err) {
-      setError(err.message || 'Demo login failed.');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const features = [
     { icon: Brain, title: 'Active Recall', desc: 'Quest-based flashcard journeys that encode concepts deeply into long-term memory.', color: 'bg-nuvio-purple-500/90', delay: 0.3 },
@@ -165,7 +123,6 @@ const Landing = () => {
 
       {/* Extra hero-specific floating shapes */}
       <div aria-hidden="true" style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0, overflow: 'hidden' }}>
-        {/* Rotating hex shapes */}
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 80, repeat: Infinity, ease: 'linear' }}
@@ -239,10 +196,11 @@ const Landing = () => {
         </div>
 
         <button
-          onClick={() => setShowLoginForm(true)}
-          className="nv-btn-secondary px-5 py-2.5 text-xs"
+          onClick={() => navigate('/dashboard')}
+          className="nv-btn-primary px-5 py-2.5 text-xs flex items-center gap-2"
         >
-          Sign In
+          <span>Launch App</span>
+          <ArrowRight className="w-3.5 h-3.5" />
         </button>
       </motion.nav>
 
@@ -257,7 +215,7 @@ const Landing = () => {
           className="nv-pill inline-flex items-center gap-2 px-4 py-2 text-[10px] font-black uppercase tracking-widest mb-10"
         >
           <div className="w-2 h-2 rounded-full bg-nuvio-green animate-pulse" />
-          StudyVerse Alpha 2.0 — Now Live
+          StudyVerse 2.0 — Local Engine Active
           <ChevronRight className="w-3 h-3 opacity-60" />
         </motion.div>
 
@@ -280,7 +238,7 @@ const Landing = () => {
           className="max-w-2xl text-text-secondary text-base md:text-lg font-medium leading-relaxed mb-12"
         >
           Acadevance transforms your study sessions into epic quests. Earn XP, battle in boss raids, 
-          master CBSE curriculum, and climb global leaderboards — all in one platform.
+          master CBSE curriculum, and climb global leaderboards — all in one local, instant platform.
         </motion.p>
 
         {/* CTA buttons */}
@@ -288,44 +246,23 @@ const Landing = () => {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.45, duration: 0.6 }}
-          className="flex flex-col sm:flex-row items-center gap-4 w-full max-w-lg mb-8"
+          className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-md mb-8"
         >
-          <motion.div whileHover={{ scale: 1.02, y: -1 }} whileTap={{ scale: 0.98 }} className="w-full flex flex-col sm:flex-row gap-4">
-            <GoogleAuthButton onClick={handleGoogleSignIn} disabled={loading} />
-            <button
-              onClick={handleDemoLogin}
-              disabled={loading}
-              className="flex-1 py-3 px-6 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-2xl font-black uppercase tracking-widest text-[11px] flex items-center justify-center gap-2 transition-all shadow-lg"
-            >
-              <Sparkles className="w-4 h-4 text-nuvio-purple-400" />
-              <span>Explore Demo</span>
-            </button>
-          </motion.div>
-        </motion.div>
-
-        {/* Dev bypass */}
-        {(window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && (
-          <motion.button
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.55 }}
-            onClick={() => {
-              const devProfile = {
-                id: 'dev-guest-id', email: 'azanabdullah27.5.2012@gmail.com',
-                full_name: 'Dev Guest', avatar_emoji: '🛠️', level: 9, xp: 999,
-                era_tokens: 5000, role: 'admin', grade_level: '9th',
-                onboarding_completed: true, last_activity_date: new Date().toISOString()
-              };
-              localStorage.setItem('acadevance_user', JSON.stringify(devProfile));
-              window.dispatchEvent(new CustomEvent('acadevance_auth_change', { detail: devProfile }));
-              navigate('/dashboard');
-            }}
-            className="w-full max-w-md py-3.5 px-8 border border-nuvio-purple-500/40 bg-nuvio-purple-500/08 hover:bg-nuvio-purple-500/15 text-nuvio-purple-300 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all"
-            style={{ background: 'rgba(168,85,247,0.06)' }}
+          <button
+            onClick={() => navigate('/dashboard')}
+            className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-nuvio-purple-600 to-nuvio-blue hover:from-nuvio-purple-500 hover:to-nuvio-cyan text-white rounded-2xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 shadow-xl shadow-nuvio-purple-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
           >
-            ⚡ Enter Developer Sandbox (Local Bypass)
-          </motion.button>
-        )}
+            <span>Enter Acadevance</span>
+            <ArrowRight className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => navigate('/curriculum')}
+            className="w-full sm:w-auto px-6 py-4 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-2xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98]"
+          >
+            <BookOpen className="w-4 h-4 text-nuvio-cyan" />
+            <span>Curriculum Hub</span>
+          </button>
+        </motion.div>
 
         {/* Trustmarks */}
         <motion.div
@@ -334,9 +271,9 @@ const Landing = () => {
           transition={{ delay: 0.65 }}
           className="mt-6 flex items-center gap-6 text-[11px] font-black uppercase tracking-[0.2em] text-text-muted"
         >
-          <span className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-nuvio-green" />No credit card</span>
-          <span className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-nuvio-green" />100% free beta</span>
-          <span className="flex items-center gap-2"><Shield className="w-4 h-4 text-nuvio-cyan" />Secure auth</span>
+          <span className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-nuvio-green" />Instant Offline Access</span>
+          <span className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-nuvio-green" />100% Free & Open</span>
+          <span className="flex items-center gap-2"><Shield className="w-4 h-4 text-nuvio-cyan" />Zero External DB Lag</span>
         </motion.div>
 
         {/* Badge ticker */}
@@ -348,55 +285,40 @@ const Landing = () => {
       {/* ── STATS ─────────────────────────────────────────────── */}
       <section ref={statsRef} className="relative z-10 max-w-7xl mx-auto px-6 pb-20">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="text-center mb-12"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-4"
         >
-          <div className="nv-divider mb-8 mx-auto max-w-xs" />
-          <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter mb-3"
+          <StatCard icon={Users} value={24000} label="Active Scholars" color="bg-nuvio-purple-500/80" delay={0.1} started={countersStarted} />
+          <StatCard icon={Zap} value={180000} label="Quests Cleared" color="bg-nuvio-cyan/80" delay={0.2} started={countersStarted} />
+          <StatCard icon={Trophy} value={94} label="Grade Avg Boost %" color="bg-nuvio-green/80" delay={0.3} started={countersStarted} />
+          <StatCard icon={Star} value={49} label="Rating / 50" color="bg-nuvio-yellow/80" delay={0.4} started={countersStarted} />
+        </motion.div>
+      </section>
+
+      {/* ── FEATURES GRID ───────────────────────────────────────── */}
+      <section className="relative z-10 max-w-7xl mx-auto px-6 py-20 border-t border-white/5">
+        <div className="text-center mb-16">
+          <div className="nv-pill inline-flex items-center gap-2 px-4 py-1.5 text-[10px] font-black uppercase tracking-widest mb-4">
+            Core Engine
+          </div>
+          <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter"
               style={{ background: 'linear-gradient(135deg, #ffffff 30%, #d8b4fe 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-            Built for serious students
+            Built for Academic Dominance
           </h2>
-          <p className="text-text-muted text-sm font-medium">Numbers that speak for themselves</p>
-        </motion.div>
-
-        <div className="flex flex-wrap gap-4 justify-center">
-          <StatCard icon={Users} value={1200} label="Active Learners" color="bg-nuvio-purple-500/80" delay={0.1} started={countersStarted} />
-          <StatCard icon={Zap} value={48000} label="XP Earned Today" color="bg-nuvio-yellow/80" delay={0.15} started={countersStarted} />
-          <StatCard icon={Trophy} value={320} label="Boss Raids Won" color="bg-nuvio-cyan/80" delay={0.2} started={countersStarted} />
-          <StatCard icon={Brain} value={9600} label="Flashcards Reviewed" color="bg-nuvio-green/80" delay={0.25} started={countersStarted} />
-          <StatCard icon={Flame} value={87} label="Day Streak Record" color="bg-nuvio-red/80" delay={0.3} started={countersStarted} />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {features.map((f, i) => (
+            <FeatureCard key={i} {...f} />
+          ))}
         </div>
       </section>
 
-      {/* ── FEATURES ─────────────────────────────────────────── */}
-      <section className="relative z-10 max-w-7xl mx-auto px-6 pb-24">
+      {/* ── BOTTOM CTA ─────────────────────────────────────────── */}
+      <section className="relative z-10 max-w-5xl mx-auto px-6 py-24 text-center">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-14"
-        >
-          <div className="nv-divider mb-8 mx-auto max-w-xs" />
-          <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter mb-4"
-              style={{ background: 'linear-gradient(135deg, #ffffff 30%, #67e8f9 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-            Everything you need
-          </h2>
-          <p className="text-text-muted text-sm font-medium max-w-lg mx-auto leading-relaxed">
-            A complete academic ecosystem built around proven learning science and addictive game design.
-          </p>
-        </motion.div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {features.map(f => <FeatureCard key={f.title} {...f} />)}
-        </div>
-      </section>
-
-      {/* ── FINAL CTA ──────────────────────────────────────────── */}
-      <section className="relative z-10 max-w-3xl mx-auto px-6 pb-24 text-center">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.96 }}
+          initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           className="nv-card nv-card-glow p-10 md:p-16"
@@ -410,16 +332,16 @@ const Landing = () => {
             Ready to level up?
           </h2>
           <p className="text-text-muted text-base font-medium mb-8 max-w-lg mx-auto leading-relaxed">
-            Join thousands of students already turning study time into the most productive — and fun — part of their day.
+            Join thousands of students turning study time into the most productive and fun part of their day.
           </p>
           <button
-            onClick={() => setShowLoginForm(true)}
+            onClick={() => navigate('/dashboard')}
             className="nv-btn-primary mx-auto"
           >
-            Start for Free <ArrowRight className="w-5 h-5" />
+            Launch Dashboard <ArrowRight className="w-5 h-5" />
           </button>
           <p className="mt-6 text-text-muted text-[11px] font-black uppercase tracking-widest">
-            No credit card required · Free during beta
+            Instant Local Access · Zero External Services Required
           </p>
         </motion.div>
       </section>
@@ -443,99 +365,6 @@ const Landing = () => {
           </div>
         </div>
       </footer>
-
-      {/* ── LOGIN MODAL ─────────────────────────────────────────── */}
-      <AnimatePresence>
-        {showLoginForm && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
-            <motion.div
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              onClick={() => setShowLoginForm(false)}
-              className="absolute inset-0"
-              style={{ background: 'rgba(2,3,8,0.85)', backdropFilter: 'blur(24px)' }}
-            />
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0, y: 24 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 24 }}
-              transition={{ type: 'spring', damping: 28, stiffness: 340 }}
-              className="nv-card w-full max-w-md p-10 space-y-8 relative z-10"
-            >
-              <div className="space-y-2 text-center">
-                <div className="w-12 h-12 rounded-2xl mx-auto mb-4 flex items-center justify-center"
-                     style={{ background: 'linear-gradient(135deg, #a855f7, #06b6d4)' }}>
-                  <GraduationCap className="w-6 h-6 text-white" />
-                </div>
-                <h2 className="text-2xl font-black uppercase tracking-tighter"
-                    style={{ background: 'linear-gradient(135deg, #ffffff 30%, #d8b4fe 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                  Welcome Back
-                </h2>
-                <p className="text-text-muted text-xs font-bold uppercase tracking-widest">Enter your credentials to continue</p>
-              </div>
-
-              <form onSubmit={handleCredentialLogin} className="space-y-5">
-                <div className="space-y-2">
-                  <label className="nv-label">Email Address</label>
-                  <div className="relative">
-                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
-                    <input
-                      type="email" required value={email}
-                      onChange={e => setEmail(e.target.value)}
-                      className="nv-input pl-12"
-                      placeholder="student@acadevance.app"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <label className="nv-label">Password</label>
-                    <button type="button" className="text-[10px] uppercase font-black text-nuvio-purple-400 hover:text-nuvio-purple-300">Forgot?</button>
-                  </div>
-                  <div className="relative">
-                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
-                    <input
-                      type="password" required value={password}
-                      onChange={e => setPassword(e.target.value)}
-                      className="nv-input pl-12"
-                      placeholder="••••••••"
-                    />
-                  </div>
-                </div>
-
-                {error && <div className="text-nuvio-red text-[10px] font-black uppercase text-center">{error}</div>}
-
-                <button type="submit" disabled={loading} className="nv-btn-primary w-full mt-2">
-                  {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <><span>Sign In</span><ArrowRight className="w-4 h-4" /></>}
-                </button>
-                <div className="flex items-center gap-3 my-3">
-                  <div className="flex-1 h-px bg-white/10" />
-                  <span className="text-[9px] font-black text-text-muted uppercase tracking-widest">OR</span>
-                  <div className="flex-1 h-px bg-white/10" />
-                </div>
-                <button
-                  type="button"
-                  onClick={handleDemoLogin}
-                  disabled={loading}
-                  className="w-full py-3 px-6 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-2xl font-black uppercase tracking-widest text-[11px] flex items-center justify-center gap-2 transition-all"
-                >
-                  <Sparkles className="w-4 h-4 text-nuvio-purple-400" />
-                  <span>Try Demo Account</span>
-                </button>
-              </form>
-
-              <div className="nv-divider" />
-
-              <div className="text-center">
-                <button onClick={() => setShowLoginForm(false)}
-                  className="text-xs font-black text-text-muted uppercase hover:text-text-primary transition-colors">
-                  Back to Landing
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
     </div>
   );
 };

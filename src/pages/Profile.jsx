@@ -536,24 +536,6 @@ const Profile = () => {
                   </div>
                 </div>
               </div>
-
-              {/* Log out section */}
-              <div className="space-y-4">
-                <button 
-                  onClick={handleLogout} 
-                  className="nv-card w-full flex items-center justify-between p-6 hover:bg-nuvio-red/10 border-white/5 hover:border-nuvio-red/20 group transition-all text-left rounded-[24px]"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-nuvio-red/10 flex items-center justify-center group-hover:scale-105 transition-transform">
-                      <LogOut className="w-5 h-5 text-nuvio-red" />
-                    </div>
-                    <div>
-                      <div className="font-black text-nuvio-red text-base uppercase tracking-tight">Sign Out</div>
-                      <div className="text-[10px] text-nuvio-red/50 uppercase tracking-widest mt-0.5">End your current study session</div>
-                    </div>
-                  </div>
-                </button>
-              </div>
             </motion.div>
           )}
         </AnimatePresence>
