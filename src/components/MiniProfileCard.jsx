@@ -1,75 +1,53 @@
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, Target, Trophy, Zap, MessageSquare, X } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { BookOpen, Target, Clock, X } from 'lucide-react';
 
 const MiniProfileCard = ({ user, onClose }) => {
   if (!user) return null;
 
   return (
     <motion.div 
-      initial={{ opacity: 0, scale: 0.9, y: 20 }}
+      initial={{ opacity: 0, scale: 0.95, y: 15 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.9, y: 20 }}
+      exit={{ opacity: 0, scale: 0.95, y: 15 }}
       className="fixed inset-0 z-[1000] flex items-center justify-center p-4 pointer-events-none"
     >
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm pointer-events-auto" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm pointer-events-auto" onClick={onClose} />
       
-      <div className="w-full max-w-md nv-card !bg-bg-card border-4 !border-nuvio-purple-500 shadow-nb pointer-events-auto relative overflow-hidden">
-        {/* Decorative Background */}
-        <div className="absolute -top-20 -right-20 w-40 h-40 bg-nuvio-purple-500/10 blur-3xl rounded-full" />
-        
+      <div className="w-full max-w-sm bg-white border border-[#e5e1d5] rounded-2xl shadow-[0_8px_32px_rgba(27,59,43,0.08)] pointer-events-auto relative overflow-hidden text-left">
         {/* Close Button */}
         <button 
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 hover:bg-white/5 rounded-full text-text-muted hover:text-white transition-colors"
+          className="absolute top-4 right-4 p-1.5 hover:bg-[#f5f3ec] rounded-lg text-[#827f76] hover:text-[#1a1917] transition-colors"
         >
-          <X className="w-6 h-6" />
+          <X className="w-4 h-4" />
         </button>
 
         {/* Profile Header */}
-        <div className="flex flex-col items-center text-center p-8 border-b-2 border-white/5">
-          <div className="w-24 h-24 rounded-full bg-nuvio-purple-500 flex items-center justify-center text-5xl border-4 border-black shadow-nb-small mb-6">
-            {user.avatar_emoji || '👤'}
+        <div className="flex flex-col items-center text-center p-8">
+          <div className="w-20 h-20 rounded-full bg-[#f5f3ec] border border-[#e5e1d5] flex items-center justify-center text-3xl shadow-sm mb-4">
+            {user.avatar_emoji || '🎓'}
           </div>
-          <h2 className="text-3xl font-black text-white uppercase tracking-tighter">{user.full_name || 'Scholar'}</h2>
-          <div className="flex items-center gap-2 mt-2 px-3 py-1 bg-nuvio-purple-500/20 rounded-full border border-nuvio-purple-500/30">
-            <Shield className="w-3 h-3 text-nuvio-purple-400" />
-            <span className="text-[10px] font-black text-nuvio-purple-400 uppercase tracking-widest">Rank: Pulse Guard</span>
+          <h2 className="text-2xl font-serif font-bold text-[#1a1917]">{user.full_name || 'Scholar'}</h2>
+          <div className="flex items-center gap-1.5 mt-2 px-3 py-1 bg-[#f5f3ec] rounded-full border border-[#e5e1d5]">
+            <span className="text-[10px] font-mono font-bold text-[#1b3b2b] uppercase tracking-wider">
+              CBSE Class {user.grade || '9'} Student
+            </span>
           </div>
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 divide-x divide-y divide-white/5 border-b-2 border-white/5">
-          <div className="p-6 flex flex-col items-center gap-2">
-            <Zap className="w-5 h-5 text-nuvio-yellow" />
-            <div className="text-xl font-black text-white">{user.xp?.toLocaleString()}</div>
-            <div className="text-[8px] font-black text-text-muted uppercase tracking-widest">Total XP</div>
+        <div className="grid grid-cols-2 divide-x divide-[#e5e1d5] border-t border-[#e5e1d5] bg-[#fbfbfa]">
+          <div className="p-4 flex flex-col items-center gap-1 text-center">
+            <BookOpen className="w-4 h-4 text-[#1b3b2b]" />
+            <div className="text-lg font-serif font-bold text-[#1a1917]">Verified</div>
+            <div className="text-[9px] font-mono text-[#827f76] uppercase tracking-wider">Study Record</div>
           </div>
-          <div className="p-6 flex flex-col items-center gap-2">
-            <Trophy className="w-5 h-5 text-nuvio-orange" />
-            <div className="text-xl font-black text-white">{user.level || 1}</div>
-            <div className="text-[8px] font-black text-text-muted uppercase tracking-widest">Sync Level</div>
+          <div className="p-4 flex flex-col items-center gap-1 text-center">
+            <Target className="w-4 h-4 text-[#1b3b2b]" />
+            <div className="text-lg font-serif font-bold text-[#1a1917]">{user.streak || 1} Days</div>
+            <div className="text-[9px] font-mono text-[#827f76] uppercase tracking-wider">Active Streak</div>
           </div>
-          <div className="p-6 flex flex-col items-center gap-2">
-            <Target className="w-5 h-5 text-nuvio-cyan" />
-            <div className="text-xl font-black text-white">{user.streak || 1}</div>
-            <div className="text-[8px] font-black text-text-muted uppercase tracking-widest">Day Streak</div>
-          </div>
-          <div className="p-6 flex flex-col items-center gap-2">
-            <MessageSquare className="w-5 h-5 text-nuvio-blue" />
-            <div className="text-xl font-black text-white">42</div>
-            <div className="text-[8px] font-black text-text-muted uppercase tracking-widest">Endorsements</div>
-          </div>
-        </div>
-
-        {/* Actions */}
-        <div className="p-6 flex gap-4">
-          <button className="flex-1 nv-btn-primary py-4 text-[10px] uppercase tracking-widest bg-nuvio-cyan border-nuvio-cyan hover:bg-white">
-            Send Message
-          </button>
-          <button className="flex-1 nv-btn-secondary py-4 text-[10px] uppercase tracking-widest">
-            Compare Specs
-          </button>
         </div>
       </div>
     </motion.div>

@@ -232,23 +232,23 @@ const SeparationLab = () => {
   };
 
   return (
-    <div className="bg-slate-950 p-5 md:p-6 border border-white/10 rounded-xl shadow-2xl text-left space-y-6">
+    <div className="bg-[#fbfbfa] p-5 md:p-6 border border-[#e5e1d5] rounded-xl shadow-2xl text-left space-y-6">
       
       {/* Title Header */}
-      <div className="flex justify-between items-center border-b border-white/5 pb-3">
+      <div className="flex justify-between items-center border-b border-[#e5e1d5] pb-3">
         <div className="flex items-center gap-2">
-          <Activity className="w-5 h-5 text-purple-400 animate-pulse" />
-          <h4 className="text-sm font-black uppercase text-white tracking-widest">
+          <Activity className="w-5 h-5 text-[#1b3b2b] animate-pulse" />
+          <h4 className="text-sm font-black uppercase text-[#1a1917] tracking-widest">
             Separation & Mixtures Virtual Science Lab
           </h4>
         </div>
-        <span className="px-2 py-0.5 bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[8px] font-black uppercase rounded">
+        <span className="px-2 py-0.5 bg-[#f5f3ec] border border-[#e5e1d5] text-[#1b3b2b] text-[8px] font-black uppercase rounded">
           Class 9 NCERT Lab
         </span>
       </div>
 
       {/* Tabs list switcher */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5 p-1 bg-slate-900 border border-white/5 rounded-lg">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5 p-1 bg-white border border-[#e5e1d5] rounded-lg">
         {[
           { id: 'chromatography', name: 'Chromatography', icon: '🧪' },
           { id: 'distillation', name: 'Distillation', icon: '🔥' },
@@ -261,7 +261,7 @@ const SeparationLab = () => {
             className={`py-2 px-2.5 rounded text-[8px] md:text-[9px] font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 ${
               activeTab === tab.id 
                 ? 'bg-purple-500 text-black shadow font-extrabold' 
-                : 'text-slate-400 hover:text-white'
+                : 'text-[#52504a] hover:text-white'
             }`}
           >
             <span>{tab.icon}</span> {tab.name}
@@ -273,12 +273,12 @@ const SeparationLab = () => {
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 min-h-[300px]">
         
         {/* Left Column: Visual Experiment Canvas */}
-        <div className="md:col-span-6 bg-slate-900/50 p-4 rounded-xl border border-white/5 flex flex-col items-center justify-center relative overflow-hidden min-h-[280px]">
+        <div className="md:col-span-6 bg-white p-4 rounded-xl border border-[#e5e1d5] flex flex-col items-center justify-center relative overflow-hidden min-h-[280px]">
           
           {/* CHROMATOGRAPHY CANVAS */}
           {activeTab === 'chromatography' && (
             <div className="w-full flex flex-col items-center justify-center py-4">
-              <span className="absolute top-3 left-3 text-[8px] font-black text-slate-500 uppercase tracking-widest">Paper Chromatography Chamber</span>
+              <span className="absolute top-3 left-3 text-[8px] font-black text-[#827f76] uppercase tracking-widest">Paper Chromatography Chamber</span>
               
               <svg viewBox="0 0 200 220" className="w-48 h-auto overflow-visible select-none">
                 {/* Glass Jar Outer Outline */}
@@ -341,7 +341,7 @@ const SeparationLab = () => {
               </svg>
 
               {/* Status readout */}
-              <div className="mt-2 text-[9px] font-black uppercase text-cyan-400">
+              <div className="mt-2 text-[9px] font-black uppercase text-[#1b3b2b]">
                 {chromRunning ? `Solvent Rising: ${Math.round(chromProgress)}%` : chromSuccess ? 'Chromatogram Complete! ✨' : 'Awaiting solvent rise'}
               </div>
             </div>
@@ -350,7 +350,7 @@ const SeparationLab = () => {
           {/* DISTILLATION CANVAS */}
           {activeTab === 'distillation' && (
             <div className="w-full flex flex-col items-center justify-center py-2">
-              <span className="absolute top-3 left-3 text-[8px] font-black text-slate-500 uppercase tracking-widest">Fractional Distillation Console</span>
+              <span className="absolute top-3 left-3 text-[8px] font-black text-[#827f76] uppercase tracking-widest">Fractional Distillation Console</span>
               
               <svg viewBox="0 0 280 200" className="w-56 h-auto overflow-visible select-none">
                 {/* 1. Heating Bunsen Burner */}
@@ -419,12 +419,12 @@ const SeparationLab = () => {
 
               {/* Status gauges */}
               <div className="grid grid-cols-2 gap-4 w-full px-6 text-[9px] font-black uppercase text-center pt-2">
-                <div className="bg-slate-950 p-1.5 rounded border border-white/5">
-                  <span className="text-slate-500 block">Separation Progress</span>
+                <div className="bg-[#fbfbfa] p-1.5 rounded border border-[#e5e1d5]">
+                  <span className="text-[#827f76] block">Separation Progress</span>
                   <span className="text-yellow-400 font-mono text-[10px]">{Math.round(distProgress)}%</span>
                 </div>
-                <div className="bg-slate-950 p-1.5 rounded border border-white/5">
-                  <span className="text-slate-500 block">Distillate Purity</span>
+                <div className="bg-[#fbfbfa] p-1.5 rounded border border-[#e5e1d5]">
+                  <span className="text-[#827f76] block">Distillate Purity</span>
                   <span className={distPurity < 80 ? 'text-red-400 font-mono text-[10px]' : 'text-green-400 font-mono text-[10px]'}>
                     {distPurity}%
                   </span>
@@ -436,7 +436,7 @@ const SeparationLab = () => {
           {/* SUBLIMATION CANVAS */}
           {activeTab === 'sublimation' && (
             <div className="w-full flex flex-col items-center justify-center py-2">
-              <span className="absolute top-3 left-3 text-[8px] font-black text-slate-500 uppercase tracking-widest">Inverted Funnel Sublimation Set-up</span>
+              <span className="absolute top-3 left-3 text-[8px] font-black text-[#827f76] uppercase tracking-widest">Inverted Funnel Sublimation Set-up</span>
               
               <svg viewBox="0 0 200 200" className="w-48 h-auto overflow-visible select-none">
                 {/* Burner */}
@@ -485,7 +485,7 @@ const SeparationLab = () => {
               </svg>
 
               {/* Readout label */}
-              <div className="mt-2 text-[9px] font-black uppercase text-cyan-400">
+              <div className="mt-2 text-[9px] font-black uppercase text-[#1b3b2b]">
                 {subTemp < 150 ? 'Heating element cold' : subProgress < 100 ? `Sublimation Active: ${Math.round(subProgress)}%` : 'Pure Camphor Recovered! ⚗️'}
               </div>
             </div>
@@ -494,7 +494,7 @@ const SeparationLab = () => {
           {/* SEPARATING FUNNEL CANVAS */}
           {activeTab === 'funnel' && (
             <div className="w-full flex flex-col items-center justify-center py-2">
-              <span className="absolute top-3 left-3 text-[8px] font-black text-slate-500 uppercase tracking-widest">Density Decantation Chamber</span>
+              <span className="absolute top-3 left-3 text-[8px] font-black text-[#827f76] uppercase tracking-widest">Density Decantation Chamber</span>
               
               <svg viewBox="0 0 200 200" className="w-48 h-auto overflow-visible select-none">
                 {/* Supporting Stand */}
@@ -552,7 +552,7 @@ const SeparationLab = () => {
               </svg>
 
               {/* Status label */}
-              <div className="mt-2 text-[9px] font-black uppercase text-cyan-400">
+              <div className="mt-2 text-[9px] font-black uppercase text-[#1b3b2b]">
                 {!funnelSettled ? 'Emulsion Mixed' : funnelWaterLevel > 0 ? `Water remaining: ${funnelWaterLevel}%` : 'Water fully drained!'}
               </div>
             </div>
@@ -564,8 +564,8 @@ const SeparationLab = () => {
         <div className="md:col-span-6 flex flex-col justify-between space-y-4">
           
           {/* Active Lab directions console */}
-          <div className="p-4 bg-slate-900 border border-white/5 rounded-xl space-y-3 shadow-md flex-1">
-            <span className="text-[8px] font-black text-purple-400 uppercase tracking-widest block border-b border-white/5 pb-1.5 flex items-center gap-1.5">
+          <div className="p-4 bg-white border border-[#e5e1d5] rounded-xl space-y-3 shadow-md flex-1">
+            <span className="text-[8px] font-black text-[#1b3b2b] uppercase tracking-widest block border-b border-[#e5e1d5] pb-1.5 flex items-center gap-1.5">
               <Compass className="w-3.5 h-3.5" /> Experiment Directions
             </span>
 
@@ -577,8 +577,8 @@ const SeparationLab = () => {
                 </p>
 
                 {/* Controls */}
-                <div className="space-y-2 bg-slate-950 p-3 rounded-lg border border-white/5">
-                  <span className="text-[7px] text-slate-500 uppercase tracking-widest block font-black">Select Ink Dye Sample:</span>
+                <div className="space-y-2 bg-[#fbfbfa] p-3 rounded-lg border border-[#e5e1d5]">
+                  <span className="text-[7px] text-[#827f76] uppercase tracking-widest block font-black">Select Ink Dye Sample:</span>
                   <div className="flex gap-2">
                     {['black', 'red', 'blue'].map(color => (
                       <button
@@ -587,8 +587,8 @@ const SeparationLab = () => {
                         onClick={() => { setInkColor(color); setChromProgress(0); setChromSuccess(false); }}
                         className={`flex-1 py-1.5 rounded text-[8px] font-black uppercase tracking-wider border transition-all ${
                           inkColor === color 
-                            ? 'bg-purple-500/20 border-purple-500 text-purple-400 shadow-sm'
-                            : 'bg-slate-900 border-white/5 text-slate-400 hover:text-white'
+                            ? 'bg-purple-500/20 border-purple-500 text-[#1b3b2b] shadow-sm'
+                            : 'bg-white border-[#e5e1d5] text-[#52504a] hover:text-white'
                         }`}
                       >
                         {color} ink
@@ -599,14 +599,14 @@ const SeparationLab = () => {
                   <button
                     onClick={handleStartChromatography}
                     disabled={chromRunning}
-                    className="w-full py-2 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-white hover:to-white hover:text-black text-white text-[9px] font-black uppercase tracking-widest rounded-lg transition-all flex items-center justify-center gap-1 mt-2"
+                    className="w-full py-2 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-white hover:to-white hover:text-black text-[#1a1917] text-[9px] font-black uppercase tracking-widest rounded-lg transition-all flex items-center justify-center gap-1 mt-2"
                   >
                     <Play className="w-3.5 h-3.5 fill-current" /> Run Capillary Action
                   </button>
                 </div>
 
-                <div className="bg-slate-950 p-2.5 rounded border border-white/5 text-[9px] text-slate-450 leading-relaxed font-semibold">
-                  <strong className="text-purple-400 block uppercase text-[7px] mb-0.5">Scientific Principle:</strong>
+                <div className="bg-[#fbfbfa] p-2.5 rounded border border-[#e5e1d5] text-[9px] text-[#52504a] leading-relaxed font-semibold">
+                  <strong className="text-[#1b3b2b] block uppercase text-[7px] mb-0.5">Scientific Principle:</strong>
                   The dye component that is **more soluble** in water rises faster and higher along the paper strip, separating cleanly from the less soluble dyes.
                 </div>
               </div>
@@ -620,10 +620,10 @@ const SeparationLab = () => {
                 </p>
 
                 {/* Heat burner temperature controller */}
-                <div className="space-y-2.5 bg-slate-950 p-3 rounded-lg border border-white/5">
-                  <div className="flex justify-between text-[7px] font-black text-slate-400">
+                <div className="space-y-2.5 bg-[#fbfbfa] p-3 rounded-lg border border-[#e5e1d5]">
+                  <div className="flex justify-between text-[7px] font-black text-[#52504a]">
                     <span>ADJUST BURNER TEMPERATURE</span>
-                    <span className="font-mono text-cyan-400">{distTemp}°C</span>
+                    <span className="font-mono text-[#1b3b2b]">{distTemp}°C</span>
                   </div>
                   <input
                     type="range"
@@ -631,17 +631,17 @@ const SeparationLab = () => {
                     max="120"
                     value={distTemp}
                     onChange={(e) => setDistTemp(parseInt(e.target.value))}
-                    className="w-full accent-purple-500 cursor-pointer"
+                    className="w-full accent-[#1b3b2b] cursor-pointer"
                   />
-                  <div className="flex justify-between text-[7px] font-bold text-slate-500">
+                  <div className="flex justify-between text-[7px] font-bold text-[#827f76]">
                     <span>Room Temp (25°C)</span>
-                    <span className="text-purple-400">BP Acetone (56°C)</span>
+                    <span className="text-[#1b3b2b]">BP Acetone (56°C)</span>
                     <span>BP Water (100°C)</span>
                   </div>
                 </div>
 
                 {/* Distillation warnings alerts */}
-                <div className="p-3 bg-slate-950 border border-white/5 rounded-lg text-[9px] leading-relaxed font-semibold">
+                <div className="p-3 bg-[#fbfbfa] border border-[#e5e1d5] rounded-lg text-[9px] leading-relaxed font-semibold">
                   {distWarning ? (
                     <span className="text-amber-400 flex gap-1.5 items-start">
                       <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0" />
@@ -653,7 +653,7 @@ const SeparationLab = () => {
                       <span>✓ Perfect! Keep temperature in the 56°C - 85°C range until separation is 100% complete.</span>
                     </span>
                   ) : (
-                    <span className="text-slate-450 flex gap-1.5 items-start">
+                    <span className="text-[#52504a] flex gap-1.5 items-start">
                       <Info className="w-4 h-4 text-cyan-500 shrink-0" />
                       <span>Slide temperature gauge to 56°C to start evaporating the acetone.</span>
                     </span>
@@ -663,7 +663,7 @@ const SeparationLab = () => {
                 {distSuccess && (
                   <button
                     onClick={resetDistillation}
-                    className="w-full py-2 bg-slate-800 hover:bg-slate-700 text-white text-[9px] font-black uppercase tracking-widest rounded-lg transition-all flex items-center justify-center gap-1.5"
+                    className="w-full py-2 bg-[#ede9de] hover:bg-slate-700 text-[#1a1917] text-[9px] font-black uppercase tracking-widest rounded-lg transition-all flex items-center justify-center gap-1.5"
                   >
                     <RotateCcw className="w-3 h-3" /> Reset Distillation Lab
                   </button>
@@ -679,10 +679,10 @@ const SeparationLab = () => {
                 </p>
 
                 {/* Heat burner temperature controller */}
-                <div className="space-y-2 bg-slate-950 p-3 rounded-lg border border-white/5">
-                  <div className="flex justify-between text-[7px] font-black text-slate-400">
+                <div className="space-y-2 bg-[#fbfbfa] p-3 rounded-lg border border-[#e5e1d5]">
+                  <div className="flex justify-between text-[7px] font-black text-[#52504a]">
                     <span>HEAT MIXTURE TWEAKER</span>
-                    <span className="font-mono text-cyan-400">{subTemp}°C</span>
+                    <span className="font-mono text-[#1b3b2b]">{subTemp}°C</span>
                   </div>
                   <input
                     type="range"
@@ -690,16 +690,16 @@ const SeparationLab = () => {
                     max="220"
                     value={subTemp}
                     onChange={(e) => setSubTemp(parseInt(e.target.value))}
-                    className="w-full accent-purple-500 cursor-pointer"
+                    className="w-full accent-[#1b3b2b] cursor-pointer"
                   />
-                  <div className="flex justify-between text-[7px] font-bold text-slate-500">
+                  <div className="flex justify-between text-[7px] font-bold text-[#827f76]">
                     <span>Room Temp (25°C)</span>
-                    <span className="text-purple-400">Sublime Temp (150°C)</span>
+                    <span className="text-[#1b3b2b]">Sublime Temp (150°C)</span>
                   </div>
                 </div>
 
                 {/* Feedback message */}
-                <div className="p-3 bg-slate-950 border border-white/5 rounded-lg text-[9px] leading-relaxed font-semibold">
+                <div className="p-3 bg-[#fbfbfa] border border-[#e5e1d5] rounded-lg text-[9px] leading-relaxed font-semibold">
                   {subTemp >= 150 ? (
                     <span className="text-green-400 flex gap-1.5 items-start">
                       <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />
@@ -716,7 +716,7 @@ const SeparationLab = () => {
                 {subSuccess && (
                   <button
                     onClick={resetSublimation}
-                    className="w-full py-2 bg-slate-800 hover:bg-slate-700 text-white text-[9px] font-black uppercase tracking-widest rounded-lg transition-all flex items-center justify-center gap-1.5"
+                    className="w-full py-2 bg-[#ede9de] hover:bg-slate-700 text-[#1a1917] text-[9px] font-black uppercase tracking-widest rounded-lg transition-all flex items-center justify-center gap-1.5"
                   >
                     <RotateCcw className="w-3 h-3" /> Reset Sublimation Lab
                   </button>
@@ -732,11 +732,11 @@ const SeparationLab = () => {
                 </p>
 
                 {/* Action Buttons */}
-                <div className="space-y-2 bg-slate-950 p-3 rounded-lg border border-white/5">
+                <div className="space-y-2 bg-[#fbfbfa] p-3 rounded-lg border border-[#e5e1d5]">
                   {!funnelSettled ? (
                     <button
                       onClick={handleSettleFunnel}
-                      className="w-full py-2.5 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-white hover:to-white hover:text-black text-white text-[9px] font-black uppercase tracking-widest rounded-lg transition-all flex items-center justify-center gap-1.5"
+                      className="w-full py-2.5 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-white hover:to-white hover:text-black text-[#1a1917] text-[9px] font-black uppercase tracking-widest rounded-lg transition-all flex items-center justify-center gap-1.5"
                     >
                       <Wind className="w-4 h-4" /> Settle Mixture
                     </button>
@@ -756,8 +756,8 @@ const SeparationLab = () => {
                 </div>
 
                 {/* Feedbacks */}
-                <div className="p-3 bg-slate-950 border border-white/5 rounded-lg text-[9px] leading-relaxed font-semibold">
-                  <span className={funnelSuccess ? 'text-green-400' : 'text-slate-350'}>
+                <div className="p-3 bg-[#fbfbfa] border border-[#e5e1d5] rounded-lg text-[9px] leading-relaxed font-semibold">
+                  <span className={funnelSuccess ? 'text-green-400' : 'text-[#52504a]'}>
                     {funnelMessage}
                   </span>
                 </div>
@@ -765,7 +765,7 @@ const SeparationLab = () => {
                 {(funnelSuccess || funnelWaterLevel === 0) && (
                   <button
                     onClick={resetFunnel}
-                    className="w-full py-2 bg-slate-800 hover:bg-slate-700 text-white text-[9px] font-black uppercase tracking-widest rounded-lg transition-all flex items-center justify-center gap-1.5"
+                    className="w-full py-2 bg-[#ede9de] hover:bg-slate-700 text-[#1a1917] text-[9px] font-black uppercase tracking-widest rounded-lg transition-all flex items-center justify-center gap-1.5"
                   >
                     <RotateCcw className="w-3 h-3" /> Mix & Reset Funnel
                   </button>
@@ -776,9 +776,9 @@ const SeparationLab = () => {
           </div>
 
           {/* XP & Rewards Checkpoint */}
-          <div className="bg-slate-950 p-3.5 rounded-xl border border-white/10 text-[10px] text-slate-400 leading-relaxed font-semibold flex items-center justify-between">
+          <div className="bg-[#fbfbfa] p-3.5 rounded-xl border border-[#e5e1d5] text-[10px] text-[#52504a] leading-relaxed font-semibold flex items-center justify-between">
             <div className="space-y-0.5">
-              <span className="text-purple-400 block uppercase text-[8px] font-black tracking-widest">Active Challenge:</span>
+              <span className="text-[#1b3b2b] block uppercase text-[8px] font-black tracking-widest">Active Challenge:</span>
               <p>Separate components successfully to earn 15-20 XP & tokens!</p>
             </div>
             
@@ -791,7 +791,7 @@ const SeparationLab = () => {
                   <Sparkles className="w-3 h-3 fill-green-400" /> Complete
                 </div>
               ) : (
-                <div className="px-2.5 py-1 bg-slate-900 border border-white/5 rounded-md text-slate-500 text-[8px] font-black uppercase tracking-widest shrink-0">
+                <div className="px-2.5 py-1 bg-white border border-[#e5e1d5] rounded-md text-[#827f76] text-[8px] font-black uppercase tracking-widest shrink-0">
                   Pending
                 </div>
               )}

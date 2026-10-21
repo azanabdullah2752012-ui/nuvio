@@ -3,11 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ChevronDown, ChevronUp, AlertTriangle, Zap, HelpCircle, 
   BookOpen, Key, ArrowRight, CheckCircle2, RotateCcw, Brain, 
-  Sparkles, Award, PlayCircle, Eye, Activity, RefreshCw, Trophy
+  Sparkles, Award, PlayCircle, Eye, Activity
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { xpService } from '../../services/xpService';
-import { authService } from '../../services/authService';
 
 // Import Sandboxes
 import CartesianPlotter from './Sandboxes/CartesianPlotter';
@@ -26,17 +24,15 @@ import './styles.css';
 const ConceptExplorer = ({ concepts = [], quiz = [], chapterTitle = "", subject = "", grade = "9" }) => {
   const [explorerMode, setExplorerMode] = useState('timeline'); // 'timeline' | 'quest'
   const [expandedId, setExpandedId] = useState(null);
-  const [eli5States, setEli5States] = useState({}); // { [conceptId]: boolean }
+  const [eli5States, setEli5States] = useState({});
 
-  // Quest player state
+  // Active study guide player state
   const [activeConceptIndex, setActiveConceptIndex] = useState(0);
-  const [questStep, setQuestStep] = useState(1); // 1: Learn, 2: See, 3: Play, 4: Recall, 5: Practice, 6: Reward
+  const [questStep, setQuestStep] = useState(1); // 1: Learn, 2: See, 3: Play, 4: Recall, 5: Practice, 6: Completed
   const [recallAnswer, setRecallAnswer] = useState("");
   const [recallRevealed, setRecallRevealed] = useState(false);
   const [selectedPracticeOpt, setSelectedPracticeOpt] = useState(null);
   const [practiceSubmitted, setPracticeSubmitted] = useState(false);
-  const [questXP, setQuestXP] = useState(0);
-  const [questCoins, setQuestCoins] = useState(0);
 
   const activeConcept = concepts && concepts[activeConceptIndex] ? concepts[activeConceptIndex] : null;
 
@@ -45,36 +41,29 @@ const ConceptExplorer = ({ concepts = [], quiz = [], chapterTitle = "", subject 
   };
 
   const toggleEli5 = (id, e) => {
-    e.stopPropagation(); // Avoid triggering card expand
+    e.stopPropagation();
     setEli5States(prev => ({
       ...prev,
       [id]: !prev[id]
     }));
   };
 
-  const startQuest = (index) => {
+  const startActiveStudy = (index) => {
     setActiveConceptIndex(index);
     setQuestStep(1);
     setRecallAnswer("");
     setRecallRevealed(false);
     setSelectedPracticeOpt(null);
     setPracticeSubmitted(false);
-    setQuestXP(0);
-    setQuestCoins(0);
     setExplorerMode('quest');
   };
 
-  // Find a matching practice question from the chapter's quiz
   const getConceptPracticeQuestion = () => {
     if (!quiz || quiz.length === 0) return null;
-    
-    // Try to find a question containing matching words
     const titleWords = activeConcept?.title?.toLowerCase().split(' ') || [];
     const matchedQ = quiz.find(q => 
       titleWords.some(word => word.length > 3 && q.q.toLowerCase().includes(word))
     );
-
-    // Fallback to a random question from quiz
     if (matchedQ) return matchedQ;
     const hashIdx = Math.abs(activeConcept?.id?.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) || 0);
     return quiz[hashIdx % quiz.length];
@@ -82,7 +71,6 @@ const ConceptExplorer = ({ concepts = [], quiz = [], chapterTitle = "", subject 
 
   const practiceQuestion = getConceptPracticeQuestion();
 
-  // Pick sandbox based on concept/chapter meta
   const renderConceptSandbox = () => {
     const cTitle = activeConcept?.title?.toLowerCase() || "";
     const chLower = chapterTitle.toLowerCase();
@@ -97,24 +85,22 @@ const ConceptExplorer = ({ concepts = [], quiz = [], chapterTitle = "", subject 
     if (grade === "9" && subLower.includes('science')) {
       const isCustomCh = chLower.includes('cell') || cTitle.includes('cell') ||
                          chLower.includes('atom') || cTitle.includes('atom') ||
-                         chLower.includes('motion') || chLower.includes('force') || 
-                         cTitle.includes('displacement') || cTitle.includes('speed') ||
-                         chLower.includes('mixture') || chLower.includes('separation') || 
-                         cTitle.includes('mixtures') || cTitle.includes('separation');
+                         chLower.includes('motion') || chLower.includes('force') ||
+                         chLower.includes('matter') || chLower.includes('pure');
       if (!isCustomCh) {
         return <Class9ScienceSandbox chapterTitle={chapterTitle} activeConcept={activeConcept} />;
       }
     }
-    if (chLower.includes('mixture') || chLower.includes('separation') || cTitle.includes('mixtures') || cTitle.includes('separation')) {
-      return <SeparationLab />;
-    }
-    if (chLower.includes('cell') || cTitle.includes('cell')) {
+    if (cTitle.includes('cell') || chLower.includes('cell')) {
       return <CellExplorer />;
     }
-    if (chLower.includes('atom') || cTitle.includes('atom')) {
+    if (cTitle.includes('atom') || chLower.includes('atom')) {
       return <AtomExplorer />;
     }
-    if (chLower.includes('motion') || chLower.includes('force') || cTitle.includes('displacement') || cTitle.includes('speed')) {
+    if (chLower.includes('matter') || chLower.includes('separation') || chLower.includes('pure') || cTitle.includes('separation')) {
+      return <SeparationLab />;
+    }
+    if (cTitle.includes('motion') || cTitle.includes('force') || subLower.includes('phys')) {
       return <MotionSimulator />;
     }
     if (chLower.includes('heron') || cTitle.includes('heron')) {
@@ -127,38 +113,24 @@ const ConceptExplorer = ({ concepts = [], quiz = [], chapterTitle = "", subject 
       return <NarrativeMap />;
     }
 
-    // Default Fallback
     return (
-      <div className="bg-slate-900 p-6 border border-white/5 rounded-xl space-y-4 text-center">
-        <Sparkles className="w-10 h-10 text-purple-400 mx-auto animate-pulse" />
-        <h5 className="text-xs font-black uppercase text-white">Visual Concept Diagram</h5>
-        <div className="p-4 bg-slate-950 border border-white/5 rounded-lg text-[11px] leading-relaxed text-slate-350">
-          <strong className="text-cyan-400 block mb-1">Concept Rule:</strong>
+      <div className="bg-[#fbfbfa] p-6 border border-[#e5e1d5] rounded-xl space-y-3 text-center">
+        <BookOpen className="w-8 h-8 text-[#1b3b2b] mx-auto" />
+        <h5 className="text-xs font-mono font-bold uppercase text-[#1a1917]">Visual Concept Summary</h5>
+        <div className="p-4 bg-white border border-[#e5e1d5] rounded-lg text-xs leading-relaxed text-[#52504a]">
+          <strong className="text-[#1b3b2b] block mb-1">Core Principle:</strong>
           {activeConcept?.definition}
         </div>
       </div>
     );
   };
 
-  const handleSelfGrade = (scoreType) => {
-    setRecallRevealed(true);
-  };
-
   const handlePracticeSubmit = (option) => {
     if (practiceSubmitted) return;
     setSelectedPracticeOpt(option);
     setPracticeSubmitted(true);
-
-    const isCorrect = option === practiceQuestion.answer;
-    if (isCorrect) {
-      setQuestXP(prev => prev + 10);
-      setQuestCoins(prev => prev + 3);
-      xpService.awardXp(10, 'Practice Arena Success');
-      authService.addTokens(3);
-      playLocalSynth('correct');
-    } else {
-      playLocalSynth('incorrect');
-    }
+    const isCorrect = option === practiceQuestion?.answer;
+    playLocalSynth(isCorrect ? 'correct' : 'incorrect');
   };
 
   const playLocalSynth = (type) => {
@@ -188,7 +160,7 @@ const ConceptExplorer = ({ concepts = [], quiz = [], chapterTitle = "", subject 
     } catch (e) {}
   };
 
-  const finishQuest = () => {
+  const finishActiveStudy = () => {
     confetti({
       particleCount: 50,
       spread: 60,
@@ -202,31 +174,34 @@ const ConceptExplorer = ({ concepts = [], quiz = [], chapterTitle = "", subject 
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -15 }}
-      className="max-w-4xl mx-auto space-y-6"
+      className="max-w-4xl mx-auto space-y-6 text-left"
     >
       {/* Header Panel */}
       <div className="text-center space-y-1 mb-6 flex flex-col items-center">
-        <span className="px-3 py-1 bg-purple-500/10 border border-purple-500/20 rounded-full text-[9px] font-black tracking-widest text-purple-400 uppercase">
-          Step 2: Core syllabus
+        <span className="px-3 py-1 bg-[#ede9de] border border-[#d8d4c7] rounded-full text-[10px] font-mono font-bold tracking-widest text-[#1b3b2b] uppercase">
+          Step 2: Core Syllabus
         </span>
-        <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tight text-white mt-2">
-          Concept Matrix
+        <h2 className="text-2xl md:text-3xl font-serif font-bold text-[#1a1917] mt-2">
+          Concept Directory
         </h2>
+        <p className="text-[#52504a] text-xs">
+          Explore key NCERT ideas, definitions, and active recall checkpoints.
+        </p>
         
         {/* Toggle Mode */}
         {explorerMode === 'timeline' && concepts && concepts.length > 0 && (
-          <div className="mt-4 flex bg-slate-900 p-1 border border-white/5 rounded-lg shrink-0 shadow-sm">
+          <div className="mt-4 flex bg-[#f5f3ec] p-1 border border-[#e5e1d5] rounded-xl shrink-0 shadow-sm">
             <button
               onClick={() => setExplorerMode('timeline')}
-              className="px-4 py-2 rounded text-[10px] font-black uppercase tracking-wider bg-purple-500 text-black shadow"
+              className="px-4 py-2 rounded-lg text-xs font-mono font-bold uppercase tracking-wider bg-[#1b3b2b] text-white shadow-sm"
             >
-              📚 Browse Concepts
+              Browse Concepts
             </button>
             <button
-              onClick={() => startQuest(0)}
-              className="px-4 py-2 rounded text-[10px] font-black uppercase tracking-wider text-slate-400 hover:text-white"
+              onClick={() => startActiveStudy(0)}
+              className="px-4 py-2 rounded-lg text-xs font-mono uppercase tracking-wider text-[#52504a] hover:text-[#1a1917]"
             >
-              🚀 Launch Active Quest
+              Interactive Study Mode ➔
             </button>
           </div>
         )}
@@ -243,8 +218,8 @@ const ConceptExplorer = ({ concepts = [], quiz = [], chapterTitle = "", subject 
             className="space-y-4"
           >
             {concepts.length === 0 ? (
-              <div className="glass-panel p-8 text-center text-slate-500 text-xs uppercase space-y-2 border border-white/5 rounded-xl">
-                <AlertTriangle className="w-8 h-8 text-yellow-500/60 mx-auto" />
+              <div className="bg-white p-8 text-center text-[#827f76] text-xs font-mono uppercase space-y-2 border border-[#e5e1d5] rounded-xl">
+                <AlertTriangle className="w-8 h-8 text-[#827f76] mx-auto" />
                 <p>No concepts found for this chapter.</p>
               </div>
             ) : (
@@ -252,182 +227,185 @@ const ConceptExplorer = ({ concepts = [], quiz = [], chapterTitle = "", subject 
                 const isExpanded = expandedId === concept.id;
                 const isEli5 = !!eli5States[concept.id];
 
-              return (
-                <div
-                  key={concept.id}
-                  className={`glass-panel overflow-hidden border-2 transition-all duration-300 ${
-                    isExpanded ? 'border-purple-500/40 shadow-purple-500/5' : 'border-white/5 hover:border-white/10'
-                  }`}
-                >
-                  {/* Header Row */}
+                return (
                   <div
-                    onClick={() => toggleExpand(concept.id)}
-                    className="p-5 flex items-center justify-between gap-4 cursor-pointer select-none"
+                    key={concept.id}
+                    className={`bg-white rounded-2xl overflow-hidden border transition-all duration-200 shadow-sm ${
+                      isExpanded ? 'border-[#1b3b2b]/40 shadow-[0_4px_20px_rgba(27,59,43,0.06)]' : 'border-[#e5e1d5] hover:border-[#1b3b2b]/30'
+                    }`}
                   >
-                    <div className="flex items-center gap-4">
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-black text-xs shrink-0 transition-colors ${
-                        isExpanded ? 'bg-purple-500 text-black' : 'bg-white/5 text-slate-400'
-                      }`}>
-                        {idx + 1}
-                      </div>
-                      <div className="text-left">
-                        <span className="block text-[8px] font-black text-slate-500 uppercase tracking-widest leading-none">
-                          Core Topic
-                        </span>
-                        <h3 className="text-base font-black text-white uppercase tracking-tight mt-1">
-                          {concept.title}
-                        </h3>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                      {isExpanded && (
-                        <button
-                          onClick={(e) => toggleEli5(concept.id, e)}
-                          className={`px-3 py-1.5 border border-white/10 rounded-[4px] text-[8px] font-black uppercase tracking-wider transition-all ${
-                            isEli5 ? 'bg-green-500 text-black border-transparent' : 'bg-slate-900 text-purple-400 hover:bg-slate-800'
-                          }`}
-                        >
-                          {isEli5 ? '👶 Child Mode' : '🎓 Academic Terms'}
-                        </button>
-                      )}
-                      <button
-                        onClick={(e) => { e.stopPropagation(); startQuest(idx); }}
-                        className="px-3 py-1.5 bg-purple-500/10 border border-purple-500/20 text-purple-400 hover:bg-purple-500 hover:text-black rounded text-[8px] font-black uppercase tracking-wider transition-all"
-                      >
-                        Quest ➔
-                      </button>
-                      {isExpanded ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
-                    </div>
-                  </div>
-
-                  {/* Expanded description details */}
-                  <AnimatePresence initial={false}>
-                    {isExpanded && (
-                      <motion.div
-                        initial={{ height: 0 }}
-                        animate={{ height: 'auto' }}
-                        exit={{ height: 0 }}
-                        transition={{ duration: 0.25 }}
-                        className="overflow-hidden"
-                      >
-                        <div className="px-5 pb-6 pt-2 border-t border-white/5 space-y-6">
-                          
-                          <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-                            {/* Definition & explanation details */}
-                            <div className="md:col-span-8 space-y-4">
-                              <div className="space-y-1.5 text-left">
-                                <span className="text-[8px] font-black text-purple-400 uppercase tracking-widest flex items-center gap-1">
-                                  <BookOpen className="w-3.5 h-3.5" /> Definition
-                                </span>
-                                <div className="p-4 bg-slate-950/80 border border-white/5 rounded-md text-xs font-bold text-slate-200 leading-relaxed">
-                                  {concept.definition}
-                                </div>
-                              </div>
-
-                              <div className="space-y-1.5 text-left">
-                                <span className="text-[8px] font-black text-cyan-400 uppercase tracking-widest flex items-center gap-1">
-                                  <HelpCircle className="w-3.5 h-3.5" /> Explanation
-                                </span>
-                                <div className="p-4 bg-white/5 border border-white/5 rounded-md text-xs font-semibold text-slate-350 leading-relaxed">
-                                  {isEli5 ? (
-                                    <p className="italic text-green-300">
-                                      "👶 {concept.eli5 || concept.explanation || 'Imagine this like blocks fitting together perfectly!'}"
-                                    </p>
-                                  ) : (
-                                    <p>{concept.explanation}</p>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Memory Aids & Mistakes */}
-                            <div className="md:col-span-4 space-y-4">
-                              {concept.memoryTrick && (
-                                <div className="p-4 bg-purple-500/5 border border-purple-500/20 rounded-md space-y-1.5 text-left">
-                                  <span className="text-[8px] font-black text-purple-400 uppercase tracking-widest flex items-center gap-1.5">
-                                    <Zap className="w-3.5 h-3.5 fill-current" /> Memory Aid
-                                  </span>
-                                  <p className="text-[11px] text-slate-300 font-bold leading-normal">
-                                    {concept.memoryTrick}
-                                  </p>
-                                </div>
-                              )}
-
-                              {concept.commonMistake && (
-                                <div className="p-4 bg-rose-500/5 border border-rose-500/20 rounded-md space-y-1.5 text-left">
-                                  <span className="text-[8px] font-black text-rose-400 uppercase tracking-widest flex items-center gap-1.5">
-                                    <AlertTriangle className="w-3.5 h-3.5" /> Common Mistake
-                                  </span>
-                                  <p className="text-[11px] text-slate-350 font-semibold leading-normal">
-                                    {concept.commonMistake}
-                                  </p>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-
-                          {/* Key takeaways list */}
-                          {concept.keyTakeaways && concept.keyTakeaways.length > 0 && (
-                            <div className="pt-4 border-t border-white/5 text-left space-y-2">
-                              <span className="text-[8px] font-black text-green-400 uppercase tracking-widest flex items-center gap-1">
-                                <Key className="w-3.5 h-3.5" /> Key Takeaways
-                              </span>
-                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                {concept.keyTakeaways.map((takeaway, tIdx) => (
-                                  <div key={tIdx} className="bg-white/5 p-3 rounded-md border border-white/5 text-[11px] font-semibold text-slate-400 flex items-start gap-2">
-                                    <span className="text-green-400 mt-0.5">•</span>
-                                    <span>{takeaway}</span>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-
+                    {/* Header Row */}
+                    <div
+                      onClick={() => toggleExpand(concept.id)}
+                      className="p-5 md:p-6 flex items-center justify-between gap-4 cursor-pointer select-none"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-serif font-bold text-xs shrink-0 transition-colors ${
+                          isExpanded ? 'bg-[#1b3b2b] text-white' : 'bg-[#f5f3ec] text-[#1b3b2b] border border-[#e5e1d5]'
+                        }`}>
+                          {idx + 1}
                         </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              );
-            }))}
+                        <div className="text-left">
+                          <span className="block text-[10px] font-mono text-[#827f76] uppercase tracking-wider leading-none">
+                            Topic {idx + 1}
+                          </span>
+                          <h3 className="text-base font-serif font-bold text-[#1a1917] mt-1">
+                            {concept.title}
+                          </h3>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        {isExpanded && (
+                          <button
+                            onClick={(e) => toggleEli5(concept.id, e)}
+                            className={`px-3 py-1.5 border rounded-lg text-[10px] font-mono uppercase tracking-wider transition-all ${
+                              isEli5 
+                                ? 'bg-[#1b3b2b] text-white border-transparent' 
+                                : 'bg-[#f5f3ec] border-[#e5e1d5] text-[#52504a] hover:text-[#1a1917]'
+                            }`}
+                          >
+                            {isEli5 ? 'Simple Language' : 'Academic Form'}
+                          </button>
+                        )}
+                        <button
+                          onClick={(e) => { e.stopPropagation(); startActiveStudy(idx); }}
+                          className="px-3 py-1.5 bg-[#f5f3ec] border border-[#e5e1d5] hover:bg-[#1b3b2b] hover:text-white text-[#1b3b2b] rounded-lg text-[10px] font-mono uppercase tracking-wider transition-all"
+                        >
+                          Study Unit ➔
+                        </button>
+                        {isExpanded ? <ChevronUp className="w-5 h-5 text-[#827f76]" /> : <ChevronDown className="w-5 h-5 text-[#827f76]" />}
+                      </div>
+                    </div>
+
+                    {/* Expanded description details */}
+                    <AnimatePresence initial={false}>
+                      {isExpanded && (
+                        <motion.div
+                          initial={{ height: 0 }}
+                          animate={{ height: 'auto' }}
+                          exit={{ height: 0 }}
+                          transition={{ duration: 0.25 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="px-6 pb-6 pt-2 border-t border-[#e5e1d5] space-y-6">
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+                              {/* Definition & explanation details */}
+                              <div className="md:col-span-8 space-y-4">
+                                <div className="space-y-1.5 text-left">
+                                  <span className="text-[10px] font-mono font-bold text-[#1b3b2b] uppercase tracking-wider flex items-center gap-1.5">
+                                    <BookOpen className="w-3.5 h-3.5" /> Formal Definition
+                                  </span>
+                                  <div className="p-4 bg-[#fbfbfa] border border-[#e5e1d5] rounded-xl text-xs text-[#1a1917] leading-relaxed">
+                                    {concept.definition}
+                                  </div>
+                                </div>
+
+                                <div className="space-y-1.5 text-left">
+                                  <span className="text-[10px] font-mono font-bold text-[#1b3b2b] uppercase tracking-wider flex items-center gap-1.5">
+                                    <HelpCircle className="w-3.5 h-3.5" /> Conceptual Explanation
+                                  </span>
+                                  <div className="p-4 bg-white border border-[#e5e1d5] rounded-xl text-xs text-[#52504a] leading-relaxed">
+                                    {isEli5 ? (
+                                      <p className="italic text-[#1b3b2b]">
+                                        "{concept.eli5 || concept.explanation || 'Imagine this like foundational building blocks fitting together systematically.'}"
+                                      </p>
+                                    ) : (
+                                      <p>{concept.explanation}</p>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Memory Aids & Mistakes */}
+                              <div className="md:col-span-4 space-y-4">
+                                {concept.memoryTrick && (
+                                  <div className="p-4 bg-[#f5f3ec] border border-[#e5e1d5] rounded-xl space-y-1.5 text-left">
+                                    <span className="text-[10px] font-mono font-bold text-[#1b3b2b] uppercase tracking-wider flex items-center gap-1.5">
+                                      <Zap className="w-3.5 h-3.5" /> Memory Clue
+                                    </span>
+                                    <p className="text-xs text-[#1a1917] leading-relaxed">
+                                      {concept.memoryTrick}
+                                    </p>
+                                  </div>
+                                )}
+
+                                {concept.commonMistake && (
+                                  <div className="p-4 bg-[#fdf2f2] border border-[#e07d7d] rounded-xl space-y-1.5 text-left">
+                                    <span className="text-[10px] font-mono font-bold text-[#8e2424] uppercase tracking-wider flex items-center gap-1.5">
+                                      <AlertTriangle className="w-3.5 h-3.5" /> Common Board Mistake
+                                    </span>
+                                    <p className="text-xs text-[#8e2424] leading-relaxed">
+                                      {concept.commonMistake}
+                                    </p>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Key takeaways list */}
+                            {concept.keyTakeaways && concept.keyTakeaways.length > 0 && (
+                              <div className="pt-4 border-t border-[#e5e1d5] text-left space-y-2">
+                                <span className="text-[10px] font-mono font-bold text-[#1b3b2b] uppercase tracking-wider flex items-center gap-1.5">
+                                  <Key className="w-3.5 h-3.5" /> Key Takeaways
+                                </span>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                  {concept.keyTakeaways.map((takeaway, tIdx) => (
+                                    <div key={tIdx} className="bg-[#fbfbfa] p-3 rounded-lg border border-[#e5e1d5] text-xs text-[#52504a] flex items-start gap-2">
+                                      <span className="text-[#1b3b2b] font-bold mt-0.5">•</span>
+                                      <span>{takeaway}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                );
+              })
+            )}
           </motion.div>
         ) : (
-          /* ACTIVE RECALL GUIDED QUEST PLAYER */
+          /* ACTIVE RECALL GUIDED STUDY PLAYER */
           <motion.div
             key="quest"
-            initial={{ opacity: 0, scale: 0.95 }}
+            initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
+            exit={{ opacity: 0, scale: 0.98 }}
             className="max-w-2xl mx-auto space-y-6"
           >
-            {/* Quest Tracker Progress header */}
-            <div className="glass-panel p-4 flex items-center justify-between border border-white/10 relative">
+            {/* Study Progress header */}
+            <div className="bg-white p-4 rounded-xl flex items-center justify-between border border-[#e5e1d5] shadow-sm">
               <button
                 onClick={() => setExplorerMode('timeline')}
-                className="text-[9px] font-black text-slate-400 hover:text-white uppercase tracking-wider"
+                className="text-[10px] font-mono font-bold text-[#52504a] hover:text-[#1a1917] uppercase tracking-wider"
               >
-                ◀ Exit Quest
+                ◀ Exit Study Mode
               </button>
               
               {/* Stepper bubbles */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
                 {[
-                  { id: 1, label: 'Learn', icon: BookOpen },
-                  { id: 2, label: 'See', icon: Eye },
-                  { id: 3, label: 'Play', icon: Activity },
-                  { id: 4, label: 'Recall', icon: Brain },
-                  { id: 5, label: 'Practice', icon: HelpCircle },
-                  { id: 6, label: 'Rewards', icon: Award }
+                  { id: 1, label: 'Learn' },
+                  { id: 2, label: 'Visual' },
+                  { id: 3, label: 'Sandbox' },
+                  { id: 4, label: 'Recall' },
+                  { id: 5, label: 'Check' },
+                  { id: 6, label: 'Done' }
                 ].map(step => (
                   <div
                     key={step.id}
-                    className={`w-6 h-6 rounded-full flex items-center justify-center border text-[9px] font-black transition-all ${
+                    className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-mono font-bold transition-all ${
                       questStep === step.id 
-                        ? 'bg-purple-500 text-black border-transparent shadow shadow-purple-500/20 scale-110' 
+                        ? 'bg-[#1b3b2b] text-white shadow-sm' 
                         : questStep > step.id 
-                          ? 'bg-green-500/20 text-green-400 border-green-500/40' 
-                          : 'bg-slate-900 text-slate-500 border-white/5'
+                          ? 'bg-[#f5f3ec] text-[#1b3b2b] border border-[#e5e1d5]' 
+                          : 'bg-[#fbfbfa] text-[#827f76] border border-[#e5e1d5]'
                     }`}
                     title={step.label}
                   >
@@ -436,16 +414,16 @@ const ConceptExplorer = ({ concepts = [], quiz = [], chapterTitle = "", subject 
                 ))}
               </div>
 
-              <span className="text-[8px] font-bold text-slate-500 uppercase tracking-widest font-mono">
-                Topic {activeConceptIndex + 1}/{concepts.length}
+              <span className="text-[10px] font-mono text-[#827f76] uppercase tracking-widest font-semibold">
+                Topic {activeConceptIndex + 1} of {concepts.length}
               </span>
             </div>
 
-            {/* Active Quest Content viewport */}
-            <div className="glass-panel p-6 sm:p-8 space-y-6 text-left border-purple-500/20 min-h-[380px] flex flex-col justify-between">
+            {/* Active Study Content viewport */}
+            <div className="bg-white p-6 sm:p-8 space-y-6 text-left border border-[#e5e1d5] rounded-2xl shadow-sm min-h-[380px] flex flex-col justify-between">
               <div className="space-y-4">
-                <span className="px-2.5 py-0.5 bg-purple-500/10 border border-purple-500/20 text-purple-400 text-[8px] font-black tracking-widest uppercase rounded">
-                  Topic Quest: {activeConcept?.title || ''}
+                <span className="px-2.5 py-1 bg-[#f5f3ec] border border-[#e5e1d5] text-[#1b3b2b] text-[10px] font-mono font-bold tracking-wider uppercase rounded-md inline-block">
+                  Topic: {activeConcept?.title || ''}
                 </span>
 
                 <AnimatePresence mode="wait">
@@ -458,22 +436,22 @@ const ConceptExplorer = ({ concepts = [], quiz = [], chapterTitle = "", subject 
                       exit={{ opacity: 0, x: -20 }}
                       className="space-y-4"
                     >
-                      <h4 className="text-lg font-black text-white uppercase tracking-tight">Step 1: Understand Concept</h4>
+                      <h4 className="text-lg font-serif font-bold text-[#1a1917]">Step 1: Understand Concept</h4>
                       
-                      <div className="p-4 bg-slate-950/80 border border-white/5 rounded-xl text-xs font-bold leading-relaxed text-slate-200">
+                      <div className="p-4 bg-[#fbfbfa] border border-[#e5e1d5] rounded-xl text-xs text-[#1a1917] leading-relaxed font-serif">
                         {activeConcept?.definition}
                       </div>
 
-                      <div className="p-4 bg-white/5 border border-white/5 rounded-xl text-xs leading-relaxed text-slate-350 font-semibold space-y-2">
-                        <span className="text-[8px] font-black text-cyan-400 uppercase tracking-widest block flex items-center gap-1">
-                          <Eye className="w-3.5 h-3.5" /> Explanation
+                      <div className="p-4 bg-white border border-[#e5e1d5] rounded-xl text-xs leading-relaxed text-[#52504a] space-y-2">
+                        <span className="text-[10px] font-mono font-bold text-[#1b3b2b] uppercase tracking-wider block flex items-center gap-1.5">
+                          <Eye className="w-3.5 h-3.5" /> Conceptual Explanation
                         </span>
                         <p>{activeConcept?.explanation}</p>
                       </div>
 
                       {activeConcept?.memoryTrick && (
-                        <div className="p-4 bg-purple-500/5 border border-purple-500/20 rounded-xl text-[11px] leading-relaxed text-purple-300 font-bold flex items-start gap-2">
-                          <Zap className="w-4 h-4 text-purple-400 fill-purple-400 shrink-0 mt-0.5" />
+                        <div className="p-4 bg-[#f5f3ec] border border-[#e5e1d5] rounded-xl text-xs leading-relaxed text-[#1a1917] flex items-start gap-2">
+                          <Zap className="w-4 h-4 text-[#1b3b2b] shrink-0 mt-0.5" />
                           <span><strong>Memory Aid:</strong> {activeConcept?.memoryTrick}</span>
                         </div>
                       )}
@@ -489,24 +467,24 @@ const ConceptExplorer = ({ concepts = [], quiz = [], chapterTitle = "", subject 
                       exit={{ opacity: 0, x: -20 }}
                       className="space-y-4"
                     >
-                      <h4 className="text-lg font-black text-white uppercase tracking-tight">Step 2: Visual Concept Model</h4>
-                      <p className="text-xs text-slate-400 leading-relaxed font-semibold">
-                        Study the visual layout. Visual diagrams bind memory tags 2.5x more effectively than plain text blocks.
+                      <h4 className="text-lg font-serif font-bold text-[#1a1917]">Step 2: Visual Concept Framework</h4>
+                      <p className="text-xs text-[#52504a] leading-relaxed">
+                        Study the visual structure of this concept. Diagrams establish durable mental anchors for examination problems.
                       </p>
 
-                      <div className="bg-slate-950 p-6 border border-white/5 rounded-xl space-y-4">
-                        <span className="block text-[8px] font-black text-purple-400 uppercase tracking-widest">Outline Snapshot</span>
+                      <div className="bg-[#fbfbfa] p-6 border border-[#e5e1d5] rounded-xl space-y-4">
+                        <span className="block text-[10px] font-mono font-bold text-[#1b3b2b] uppercase tracking-wider">Concept Summary</span>
                         <div className="space-y-3 text-xs leading-normal">
-                          <div className="flex justify-between border-b border-white/5 pb-2">
-                            <span className="text-slate-500">Visual Component:</span>
-                            <strong className="text-white uppercase tracking-tight font-black">{activeConcept?.visualType || 'Generic Grid'}</strong>
+                          <div className="flex justify-between border-b border-[#e5e1d5] pb-2">
+                            <span className="text-[#827f76]">Visual Framework:</span>
+                            <strong className="text-[#1a1917] font-serif font-bold">{activeConcept?.visualType || 'Schematic Diagram'}</strong>
                           </div>
                           {activeConcept?.keyTakeaways && activeConcept.keyTakeaways.length > 0 && (
                             <div className="space-y-1.5">
-                              <span className="text-[8px] text-slate-500 uppercase tracking-widest block font-bold">Key Elements:</span>
+                              <span className="text-[10px] text-[#827f76] uppercase tracking-wider block font-mono font-bold">Key Elements:</span>
                               {activeConcept.keyTakeaways.slice(0, 2).map((takeaway, idx) => (
-                                <div key={idx} className="text-[11px] font-semibold text-slate-350 flex items-start gap-1.5">
-                                  <span className="text-cyan-400 font-black">•</span>
+                                <div key={idx} className="text-xs text-[#52504a] flex items-start gap-2">
+                                  <span className="text-[#1b3b2b] font-bold">•</span>
                                   <span>{takeaway}</span>
                                 </div>
                               ))}
@@ -526,9 +504,9 @@ const ConceptExplorer = ({ concepts = [], quiz = [], chapterTitle = "", subject 
                       exit={{ opacity: 0, x: -20 }}
                       className="space-y-4"
                     >
-                      <h4 className="text-lg font-black text-white uppercase tracking-tight">Step 3: Interactive Sandbox</h4>
-                      <p className="text-xs text-slate-400 leading-relaxed font-semibold">
-                        Tweak values and inspect the live mathematical changes to build intuition.
+                      <h4 className="text-lg font-serif font-bold text-[#1a1917]">Step 3: Interactive Sandbox</h4>
+                      <p className="text-xs text-[#52504a] leading-relaxed">
+                        Tweak values and observe real-time mathematical changes to build intuition.
                       </p>
 
                       <div className="w-full">
@@ -546,71 +524,68 @@ const ConceptExplorer = ({ concepts = [], quiz = [], chapterTitle = "", subject 
                       exit={{ opacity: 0, x: -20 }}
                       className="space-y-4"
                     >
-                      <h4 className="text-lg font-black text-white uppercase tracking-tight">Step 4: Active Recall Challenge</h4>
-                      <p className="text-xs text-slate-400 leading-relaxed font-semibold">
-                        Research shows active retrieval practice strengthening memory pathways. Write down what you remember without looking back:
+                      <h4 className="text-lg font-serif font-bold text-[#1a1917]">Step 4: Active Recall Check</h4>
+                      <p className="text-xs text-[#52504a] leading-relaxed">
+                        Active retrieval practice strengthens retention. Summarize the core concept in your own words before checking the solution:
                       </p>
 
                       {!recallRevealed ? (
                         <div className="space-y-4">
-                          <span className="block text-[8px] font-black text-purple-400 uppercase tracking-widest">
-                            Can you explain this from memory?
-                          </span>
                           <textarea
                             value={recallAnswer}
                             onChange={(e) => setRecallAnswer(e.target.value)}
-                            placeholder="Type definition, core logic, or formula here..."
+                            placeholder="Type definition, core logic, or key formula here..."
                             rows={4}
-                            className="w-full bg-slate-950 border border-white/10 rounded-xl p-4 text-xs font-semibold text-white focus:outline-none focus:border-purple-500 shadow-inner"
+                            className="w-full bg-[#fbfbfa] border border-[#e5e1d5] rounded-xl p-4 text-xs font-sans text-[#1a1917] focus:outline-none focus:border-[#1b3b2b]"
                           />
 
                           <div className="flex gap-2">
                             <button
                               disabled={recallAnswer.trim().length === 0}
-                              onClick={() => handleSelfGrade('perfect')}
-                              className="flex-1 py-3.5 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-white hover:to-white hover:text-black text-white text-[10px] font-black uppercase tracking-widest rounded-xl transition-all active:scale-95 disabled:opacity-40"
+                              onClick={() => setRecallRevealed(true)}
+                              className="flex-1 py-3 bg-[#1b3b2b] hover:bg-[#26523c] text-white text-xs font-mono font-bold uppercase tracking-wider rounded-xl transition-all shadow-sm disabled:opacity-40"
                             >
-                              Reveal Answer & Grade ➔
+                              Check My Recall ➔
                             </button>
                           </div>
                         </div>
                       ) : (
-                        <div className="space-y-4 animate-fadeIn">
-                          <div className="p-4 bg-slate-900 border border-white/5 rounded-xl space-y-1.5">
-                            <span className="text-[8px] text-slate-500 uppercase tracking-widest block font-bold">Your Explanation:</span>
-                            <p className="text-xs font-semibold text-slate-300 italic">"{recallAnswer}"</p>
+                        <div className="space-y-4">
+                          <div className="p-4 bg-[#fbfbfa] border border-[#e5e1d5] rounded-xl space-y-1">
+                            <span className="text-[10px] font-mono text-[#827f76] uppercase tracking-wider block font-bold">Your Explanation:</span>
+                            <p className="text-xs text-[#52504a] italic">"{recallAnswer}"</p>
                           </div>
 
-                          <div className="p-4 bg-purple-500/10 border border-purple-500/30 rounded-xl space-y-2">
-                            <span className="text-[8px] text-purple-400 uppercase tracking-widest block font-black flex items-center gap-1">
-                              <Brain className="w-3.5 h-3.5" /> Core Reference Definition:
+                          <div className="p-4 bg-white border border-[#1b3b2b]/30 rounded-xl space-y-1.5 shadow-sm">
+                            <span className="text-[10px] text-[#1b3b2b] uppercase tracking-wider block font-mono font-bold flex items-center gap-1.5">
+                              <Brain className="w-3.5 h-3.5" /> Official NCERT Definition:
                             </span>
-                            <p className="text-xs font-bold text-white leading-relaxed">{activeConcept?.definition}</p>
-                            <p className="text-[11px] text-slate-350 leading-relaxed font-medium mt-1">{activeConcept?.explanation}</p>
+                            <p className="text-xs font-serif font-bold text-[#1a1917] leading-relaxed">{activeConcept?.definition}</p>
+                            <p className="text-xs text-[#52504a] leading-relaxed mt-1">{activeConcept?.explanation}</p>
                           </div>
 
-                          <div className="space-y-2 border-t border-white/5 pt-4">
-                            <span className="block text-[8px] font-black text-slate-500 uppercase tracking-widest text-center">
-                              How close was your recall? Select to advance:
+                          <div className="space-y-2 border-t border-[#e5e1d5] pt-4">
+                            <span className="block text-[10px] font-mono uppercase tracking-wider text-[#827f76] text-center">
+                              Rate your recall accuracy to continue:
                             </span>
                             <div className="grid grid-cols-3 gap-2">
                               <button
                                 onClick={() => { playLocalSynth('correct'); setQuestStep(5); }}
-                                className="py-3 bg-green-500/10 border border-green-500/30 hover:bg-green-500 hover:text-black text-green-400 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all"
+                                className="py-2.5 bg-[#f5f3ec] border border-[#e5e1d5] hover:bg-[#1b3b2b] hover:text-white text-[#1b3b2b] rounded-lg text-[10px] font-mono font-bold uppercase tracking-wider transition-all"
                               >
-                                Confident 🟢
+                                Confident
                               </button>
                               <button
                                 onClick={() => { playLocalSynth('correct'); setQuestStep(5); }}
-                                className="py-3 bg-yellow-500/10 border border-yellow-500/30 hover:bg-yellow-500 hover:text-black text-yellow-400 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all"
+                                className="py-2.5 bg-[#fef9ee] border border-[#e5e1d5] hover:bg-[#85570e] hover:text-white text-[#85570e] rounded-lg text-[10px] font-mono font-bold uppercase tracking-wider transition-all"
                               >
-                                Partial 🟡
+                                Partial
                               </button>
                               <button
                                 onClick={() => { playLocalSynth('incorrect'); setQuestStep(5); }}
-                                className="py-3 bg-rose-500/10 border border-rose-500/30 hover:bg-rose-500 hover:text-black text-rose-400 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all"
+                                className="py-2.5 bg-[#fdf2f2] border border-[#e5e1d5] hover:bg-[#8e2424] hover:text-white text-[#8e2424] rounded-lg text-[10px] font-mono font-bold uppercase tracking-wider transition-all"
                               >
-                                Needs Review 🔴
+                                Review Needed
                               </button>
                             </div>
                           </div>
@@ -619,7 +594,7 @@ const ConceptExplorer = ({ concepts = [], quiz = [], chapterTitle = "", subject 
                     </motion.div>
                   )}
 
-                  {/* Step 5: Practice Arena */}
+                  {/* Step 5: Practice Check */}
                   {questStep === 5 && (
                     <motion.div
                       key="practice"
@@ -628,18 +603,18 @@ const ConceptExplorer = ({ concepts = [], quiz = [], chapterTitle = "", subject 
                       exit={{ opacity: 0, x: -20 }}
                       className="space-y-4"
                     >
-                      <h4 className="text-lg font-black text-white uppercase tracking-tight">Step 5: Concept Checkpoint</h4>
-                      <p className="text-xs text-slate-400 leading-relaxed font-semibold">
-                        Confirm your understanding by solving this board-aligned checkpoint problem.
+                      <h4 className="text-lg font-serif font-bold text-[#1a1917]">Step 5: Concept Checkpoint</h4>
+                      <p className="text-xs text-[#52504a] leading-relaxed">
+                        Verify your understanding with this syllabus checkpoint exercise.
                       </p>
 
                       {!practiceQuestion ? (
-                        <div className="text-center p-8 bg-slate-900 border border-white/5 rounded-xl text-slate-500 text-xs">
+                        <div className="text-center p-8 bg-[#fbfbfa] border border-[#e5e1d5] rounded-xl text-[#827f76] text-xs font-mono uppercase">
                           No question available for this checkpoint. Click continue to advance.
                         </div>
                       ) : (
                         <div className="space-y-4">
-                          <div className="p-5 bg-slate-900 border border-white/10 rounded-xl text-xs font-bold text-white leading-relaxed">
+                          <div className="p-5 bg-[#fbfbfa] border border-[#e5e1d5] rounded-xl text-xs font-serif font-bold text-[#1a1917] leading-relaxed">
                             {practiceQuestion.q}
                           </div>
 
@@ -655,20 +630,20 @@ const ConceptExplorer = ({ concepts = [], quiz = [], chapterTitle = "", subject 
                                   key={oIdx}
                                   disabled={practiceSubmitted}
                                   onClick={() => handlePracticeSubmit(opt)}
-                                  className={`w-full p-3.5 border-2 rounded-xl text-xs font-semibold text-left transition-all ${
+                                  className={`w-full p-3.5 border rounded-xl text-xs font-sans text-left transition-all ${
                                     showSuccess 
-                                      ? 'bg-green-500/10 border-green-500 text-green-400'
+                                      ? 'bg-[#f5f3ec] border-[#1b3b2b] text-[#1b3b2b] font-bold'
                                       : showDanger 
-                                        ? 'bg-rose-500/10 border-rose-500 text-rose-400'
+                                        ? 'bg-[#fdf2f2] border-[#e07d7d] text-[#8e2424]'
                                         : isSelected 
-                                          ? 'bg-purple-500/15 border-purple-500 text-purple-400'
-                                          : 'bg-slate-950 border-white/5 text-slate-350 hover:bg-slate-900'
+                                          ? 'bg-[#f5f3ec] border-[#1b3b2b] text-[#1b3b2b]'
+                                          : 'bg-white border-[#e5e1d5] text-[#1a1917] hover:border-[#1b3b2b]/40 hover:bg-[#fbfbfa]'
                                   }`}
                                 >
                                   <div className="flex justify-between items-center">
                                     <span>{opt}</span>
-                                    {showSuccess && <span className="bg-green-500 text-black text-[8px] font-black uppercase px-2 py-0.5 rounded tracking-widest shrink-0">✓ Correct</span>}
-                                    {showDanger && <span className="bg-rose-500 text-black text-[8px] font-black uppercase px-2 py-0.5 rounded tracking-widest shrink-0">✗ Wrong</span>}
+                                    {showSuccess && <span className="text-[10px] font-mono font-bold text-[#1b3b2b]">✓ Correct</span>}
+                                    {showDanger && <span className="text-[10px] font-mono font-bold text-[#8e2424]">✗ Incorrect</span>}
                                   </div>
                                 </button>
                               );
@@ -676,8 +651,8 @@ const ConceptExplorer = ({ concepts = [], quiz = [], chapterTitle = "", subject 
                           </div>
 
                           {practiceSubmitted && (
-                            <div className="p-4 bg-slate-900 border border-white/10 rounded-xl text-[11px] leading-relaxed text-slate-400 font-semibold space-y-1 animate-fadeIn">
-                              <strong className="text-purple-400 font-black uppercase tracking-wider block">Solution Explanation:</strong>
+                            <div className="p-4 bg-[#fbfbfa] border border-[#e5e1d5] rounded-xl text-xs leading-relaxed text-[#52504a] space-y-1">
+                              <strong className="text-[#1b3b2b] font-mono uppercase tracking-wider block text-[10px]">Solution Explanation:</strong>
                               <p>{practiceQuestion.explanation}</p>
                             </div>
                           )}
@@ -690,48 +665,48 @@ const ConceptExplorer = ({ concepts = [], quiz = [], chapterTitle = "", subject 
                   {questStep === 6 && (
                     <motion.div
                       key="reward"
-                      initial={{ scale: 0.95, opacity: 0 }}
+                      initial={{ scale: 0.98, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
-                      exit={{ scale: 0.95, opacity: 0 }}
+                      exit={{ scale: 0.98, opacity: 0 }}
                       className="space-y-6 text-center py-6 flex flex-col items-center"
                     >
-                      <div className="w-14 h-14 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                      <div className="w-14 h-14 rounded-full bg-[#f5f3ec] border border-[#e5e1d5] text-[#1b3b2b] flex items-center justify-center">
                         <CheckCircle2 className="w-7 h-7" />
                       </div>
                       
                       <div className="space-y-1">
-                        <h4 className="text-xl font-bold text-white uppercase font-clash">Concept Verified</h4>
-                        <p className="text-xs text-zinc-400 font-sans max-w-[280px] mx-auto leading-relaxed">
-                          You completed "{activeConcept?.title || ''}" through definition, simulation, and recall.
+                        <h4 className="text-xl font-serif font-bold text-[#1a1917]">Concept Unit Completed</h4>
+                        <p className="text-xs text-[#52504a] max-w-sm mx-auto leading-relaxed">
+                          You completed "{activeConcept?.title || ''}" through definition, visual modeling, and active recall.
                         </p>
                       </div>
 
-                      <div className="bg-[#08090b] px-6 py-4 border border-white/5 rounded-xl flex gap-8 text-xs">
+                      <div className="bg-[#fbfbfa] px-6 py-4 border border-[#e5e1d5] rounded-xl flex gap-8 text-xs shadow-sm">
                         <div>
-                          <span className="text-[8px] font-mono text-zinc-500 uppercase tracking-widest block">Active Recall</span>
-                          <span className="text-emerald-400 font-mono text-sm font-bold">Verified ✓</span>
+                          <span className="text-[10px] font-mono text-[#827f76] uppercase tracking-wider block">Active Recall</span>
+                          <span className="text-[#1b3b2b] font-mono text-sm font-bold">Verified ✓</span>
                         </div>
-                        <div className="w-[1px] bg-white/5" />
+                        <div className="w-[1px] bg-[#e5e1d5]" />
                         <div>
-                          <span className="text-[8px] font-mono text-zinc-500 uppercase tracking-widest block">Checkpoint</span>
-                          <span className="text-white font-mono text-sm font-bold">Completed</span>
+                          <span className="text-[10px] font-mono text-[#827f76] uppercase tracking-wider block">Checkpoint</span>
+                          <span className="text-[#1a1917] font-mono text-sm font-bold">Completed</span>
                         </div>
                       </div>
 
                       <div className="flex gap-3 w-full">
                         {activeConceptIndex + 1 < concepts.length ? (
                           <button
-                            onClick={() => startQuest(activeConceptIndex + 1)}
-                            className="flex-1 py-3.5 bg-[#ff4625] hover:bg-[#ff5738] text-white text-[10px] font-mono font-bold uppercase tracking-widest rounded-xl transition-all shadow-sm"
+                            onClick={() => startActiveStudy(activeConceptIndex + 1)}
+                            className="flex-1 py-3.5 bg-[#1b3b2b] hover:bg-[#26523c] text-white text-xs font-mono font-bold uppercase tracking-wider rounded-xl transition-all shadow-[0_2px_8px_rgba(27,59,43,0.2)]"
                           >
                             Next Concept Unit ➔
                           </button>
                         ) : (
                           <button
-                            onClick={finishQuest}
-                            className="flex-1 py-3.5 bg-emerald-500 hover:bg-emerald-600 text-black text-[10px] font-mono font-bold uppercase tracking-widest rounded-xl transition-all shadow-sm"
+                            onClick={finishActiveStudy}
+                            className="flex-1 py-3.5 bg-[#1b3b2b] hover:bg-[#26523c] text-white text-xs font-mono font-bold uppercase tracking-wider rounded-xl transition-all shadow-[0_2px_8px_rgba(27,59,43,0.2)]"
                           >
-                            Complete Concept Module ✓
+                            Return to Concept Matrix ✓
                           </button>
                         )}
                       </div>
@@ -742,20 +717,19 @@ const ConceptExplorer = ({ concepts = [], quiz = [], chapterTitle = "", subject 
 
               {/* Progress buttons for linear steps */}
               {questStep < 6 && (
-                <div className="flex justify-between items-center border-t border-white/5 pt-4 mt-6">
+                <div className="flex justify-between items-center border-t border-[#e5e1d5] pt-4 mt-6">
                   <button
                     disabled={questStep === 1}
                     onClick={() => setQuestStep(prev => prev - 1)}
-                    className="px-4 py-2 bg-slate-900 border border-white/10 rounded-lg text-slate-400 text-[9px] font-black uppercase tracking-widest hover:text-white disabled:opacity-30 transition-all active:scale-95"
+                    className="px-4 py-2 border border-[#e5e1d5] bg-white hover:bg-[#fbfbfa] rounded-lg text-[#52504a] text-xs font-mono uppercase tracking-wider disabled:opacity-30 transition-all"
                   >
                     ◀ Back
                   </button>
 
-                  {/* Show "Continue" or custom triggers depending on state */}
                   {questStep === 4 && !recallRevealed ? null : questStep === 5 && !practiceSubmitted ? (
                     <button
                       onClick={() => setQuestStep(6)}
-                      className="px-4 py-2 bg-slate-900 border border-white/10 rounded-lg text-slate-400 text-[9px] font-black uppercase tracking-widest hover:text-white transition-all active:scale-95"
+                      className="px-4 py-2 border border-[#e5e1d5] bg-white hover:bg-[#fbfbfa] rounded-lg text-[#52504a] text-xs font-mono uppercase tracking-wider transition-all"
                     >
                       Skip Checkpoint ➔
                     </button>
@@ -770,9 +744,9 @@ const ConceptExplorer = ({ concepts = [], quiz = [], chapterTitle = "", subject 
                           setQuestStep(prev => prev + 1);
                         }
                       }}
-                      className="px-5 py-2.5 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-cyan-500 hover:to-blue-600 text-white text-[9px] font-black uppercase tracking-widest rounded-lg transition-all active:scale-95 flex items-center gap-1.5 shadow"
+                      className="px-5 py-2.5 bg-[#1b3b2b] hover:bg-[#26523c] text-white text-xs font-mono font-bold uppercase tracking-wider rounded-xl transition-all flex items-center gap-1.5 shadow-[0_2px_8px_rgba(27,59,43,0.2)]"
                     >
-                      Continue Quest <ArrowRight className="w-3.5 h-3.5" />
+                      Continue <ArrowRight className="w-3.5 h-3.5" />
                     </button>
                   )}
                 </div>

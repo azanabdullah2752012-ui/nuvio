@@ -224,7 +224,7 @@ const Calendar = () => {
         </div>
 
         {/* RIGHT: SELECTED DATE INSPECTION PANEL */}
-        <div className="lg:col-span-4 p-6 sm:p-8 border border-white/10 bg-[#0d0f14] rounded-2xl space-y-6">
+        <div className="lg:col-span-4 p-6 sm:p-8 border border-[#e5e1d5] bg-white rounded-2xl shadow-[0_4px_20px_rgba(27,59,43,0.04)] space-y-6">
           <div className="border-b border-[#e5e1d5] pb-4">
             <span className="font-mono text-[9px] uppercase tracking-widest text-[#1b3b2b] font-bold">
               Timetable Details

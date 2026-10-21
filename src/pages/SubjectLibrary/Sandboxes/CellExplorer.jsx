@@ -225,15 +225,15 @@ const CellExplorer = () => {
   const shelfOrganelles = expectedOrganelles.filter(org => !placedOrganelles.includes(org));
 
   return (
-    <div className="bg-slate-900/60 p-6 border border-white/10 rounded-xl space-y-6 text-left shadow-lg relative">
+    <div className="bg-white p-6 border border-[#e5e1d5] rounded-xl space-y-6 text-left shadow-lg relative">
       {/* Header and Mode Selector */}
-      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 border-b border-white/5 pb-4">
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 border-b border-[#e5e1d5] pb-4">
         <div className="space-y-0.5">
-          <span className="block text-[8px] font-black text-purple-400 uppercase tracking-widest">
+          <span className="block text-[8px] font-black text-[#1b3b2b] uppercase tracking-widest">
             Biology Laboratory
           </span>
-          <h4 className="text-sm font-black uppercase text-white">Interactive Cell Sandbox</h4>
-          <p className="text-slate-400 text-[10px] font-semibold">
+          <h4 className="text-sm font-black uppercase text-[#1a1917]">Interactive Cell Sandbox</h4>
+          <p className="text-[#52504a] text-[10px] font-semibold">
             {isGameMode 
               ? "Select an organelle from the shelf and click its matching outline in the cell."
               : "Select cell type and click on highlighted structures to analyze organelles."
@@ -243,13 +243,13 @@ const CellExplorer = () => {
 
         <div className="flex gap-2">
           {/* Game Mode toggle */}
-          <div className="flex bg-slate-950 p-1 border border-white/5 rounded-lg shrink-0">
+          <div className="flex bg-[#fbfbfa] p-1 border border-[#e5e1d5] rounded-lg shrink-0">
             <button
               onClick={() => setIsGameMode(false)}
               className={`px-3.5 py-1.5 rounded text-[8px] font-black uppercase tracking-wider transition-all ${
                 !isGameMode
                   ? 'bg-purple-500 text-black shadow'
-                  : 'text-slate-400 hover:text-white'
+                  : 'text-[#52504a] hover:text-white'
               }`}
             >
               🎓 Explorer
@@ -259,7 +259,7 @@ const CellExplorer = () => {
               className={`px-3.5 py-1.5 rounded text-[8px] font-black uppercase tracking-wider transition-all ${
                 isGameMode
                   ? 'bg-purple-500 text-black shadow'
-                  : 'text-slate-400 hover:text-white'
+                  : 'text-[#52504a] hover:text-white'
               }`}
             >
               🧩 Assembly Game
@@ -267,7 +267,7 @@ const CellExplorer = () => {
           </div>
 
           {/* Cell type toggle */}
-          <div className="flex bg-slate-950 p-1 border border-white/5 rounded-lg shrink-0">
+          <div className="flex bg-[#fbfbfa] p-1 border border-[#e5e1d5] rounded-lg shrink-0">
             {[
               { id: 'plant', label: '🌿 Plant' },
               { id: 'animal', label: '🦁 Animal' }
@@ -283,7 +283,7 @@ const CellExplorer = () => {
                 className={`px-3.5 py-1.5 rounded text-[8px] font-black uppercase tracking-wider transition-all ${
                   cellType === type.id
                     ? 'bg-purple-500 text-black shadow'
-                    : 'text-slate-400 hover:text-white'
+                    : 'text-[#52504a] hover:text-white'
                 }`}
               >
                 {type.label}
@@ -296,8 +296,8 @@ const CellExplorer = () => {
       {/* Main Grid */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
         {/* SVG Interactive Model Column */}
-        <div className="md:col-span-7 bg-slate-950/80 rounded-xl border border-white/5 p-4 flex items-center justify-center relative min-h-[340px] overflow-hidden">
-          <span className="absolute top-3 left-3 text-[8px] font-black text-slate-500 uppercase tracking-widest">
+        <div className="md:col-span-7 bg-[#fbfbfa] rounded-xl border border-[#e5e1d5] p-4 flex items-center justify-center relative min-h-[340px] overflow-hidden">
+          <span className="absolute top-3 left-3 text-[8px] font-black text-[#827f76] uppercase tracking-widest">
             {isGameMode ? "Cell Assembly Canvas" : "Clickable Vector Model"}
           </span>
 
@@ -535,20 +535,20 @@ const CellExplorer = () => {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -15 }}
                 transition={{ duration: 0.2 }}
-                className="glass-panel p-6 border-purple-500/20 shadow-md space-y-4 min-h-[340px] flex flex-col justify-between"
+                className="glass-panel p-6 border-[#e5e1d5] shadow-md space-y-4 min-h-[340px] flex flex-col justify-between"
               >
                 <div className="space-y-3">
-                  <span className="px-2 py-0.5 bg-purple-500/10 border border-purple-500/20 text-purple-400 text-[8px] font-black tracking-widest uppercase rounded">
+                  <span className="px-2 py-0.5 bg-[#f5f3ec] border border-[#e5e1d5] text-[#1b3b2b] text-[8px] font-black tracking-widest uppercase rounded">
                     Selected Organelle
                   </span>
                   
-                  <h3 className="text-lg font-black uppercase tracking-tight text-white mt-1">
+                  <h3 className="text-lg font-black uppercase tracking-tight text-[#1a1917] mt-1">
                     {activeInfo.name}
                   </h3>
 
                   {/* Primary function section */}
-                  <div className="space-y-1.5 pt-2 border-t border-white/5 text-xs text-slate-350">
-                    <span className="font-black text-[9px] uppercase tracking-wider text-cyan-400 block flex items-center gap-1">
+                  <div className="space-y-1.5 pt-2 border-t border-[#e5e1d5] text-xs text-[#52504a]">
+                    <span className="font-black text-[9px] uppercase tracking-wider text-[#1b3b2b] block flex items-center gap-1">
                       <Sparkles className="w-3.5 h-3.5" /> Primary Function
                     </span>
                     <p className="leading-relaxed font-semibold">
@@ -557,7 +557,7 @@ const CellExplorer = () => {
                   </div>
 
                   {/* NCERT diagnostic fact section */}
-                  <div className="space-y-1.5 pt-3 border-t border-white/5 text-xs text-slate-400">
+                  <div className="space-y-1.5 pt-3 border-t border-[#e5e1d5] text-xs text-[#52504a]">
                     <span className="font-black text-[9px] uppercase tracking-wider text-amber-400 block flex items-center gap-1">
                       <BookOpen className="w-3.5 h-3.5" /> NCERT Key Fact
                     </span>
@@ -567,8 +567,8 @@ const CellExplorer = () => {
                   </div>
                 </div>
 
-                <div className="bg-slate-950 p-3.5 border border-white/5 rounded-lg flex items-start gap-2.5 mt-4 text-[9px] text-slate-500 font-semibold leading-normal">
-                  <Info className="w-4 h-4 text-purple-400 shrink-0" />
+                <div className="bg-[#fbfbfa] p-3.5 border border-[#e5e1d5] rounded-lg flex items-start gap-2.5 mt-4 text-[9px] text-[#827f76] font-semibold leading-normal">
+                  <Info className="w-4 h-4 text-[#1b3b2b] shrink-0" />
                   <span>
                     Hover over or tap other structures in the model diagram to study different organelles.
                   </span>
@@ -584,27 +584,27 @@ const CellExplorer = () => {
               >
                 <Trophy className="w-16 h-16 text-yellow-400 animate-bounce" />
                 <div className="space-y-2">
-                  <h3 className="text-xl font-black text-white uppercase tracking-tight">Cell Assembled!</h3>
-                  <p className="text-xs text-slate-400 font-semibold max-w-[200px] mx-auto leading-relaxed">
+                  <h3 className="text-xl font-black text-[#1a1917] uppercase tracking-tight">Cell Assembled!</h3>
+                  <p className="text-xs text-[#52504a] font-semibold max-w-[200px] mx-auto leading-relaxed">
                     You placed all organelles accurately on the matrix. Excellent work!
                   </p>
                 </div>
 
-                <div className="bg-slate-950 px-6 py-3 border border-white/5 rounded-xl flex gap-6 text-xs font-black">
+                <div className="bg-[#fbfbfa] px-6 py-3 border border-[#e5e1d5] rounded-xl flex gap-6 text-xs font-black">
                   <div>
-                    <span className="text-[7px] text-slate-500 uppercase tracking-widest block">Reward</span>
+                    <span className="text-[7px] text-[#827f76] uppercase tracking-widest block">Reward</span>
                     <span className="text-green-400 font-mono">+50 XP ✨</span>
                   </div>
                   <div className="w-[1px] bg-white/5" />
                   <div>
-                    <span className="text-[7px] text-slate-500 uppercase tracking-widest block">Bonus</span>
+                    <span className="text-[7px] text-[#827f76] uppercase tracking-widest block">Bonus</span>
                     <span className="text-amber-400 font-mono">+10 Coins 🪙</span>
                   </div>
                 </div>
 
                 <button
                   onClick={resetGame}
-                  className="px-6 py-3 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-cyan-500 hover:to-blue-600 text-white text-[9px] font-black uppercase tracking-widest rounded-lg transition-all active:scale-95 flex items-center gap-1.5 shadow"
+                  className="px-6 py-3 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-cyan-500 hover:to-blue-600 text-[#1a1917] text-[9px] font-black uppercase tracking-widest rounded-lg transition-all active:scale-95 flex items-center gap-1.5 shadow"
                 >
                   <RotateCcw className="w-3.5 h-3.5" /> Replay Game
                 </button>
@@ -615,19 +615,19 @@ const CellExplorer = () => {
                 key="playing"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="glass-panel p-6 border-white/5 shadow-md space-y-4 min-h-[340px] flex flex-col justify-between"
+                className="glass-panel p-6 border-[#e5e1d5] shadow-md space-y-4 min-h-[340px] flex flex-col justify-between"
               >
                 <div className="space-y-4">
-                  <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                    <span className="text-[8px] font-black text-purple-400 uppercase tracking-widest">
+                  <div className="flex justify-between items-center border-b border-[#e5e1d5] pb-2">
+                    <span className="text-[8px] font-black text-[#1b3b2b] uppercase tracking-widest">
                       Organelles Shelf
                     </span>
-                    <span className="text-[9px] font-black text-slate-500 uppercase font-mono">
+                    <span className="text-[9px] font-black text-[#827f76] uppercase font-mono">
                       Placed: {placedOrganelles.length}/{expectedOrganelles.length}
                     </span>
                   </div>
 
-                  <p className="text-[10px] text-slate-400 font-semibold leading-relaxed">
+                  <p className="text-[10px] text-[#52504a] font-semibold leading-relaxed">
                     Select an organelle below, then click its corresponding dashed outline on the cell structure to snap it into place.
                   </p>
 
@@ -643,7 +643,7 @@ const CellExplorer = () => {
                           className={`p-2.5 rounded-lg border text-left flex items-center gap-2 transition-all duration-200 hover:scale-[1.02] ${
                             isSelected 
                               ? 'bg-purple-500/20 border-purple-500 text-purple-300 shadow-md ring-2 ring-purple-500/25'
-                              : 'bg-slate-950 border-white/5 text-slate-350 hover:bg-slate-900 hover:border-white/10'
+                              : 'bg-[#fbfbfa] border-[#e5e1d5] text-[#52504a] hover:bg-white hover:border-[#e5e1d5]'
                           }`}
                         >
                           <span className="text-lg shrink-0">{details.emoji}</span>
@@ -657,8 +657,8 @@ const CellExplorer = () => {
                 </div>
 
                 {/* Footer hints */}
-                <div className="bg-slate-950 p-3 rounded-lg border border-white/5 text-[9px] text-slate-500 font-semibold leading-normal flex items-start gap-2">
-                  <Info className="w-3.5 h-3.5 text-purple-400 shrink-0 mt-0.5" />
+                <div className="bg-[#fbfbfa] p-3 rounded-lg border border-[#e5e1d5] text-[9px] text-[#827f76] font-semibold leading-normal flex items-start gap-2">
+                  <Info className="w-3.5 h-3.5 text-[#1b3b2b] shrink-0 mt-0.5" />
                   <span>
                     {selectedShelfOrganelle 
                       ? `Now find the matching slot for the ${ORGANELLE_INFO[selectedShelfOrganelle].name.split(' ')[0]} in the drawing.`

@@ -27,11 +27,11 @@ const PatternsSandbox = () => {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 bg-slate-950 p-5 border border-white/10 rounded-xl">
+    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 bg-[#fbfbfa] p-5 border border-[#e5e1d5] rounded-xl">
       <div className="md:col-span-6 flex flex-col items-center justify-center min-h-[200px]">
         {patternType === 'triangular' && (
-          <div className="flex flex-col gap-1.5 items-center justify-center p-4 bg-slate-900/50 rounded-xl border border-white/5 w-full h-full">
-            <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-2">Triangular Dots Arrangement</span>
+          <div className="flex flex-col gap-1.5 items-center justify-center p-4 bg-white rounded-xl border border-[#e5e1d5] w-full h-full">
+            <span className="text-[8px] font-black text-[#827f76] uppercase tracking-widest mb-2">Triangular Dots Arrangement</span>
             <div className="flex flex-col items-center justify-center gap-1.5">
               {Array.from({ length: n }).map((_, rIdx) => (
                 <div key={rIdx} className="flex gap-1.5">
@@ -50,8 +50,8 @@ const PatternsSandbox = () => {
         )}
 
         {patternType === 'square' && (
-          <div className="flex flex-col gap-1.5 items-center justify-center p-4 bg-slate-900/50 rounded-xl border border-white/5 w-full h-full">
-            <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-2">Square Grid Arrangement</span>
+          <div className="flex flex-col gap-1.5 items-center justify-center p-4 bg-white rounded-xl border border-[#e5e1d5] w-full h-full">
+            <span className="text-[8px] font-black text-[#827f76] uppercase tracking-widest mb-2">Square Grid Arrangement</span>
             <div className="grid gap-1.5" style={{ gridTemplateColumns: `repeat(${n}, minmax(0, 1fr))` }}>
               {Array.from({ length: n * n }).map((_, idx) => (
                 <motion.div
@@ -66,15 +66,15 @@ const PatternsSandbox = () => {
         )}
 
         {patternType === 'fibonacci' && (
-          <div className="flex flex-col items-center justify-center p-4 bg-slate-900/50 rounded-xl border border-white/5 w-full h-full space-y-4">
-            <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest">Virahānka-Fibonacci Sequence Blocks</span>
+          <div className="flex flex-col items-center justify-center p-4 bg-white rounded-xl border border-[#e5e1d5] w-full h-full space-y-4">
+            <span className="text-[8px] font-black text-[#827f76] uppercase tracking-widest">Virahānka-Fibonacci Sequence Blocks</span>
             <div className="flex flex-wrap gap-2 items-end justify-center">
               {fibTerms.slice(0, n).map((val, idx) => (
                 <motion.div
                   key={idx}
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: `${val * 10 + 20}px`, opacity: 1 }}
-                  className="w-10 bg-gradient-to-t from-purple-600 to-indigo-400 rounded-t-lg flex items-center justify-center text-[10px] font-black text-white pb-1"
+                  className="w-10 bg-gradient-to-t from-purple-600 to-indigo-400 rounded-t-lg flex items-center justify-center text-[10px] font-black text-[#1a1917] pb-1"
                 >
                   {val}
                 </motion.div>
@@ -85,15 +85,15 @@ const PatternsSandbox = () => {
       </div>
 
       <div className="md:col-span-6 flex flex-col justify-between text-left space-y-4">
-        <div className="p-4 bg-slate-900 border border-white/10 rounded-lg space-y-3">
-          <span className="block text-[8px] font-black text-slate-500 uppercase tracking-widest">Sequence Controller</span>
-          <div className="flex gap-1.5 p-0.5 bg-slate-950 rounded border border-white/5">
+        <div className="p-4 bg-white border border-[#e5e1d5] rounded-lg space-y-3">
+          <span className="block text-[8px] font-black text-[#827f76] uppercase tracking-widest">Sequence Controller</span>
+          <div className="flex gap-1.5 p-0.5 bg-[#fbfbfa] rounded border border-[#e5e1d5]">
             {['triangular', 'square', 'fibonacci'].map(type => (
               <button
                 key={type}
                 onClick={() => { setPatternType(type); setN(4); }}
                 className={`flex-1 py-1.5 rounded text-[8px] font-black uppercase tracking-wider transition-all ${
-                  patternType === type ? 'bg-purple-500 text-black' : 'text-slate-400 hover:text-white'
+                  patternType === type ? 'bg-purple-500 text-black' : 'text-[#52504a] hover:text-white'
                 }`}
               >
                 {type}
@@ -102,25 +102,25 @@ const PatternsSandbox = () => {
           </div>
 
           <div className="space-y-1">
-            <label className="text-[9px] font-black text-slate-400 uppercase tracking-wider flex justify-between">
+            <label className="text-[9px] font-black text-[#52504a] uppercase tracking-wider flex justify-between">
               <span>Term Index (n)</span>
-              <span className="text-purple-400 font-mono">n = {n}</span>
+              <span className="text-[#1b3b2b] font-mono">n = {n}</span>
             </label>
             <input
               type="range" min="1" max="7" value={n}
               onChange={e => setN(parseInt(e.target.value))}
-              className="w-full h-1 bg-slate-950 rounded-lg appearance-none cursor-pointer accent-purple-500"
+              className="w-full h-1 bg-[#fbfbfa] rounded-lg appearance-none cursor-pointer accent-[#1b3b2b]"
             />
           </div>
 
-          <div className="flex justify-between border-t border-white/5 pt-2 text-xs">
-            <span className="text-slate-400 font-semibold uppercase text-[9px] tracking-wider">Current Term Value</span>
+          <div className="flex justify-between border-t border-[#e5e1d5] pt-2 text-xs">
+            <span className="text-[#52504a] font-semibold uppercase text-[9px] tracking-wider">Current Term Value</span>
             <strong className="text-yellow-400 font-mono">Value = {calculateTerm()}</strong>
           </div>
         </div>
 
-        <div className="p-3 bg-purple-950/20 border border-purple-500/20 rounded-lg text-[10px] leading-relaxed text-slate-400 font-semibold">
-          <strong className="text-purple-400 block mb-0.5">Pattern Rule:</strong>
+        <div className="p-3 bg-purple-950/20 border border-[#e5e1d5] rounded-lg text-[10px] leading-relaxed text-[#52504a] font-semibold">
+          <strong className="text-[#1b3b2b] block mb-0.5">Pattern Rule:</strong>
           {patternType === 'triangular' && "Triangular numbers sum successive integers: Sum = n(n+1)/2. For n=4, 1+2+3+4 = 10."}
           {patternType === 'square' && "Square numbers sum consecutive odd numbers starting from 1: Sum = n². For n=4, 1+3+5+7 = 16."}
           {patternType === 'fibonacci' && "Each Virahānka-Fibonacci number is the sum of the two preceding numbers: Fn = Fn-1 + Fn-2."}
@@ -150,10 +150,10 @@ const AnglesSandbox = () => {
   const targetY = 100 - 75 * Math.sin(rad);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 bg-slate-950 p-5 border border-white/10 rounded-xl">
+    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 bg-[#fbfbfa] p-5 border border-[#e5e1d5] rounded-xl">
       <div className="md:col-span-6 flex flex-col items-center justify-center">
-        <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-3">Interactive Protractor</span>
-        <div className="w-48 h-48 bg-slate-900 border border-white/5 rounded-full flex items-center justify-center shadow-inner relative overflow-hidden">
+        <span className="text-[8px] font-black text-[#827f76] uppercase tracking-widest mb-3">Interactive Protractor</span>
+        <div className="w-48 h-48 bg-white border border-[#e5e1d5] rounded-full flex items-center justify-center shadow-inner relative overflow-hidden">
           <svg className="w-full h-full" viewBox="0 0 200 200">
             {/* Horizontal axis grid line */}
             <line x1="20" y1="100" x2="180" y2="100" stroke="#ffffff" strokeWidth="1" strokeDasharray="3,3" opacity="0.2" />
@@ -185,38 +185,38 @@ const AnglesSandbox = () => {
               />
             )}
           </svg>
-          <div className="absolute bottom-2 bg-slate-950/80 px-2 py-0.5 border border-white/5 rounded font-mono text-[9px] text-purple-400">
+          <div className="absolute bottom-2 bg-[#fbfbfa] px-2 py-0.5 border border-[#e5e1d5] rounded font-mono text-[9px] text-[#1b3b2b]">
             θ = {angle}°
           </div>
         </div>
       </div>
 
       <div className="md:col-span-6 flex flex-col justify-between text-left space-y-4">
-        <div className="p-4 bg-slate-900 border border-white/10 rounded-lg space-y-4">
-          <span className="block text-[8px] font-black text-slate-500 uppercase tracking-widest">Angle Dial</span>
+        <div className="p-4 bg-white border border-[#e5e1d5] rounded-lg space-y-4">
+          <span className="block text-[8px] font-black text-[#827f76] uppercase tracking-widest">Angle Dial</span>
           <div className="space-y-1">
             <input
               type="range" min="0" max="180" value={angle}
               onChange={e => setAngle(parseInt(e.target.value))}
-              className="w-full h-1 bg-slate-950 rounded-lg appearance-none cursor-pointer accent-purple-500"
+              className="w-full h-1 bg-[#fbfbfa] rounded-lg appearance-none cursor-pointer accent-[#1b3b2b]"
             />
-            <div className="flex justify-between text-[8px] font-bold text-slate-500 font-mono">
+            <div className="flex justify-between text-[8px] font-bold text-[#827f76] font-mono">
               <span>0°</span>
               <span>90° (Right)</span>
               <span>180° (Straight)</span>
             </div>
           </div>
 
-          <div className="space-y-2 border-t border-white/5 pt-2">
+          <div className="space-y-2 border-t border-[#e5e1d5] pt-2">
             <div className="flex justify-between text-xs">
-              <span className="text-slate-400 font-semibold">Classification</span>
-              <strong className="text-cyan-400 font-black uppercase text-[10px]">{getAngleType(angle)}</strong>
+              <span className="text-[#52504a] font-semibold">Classification</span>
+              <strong className="text-[#1b3b2b] font-black uppercase text-[10px]">{getAngleType(angle)}</strong>
             </div>
           </div>
         </div>
 
-        <div className="p-3 bg-purple-950/20 border border-purple-500/20 rounded-lg text-[10px] leading-relaxed text-slate-400 font-semibold">
-          <strong className="text-purple-400 block mb-0.5">Properties:</strong>
+        <div className="p-3 bg-purple-950/20 border border-[#e5e1d5] rounded-lg text-[10px] leading-relaxed text-[#52504a] font-semibold">
+          <strong className="text-[#1b3b2b] block mb-0.5">Properties:</strong>
           An angle is formed when two rays meet at a common endpoint (vertex). We divide one full turn into 360 equal parts, called degrees.
         </div>
       </div>
@@ -253,11 +253,11 @@ const CollatzSandbox = () => {
   }, [startNum]);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 bg-slate-950 p-5 border border-white/10 rounded-xl">
+    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 bg-[#fbfbfa] p-5 border border-[#e5e1d5] rounded-xl">
       <div className="md:col-span-6 flex flex-col items-center justify-center space-y-4">
-        <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest">Collatz Step-by-Step Path</span>
+        <span className="text-[8px] font-black text-[#827f76] uppercase tracking-widest">Collatz Step-by-Step Path</span>
         
-        <div className="flex flex-wrap gap-2 justify-center max-h-[160px] overflow-y-auto p-3 bg-slate-900/50 border border-white/5 rounded-xl w-full">
+        <div className="flex flex-wrap gap-2 justify-center max-h-[160px] overflow-y-auto p-3 bg-white border border-[#e5e1d5] rounded-xl w-full">
           {sequence.map((num, i) => {
             const isFinished = num === 1;
             const isSpecialLoop = num === 4 || num === 2 || num === 1;
@@ -270,12 +270,12 @@ const CollatzSandbox = () => {
                   isFinished 
                     ? 'bg-green-500/25 border-green-500 text-green-400' 
                     : isSpecialLoop 
-                      ? 'bg-purple-500/20 border-purple-500 text-purple-400'
-                      : 'bg-slate-950 border-white/5 text-slate-200'
+                      ? 'bg-purple-500/20 border-purple-500 text-[#1b3b2b]'
+                      : 'bg-[#fbfbfa] border-[#e5e1d5] text-slate-200'
                 }`}
               >
                 <span>{num}</span>
-                {i < sequence.length - 1 && <span className="text-[9px] text-slate-500 ml-1">➔</span>}
+                {i < sequence.length - 1 && <span className="text-[9px] text-[#827f76] ml-1">➔</span>}
               </motion.div>
             );
           })}
@@ -283,34 +283,34 @@ const CollatzSandbox = () => {
       </div>
 
       <div className="md:col-span-6 flex flex-col justify-between text-left space-y-4">
-        <div className="p-4 bg-slate-900 border border-white/10 rounded-lg space-y-3">
-          <span className="block text-[8px] font-black text-slate-500 uppercase tracking-widest">Number Selector</span>
+        <div className="p-4 bg-white border border-[#e5e1d5] rounded-lg space-y-3">
+          <span className="block text-[8px] font-black text-[#827f76] uppercase tracking-widest">Number Selector</span>
           <div className="flex items-center gap-3">
             <button
               onClick={() => setStartNum(prev => Math.max(1, prev - 1))}
-              className="p-2 bg-slate-950 border border-white/10 rounded hover:bg-slate-800 text-purple-400 active:scale-95"
+              className="p-2 bg-[#fbfbfa] border border-[#e5e1d5] rounded hover:bg-[#ede9de] text-[#1b3b2b] active:scale-95"
             >
               <Minus className="w-4 h-4" />
             </button>
-            <span className="flex-1 text-center font-mono font-black text-xl text-white">
+            <span className="flex-1 text-center font-mono font-black text-xl text-[#1a1917]">
               {startNum}
             </span>
             <button
               onClick={() => setStartNum(prev => Math.min(100, prev + 1))}
-              className="p-2 bg-slate-950 border border-white/10 rounded hover:bg-slate-800 text-purple-400 active:scale-95"
+              className="p-2 bg-[#fbfbfa] border border-[#e5e1d5] rounded hover:bg-[#ede9de] text-[#1b3b2b] active:scale-95"
             >
               <Plus className="w-4 h-4" />
             </button>
           </div>
 
-          <div className="flex justify-between border-t border-white/5 pt-2 text-xs">
-            <span className="text-slate-400 font-semibold text-[9px] tracking-wider uppercase">Path length</span>
+          <div className="flex justify-between border-t border-[#e5e1d5] pt-2 text-xs">
+            <span className="text-[#52504a] font-semibold text-[9px] tracking-wider uppercase">Path length</span>
             <strong className="text-yellow-400 font-mono">{sequence.length} steps</strong>
           </div>
         </div>
 
-        <div className="p-3 bg-purple-950/20 border border-purple-500/20 rounded-lg text-[10px] leading-relaxed text-slate-400 font-semibold">
-          <strong className="text-purple-400 block mb-0.5">Collatz Rule:</strong>
+        <div className="p-3 bg-purple-950/20 border border-[#e5e1d5] rounded-lg text-[10px] leading-relaxed text-[#52504a] font-semibold">
+          <strong className="text-[#1b3b2b] block mb-0.5">Collatz Rule:</strong>
           If number is even, divide by 2. If odd, multiply by 3 and add 1. No matter what starting number you pick, it always gets pulled into the 4-2-1 loop!
         </div>
       </div>
@@ -353,18 +353,18 @@ const DataHandlingSandbox = () => {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 bg-slate-950 p-5 border border-white/10 rounded-xl">
+    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 bg-[#fbfbfa] p-5 border border-[#e5e1d5] rounded-xl">
       <div className="md:col-span-6 flex flex-col items-center justify-center space-y-4">
-        <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest">Dynamic Visual Graph</span>
+        <span className="text-[8px] font-black text-[#827f76] uppercase tracking-widest">Dynamic Visual Graph</span>
         
-        <div className="w-full space-y-3.5 p-4 bg-slate-900/50 border border-white/5 rounded-xl">
+        <div className="w-full space-y-3.5 p-4 bg-white border border-[#e5e1d5] rounded-xl">
           {Object.entries(data).map(([key, count]) => (
             <div key={key} className="space-y-1 text-left">
-              <div className="flex justify-between text-[10px] font-bold text-slate-400">
+              <div className="flex justify-between text-[10px] font-bold text-[#52504a]">
                 <span>{key}</span>
-                <span className="font-mono text-purple-400">{count} units</span>
+                <span className="font-mono text-[#1b3b2b]">{count} units</span>
               </div>
-              <div className="h-5 w-full bg-slate-950 border border-white/5 rounded p-0.5">
+              <div className="h-5 w-full bg-[#fbfbfa] border border-[#e5e1d5] rounded p-0.5">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${count * 10}%` }}
@@ -377,26 +377,26 @@ const DataHandlingSandbox = () => {
       </div>
 
       <div className="md:col-span-6 flex flex-col justify-between text-left space-y-4">
-        <div className="p-4 bg-slate-900 border border-white/10 rounded-lg space-y-3.5">
-          <span className="block text-[8px] font-black text-slate-500 uppercase tracking-widest">Category Tally Console</span>
+        <div className="p-4 bg-white border border-[#e5e1d5] rounded-lg space-y-3.5">
+          <span className="block text-[8px] font-black text-[#827f76] uppercase tracking-widest">Category Tally Console</span>
           
           <div className="space-y-2.5">
             {Object.entries(data).map(([key, count]) => (
-              <div key={key} className="flex items-center justify-between text-xs border-b border-white/5 pb-1.5">
-                <div className="w-20 font-bold text-slate-350">{key}</div>
-                <div className="flex-1 font-mono text-cyan-400 font-black tracking-widest text-center">
+              <div key={key} className="flex items-center justify-between text-xs border-b border-[#e5e1d5] pb-1.5">
+                <div className="w-20 font-bold text-[#52504a]">{key}</div>
+                <div className="flex-1 font-mono text-[#1b3b2b] font-black tracking-widest text-center">
                   {getTallyString(count)}
                 </div>
                 <div className="flex items-center gap-1.5 shrink-0">
                   <button
                     onClick={() => decrement(key)}
-                    className="p-1 bg-slate-950 border border-white/10 rounded hover:bg-slate-800 text-slate-400"
+                    className="p-1 bg-[#fbfbfa] border border-[#e5e1d5] rounded hover:bg-[#ede9de] text-[#52504a]"
                   >
                     <Minus className="w-3.5 h-3.5" />
                   </button>
                   <button
                     onClick={() => increment(key)}
-                    className="p-1 bg-slate-950 border border-white/10 rounded hover:bg-slate-800 text-slate-400"
+                    className="p-1 bg-[#fbfbfa] border border-[#e5e1d5] rounded hover:bg-[#ede9de] text-[#52504a]"
                   >
                     <Plus className="w-3.5 h-3.5" />
                   </button>
@@ -406,8 +406,8 @@ const DataHandlingSandbox = () => {
           </div>
         </div>
 
-        <div className="p-3 bg-purple-950/20 border border-purple-500/20 rounded-lg text-[10px] leading-relaxed text-slate-400 font-semibold">
-          <strong className="text-purple-400 block mb-0.5">Tally System:</strong>
+        <div className="p-3 bg-purple-950/20 border border-[#e5e1d5] rounded-lg text-[10px] leading-relaxed text-[#52504a] font-semibold">
+          <strong className="text-[#1b3b2b] block mb-0.5">Tally System:</strong>
           Tally marks group counting in bundles of 5. The fifth line crosses the first 4, making it easy to skip-count arrays of raw statistics.
         </div>
       </div>
@@ -449,36 +449,36 @@ const PrimeTimeSandbox = () => {
   const primeFactorization = getPrimeFactorization(num);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 bg-slate-950 p-5 border border-white/10 rounded-xl">
+    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 bg-[#fbfbfa] p-5 border border-[#e5e1d5] rounded-xl">
       <div className="md:col-span-6 flex flex-col items-center justify-center space-y-4">
-        <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest">Number properties Diagnostics</span>
+        <span className="text-[8px] font-black text-[#827f76] uppercase tracking-widest">Number properties Diagnostics</span>
         
-        <div className="w-full p-4 bg-slate-900/50 border border-white/5 rounded-xl space-y-3">
-          <div className="flex justify-between items-center border-b border-white/5 pb-2 text-xs">
-            <span className="text-slate-400 font-semibold">Classification:</span>
+        <div className="w-full p-4 bg-white border border-[#e5e1d5] rounded-xl space-y-3">
+          <div className="flex justify-between items-center border-b border-[#e5e1d5] pb-2 text-xs">
+            <span className="text-[#52504a] font-semibold">Classification:</span>
             <span className={`px-2.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider ${
               isPrime 
                 ? 'bg-green-500/15 border border-green-500/30 text-green-400' 
-                : 'bg-purple-500/15 border border-purple-500/30 text-purple-400'
+                : 'bg-purple-500/15 border border-purple-500/30 text-[#1b3b2b]'
             }`}>
               {isPrime ? 'PRIME NUMBER' : 'COMPOSITE NUMBER'}
             </span>
           </div>
 
           <div className="space-y-1 text-left text-xs">
-            <span className="block text-[8px] font-black text-slate-500 uppercase tracking-widest">All Factors list</span>
+            <span className="block text-[8px] font-black text-[#827f76] uppercase tracking-widest">All Factors list</span>
             <div className="flex flex-wrap gap-1.5">
               {factorsList.map(f => (
-                <span key={f} className="px-2 py-1 bg-slate-950 border border-white/5 text-yellow-400 font-mono rounded text-[11px] font-black">
+                <span key={f} className="px-2 py-1 bg-[#fbfbfa] border border-[#e5e1d5] text-yellow-400 font-mono rounded text-[11px] font-black">
                   {f}
                 </span>
               ))}
             </div>
           </div>
 
-          <div className="space-y-1 text-left text-xs pt-1 border-t border-white/5">
-            <span className="block text-[8px] font-black text-slate-500 uppercase tracking-widest">Prime Factorization</span>
-            <div className="p-2.5 bg-slate-950 border border-white/5 rounded text-cyan-400 font-mono font-black text-[13px] text-center">
+          <div className="space-y-1 text-left text-xs pt-1 border-t border-[#e5e1d5]">
+            <span className="block text-[8px] font-black text-[#827f76] uppercase tracking-widest">Prime Factorization</span>
+            <div className="p-2.5 bg-[#fbfbfa] border border-[#e5e1d5] rounded text-[#1b3b2b] font-mono font-black text-[13px] text-center">
               {num} = {primeFactorization.join(' × ')}
             </div>
           </div>
@@ -486,21 +486,21 @@ const PrimeTimeSandbox = () => {
       </div>
 
       <div className="md:col-span-6 flex flex-col justify-between text-left space-y-4">
-        <div className="p-4 bg-slate-900 border border-white/10 rounded-lg space-y-3">
-          <span className="block text-[8px] font-black text-slate-500 uppercase tracking-widest">Number Selector</span>
+        <div className="p-4 bg-white border border-[#e5e1d5] rounded-lg space-y-3">
+          <span className="block text-[8px] font-black text-[#827f76] uppercase tracking-widest">Number Selector</span>
           <div className="flex items-center gap-3">
             <button
               onClick={() => setNum(prev => Math.max(2, prev - 1))}
-              className="p-2 bg-slate-950 border border-white/10 rounded hover:bg-slate-800 text-purple-400 active:scale-95"
+              className="p-2 bg-[#fbfbfa] border border-[#e5e1d5] rounded hover:bg-[#ede9de] text-[#1b3b2b] active:scale-95"
             >
               <Minus className="w-4 h-4" />
             </button>
-            <span className="flex-1 text-center font-mono font-black text-xl text-white">
+            <span className="flex-1 text-center font-mono font-black text-xl text-[#1a1917]">
               {num}
             </span>
             <button
               onClick={() => setNum(prev => Math.min(100, prev + 1))}
-              className="p-2 bg-slate-950 border border-white/10 rounded hover:bg-slate-800 text-purple-400 active:scale-95"
+              className="p-2 bg-[#fbfbfa] border border-[#e5e1d5] rounded hover:bg-[#ede9de] text-[#1b3b2b] active:scale-95"
             >
               <Plus className="w-4 h-4" />
             </button>
@@ -510,13 +510,13 @@ const PrimeTimeSandbox = () => {
             <input
               type="range" min="2" max="100" value={num}
               onChange={e => setNum(parseInt(e.target.value))}
-              className="w-full h-1 bg-slate-950 rounded-lg appearance-none cursor-pointer accent-purple-500"
+              className="w-full h-1 bg-[#fbfbfa] rounded-lg appearance-none cursor-pointer accent-[#1b3b2b]"
             />
           </div>
         </div>
 
-        <div className="p-3 bg-purple-950/20 border border-purple-500/20 rounded-lg text-[10px] leading-relaxed text-slate-400 font-semibold">
-          <strong className="text-purple-400 block mb-0.5">Prime vs. Composite:</strong>
+        <div className="p-3 bg-purple-950/20 border border-[#e5e1d5] rounded-lg text-[10px] leading-relaxed text-[#52504a] font-semibold">
+          <strong className="text-[#1b3b2b] block mb-0.5">Prime vs. Composite:</strong>
           Prime numbers (like 2, 3, 5, 7) have only 2 factors: 1 and themselves. Composite numbers have more. All numbers can be written as products of primes!
         </div>
       </div>
@@ -532,11 +532,11 @@ const PerimeterAreaSandbox = () => {
   const [h, setH] = useState(4);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 bg-slate-950 p-5 border border-white/10 rounded-xl">
+    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 bg-[#fbfbfa] p-5 border border-[#e5e1d5] rounded-xl">
       <div className="md:col-span-6 flex flex-col items-center justify-center">
-        <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-3">Rectangle Grid Overlay</span>
+        <span className="text-[8px] font-black text-[#827f76] uppercase tracking-widest mb-3">Rectangle Grid Overlay</span>
         
-        <div className="w-40 h-40 bg-slate-900 border border-white/5 rounded flex items-center justify-center p-2 relative shadow-inner">
+        <div className="w-40 h-40 bg-white border border-[#e5e1d5] rounded flex items-center justify-center p-2 relative shadow-inner">
           <div className="grid grid-cols-10 grid-rows-10 gap-0.5 w-full h-full">
             {(() => {
               const cells = [];
@@ -549,7 +549,7 @@ const PerimeterAreaSandbox = () => {
                 const isInside = cell.x < w && cell.y < h;
                 const isBorder = isInside && (cell.x === 0 || cell.y === 0 || cell.x === w - 1 || cell.y === h - 1);
                 
-                let bgClass = "bg-slate-950/40 border border-white/2";
+                let bgClass = "bg-[#fbfbfa]/40 border border-white/2";
                 if (isBorder) {
                   bgClass = "bg-purple-500 border border-purple-400 shadow-[0_0_4px_rgba(168,85,247,0.3)]";
                 } else if (isInside) {
@@ -569,48 +569,48 @@ const PerimeterAreaSandbox = () => {
       </div>
 
       <div className="md:col-span-6 flex flex-col justify-between text-left space-y-4">
-        <div className="p-4 bg-slate-900 border border-white/10 rounded-lg space-y-3">
-          <span className="block text-[8px] font-black text-slate-500 uppercase tracking-widest">Dimension Controls</span>
+        <div className="p-4 bg-white border border-[#e5e1d5] rounded-lg space-y-3">
+          <span className="block text-[8px] font-black text-[#827f76] uppercase tracking-widest">Dimension Controls</span>
           
           <div className="space-y-2">
             <div className="space-y-1">
-              <label className="text-[9px] font-bold text-slate-400 uppercase flex justify-between">
+              <label className="text-[9px] font-bold text-[#52504a] uppercase flex justify-between">
                 <span>Width (l)</span>
-                <span className="font-mono text-purple-400">{w} m</span>
+                <span className="font-mono text-[#1b3b2b]">{w} m</span>
               </label>
               <input
                 type="range" min="1" max="10" value={w}
                 onChange={e => setW(parseInt(e.target.value))}
-                className="w-full h-1 bg-slate-950 rounded-lg appearance-none cursor-pointer accent-purple-500"
+                className="w-full h-1 bg-[#fbfbfa] rounded-lg appearance-none cursor-pointer accent-[#1b3b2b]"
               />
             </div>
             <div className="space-y-1">
-              <label className="text-[9px] font-bold text-slate-400 uppercase flex justify-between">
+              <label className="text-[9px] font-bold text-[#52504a] uppercase flex justify-between">
                 <span>Height (w)</span>
-                <span className="font-mono text-purple-400">{h} m</span>
+                <span className="font-mono text-[#1b3b2b]">{h} m</span>
               </label>
               <input
                 type="range" min="1" max="10" value={h}
                 onChange={e => setH(parseInt(e.target.value))}
-                className="w-full h-1 bg-slate-950 rounded-lg appearance-none cursor-pointer accent-purple-500"
+                className="w-full h-1 bg-[#fbfbfa] rounded-lg appearance-none cursor-pointer accent-[#1b3b2b]"
               />
             </div>
           </div>
 
-          <div className="border-t border-white/5 pt-2 space-y-1.5 text-xs">
+          <div className="border-t border-[#e5e1d5] pt-2 space-y-1.5 text-xs">
             <div className="flex justify-between">
-              <span className="text-slate-400 font-semibold uppercase text-[9px] tracking-wider">Perimeter (Boundary)</span>
-              <strong className="text-cyan-400 font-mono">2 × ({w} + {h}) = {2 * (w + h)} m</strong>
+              <span className="text-[#52504a] font-semibold uppercase text-[9px] tracking-wider">Perimeter (Boundary)</span>
+              <strong className="text-[#1b3b2b] font-mono">2 × ({w} + {h}) = {2 * (w + h)} m</strong>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-400 font-semibold uppercase text-[9px] tracking-wider">Area (Enclosed Space)</span>
+              <span className="text-[#52504a] font-semibold uppercase text-[9px] tracking-wider">Area (Enclosed Space)</span>
               <strong className="text-yellow-400 font-mono">{w} × {h} = {w * h} sq m</strong>
             </div>
           </div>
         </div>
 
-        <div className="p-3 bg-purple-950/20 border border-purple-500/20 rounded-lg text-[10px] leading-relaxed text-slate-400 font-semibold">
-          <strong className="text-purple-400 block mb-0.5">Measurement Rule:</strong>
+        <div className="p-3 bg-purple-950/20 border border-[#e5e1d5] rounded-lg text-[10px] leading-relaxed text-[#52504a] font-semibold">
+          <strong className="text-[#1b3b2b] block mb-0.5">Measurement Rule:</strong>
           Perimeter measures the boundary fence length (1D). Area measures the total grid square boxes enclosed on the inside (2D).
         </div>
       </div>
@@ -631,11 +631,11 @@ const FractionsSandbox = () => {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 bg-slate-950 p-5 border border-white/10 rounded-xl">
+    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 bg-[#fbfbfa] p-5 border border-[#e5e1d5] rounded-xl">
       <div className="md:col-span-6 flex flex-col items-center justify-center">
-        <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-3">Fraction Shading Strip</span>
+        <span className="text-[8px] font-black text-[#827f76] uppercase tracking-widest mb-3">Fraction Shading Strip</span>
         
-        <div className="w-full h-16 bg-slate-900 border border-white/5 rounded-xl overflow-hidden flex shadow-inner p-1 relative">
+        <div className="w-full h-16 bg-white border border-[#e5e1d5] rounded-xl overflow-hidden flex shadow-inner p-1 relative">
           <div className="flex w-full h-full gap-1">
             {Array.from({ length: den }).map((_, idx) => {
               const isShaded = idx < num;
@@ -645,7 +645,7 @@ const FractionsSandbox = () => {
                   className={`flex-1 rounded-md transition-colors ${
                     isShaded 
                       ? 'bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.3)]' 
-                      : 'bg-slate-950 border border-white/5'
+                      : 'bg-[#fbfbfa] border border-[#e5e1d5]'
                   }`}
                   animate={isShaded ? { scale: [0.95, 1] } : {}}
                 />
@@ -654,48 +654,48 @@ const FractionsSandbox = () => {
           </div>
         </div>
 
-        <div className="mt-3.5 bg-slate-950 px-4 py-1.5 border border-white/5 rounded font-mono text-xs text-yellow-400 font-black">
+        <div className="mt-3.5 bg-[#fbfbfa] px-4 py-1.5 border border-[#e5e1d5] rounded font-mono text-xs text-yellow-400 font-black">
           {num} / {den} = {((num / den) * 100).toFixed(0)}% Shaded
         </div>
       </div>
 
       <div className="md:col-span-6 flex flex-col justify-between text-left space-y-4">
-        <div className="p-4 bg-slate-900 border border-white/10 rounded-lg space-y-3">
-          <span className="block text-[8px] font-black text-slate-500 uppercase tracking-widest">Fraction Builder</span>
+        <div className="p-4 bg-white border border-[#e5e1d5] rounded-lg space-y-3">
+          <span className="block text-[8px] font-black text-[#827f76] uppercase tracking-widest">Fraction Builder</span>
           
           <div className="space-y-2">
             <div className="space-y-1">
-              <label className="text-[9px] font-bold text-slate-400 uppercase flex justify-between">
+              <label className="text-[9px] font-bold text-[#52504a] uppercase flex justify-between">
                 <span>Numerator (Parts Taken)</span>
-                <span className="font-mono text-purple-400">{num}</span>
+                <span className="font-mono text-[#1b3b2b]">{num}</span>
               </label>
               <input
                 type="range" min="1" max={den} value={num}
                 onChange={e => setNum(parseInt(e.target.value))}
-                className="w-full h-1 bg-slate-950 rounded-lg appearance-none cursor-pointer accent-purple-500"
+                className="w-full h-1 bg-[#fbfbfa] rounded-lg appearance-none cursor-pointer accent-[#1b3b2b]"
               />
             </div>
             <div className="space-y-1">
-              <label className="text-[9px] font-bold text-slate-400 uppercase flex justify-between">
+              <label className="text-[9px] font-bold text-[#52504a] uppercase flex justify-between">
                 <span>Denominator (Total Parts)</span>
-                <span className="font-mono text-purple-400">{den}</span>
+                <span className="font-mono text-[#1b3b2b]">{den}</span>
               </label>
               <input
                 type="range" min="1" max="8" value={den}
                 onChange={e => handleDenChange(parseInt(e.target.value))}
-                className="w-full h-1 bg-slate-950 rounded-lg appearance-none cursor-pointer accent-purple-500"
+                className="w-full h-1 bg-[#fbfbfa] rounded-lg appearance-none cursor-pointer accent-[#1b3b2b]"
               />
             </div>
           </div>
 
-          <div className="flex justify-between border-t border-white/5 pt-2 text-xs">
-            <span className="text-slate-400 font-semibold text-[9px] tracking-wider uppercase">Decimal Value</span>
-            <strong className="text-cyan-400 font-mono">{(num / den).toFixed(3)}</strong>
+          <div className="flex justify-between border-t border-[#e5e1d5] pt-2 text-xs">
+            <span className="text-[#52504a] font-semibold text-[9px] tracking-wider uppercase">Decimal Value</span>
+            <strong className="text-[#1b3b2b] font-mono">{(num / den).toFixed(3)}</strong>
           </div>
         </div>
 
-        <div className="p-3 bg-purple-950/20 border border-purple-500/20 rounded-lg text-[10px] leading-relaxed text-slate-400 font-semibold">
-          <strong className="text-purple-400 block mb-0.5">Fractions:</strong>
+        <div className="p-3 bg-purple-950/20 border border-[#e5e1d5] rounded-lg text-[10px] leading-relaxed text-[#52504a] font-semibold">
+          <strong className="text-[#1b3b2b] block mb-0.5">Fractions:</strong>
           A fraction represents divisions of a whole. Denominator is the total equal partitions, Numerator counts the partitions chosen.
         </div>
       </div>
@@ -710,11 +710,11 @@ const ConstructionsSandbox = () => {
   const [step, setStep] = useState(1);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 bg-slate-950 p-5 border border-white/10 rounded-xl">
+    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 bg-[#fbfbfa] p-5 border border-[#e5e1d5] rounded-xl">
       <div className="md:col-span-6 flex flex-col items-center justify-center">
-        <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-3">Construction Animator</span>
+        <span className="text-[8px] font-black text-[#827f76] uppercase tracking-widest mb-3">Construction Animator</span>
         
-        <div className="w-48 h-48 bg-slate-900 border border-white/5 rounded-xl flex items-center justify-center relative overflow-hidden shadow-inner">
+        <div className="w-48 h-48 bg-white border border-[#e5e1d5] rounded-xl flex items-center justify-center relative overflow-hidden shadow-inner">
           <svg className="w-full h-full" viewBox="0 0 200 200">
             {/* Base Line AB */}
             <line x1="40" y1="120" x2="160" y2="120" stroke="#4b5563" strokeWidth="2.5" />
@@ -765,23 +765,23 @@ const ConstructionsSandbox = () => {
       </div>
 
       <div className="md:col-span-6 flex flex-col justify-between text-left space-y-4">
-        <div className="p-4 bg-slate-900 border border-white/10 rounded-lg space-y-4">
-          <span className="block text-[8px] font-black text-slate-500 uppercase tracking-widest">Construction Steps</span>
+        <div className="p-4 bg-white border border-[#e5e1d5] rounded-lg space-y-4">
+          <span className="block text-[8px] font-black text-[#827f76] uppercase tracking-widest">Construction Steps</span>
           
           <div className="space-y-1.5 text-[11px] text-slate-300 font-bold">
-            <div className={`p-2 rounded flex items-center justify-between ${step === 1 ? 'bg-purple-500/10 border border-purple-500/20 text-purple-400' : 'opacity-50'}`}>
+            <div className={`p-2 rounded flex items-center justify-between ${step === 1 ? 'bg-[#f5f3ec] border border-[#e5e1d5] text-[#1b3b2b]' : 'opacity-50'}`}>
               <span>1. Draw Base Segment AB</span>
               {step > 1 && <Check className="w-3.5 h-3.5 text-green-400" />}
             </div>
-            <div className={`p-2 rounded flex items-center justify-between ${step === 2 ? 'bg-purple-500/10 border border-purple-500/20 text-purple-400' : 'opacity-50'}`}>
+            <div className={`p-2 rounded flex items-center justify-between ${step === 2 ? 'bg-[#f5f3ec] border border-[#e5e1d5] text-[#1b3b2b]' : 'opacity-50'}`}>
               <span>2. Sweep Arc from Point A (R &gt; half)</span>
               {step > 2 && <Check className="w-3.5 h-3.5 text-green-400" />}
             </div>
-            <div className={`p-2 rounded flex items-center justify-between ${step === 3 ? 'bg-purple-500/10 border border-purple-500/20 text-purple-400' : 'opacity-50'}`}>
+            <div className={`p-2 rounded flex items-center justify-between ${step === 3 ? 'bg-[#f5f3ec] border border-[#e5e1d5] text-[#1b3b2b]' : 'opacity-50'}`}>
               <span>3. Sweep identical Arc from B</span>
               {step > 3 && <Check className="w-3.5 h-3.5 text-green-400" />}
             </div>
-            <div className={`p-2 rounded flex items-center justify-between ${step === 4 ? 'bg-purple-500/10 border border-purple-500/20 text-purple-400' : 'opacity-50'}`}>
+            <div className={`p-2 rounded flex items-center justify-between ${step === 4 ? 'bg-[#f5f3ec] border border-[#e5e1d5] text-[#1b3b2b]' : 'opacity-50'}`}>
               <span>4. Draw line through Intersections</span>
               {step > 4 && <Check className="w-3.5 h-3.5 text-green-400" />}
             </div>
@@ -791,7 +791,7 @@ const ConstructionsSandbox = () => {
             <button
               onClick={() => setStep(prev => Math.max(1, prev - 1))}
               disabled={step === 1}
-              className="flex-1 py-2 bg-slate-950 border border-white/5 hover:bg-slate-800 text-slate-400 rounded text-[9px] font-black uppercase tracking-widest disabled:opacity-40"
+              className="flex-1 py-2 bg-[#fbfbfa] border border-[#e5e1d5] hover:bg-[#ede9de] text-[#52504a] rounded text-[9px] font-black uppercase tracking-widest disabled:opacity-40"
             >
               Back
             </button>
@@ -810,8 +810,8 @@ const ConstructionsSandbox = () => {
           </div>
         </div>
 
-        <div className="p-3 bg-purple-950/20 border border-purple-500/20 rounded-lg text-[10px] leading-relaxed text-slate-400 font-semibold">
-          <strong className="text-purple-400 block mb-0.5">Constructions:</strong>
+        <div className="p-3 bg-purple-950/20 border border-[#e5e1d5] rounded-lg text-[10px] leading-relaxed text-[#52504a] font-semibold">
+          <strong className="text-[#1b3b2b] block mb-0.5">Constructions:</strong>
           A perpendicular bisector splits a segment exactly in half at 90 degrees. Compasses preserve radial distances to locate bisect points.
         </div>
       </div>
@@ -838,11 +838,11 @@ const SymmetrySandbox = () => {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 bg-slate-950 p-5 border border-white/10 rounded-xl">
+    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 bg-[#fbfbfa] p-5 border border-[#e5e1d5] rounded-xl">
       <div className="md:col-span-8 flex flex-col items-center justify-center">
-        <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-3">Reflective Symmetry Matrix</span>
+        <span className="text-[8px] font-black text-[#827f76] uppercase tracking-widest mb-3">Reflective Symmetry Matrix</span>
         
-        <div className="flex gap-3 bg-slate-900/40 p-4 border border-white/5 rounded-2xl items-center shadow-inner">
+        <div className="flex gap-3 bg-white/40 p-4 border border-[#e5e1d5] rounded-2xl items-center shadow-inner">
           {/* Left Grid (User controlled) */}
           <div className="grid grid-cols-4 gap-1.5">
             {Array.from({ length: 16 }).map((_, idx) => {
@@ -854,7 +854,7 @@ const SymmetrySandbox = () => {
                   className={`w-8 h-8 border rounded-md cursor-pointer transition-colors ${
                     isActive 
                       ? 'bg-purple-500 border-purple-400 shadow-[0_0_6px_rgba(168,85,247,0.3)]' 
-                      : 'bg-slate-950 border-white/5 hover:border-slate-800'
+                      : 'bg-[#fbfbfa] border-[#e5e1d5] hover:border-slate-800'
                   }`}
                 />
               );
@@ -882,7 +882,7 @@ const SymmetrySandbox = () => {
                   className={`w-8 h-8 border-2 border-dashed rounded-md transition-colors ${
                     isActive 
                       ? 'bg-cyan-500/90 border-cyan-400 shadow-[0_0_6px_rgba(34,211,238,0.3)]' 
-                      : 'bg-slate-950/20 border-white/5'
+                      : 'bg-[#fbfbfa]/20 border-[#e5e1d5]'
                   }`}
                 />
               );
@@ -892,21 +892,21 @@ const SymmetrySandbox = () => {
       </div>
 
       <div className="md:col-span-4 flex flex-col justify-between text-left space-y-4">
-        <div className="p-4 bg-slate-900 border border-white/10 rounded-lg space-y-4">
-          <span className="block text-[8px] font-black text-slate-500 uppercase tracking-widest">Mirror Controls</span>
-          <p className="text-[10px] text-slate-400 font-semibold leading-normal">
+        <div className="p-4 bg-white border border-[#e5e1d5] rounded-lg space-y-4">
+          <span className="block text-[8px] font-black text-[#827f76] uppercase tracking-widest">Mirror Controls</span>
+          <p className="text-[10px] text-[#52504a] font-semibold leading-normal">
             Draw dots on the left grid. See how reflection symmetry projects cells to the right side!
           </p>
           <button
             onClick={clearGrid}
-            className="w-full py-2.5 bg-slate-950 border border-white/10 hover:bg-slate-800 rounded text-[9px] font-black uppercase tracking-widest text-slate-400 flex items-center justify-center gap-1.5"
+            className="w-full py-2.5 bg-[#fbfbfa] border border-[#e5e1d5] hover:bg-[#ede9de] rounded text-[9px] font-black uppercase tracking-widest text-[#52504a] flex items-center justify-center gap-1.5"
           >
             <RotateCcw className="w-3.5 h-3.5" /> Clear canvas
           </button>
         </div>
 
-        <div className="p-3 bg-purple-950/20 border border-purple-500/20 rounded-lg text-[10px] leading-relaxed text-slate-400 font-semibold">
-          <strong className="text-purple-400 block mb-0.5">Line Symmetry:</strong>
+        <div className="p-3 bg-purple-950/20 border border-[#e5e1d5] rounded-lg text-[10px] leading-relaxed text-[#52504a] font-semibold">
+          <strong className="text-[#1b3b2b] block mb-0.5">Line Symmetry:</strong>
           An axis line of symmetry divides a shape into two identical halves, behaving exactly like mirror reflections.
         </div>
       </div>
@@ -921,9 +921,9 @@ const IntegersSandbox = () => {
   const [pos, setPos] = useState(0);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 bg-slate-950 p-5 border border-white/10 rounded-xl">
-      <div className="md:col-span-12 flex flex-col items-center justify-center p-4 bg-slate-900/50 border border-white/5 rounded-xl">
-        <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-6">Interactive 1D Number Line</span>
+    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 bg-[#fbfbfa] p-5 border border-[#e5e1d5] rounded-xl">
+      <div className="md:col-span-12 flex flex-col items-center justify-center p-4 bg-white border border-[#e5e1d5] rounded-xl">
+        <span className="text-[8px] font-black text-[#827f76] uppercase tracking-widest mb-6">Interactive 1D Number Line</span>
         
         {/* Horizontal Number Line ticks */}
         <div className="relative w-full flex items-center justify-between px-4 pb-4 select-none">
@@ -940,7 +940,7 @@ const IntegersSandbox = () => {
                 <div className={`h-3 w-0.5 ${isZero ? 'h-4 bg-yellow-400 w-1' : 'bg-slate-500'}`} />
                 <span className={`text-[10px] font-mono font-black mt-2 ${
                   isCurrent 
-                    ? 'text-purple-400 scale-125' 
+                    ? 'text-[#1b3b2b] scale-125' 
                     : isZero 
                       ? 'text-yellow-400' 
                       : isPos 
@@ -965,15 +965,15 @@ const IntegersSandbox = () => {
       </div>
 
       <div className="md:col-span-12 grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
-        <div className="p-4 bg-slate-900 border border-white/10 rounded-lg space-y-3">
-          <span className="block text-[8px] font-black text-slate-500 uppercase tracking-widest">Walk Controller</span>
+        <div className="p-4 bg-white border border-[#e5e1d5] rounded-lg space-y-3">
+          <span className="block text-[8px] font-black text-[#827f76] uppercase tracking-widest">Walk Controller</span>
           <div className="space-y-1">
             <input
               type="range" min="-5" max="5" value={pos}
               onChange={e => setPos(parseInt(e.target.value))}
-              className="w-full h-1 bg-slate-950 rounded-lg appearance-none cursor-pointer accent-purple-500"
+              className="w-full h-1 bg-[#fbfbfa] rounded-lg appearance-none cursor-pointer accent-[#1b3b2b]"
             />
-            <div className="flex justify-between text-[8px] font-black text-slate-500 font-mono">
+            <div className="flex justify-between text-[8px] font-black text-[#827f76] font-mono">
               <span className="text-rose-500">-5 Debt</span>
               <span className="text-yellow-400">0 Neutral</span>
               <span className="text-green-500">+5 Fortune</span>
@@ -981,9 +981,9 @@ const IntegersSandbox = () => {
           </div>
         </div>
 
-        <div className="p-4 bg-purple-950/20 border border-purple-500/20 rounded-lg text-[10px] leading-relaxed text-slate-400 font-semibold flex flex-col justify-center">
+        <div className="p-4 bg-purple-950/20 border border-[#e5e1d5] rounded-lg text-[10px] leading-relaxed text-[#52504a] font-semibold flex flex-col justify-center">
           <div>
-            <strong className="text-purple-400 block mb-0.5">Additive Inverse:</strong>
+            <strong className="text-[#1b3b2b] block mb-0.5">Additive Inverse:</strong>
             Integers encompass negative numbers, positive whole numbers, and zero. The opposite of a number is its inverse (e.g. +3 inverse is -3). Adding opposite numbers always results in exactly 0!
           </div>
         </div>
@@ -1031,9 +1031,9 @@ const Class6MathSandbox = ({ chapterTitle, activeConcept }) => {
 
   // Fallback
   return (
-    <div className="bg-slate-900 p-6 border border-white/10 rounded-xl text-center text-slate-350">
-      <HelpCircle className="w-10 h-10 text-purple-400 mx-auto animate-pulse mb-2" />
-      <h5 className="text-xs font-black uppercase text-white mb-2">Interactive Math Visualization</h5>
+    <div className="bg-white p-6 border border-[#e5e1d5] rounded-xl text-center text-[#52504a]">
+      <HelpCircle className="w-10 h-10 text-[#1b3b2b] mx-auto animate-pulse mb-2" />
+      <h5 className="text-xs font-black uppercase text-[#1a1917] mb-2">Interactive Math Visualization</h5>
       <p className="text-[11px]">{activeConcept?.definition || "Select a concept step to begin your visual analysis."}</p>
     </div>
   );

@@ -35,24 +35,24 @@ const ScientificMethodSandbox = () => {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center border-b border-white/5 pb-2">
-        <span className="text-[10px] font-black text-purple-400 uppercase tracking-widest">
+      <div className="flex justify-between items-center border-b border-[#e5e1d5] pb-2">
+        <span className="text-[10px] font-black text-[#1b3b2b] uppercase tracking-widest">
           Flight Fuel Lab: Metric vs Imperial Calibration
         </span>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
         {/* Simulator Panel */}
-        <div className="md:col-span-7 bg-slate-950 p-4 rounded-xl border border-white/5 flex flex-col justify-between space-y-4">
-          <div className="relative h-44 bg-slate-900 border border-white/10 rounded-xl overflow-hidden flex flex-col items-center justify-center p-4">
-            <span className="text-[7px] font-black text-slate-500 uppercase tracking-widest absolute top-2 left-2">
+        <div className="md:col-span-7 bg-[#fbfbfa] p-4 rounded-xl border border-[#e5e1d5] flex flex-col justify-between space-y-4">
+          <div className="relative h-44 bg-white border border-[#e5e1d5] rounded-xl overflow-hidden flex flex-col items-center justify-center p-4">
+            <span className="text-[7px] font-black text-[#827f76] uppercase tracking-widest absolute top-2 left-2">
               Airplane Fuel Weight Chamber
             </span>
 
             <span className="text-3xl animate-bounce">✈️⛽</span>
             <div className="text-center mt-2 space-y-1">
-              <span className="text-[10px] font-bold text-slate-400 block">Fuel Mass Log:</span>
-              <strong className="text-cyan-400 font-mono text-xl">
+              <span className="text-[10px] font-bold text-[#52504a] block">Fuel Mass Log:</span>
+              <strong className="text-[#1b3b2b] font-mono text-xl">
                 {massValue} {unitMode === 'metric' ? 'kg' : 'lbs'}
               </strong>
             </div>
@@ -65,19 +65,19 @@ const ScientificMethodSandbox = () => {
           </div>
 
           <div className="space-y-2">
-            <div className="flex justify-between text-[9px] font-black text-slate-400">
+            <div className="flex justify-between text-[9px] font-black text-[#52504a]">
               <span>SELECT UNIT METRIC & SLIDER INPUT</span>
             </div>
             <div className="flex gap-2">
               <button
                 onClick={() => { setUnitMode('metric'); setConversionSuccess(false); }}
-                className={`flex-1 py-1 rounded text-[8px] font-black uppercase tracking-wider ${unitMode === 'metric' ? 'bg-purple-500 text-black' : 'bg-slate-900 text-slate-400 hover:text-white'}`}
+                className={`flex-1 py-1 rounded text-[8px] font-black uppercase tracking-wider ${unitMode === 'metric' ? 'bg-purple-500 text-black' : 'bg-white text-[#52504a] hover:text-white'}`}
               >
                 Metric (kg)
               </button>
               <button
                 onClick={() => { setUnitMode('imperial'); setConversionSuccess(false); }}
-                className={`flex-1 py-1 rounded text-[8px] font-black uppercase tracking-wider ${unitMode === 'imperial' ? 'bg-purple-500 text-black' : 'bg-slate-900 text-slate-400 hover:text-white'}`}
+                className={`flex-1 py-1 rounded text-[8px] font-black uppercase tracking-wider ${unitMode === 'imperial' ? 'bg-purple-500 text-black' : 'bg-white text-[#52504a] hover:text-white'}`}
               >
                 Imperial (lbs)
               </button>
@@ -88,15 +88,15 @@ const ScientificMethodSandbox = () => {
               max="300"
               value={massValue}
               onChange={(e) => { setMassValue(parseInt(e.target.value)); setConversionSuccess(false); }}
-              className="w-full accent-purple-500 cursor-pointer"
+              className="w-full accent-[#1b3b2b] cursor-pointer"
             />
           </div>
         </div>
 
         {/* Readout panel */}
         <div className="md:col-span-5 space-y-4">
-          <div className="p-4 bg-slate-900 border border-white/5 rounded-xl space-y-3 min-h-[140px] text-[10px] text-slate-350 leading-relaxed font-semibold">
-            <span className="font-black text-[9px] uppercase tracking-wider text-purple-400 block border-b border-white/5 pb-1.5 flex items-center gap-1">
+          <div className="p-4 bg-white border border-[#e5e1d5] rounded-xl space-y-3 min-h-[140px] text-[10px] text-[#52504a] leading-relaxed font-semibold">
+            <span className="font-black text-[9px] uppercase tracking-wider text-[#1b3b2b] block border-b border-[#e5e1d5] pb-1.5 flex items-center gap-1">
               <CompassIcon className="w-3.5 h-3.5" /> Mission Calibration
             </span>
             <p>
@@ -107,7 +107,7 @@ const ScientificMethodSandbox = () => {
             </p>
             <button
               onClick={handleRunVerification}
-              className="w-full py-2 bg-slate-800 hover:bg-slate-700 text-white text-[9px] font-black uppercase tracking-widest rounded transition-all mt-1"
+              className="w-full py-2 bg-[#ede9de] hover:bg-slate-700 text-[#1a1917] text-[9px] font-black uppercase tracking-widest rounded transition-all mt-1"
             >
               Verify Fuel Weight
             </button>
@@ -151,17 +151,17 @@ const TissueViewerSandbox = () => {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center border-b border-white/5 pb-2">
-        <span className="text-[10px] font-black text-purple-400 uppercase tracking-widest">
+      <div className="flex justify-between items-center border-b border-[#e5e1d5] pb-2">
+        <span className="text-[10px] font-black text-[#1b3b2b] uppercase tracking-widest">
           Microscope Simulator: Tissue Cell Activation
         </span>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
         {/* Tissue Microscope View */}
-        <div className="md:col-span-7 bg-slate-950 p-4 rounded-xl border border-white/5 flex flex-col justify-between space-y-4">
-          <div className="relative h-44 bg-slate-900 border border-white/10 rounded-xl overflow-hidden flex items-center justify-center">
-            <span className="text-[7px] font-black text-slate-500 uppercase tracking-widest absolute top-2 left-2">
+        <div className="md:col-span-7 bg-[#fbfbfa] p-4 rounded-xl border border-[#e5e1d5] flex flex-col justify-between space-y-4">
+          <div className="relative h-44 bg-white border border-[#e5e1d5] rounded-xl overflow-hidden flex items-center justify-center">
+            <span className="text-[7px] font-black text-[#827f76] uppercase tracking-widest absolute top-2 left-2">
               Slide Chamber View (1000x Magnification)
             </span>
 
@@ -201,7 +201,7 @@ const TissueViewerSandbox = () => {
                   <motion.div
                     key={idx}
                     className={`border border-emerald-500/30 rounded-sm flex items-center justify-center text-[8px] font-black transition-all ${
-                      tissueState === 'active' ? 'bg-emerald-500/20 border-emerald-400 scale-105' : 'bg-slate-950 text-slate-500'
+                      tissueState === 'active' ? 'bg-emerald-500/20 border-emerald-400 scale-105' : 'bg-[#fbfbfa] text-[#827f76]'
                     }`}
                   >
                     🌱
@@ -218,7 +218,7 @@ const TissueViewerSandbox = () => {
                     key={idx}
                     animate={tissueState === 'active' ? { scaleX: [1, 0.8, 1] } : {}}
                     transition={{ duration: 0.8, repeat: 1 }}
-                    className="h-3 bg-gradient-to-r from-red-600 to-rose-500 rounded-full border border-white/10 relative overflow-hidden"
+                    className="h-3 bg-gradient-to-r from-red-600 to-rose-500 rounded-full border border-[#e5e1d5] relative overflow-hidden"
                   >
                     {/* Striations */}
                     <div className="absolute inset-0 flex justify-around opacity-30 select-none">
@@ -234,13 +234,13 @@ const TissueViewerSandbox = () => {
           </div>
 
           <div className="space-y-1.5">
-            <span className="text-[7px] text-slate-500 uppercase tracking-widest block font-black">Choose Tissue Sample:</span>
+            <span className="text-[7px] text-[#827f76] uppercase tracking-widest block font-black">Choose Tissue Sample:</span>
             <div className="flex gap-2">
               {['neuron', 'meristem', 'muscle'].map(type => (
                 <button
                   key={type}
                   onClick={() => { setTissueType(type); setTissueState('idle'); }}
-                  className={`flex-1 py-1 rounded text-[8px] font-black uppercase tracking-wider ${tissueType === type ? 'bg-purple-500 text-black' : 'bg-slate-900 text-slate-400 hover:text-white'}`}
+                  className={`flex-1 py-1 rounded text-[8px] font-black uppercase tracking-wider ${tissueType === type ? 'bg-purple-500 text-black' : 'bg-white text-[#52504a] hover:text-white'}`}
                 >
                   {type}
                 </button>
@@ -251,8 +251,8 @@ const TissueViewerSandbox = () => {
 
         {/* Diagnostic console */}
         <div className="md:col-span-5 space-y-4">
-          <div className="p-4 bg-slate-900 border border-white/5 rounded-xl space-y-3 min-h-[140px] text-[10px] text-slate-350 leading-relaxed font-semibold">
-            <span className="font-black text-[9px] uppercase tracking-wider text-cyan-400 block border-b border-white/5 pb-1.5 flex items-center gap-1">
+          <div className="p-4 bg-white border border-[#e5e1d5] rounded-xl space-y-3 min-h-[140px] text-[10px] text-[#52504a] leading-relaxed font-semibold">
+            <span className="font-black text-[9px] uppercase tracking-wider text-[#1b3b2b] block border-b border-[#e5e1d5] pb-1.5 flex items-center gap-1">
               <Eye className="w-3.5 h-3.5" /> Specimen Analysis
             </span>
             {tissueType === 'neuron' && (
@@ -295,17 +295,17 @@ const EnergyMachinesSandbox = () => {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center border-b border-white/5 pb-2">
-        <span className="text-[10px] font-black text-purple-400 uppercase tracking-widest">
+      <div className="flex justify-between items-center border-b border-[#e5e1d5] pb-2">
+        <span className="text-[10px] font-black text-[#1b3b2b] uppercase tracking-widest">
           Hydraulic Power Lab: Kinetic Energy Converter
         </span>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
         {/* Simulation */}
-        <div className="md:col-span-7 bg-slate-950 p-4 rounded-xl border border-white/5 flex flex-col justify-between space-y-4">
-          <div className="relative h-44 bg-slate-900 border border-white/10 rounded-xl overflow-hidden flex flex-col items-center justify-center p-4">
-            <span className="text-[7px] font-black text-slate-500 uppercase tracking-widest absolute top-2 left-2">
+        <div className="md:col-span-7 bg-[#fbfbfa] p-4 rounded-xl border border-[#e5e1d5] flex flex-col justify-between space-y-4">
+          <div className="relative h-44 bg-white border border-[#e5e1d5] rounded-xl overflow-hidden flex flex-col items-center justify-center p-4">
+            <span className="text-[7px] font-black text-[#827f76] uppercase tracking-widest absolute top-2 left-2">
               Traditional Water Mill (Panchakki) Chamber
             </span>
 
@@ -342,9 +342,9 @@ const EnergyMachinesSandbox = () => {
           </div>
 
           <div className="space-y-1">
-            <div className="flex justify-between text-[9px] font-black text-slate-400">
+            <div className="flex justify-between text-[9px] font-black text-[#52504a]">
               <span>WATER FLOW RATE RATE INPUT</span>
-              <span className="font-mono text-purple-400">{flowRate} m/s</span>
+              <span className="font-mono text-[#1b3b2b]">{flowRate} m/s</span>
             </div>
             <input
               type="range"
@@ -352,21 +352,21 @@ const EnergyMachinesSandbox = () => {
               max="10"
               value={flowRate}
               onChange={(e) => setFlowRate(parseInt(e.target.value))}
-              className="w-full accent-purple-500 cursor-pointer"
+              className="w-full accent-[#1b3b2b] cursor-pointer"
             />
           </div>
         </div>
 
         {/* Readout stats */}
         <div className="md:col-span-5 space-y-4">
-          <div className="p-4 bg-slate-900 border border-white/5 rounded-xl space-y-3 min-h-[140px] text-[10px] text-slate-350 leading-relaxed font-semibold">
-            <span className="font-black text-[9px] uppercase tracking-wider text-cyan-400 block border-b border-white/5 pb-1.5 flex items-center gap-1">
+          <div className="p-4 bg-white border border-[#e5e1d5] rounded-xl space-y-3 min-h-[140px] text-[10px] text-[#52504a] leading-relaxed font-semibold">
+            <span className="font-black text-[9px] uppercase tracking-wider text-[#1b3b2b] block border-b border-[#e5e1d5] pb-1.5 flex items-center gap-1">
               <Activity className="w-3.5 h-3.5" /> Energy Calculations
             </span>
             <div className="space-y-1.5 font-mono text-[9px]">
               <div className="flex justify-between">
                 <span>FLOW SPEED (v):</span>
-                <span className="text-white">{flowRate} m/s</span>
+                <span className="text-[#1a1917]">{flowRate} m/s</span>
               </div>
               <div className="flex justify-between">
                 <span>PADDLE RPM:</span>
@@ -378,10 +378,10 @@ const EnergyMachinesSandbox = () => {
               </div>
               <div className="flex justify-between">
                 <span>GENERATED POWER:</span>
-                <span className="text-cyan-400">{energyGenerated.toFixed(1)} Watts</span>
+                <span className="text-[#1b3b2b]">{energyGenerated.toFixed(1)} Watts</span>
               </div>
             </div>
-            <p className="text-slate-450 border-t border-white/5 pt-2 text-[9px]">
+            <p className="text-[#52504a] border-t border-[#e5e1d5] pt-2 text-[9px]">
               Water mills convert the gravitational Potential Energy of falling water into Kinetic Energy to run grinding tools.
             </p>
           </div>
@@ -433,25 +433,25 @@ const ChemicalCombinationsSandbox = () => {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center border-b border-white/5 pb-2">
-        <span className="text-[10px] font-black text-purple-400 uppercase tracking-widest">
+      <div className="flex justify-between items-center border-b border-[#e5e1d5] pb-2">
+        <span className="text-[10px] font-black text-[#1b3b2b] uppercase tracking-widest">
           Chemical Purifier: Law of Conservation of Mass
         </span>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
         {/* Scale simulation */}
-        <div className="md:col-span-7 bg-slate-950 p-4 rounded-xl border border-white/5 flex flex-col justify-between space-y-4">
-          <div className="relative h-44 bg-slate-900 border border-white/10 rounded-xl overflow-hidden flex flex-col items-center justify-center p-4">
-            <span className="text-[7px] font-black text-slate-500 uppercase tracking-widest absolute top-2 left-2">
+        <div className="md:col-span-7 bg-[#fbfbfa] p-4 rounded-xl border border-[#e5e1d5] flex flex-col justify-between space-y-4">
+          <div className="relative h-44 bg-white border border-[#e5e1d5] rounded-xl overflow-hidden flex flex-col items-center justify-center p-4">
+            <span className="text-[7px] font-black text-[#827f76] uppercase tracking-widest absolute top-2 left-2">
               Sealed Reaction Flask & Scale
             </span>
 
             {/* Weighing scale grid */}
             <div className="text-center space-y-2">
               <span className="text-3xl">🧪⚗️</span>
-              <div className="bg-slate-950 p-2 rounded-lg border border-white/5 font-mono">
-                <span className="text-[7px] text-slate-500 block uppercase font-bold">Total Scale Weight:</span>
+              <div className="bg-[#fbfbfa] p-2 rounded-lg border border-[#e5e1d5] font-mono">
+                <span className="text-[7px] text-[#827f76] block uppercase font-bold">Total Scale Weight:</span>
                 <strong className="text-green-400 text-xl font-black">{reactantMass.toFixed(2)} g</strong>
               </div>
             </div>
@@ -474,7 +474,7 @@ const ChemicalCombinationsSandbox = () => {
             {reactionSuccess && (
               <button
                 onClick={resetReaction}
-                className="px-3 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-all"
+                className="px-3 bg-[#ede9de] text-[#1a1917] rounded-lg hover:bg-slate-700 transition-all"
               >
                 <RotateCcw className="w-4 h-4" />
               </button>
@@ -484,14 +484,14 @@ const ChemicalCombinationsSandbox = () => {
 
         {/* Readout panel */}
         <div className="md:col-span-5 space-y-4">
-          <div className="p-4 bg-slate-900 border border-white/5 rounded-xl space-y-3 min-h-[140px] text-[10px] text-slate-350 leading-relaxed font-semibold">
-            <span className="font-black text-[9px] uppercase tracking-wider text-cyan-400 block border-b border-white/5 pb-1.5 flex items-center gap-1">
+          <div className="p-4 bg-white border border-[#e5e1d5] rounded-xl space-y-3 min-h-[140px] text-[10px] text-[#52504a] leading-relaxed font-semibold">
+            <span className="font-black text-[9px] uppercase tracking-wider text-[#1b3b2b] block border-b border-[#e5e1d5] pb-1.5 flex items-center gap-1">
               <CompassIcon className="w-3.5 h-3.5" /> Conservation Principle
             </span>
             <p>
               Antoine Lavoisier established that mass can neither be created nor destroyed in a chemical reaction.
             </p>
-            <p className="text-slate-400 leading-normal">
+            <p className="text-[#52504a] leading-normal">
               {reactionSuccess ? (
                 <span className="text-green-400">✓ SUCCESS: Notice how the reactants turned into products, yet the mass scale remained exactly **{reactantMass.toFixed(2)} g**!</span>
               ) : (
@@ -543,17 +543,17 @@ const SoundWavesSandbox = () => {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center border-b border-white/5 pb-2">
-        <span className="text-[10px] font-black text-purple-400 uppercase tracking-widest">
+      <div className="flex justify-between items-center border-b border-[#e5e1d5] pb-2">
+        <span className="text-[10px] font-black text-[#1b3b2b] uppercase tracking-widest">
           Acoustic Laboratory: Wave Scope & SONAR Depth Scanner
         </span>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
         {/* Wave visualizer */}
-        <div className="md:col-span-7 bg-slate-950 p-4 rounded-xl border border-white/5 flex flex-col justify-between space-y-4">
-          <div className="relative h-44 bg-slate-900 border border-white/10 rounded-xl overflow-hidden flex items-center justify-center p-4">
-            <span className="text-[7px] font-black text-slate-500 uppercase tracking-widest absolute top-2 left-2">
+        <div className="md:col-span-7 bg-[#fbfbfa] p-4 rounded-xl border border-[#e5e1d5] flex flex-col justify-between space-y-4">
+          <div className="relative h-44 bg-white border border-[#e5e1d5] rounded-xl overflow-hidden flex items-center justify-center p-4">
+            <span className="text-[7px] font-black text-[#827f76] uppercase tracking-widest absolute top-2 left-2">
               Oscilloscope Wave-profile Display
             </span>
 
@@ -570,7 +570,7 @@ const SoundWavesSandbox = () => {
             </svg>
 
             {sonarActive && (
-              <div className="absolute inset-0 bg-blue-950/40 flex items-center justify-center z-10 text-xs font-black uppercase text-cyan-400 animate-pulse">
+              <div className="absolute inset-0 bg-blue-950/40 flex items-center justify-center z-10 text-xs font-black uppercase text-[#1b3b2b] animate-pulse">
                 🔊 SONAR Ping Sent... Receiving Echo...
               </div>
             )}
@@ -578,9 +578,9 @@ const SoundWavesSandbox = () => {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
-              <div className="flex justify-between text-[8px] font-black text-slate-400">
+              <div className="flex justify-between text-[8px] font-black text-[#52504a]">
                 <span>FREQUENCY</span>
-                <span className="font-mono text-purple-400">{frequency} Hz</span>
+                <span className="font-mono text-[#1b3b2b]">{frequency} Hz</span>
               </div>
               <input
                 type="range"
@@ -588,13 +588,13 @@ const SoundWavesSandbox = () => {
                 max="10"
                 value={frequency}
                 onChange={(e) => setFrequency(parseInt(e.target.value))}
-                className="w-full accent-purple-500 cursor-pointer"
+                className="w-full accent-[#1b3b2b] cursor-pointer"
               />
             </div>
             <div className="space-y-1">
-              <div className="flex justify-between text-[8px] font-black text-slate-400">
+              <div className="flex justify-between text-[8px] font-black text-[#52504a]">
                 <span>AMPLITUDE</span>
-                <span className="font-mono text-purple-400">{amplitude}</span>
+                <span className="font-mono text-[#1b3b2b]">{amplitude}</span>
               </div>
               <input
                 type="range"
@@ -602,7 +602,7 @@ const SoundWavesSandbox = () => {
                 max="10"
                 value={amplitude}
                 onChange={(e) => setAmplitude(parseInt(e.target.value))}
-                className="w-full accent-purple-500 cursor-pointer"
+                className="w-full accent-[#1b3b2b] cursor-pointer"
               />
             </div>
           </div>
@@ -610,15 +610,15 @@ const SoundWavesSandbox = () => {
 
         {/* Diagnostics & SONAR details */}
         <div className="md:col-span-5 space-y-4">
-          <div className="p-4 bg-slate-900 border border-white/5 rounded-xl space-y-3.5 min-h-[140px] text-[10px] text-slate-350 leading-relaxed font-semibold">
-            <span className="font-black text-[9px] uppercase tracking-wider text-cyan-400 block border-b border-white/5 pb-1.5 flex items-center gap-1">
+          <div className="p-4 bg-white border border-[#e5e1d5] rounded-xl space-y-3.5 min-h-[140px] text-[10px] text-[#52504a] leading-relaxed font-semibold">
+            <span className="font-black text-[9px] uppercase tracking-wider text-[#1b3b2b] block border-b border-[#e5e1d5] pb-1.5 flex items-center gap-1">
               <CompassIcon className="w-3.5 h-3.5" /> SONAR Navigation
             </span>
             <p>
               SONAR uses ultrasonic pulses to measure the depth of water bodies. High frequency produces higher pitch.
             </p>
             {sonarDepth > 0 && (
-              <div className="bg-slate-950 p-2 rounded border border-white/5 font-mono text-[9px] text-green-400 text-center leading-normal">
+              <div className="bg-[#fbfbfa] p-2 rounded border border-[#e5e1d5] font-mono text-[9px] text-green-400 text-center leading-normal">
                 ECHO TRIP TIME: **0.8 seconds** <br />
                 CALCULATED DEPTH: **{sonarDepth} meters**
               </div>
@@ -626,7 +626,7 @@ const SoundWavesSandbox = () => {
             <button
               onClick={handleSonarTrigger}
               disabled={sonarActive}
-              className="w-full py-2 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-white hover:to-white hover:text-black text-white text-[9px] font-black uppercase tracking-widest rounded-lg transition-all"
+              className="w-full py-2 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-white hover:to-white hover:text-black text-[#1a1917] text-[9px] font-black uppercase tracking-widest rounded-lg transition-all"
             >
               Trigger SONAR Ping
             </button>
@@ -660,17 +660,17 @@ const ReproductionLab = () => {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center border-b border-white/5 pb-2">
-        <span className="text-[10px] font-black text-purple-400 uppercase tracking-widest">
+      <div className="flex justify-between items-center border-b border-[#e5e1d5] pb-2">
+        <span className="text-[10px] font-black text-[#1b3b2b] uppercase tracking-widest">
           Genetics Console: Punnett Square Allele Cross-over
         </span>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
         {/* Visual cross board */}
-        <div className="md:col-span-7 bg-slate-950 p-4 rounded-xl border border-white/5 flex flex-col justify-between space-y-4">
-          <div className="relative h-44 bg-slate-900 border border-white/10 rounded-xl overflow-hidden flex flex-col items-center justify-center p-4">
-            <span className="text-[7px] font-black text-slate-500 uppercase tracking-widest absolute top-2 left-2">
+        <div className="md:col-span-7 bg-[#fbfbfa] p-4 rounded-xl border border-[#e5e1d5] flex flex-col justify-between space-y-4">
+          <div className="relative h-44 bg-white border border-[#e5e1d5] rounded-xl overflow-hidden flex flex-col items-center justify-center p-4">
+            <span className="text-[7px] font-black text-[#827f76] uppercase tracking-widest absolute top-2 left-2">
               Cross-over Grid Display
             </span>
 
@@ -680,11 +680,11 @@ const ReproductionLab = () => {
                   <div 
                     key={idx} 
                     className={`p-3 rounded-lg border text-xs font-black uppercase flex flex-col items-center justify-center leading-none ${
-                      allele.includes('R') ? 'bg-rose-500/20 border-rose-500/40 text-rose-400' : 'bg-slate-950 border-white/5 text-slate-400'
+                      allele.includes('R') ? 'bg-rose-500/20 border-rose-500/40 text-rose-400' : 'bg-[#fbfbfa] border-[#e5e1d5] text-[#52504a]'
                     }`}
                   >
                     <span>{allele}</span>
-                    <span className="text-[6px] text-slate-500 mt-1 uppercase font-bold">
+                    <span className="text-[6px] text-[#827f76] mt-1 uppercase font-bold">
                       {allele.includes('R') ? 'Red Flower' : 'White Flower'}
                     </span>
                   </div>
@@ -693,20 +693,20 @@ const ReproductionLab = () => {
             ) : (
               <div className="text-center space-y-2">
                 <span className="text-3xl animate-pulse">🌸🐝</span>
-                <p className="text-[9px] text-slate-500 font-black uppercase">Awaiting pollination cross-over</p>
+                <p className="text-[9px] text-[#827f76] font-black uppercase">Awaiting pollination cross-over</p>
               </div>
             )}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
-              <label className="text-[8px] font-black text-slate-500 uppercase block">Parent 1:</label>
+              <label className="text-[8px] font-black text-[#827f76] uppercase block">Parent 1:</label>
               <div className="flex gap-1">
                 {['R', 'r'].map(a => (
                   <button
                     key={a}
                     onClick={() => { setAlleleParent1(a); setCrossResults(null); }}
-                    className={`flex-1 py-1 rounded text-[8px] font-black ${alleleParent1 === a ? 'bg-purple-500 text-black' : 'bg-slate-900 text-slate-400'}`}
+                    className={`flex-1 py-1 rounded text-[8px] font-black ${alleleParent1 === a ? 'bg-purple-500 text-black' : 'bg-white text-[#52504a]'}`}
                   >
                     {a === 'R' ? 'R (Dom)' : 'r (Rec)'}
                   </button>
@@ -714,13 +714,13 @@ const ReproductionLab = () => {
               </div>
             </div>
             <div className="space-y-1">
-              <label className="text-[8px] font-black text-slate-500 uppercase block">Parent 2:</label>
+              <label className="text-[8px] font-black text-[#827f76] uppercase block">Parent 2:</label>
               <div className="flex gap-1">
                 {['R', 'r'].map(a => (
                   <button
                     key={a}
                     onClick={() => { setAlleleParent2(a); setCrossResults(null); }}
-                    className={`flex-1 py-1 rounded text-[8px] font-black ${alleleParent2 === a ? 'bg-purple-500 text-black' : 'bg-slate-900 text-slate-400'}`}
+                    className={`flex-1 py-1 rounded text-[8px] font-black ${alleleParent2 === a ? 'bg-purple-500 text-black' : 'bg-white text-[#52504a]'}`}
                   >
                     {a === 'R' ? 'R (Dom)' : 'r (Rec)'}
                   </button>
@@ -732,19 +732,19 @@ const ReproductionLab = () => {
 
         {/* Readout panel */}
         <div className="md:col-span-5 space-y-4">
-          <div className="p-4 bg-slate-900 border border-white/5 rounded-xl space-y-3.5 min-h-[140px] text-[10px] text-slate-350 leading-relaxed font-semibold">
-            <span className="font-black text-[9px] uppercase tracking-wider text-cyan-400 block border-b border-white/5 pb-1.5 flex items-center gap-1">
+          <div className="p-4 bg-white border border-[#e5e1d5] rounded-xl space-y-3.5 min-h-[140px] text-[10px] text-[#52504a] leading-relaxed font-semibold">
+            <span className="font-black text-[9px] uppercase tracking-wider text-[#1b3b2b] block border-b border-[#e5e1d5] pb-1.5 flex items-center gap-1">
               <Brain className="w-3.5 h-3.5" /> Genetics Principle
             </span>
             <p>
               Dominant alleles (R, Red flower) hide the phenotypic traits of Recessive alleles (r, white flower).
             </p>
-            <p className="text-slate-400 leading-normal">
+            <p className="text-[#52504a] leading-normal">
               Select alleles for both parent seeds and click Pollinate.
             </p>
             <button
               onClick={handleRunCross}
-              className="w-full py-2.5 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-white hover:to-white hover:text-black text-white text-[9px] font-black uppercase tracking-widest rounded-lg transition-all"
+              className="w-full py-2.5 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-white hover:to-white hover:text-black text-[#1a1917] text-[9px] font-black uppercase tracking-widest rounded-lg transition-all"
             >
               Pollinate & Cross ➔
             </button>
@@ -800,24 +800,24 @@ const KingdomSorterSandbox = () => {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center border-b border-white/5 pb-2">
-        <span className="text-[10px] font-black text-purple-400 uppercase tracking-widest">
+      <div className="flex justify-between items-center border-b border-[#e5e1d5] pb-2">
+        <span className="text-[10px] font-black text-[#1b3b2b] uppercase tracking-widest">
           Taxonomy Laboratory: Whittaker Kingdom Sorter
         </span>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
         {/* Specimen display */}
-        <div className="md:col-span-7 bg-slate-950 p-4 rounded-xl border border-white/5 flex flex-col justify-between space-y-4">
-          <div className="relative h-36 bg-slate-900 border border-white/10 rounded-xl overflow-hidden flex flex-col items-center justify-center p-4">
-            <span className="text-[7px] font-black text-slate-500 uppercase tracking-widest absolute top-2 left-2">
+        <div className="md:col-span-7 bg-[#fbfbfa] p-4 rounded-xl border border-[#e5e1d5] flex flex-col justify-between space-y-4">
+          <div className="relative h-36 bg-white border border-[#e5e1d5] rounded-xl overflow-hidden flex flex-col items-center justify-center p-4">
+            <span className="text-[7px] font-black text-[#827f76] uppercase tracking-widest absolute top-2 left-2">
               Specimen Viewing Slide
             </span>
 
             <div className="text-center space-y-1 mt-2">
               <span className="text-4xl animate-pulse block">{specimens[specimen].emoji}</span>
-              <strong className="text-white text-xs uppercase block font-black mt-1">{specimen} Specimen</strong>
-              <p className="text-[9px] text-slate-400 leading-normal max-w-[180px] font-semibold">{specimens[specimen].desc}</p>
+              <strong className="text-[#1a1917] text-xs uppercase block font-black mt-1">{specimen} Specimen</strong>
+              <p className="text-[9px] text-[#52504a] leading-normal max-w-[180px] font-semibold">{specimens[specimen].desc}</p>
             </div>
           </div>
 
@@ -832,7 +832,7 @@ const KingdomSorterSandbox = () => {
                     ? success 
                       ? 'bg-green-500/20 border-green-500 text-green-400 font-extrabold'
                       : 'bg-red-500/20 border-red-500 text-red-400 font-extrabold'
-                    : 'bg-slate-900 border-white/5 text-slate-400 hover:text-white'
+                    : 'bg-white border-[#e5e1d5] text-[#52504a] hover:text-white'
                 }`}
               >
                 {k}
@@ -843,8 +843,8 @@ const KingdomSorterSandbox = () => {
 
         {/* Switcher & Diagnostics */}
         <div className="md:col-span-5 space-y-4">
-          <div className="p-4 bg-slate-900 border border-white/5 rounded-xl space-y-3.5 min-h-[140px] text-[10px] text-slate-350 leading-relaxed font-semibold">
-            <span className="font-black text-[9px] uppercase tracking-wider text-purple-400 block border-b border-white/5 pb-1.5 flex items-center gap-1">
+          <div className="p-4 bg-white border border-[#e5e1d5] rounded-xl space-y-3.5 min-h-[140px] text-[10px] text-[#52504a] leading-relaxed font-semibold">
+            <span className="font-black text-[9px] uppercase tracking-wider text-[#1b3b2b] block border-b border-[#e5e1d5] pb-1.5 flex items-center gap-1">
               <CompassIcon className="w-3.5 h-3.5" /> Specimen Board
             </span>
             <div className="flex gap-2">
@@ -854,8 +854,8 @@ const KingdomSorterSandbox = () => {
                   onClick={() => { setSpecimen(k); setSelectedKingdom(null); setSuccess(false); }}
                   className={`flex-1 py-1.5 rounded text-[8px] font-black uppercase border transition-all ${
                     specimen === k 
-                      ? 'bg-purple-500/20 border-purple-500 text-purple-400'
-                      : 'bg-slate-950 border-white/5 text-slate-400 hover:text-white'
+                      ? 'bg-purple-500/20 border-purple-500 text-[#1b3b2b]'
+                      : 'bg-[#fbfbfa] border-[#e5e1d5] text-[#52504a] hover:text-white'
                   }`}
                 >
                   {k}
@@ -863,7 +863,7 @@ const KingdomSorterSandbox = () => {
               ))}
             </div>
 
-            <div className="border-t border-white/5 pt-2 text-slate-400 font-semibold leading-relaxed">
+            <div className="border-t border-[#e5e1d5] pt-2 text-[#52504a] font-semibold leading-relaxed">
               {selectedKingdom ? (
                 success ? (
                   <span className="text-green-400">✓ CORRECT: Successfully classified under the kingdom **{selectedKingdom}**!</span>
@@ -902,17 +902,17 @@ const EarthSystemSandbox = () => {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center border-b border-white/5 pb-2">
-        <span className="text-[10px] font-black text-purple-400 uppercase tracking-widest">
+      <div className="flex justify-between items-center border-b border-[#e5e1d5] pb-2">
+        <span className="text-[10px] font-black text-[#1b3b2b] uppercase tracking-widest">
           Planetary Simulation: Albedo & Greenhouse Thermal Matrix
         </span>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
         {/* Planetary view */}
-        <div className="md:col-span-7 bg-slate-950 p-4 rounded-xl border border-white/5 flex flex-col justify-between space-y-4">
-          <div className="relative h-44 bg-slate-900 border border-white/10 rounded-xl overflow-hidden flex flex-col items-center justify-center p-4">
-            <span className="text-[7px] font-black text-slate-500 uppercase tracking-widest absolute top-2 left-2">
+        <div className="md:col-span-7 bg-[#fbfbfa] p-4 rounded-xl border border-[#e5e1d5] flex flex-col justify-between space-y-4">
+          <div className="relative h-44 bg-white border border-[#e5e1d5] rounded-xl overflow-hidden flex flex-col items-center justify-center p-4">
+            <span className="text-[7px] font-black text-[#827f76] uppercase tracking-widest absolute top-2 left-2">
               Atmosphere & Heat Absorption Scope
             </span>
 
@@ -921,9 +921,9 @@ const EarthSystemSandbox = () => {
               <span className="text-4xl animate-pulse block">
                 {earthTemp > 18 ? "🥵🌍" : earthTemp < 10 ? "🥶🌍" : "🌏✨"}
               </span>
-              <div className="bg-slate-950 px-3 py-1.5 border border-white/5 rounded-lg font-mono">
-                <span className="text-[6px] text-slate-500 block uppercase font-bold">Planetary Mean Temp:</span>
-                <strong className={`text-xl font-black ${earthTemp > 18 ? 'text-red-400' : earthTemp < 10 ? 'text-cyan-400' : 'text-green-400'}`}>
+              <div className="bg-[#fbfbfa] px-3 py-1.5 border border-[#e5e1d5] rounded-lg font-mono">
+                <span className="text-[6px] text-[#827f76] block uppercase font-bold">Planetary Mean Temp:</span>
+                <strong className={`text-xl font-black ${earthTemp > 18 ? 'text-red-400' : earthTemp < 10 ? 'text-[#1b3b2b]' : 'text-green-400'}`}>
                   {earthTemp}°C
                 </strong>
               </div>
@@ -932,9 +932,9 @@ const EarthSystemSandbox = () => {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
-              <div className="flex justify-between text-[8px] font-black text-slate-400">
+              <div className="flex justify-between text-[8px] font-black text-[#52504a]">
                 <span>CO₂ CONCENTRATION</span>
-                <span className="font-mono text-purple-400">{co2Level} ppm</span>
+                <span className="font-mono text-[#1b3b2b]">{co2Level} ppm</span>
               </div>
               <input
                 type="range"
@@ -943,13 +943,13 @@ const EarthSystemSandbox = () => {
                 step="50"
                 value={co2Level}
                 onChange={(e) => setCo2Level(parseInt(e.target.value))}
-                className="w-full accent-purple-500 cursor-pointer"
+                className="w-full accent-[#1b3b2b] cursor-pointer"
               />
             </div>
             <div className="space-y-1">
-              <div className="flex justify-between text-[8px] font-black text-slate-400">
+              <div className="flex justify-between text-[8px] font-black text-[#52504a]">
                 <span>POLAR ICE COVER</span>
-                <span className="font-mono text-purple-400">{iceCover}%</span>
+                <span className="font-mono text-[#1b3b2b]">{iceCover}%</span>
               </div>
               <input
                 type="range"
@@ -958,7 +958,7 @@ const EarthSystemSandbox = () => {
                 step="10"
                 value={iceCover}
                 onChange={(e) => setIceCover(parseInt(e.target.value))}
-                className="w-full accent-purple-500 cursor-pointer"
+                className="w-full accent-[#1b3b2b] cursor-pointer"
               />
             </div>
           </div>
@@ -966,22 +966,22 @@ const EarthSystemSandbox = () => {
 
         {/* Readouts diagnostics */}
         <div className="md:col-span-5 space-y-4">
-          <div className="p-4 bg-slate-900 border border-white/5 rounded-xl space-y-3.5 min-h-[140px] text-[10px] text-slate-350 leading-relaxed font-semibold">
-            <span className="font-black text-[9px] uppercase tracking-wider text-cyan-400 block border-b border-white/5 pb-1.5 flex items-center gap-1">
+          <div className="p-4 bg-white border border-[#e5e1d5] rounded-xl space-y-3.5 min-h-[140px] text-[10px] text-[#52504a] leading-relaxed font-semibold">
+            <span className="font-black text-[9px] uppercase tracking-wider text-[#1b3b2b] block border-b border-[#e5e1d5] pb-1.5 flex items-center gap-1">
               <Activity className="w-3.5 h-3.5" /> Climate Analytics
             </span>
-            <div className="space-y-1 text-slate-400 leading-normal">
+            <div className="space-y-1 text-[#52504a] leading-normal">
               {earthTemp > 18 && (
                 <span className="text-red-400 block font-bold">⚠️ GREENHOUSE WARNING: High CO₂ levels are trapping thermal radiation. Polar icecap melting is accelerating.</span>
               )}
               {earthTemp < 10 && (
-                <span className="text-cyan-400 block font-bold">❄️ ALBEDO WARNING: High ice reflection is returning solar radiation back to space, triggering cooling.</span>
+                <span className="text-[#1b3b2b] block font-bold">❄️ ALBEDO WARNING: High ice reflection is returning solar radiation back to space, triggering cooling.</span>
               )}
               {earthTemp >= 10 && earthTemp <= 18 && (
                 <span className="text-green-400 block font-bold">✓ ECOSTASIS: Temperature within normal habitable ranges (10°C - 18°C). Atmospheric balance optimized.</span>
               )}
             </div>
-            <p className="text-slate-450 border-t border-white/5 pt-2 text-[9px]">
+            <p className="text-[#52504a] border-t border-[#e5e1d5] pt-2 text-[9px]">
               Albedo reflects radiation back to space, keeping Earth cool, while greenhouse gases trap heat to sustain the biosphere.
             </p>
           </div>
@@ -1025,11 +1025,11 @@ const Class9ScienceSandbox = ({ chapterTitle = "", activeConcept = null }) => {
 
     // Fallback UI
     return (
-      <div className="bg-slate-900 p-6 border border-white/5 rounded-xl space-y-4 text-center">
-        <Sparkles className="w-10 h-10 text-purple-400 mx-auto animate-pulse" />
-        <h5 className="text-xs font-black uppercase text-white">Concept Visualisation</h5>
-        <div className="p-4 bg-slate-950 border border-white/5 rounded-lg text-[11px] leading-relaxed text-slate-350">
-          <strong className="text-cyan-400 block mb-1">Concept Target:</strong>
+      <div className="bg-white p-6 border border-[#e5e1d5] rounded-xl space-y-4 text-center">
+        <Sparkles className="w-10 h-10 text-[#1b3b2b] mx-auto animate-pulse" />
+        <h5 className="text-xs font-black uppercase text-[#1a1917]">Concept Visualisation</h5>
+        <div className="p-4 bg-[#fbfbfa] border border-[#e5e1d5] rounded-lg text-[11px] leading-relaxed text-[#52504a]">
+          <strong className="text-[#1b3b2b] block mb-1">Concept Target:</strong>
           {activeConcept?.definition || "Explore the subtopics to configure dynamic lab components."}
         </div>
       </div>
@@ -1037,13 +1037,13 @@ const Class9ScienceSandbox = ({ chapterTitle = "", activeConcept = null }) => {
   };
 
   return (
-    <div className="w-full bg-slate-900/60 p-5 border border-white/10 rounded-xl space-y-5 text-left shadow-lg">
+    <div className="w-full bg-white p-5 border border-[#e5e1d5] rounded-xl space-y-5 text-left shadow-lg">
       <div className="space-y-0.5">
-        <span className="block text-[8px] font-black text-purple-400 uppercase tracking-widest">
+        <span className="block text-[8px] font-black text-[#1b3b2b] uppercase tracking-widest">
           Class 9 NCERT Science Laboratory
         </span>
-        <h4 className="text-sm font-black uppercase text-white truncate">{chapterTitle}</h4>
-        <p className="text-slate-400 text-[9px] font-semibold leading-relaxed">
+        <h4 className="text-sm font-black uppercase text-[#1a1917] truncate">{chapterTitle}</h4>
+        <p className="text-[#52504a] text-[9px] font-semibold leading-relaxed">
           Tweak values, slide temperature bars, and trigger reactions to visualize core experimental concepts.
         </p>
       </div>

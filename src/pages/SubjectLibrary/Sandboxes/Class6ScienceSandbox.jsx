@@ -46,22 +46,22 @@ const ScientificMethodSandbox = () => {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center border-b border-white/5 pb-2">
-        <span className="text-[10px] font-black text-purple-400 uppercase tracking-widest">
+      <div className="flex justify-between items-center border-b border-[#e5e1d5] pb-2">
+        <span className="text-[10px] font-black text-[#1b3b2b] uppercase tracking-widest">
           Experiment 1.1: Pen Troubleshooting Lab
         </span>
-        <span className="text-[9px] font-mono text-slate-500">
+        <span className="text-[9px] font-mono text-[#827f76]">
           Stage {stage}/5
         </span>
       </div>
 
-      <div className="bg-slate-950 p-4 rounded-xl border border-white/5 min-h-[180px] flex flex-col justify-between">
+      <div className="bg-[#fbfbfa] p-4 rounded-xl border border-[#e5e1d5] min-h-[180px] flex flex-col justify-between">
         {stage === 1 && (
           <div className="space-y-3">
-            <h6 className="text-xs font-black uppercase text-white">Step 1: Observation</h6>
-            <div className="flex items-center gap-3 bg-slate-900/60 p-3 border border-white/5 rounded-lg">
+            <h6 className="text-xs font-black uppercase text-[#1a1917]">Step 1: Observation</h6>
+            <div className="flex items-center gap-3 bg-white p-3 border border-[#e5e1d5] rounded-lg">
               <span className="text-3xl">✍️❌</span>
-              <p className="text-[10px] text-slate-350 leading-relaxed font-semibold">
+              <p className="text-[10px] text-[#52504a] leading-relaxed font-semibold">
                 You sit down to do homework and start writing. Suddenly, the pen ceases to leave any ink.
               </p>
             </div>
@@ -76,10 +76,10 @@ const ScientificMethodSandbox = () => {
 
         {stage === 2 && (
           <div className="space-y-3">
-            <h6 className="text-xs font-black uppercase text-white">Step 2: Questioning</h6>
-            <div className="flex items-center gap-3 bg-slate-900/60 p-3 border border-white/5 rounded-lg">
+            <h6 className="text-xs font-black uppercase text-[#1a1917]">Step 2: Questioning</h6>
+            <div className="flex items-center gap-3 bg-white p-3 border border-[#e5e1d5] rounded-lg">
               <span className="text-3xl">❓</span>
-              <p className="text-[10px] text-cyan-400 leading-relaxed font-black uppercase tracking-wider">
+              <p className="text-[10px] text-[#1b3b2b] leading-relaxed font-black uppercase tracking-wider">
                 "Why did my pen stop writing?"
               </p>
             </div>
@@ -94,8 +94,8 @@ const ScientificMethodSandbox = () => {
 
         {stage === 3 && (
           <div className="space-y-3">
-            <h6 className="text-xs font-black uppercase text-white">Step 3: Hypothesis (Guess)</h6>
-            <p className="text-[10px] text-slate-400 font-semibold mb-2">
+            <h6 className="text-xs font-black uppercase text-[#1a1917]">Step 3: Hypothesis (Guess)</h6>
+            <p className="text-[10px] text-[#52504a] font-semibold mb-2">
               Form a testable explanation for why the pen stopped writing. Select one to test:
             </p>
             <div className="grid grid-cols-2 gap-2">
@@ -104,7 +104,7 @@ const ScientificMethodSandbox = () => {
                 className={`p-3 rounded-lg border text-left flex flex-col justify-between transition-all ${
                   hypothesis === 'empty' 
                     ? 'bg-purple-500/20 border-purple-500 text-purple-300'
-                    : 'bg-slate-900 border-white/5 text-slate-400 hover:bg-slate-800'
+                    : 'bg-white border-[#e5e1d5] text-[#52504a] hover:bg-[#ede9de]'
                 }`}
               >
                 <span className="text-[9px] font-black uppercase">Hypothesis A</span>
@@ -115,7 +115,7 @@ const ScientificMethodSandbox = () => {
                 className={`p-3 rounded-lg border text-left flex flex-col justify-between transition-all ${
                   hypothesis === 'dried' 
                     ? 'bg-purple-500/20 border-purple-500 text-purple-300'
-                    : 'bg-slate-900 border-white/5 text-slate-400 hover:bg-slate-800'
+                    : 'bg-white border-[#e5e1d5] text-[#52504a] hover:bg-[#ede9de]'
                 }`}
               >
                 <span className="text-[9px] font-black uppercase">Hypothesis B</span>
@@ -135,8 +135,8 @@ const ScientificMethodSandbox = () => {
 
         {stage === 4 && (
           <div className="space-y-3 text-center py-2">
-            <h6 className="text-xs font-black uppercase text-white">Step 4: Testing & Experimentation</h6>
-            <p className="text-[10px] text-slate-450 font-semibold">
+            <h6 className="text-xs font-black uppercase text-[#1a1917]">Step 4: Testing & Experimentation</h6>
+            <p className="text-[10px] text-[#52504a] font-semibold">
               {hypothesis === 'empty' 
                 ? "Test: Open the pen shell and pull out the refill to inspect ink level."
                 : "Test: Dip the nib in warm water for a few seconds to dissolve dried ink."}
@@ -158,7 +158,7 @@ const ScientificMethodSandbox = () => {
 
         {stage === 5 && (
           <div className="space-y-3">
-            <h6 className="text-xs font-black uppercase text-white">Step 5: Analyze & Conclude</h6>
+            <h6 className="text-xs font-black uppercase text-[#1a1917]">Step 5: Analyze & Conclude</h6>
             {testResult === 'fail' ? (
               <div className="space-y-3">
                 <div className="bg-red-500/10 border border-red-500/20 p-3 rounded-lg text-[10px] text-red-400 font-semibold leading-relaxed">
@@ -166,7 +166,7 @@ const ScientificMethodSandbox = () => {
                 </div>
                 <button
                   onClick={() => setStage(3)}
-                  className="w-full py-2 bg-slate-800 hover:bg-slate-700 text-white text-[9px] font-black uppercase tracking-widest rounded transition-all"
+                  className="w-full py-2 bg-[#ede9de] hover:bg-slate-700 text-[#1a1917] text-[9px] font-black uppercase tracking-widest rounded transition-all"
                 >
                   Formulate New Hypothesis ↩
                 </button>
@@ -178,7 +178,7 @@ const ScientificMethodSandbox = () => {
                 </div>
                 <button
                   onClick={resetActivity}
-                  className="w-full py-2 bg-slate-800 hover:bg-slate-700 text-white text-[9px] font-black uppercase tracking-widest rounded transition-all flex items-center justify-center gap-1"
+                  className="w-full py-2 bg-[#ede9de] hover:bg-slate-700 text-[#1a1917] text-[9px] font-black uppercase tracking-widest rounded transition-all flex items-center justify-center gap-1"
                 >
                   <RotateCcw className="w-3 h-3" /> Reset Experiment
                 </button>
@@ -271,11 +271,11 @@ const HabitatAdaptationSandbox = () => {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center border-b border-white/5 pb-2">
-        <span className="text-[10px] font-black text-purple-400 uppercase tracking-widest">
+      <div className="flex justify-between items-center border-b border-[#e5e1d5] pb-2">
+        <span className="text-[10px] font-black text-[#1b3b2b] uppercase tracking-widest">
           Activity 2.2: Habitat Matcher Game
         </span>
-        <span className="text-[9px] font-mono text-slate-500">
+        <span className="text-[9px] font-mono text-[#827f76]">
           Matched: {matchedList.length}/{organisms.length}
         </span>
       </div>
@@ -283,7 +283,7 @@ const HabitatAdaptationSandbox = () => {
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
         {/* Organisms column */}
         <div className="md:col-span-5 space-y-2">
-          <label className="text-[8px] font-black text-slate-500 uppercase tracking-widest block">
+          <label className="text-[8px] font-black text-[#827f76] uppercase tracking-widest block">
             1. Select Organism
           </label>
           <div className="flex flex-col gap-1.5">
@@ -299,7 +299,7 @@ const HabitatAdaptationSandbox = () => {
                       ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 opacity-60' 
                       : selected 
                       ? 'bg-purple-500/20 border-purple-500 text-purple-300 ring-1 ring-purple-500'
-                      : 'bg-slate-900 border-white/5 text-slate-350 hover:bg-slate-800'
+                      : 'bg-white border-[#e5e1d5] text-[#52504a] hover:bg-[#ede9de]'
                   }`}
                 >
                   <div className="flex items-center gap-2">
@@ -314,9 +314,9 @@ const HabitatAdaptationSandbox = () => {
         </div>
 
         {/* Habitats column */}
-        <div className="md:col-span-7 bg-slate-950 p-4 rounded-xl border border-white/5 space-y-4 flex flex-col justify-between">
+        <div className="md:col-span-7 bg-[#fbfbfa] p-4 rounded-xl border border-[#e5e1d5] space-y-4 flex flex-col justify-between">
           <div className="space-y-2">
-            <label className="text-[8px] font-black text-slate-500 uppercase tracking-widest block">
+            <label className="text-[8px] font-black text-[#827f76] uppercase tracking-widest block">
               2. Choose Target Habitat
             </label>
             <div className="grid grid-cols-2 gap-2">
@@ -329,7 +329,7 @@ const HabitatAdaptationSandbox = () => {
                     className={`p-3 rounded-lg border text-center flex flex-col items-center justify-center transition-all ${
                       selected 
                         ? 'bg-purple-500/20 border-purple-500 text-purple-300 shadow'
-                        : 'bg-slate-900 border-white/5 text-slate-400 hover:bg-slate-800'
+                        : 'bg-white border-[#e5e1d5] text-[#52504a] hover:bg-[#ede9de]'
                     }`}
                   >
                     <span className="text-2xl mb-1">{hab.emoji}</span>
@@ -341,14 +341,14 @@ const HabitatAdaptationSandbox = () => {
           </div>
 
           {/* Feedback Display */}
-          <div className="p-3 bg-slate-900 border border-white/5 rounded-lg text-[10px] min-h-[50px] flex items-center justify-center text-center font-semibold text-slate-300">
+          <div className="p-3 bg-white border border-[#e5e1d5] rounded-lg text-[10px] min-h-[50px] flex items-center justify-center text-center font-semibold text-slate-300">
             {feedback ? feedback : "Match all organisms with their correct habitats to learn their key survival traits."}
           </div>
 
           {matchedList.length === organisms.length && (
             <button
               onClick={resetActivity}
-              className="w-full py-2 bg-slate-850 hover:bg-slate-805 text-white text-[9px] font-black uppercase tracking-widest rounded transition-all flex items-center justify-center gap-1"
+              className="w-full py-2 bg-[#f5f3ec] hover:bg-slate-805 text-[#1a1917] text-[9px] font-black uppercase tracking-widest rounded transition-all flex items-center justify-center gap-1"
             >
               <RotateCcw className="w-3 h-3" /> Reset Matcher
             </button>
@@ -406,8 +406,8 @@ const BalancedDietSandbox = () => {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center border-b border-white/5 pb-2">
-        <span className="text-[10px] font-black text-purple-400 uppercase tracking-widest">
+      <div className="flex justify-between items-center border-b border-[#e5e1d5] pb-2">
+        <span className="text-[10px] font-black text-[#1b3b2b] uppercase tracking-widest">
           Mindful Meal Laboratory: Balanced Plate Maker
         </span>
       </div>
@@ -415,7 +415,7 @@ const BalancedDietSandbox = () => {
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
         {/* Food Choice Grid */}
         <div className="md:col-span-5 space-y-2">
-          <label className="text-[8px] font-black text-slate-500 uppercase tracking-widest block">
+          <label className="text-[8px] font-black text-[#827f76] uppercase tracking-widest block">
             Add to plate
           </label>
           <div className="grid grid-cols-2 gap-2">
@@ -428,7 +428,7 @@ const BalancedDietSandbox = () => {
                   className={`p-2 rounded-lg border text-left flex items-center gap-2 transition-all ${
                     active 
                       ? 'bg-purple-500/20 border-purple-500 text-purple-300 shadow'
-                      : 'bg-slate-900 border-white/5 text-slate-400 hover:bg-slate-800'
+                      : 'bg-white border-[#e5e1d5] text-[#52504a] hover:bg-[#ede9de]'
                   }`}
                 >
                   <span className="text-xl">{item.emoji}</span>
@@ -442,10 +442,10 @@ const BalancedDietSandbox = () => {
         </div>
 
         {/* Plates and Gauges */}
-        <div className="md:col-span-7 bg-slate-950 p-4 rounded-xl border border-white/5 space-y-4">
+        <div className="md:col-span-7 bg-[#fbfbfa] p-4 rounded-xl border border-[#e5e1d5] space-y-4">
           {/* Plate Visual */}
-          <div className="border border-white/10 rounded-full w-24 h-24 mx-auto bg-slate-900 flex items-center justify-center p-2 relative shadow-inner">
-            <span className="absolute -top-1.5 px-1.5 py-0.5 bg-slate-950 border border-white/10 text-[6px] text-slate-400 uppercase font-black rounded">Tray</span>
+          <div className="border border-[#e5e1d5] rounded-full w-24 h-24 mx-auto bg-white flex items-center justify-center p-2 relative shadow-inner">
+            <span className="absolute -top-1.5 px-1.5 py-0.5 bg-[#fbfbfa] border border-[#e5e1d5] text-[6px] text-[#52504a] uppercase font-black rounded">Tray</span>
             {selectedFoods.length === 0 ? (
               <span className="text-[8px] text-slate-600 font-bold uppercase text-center">Tray Empty</span>
             ) : (
@@ -461,44 +461,44 @@ const BalancedDietSandbox = () => {
           <div className="space-y-2 text-[8px] font-black">
             {/* Energy Bar */}
             <div className="space-y-0.5">
-              <div className="flex justify-between text-slate-400">
+              <div className="flex justify-between text-[#52504a]">
                 <span>ENERGY GIVING (CARBS + FATS)</span>
                 <span className="font-mono">{totals.energy}%</span>
               </div>
-              <div className="h-2 w-full bg-slate-900 rounded overflow-hidden">
+              <div className="h-2 w-full bg-white rounded overflow-hidden">
                 <div className="h-full bg-amber-500 transition-all duration-300" style={{ width: `${totals.energy}%` }} />
               </div>
             </div>
 
             {/* Growth Bar */}
             <div className="space-y-0.5">
-              <div className="flex justify-between text-slate-400">
+              <div className="flex justify-between text-[#52504a]">
                 <span>BODY BUILDING (PROTEIN)</span>
                 <span className="font-mono">{totals.growth}%</span>
               </div>
-              <div className="h-2 w-full bg-slate-900 rounded overflow-hidden">
+              <div className="h-2 w-full bg-white rounded overflow-hidden">
                 <div className="h-full bg-rose-500 transition-all duration-300" style={{ width: `${totals.growth}%` }} />
               </div>
             </div>
 
             {/* Protection Bar */}
             <div className="space-y-0.5">
-              <div className="flex justify-between text-slate-400">
+              <div className="flex justify-between text-[#52504a]">
                 <span>PROTECTION (VITAMINS & MINERALS)</span>
                 <span className="font-mono">{totals.protection}%</span>
               </div>
-              <div className="h-2 w-full bg-slate-900 rounded overflow-hidden">
+              <div className="h-2 w-full bg-white rounded overflow-hidden">
                 <div className="h-full bg-cyan-500 transition-all duration-300" style={{ width: `${totals.protection}%` }} />
               </div>
             </div>
 
             {/* Fiber Bar */}
             <div className="space-y-0.5">
-              <div className="flex justify-between text-slate-400">
+              <div className="flex justify-between text-[#52504a]">
                 <span>ROUGHAGE (DIETARY FIBER)</span>
                 <span className="font-mono">{totals.roughage}%</span>
               </div>
-              <div className="h-2 w-full bg-slate-900 rounded overflow-hidden">
+              <div className="h-2 w-full bg-white rounded overflow-hidden">
                 <div className="h-full bg-emerald-500 transition-all duration-300" style={{ width: `${totals.roughage}%` }} />
               </div>
             </div>
@@ -551,8 +551,8 @@ const MagnetSandbox = () => {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center border-b border-white/5 pb-2">
-        <span className="text-[10px] font-black text-purple-400 uppercase tracking-widest">
+      <div className="flex justify-between items-center border-b border-[#e5e1d5] pb-2">
+        <span className="text-[10px] font-black text-[#1b3b2b] uppercase tracking-widest">
           Magnetics Laboratory: Polarity & Attraction
         </span>
       </div>
@@ -560,7 +560,7 @@ const MagnetSandbox = () => {
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
         {/* Objects Shelf */}
         <div className="md:col-span-5 space-y-2">
-          <label className="text-[8px] font-black text-slate-500 uppercase tracking-widest block">
+          <label className="text-[8px] font-black text-[#827f76] uppercase tracking-widest block">
             Select materials to test
           </label>
           <div className="flex flex-col gap-1.5">
@@ -571,14 +571,14 @@ const MagnetSandbox = () => {
                 className={`p-2.5 rounded-lg border text-left flex items-center justify-between transition-all ${
                   selectedObject === item.name 
                     ? 'bg-purple-500/20 border-purple-500 text-purple-300'
-                    : 'bg-slate-900 border-white/5 text-slate-400 hover:bg-slate-800'
+                    : 'bg-white border-[#e5e1d5] text-[#52504a] hover:bg-[#ede9de]'
                 }`}
               >
                 <div className="flex items-center gap-2">
                   <span className="text-lg">{item.emoji}</span>
                   <span className="text-[9px] font-black uppercase tracking-wider">{item.name}</span>
                 </div>
-                <span className="text-[7px] font-semibold text-slate-500">
+                <span className="text-[7px] font-semibold text-[#827f76]">
                   {item.magnetic ? "MAGNETIC" : "NON-MAGNETIC"}
                 </span>
               </button>
@@ -587,28 +587,28 @@ const MagnetSandbox = () => {
         </div>
 
         {/* Visual Lab Field */}
-        <div className="md:col-span-7 bg-slate-950 p-4 rounded-xl border border-white/5 space-y-4">
-          <div className="flex justify-center bg-slate-900 p-1 border border-white/5 rounded-lg text-[8px] font-black uppercase">
+        <div className="md:col-span-7 bg-[#fbfbfa] p-4 rounded-xl border border-[#e5e1d5] space-y-4">
+          <div className="flex justify-center bg-white p-1 border border-[#e5e1d5] rounded-lg text-[8px] font-black uppercase">
             <button
               onClick={() => setPoleMode('unlike')}
-              className={`flex-1 py-1.5 rounded transition-all ${poleMode === 'unlike' ? 'bg-purple-500 text-black shadow' : 'text-slate-400'}`}
+              className={`flex-1 py-1.5 rounded transition-all ${poleMode === 'unlike' ? 'bg-purple-500 text-black shadow' : 'text-[#52504a]'}`}
             >
               Attractive Test (N-S)
             </button>
             <button
               onClick={() => setPoleMode('like')}
-              className={`flex-1 py-1.5 rounded transition-all ${poleMode === 'like' ? 'bg-purple-500 text-black shadow' : 'text-slate-400'}`}
+              className={`flex-1 py-1.5 rounded transition-all ${poleMode === 'like' ? 'bg-purple-500 text-black shadow' : 'text-[#52504a]'}`}
             >
               Repulsive Test (S-S)
             </button>
           </div>
 
           {/* Attraction Area */}
-          <div className="h-32 bg-slate-950/60 rounded-xl border border-white/5 relative flex items-center justify-between px-8 overflow-hidden">
+          <div className="h-32 bg-[#fbfbfa]/60 rounded-xl border border-[#e5e1d5] relative flex items-center justify-between px-8 overflow-hidden">
             {/* Primary Bar Magnet (N-S) */}
-            <div className="flex border border-white/10 rounded overflow-hidden shadow-lg h-8 select-none shrink-0 z-15">
-              <span className="bg-red-600 w-8 flex items-center justify-center text-[10px] font-black text-white">N</span>
-              <span className="bg-blue-600 w-8 flex items-center justify-center text-[10px] font-black text-white">S</span>
+            <div className="flex border border-[#e5e1d5] rounded overflow-hidden shadow-lg h-8 select-none shrink-0 z-15">
+              <span className="bg-red-600 w-8 flex items-center justify-center text-[10px] font-black text-[#1a1917]">N</span>
+              <span className="bg-blue-600 w-8 flex items-center justify-center text-[10px] font-black text-[#1a1917]">S</span>
             </div>
 
             {/* Force Vector Arrows Display */}
@@ -631,7 +631,7 @@ const MagnetSandbox = () => {
                   {activeObj ? (
                     <div className="flex flex-col items-center">
                       <span>{activeObj.emoji}</span>
-                      <span className="text-[6px] text-slate-500 uppercase font-black">{activeObj.name}</span>
+                      <span className="text-[6px] text-[#827f76] uppercase font-black">{activeObj.name}</span>
                     </div>
                   ) : (
                     <span className="text-[8px] text-slate-600 font-bold uppercase">No Material</span>
@@ -641,7 +641,7 @@ const MagnetSandbox = () => {
             ) : (
               /* Repulsive Test: Second magnet with S-N orientation faces the left magnet's S pole. S-S repels! */
               <>
-                <div className="absolute left-24 right-28 flex items-center justify-center gap-1.5 text-[11px] font-black text-cyan-400 pointer-events-none select-none z-10">
+                <div className="absolute left-24 right-28 flex items-center justify-center gap-1.5 text-[11px] font-black text-[#1b3b2b] pointer-events-none select-none z-10">
                   <span>←</span>
                   <span 
                     className="inline-block bg-cyan-450 h-1.5 rounded-full transition-all"
@@ -651,12 +651,12 @@ const MagnetSandbox = () => {
                 </div>
 
                 <div 
-                  className="flex border border-white/10 rounded overflow-hidden shadow-lg h-8 select-none transition-all duration-100 shrink-0"
+                  className="flex border border-[#e5e1d5] rounded overflow-hidden shadow-lg h-8 select-none transition-all duration-100 shrink-0"
                   style={{ transform: `translateX(-${(100 - distance) * 0.4}px)` }}
                 >
                   {/* Flipped orientation: South faces South */}
-                  <span className="bg-blue-600 w-8 flex items-center justify-center text-[10px] font-black text-white">S</span>
-                  <span className="bg-red-600 w-8 flex items-center justify-center text-[10px] font-black text-white">N</span>
+                  <span className="bg-blue-600 w-8 flex items-center justify-center text-[10px] font-black text-[#1a1917]">S</span>
+                  <span className="bg-red-600 w-8 flex items-center justify-center text-[10px] font-black text-[#1a1917]">N</span>
                 </div>
               </>
             )}
@@ -668,7 +668,7 @@ const MagnetSandbox = () => {
               </span>
             )}
             {poleMode === 'like' && distance < 45 && (
-              <span className="absolute bottom-2 left-0 right-0 text-center text-[8px] text-cyan-400 font-black animate-pulse uppercase tracking-wider">
+              <span className="absolute bottom-2 left-0 right-0 text-center text-[8px] text-[#1b3b2b] font-black animate-pulse uppercase tracking-wider">
                 Repulsion Force (Like Poles S-S) ⚡
               </span>
             )}
@@ -676,7 +676,7 @@ const MagnetSandbox = () => {
 
           {/* Slider distance controller */}
           <div className="space-y-1.5">
-            <div className="flex justify-between text-[9px] font-black text-slate-400">
+            <div className="flex justify-between text-[9px] font-black text-[#52504a]">
               <span>PROXIMITY DISTANCE (RULER)</span>
               <span className="font-mono">{distance} mm</span>
             </div>
@@ -686,12 +686,12 @@ const MagnetSandbox = () => {
               max="100"
               value={distance}
               onChange={(e) => setDistance(parseInt(e.target.value))}
-              className="w-full accent-purple-500"
+              className="w-full accent-[#1b3b2b]"
             />
           </div>
 
           {/* Diagnostic Console */}
-          <div className="p-3 bg-slate-900 border border-white/5 rounded-lg text-[10px] text-slate-400 leading-normal font-semibold">
+          <div className="p-3 bg-white border border-[#e5e1d5] rounded-lg text-[10px] text-[#52504a] leading-normal font-semibold">
             {poleMode === 'unlike' ? (
               activeObj ? (
                 <span><strong>Attraction Check:</strong> {activeObj.desc}</span>
@@ -739,40 +739,40 @@ const MeasurementMotionSandbox = () => {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-center bg-slate-900 p-1 border border-white/5 rounded-lg text-[8px] font-black uppercase">
+      <div className="flex justify-center bg-white p-1 border border-[#e5e1d5] rounded-lg text-[8px] font-black uppercase">
         <button
           onClick={() => setActiveTab('measure')}
-          className={`flex-1 py-1.5 rounded transition-all ${activeTab === 'measure' ? 'bg-purple-500 text-black shadow' : 'text-slate-400'}`}
+          className={`flex-1 py-1.5 rounded transition-all ${activeTab === 'measure' ? 'bg-purple-500 text-black shadow' : 'text-[#52504a]'}`}
         >
           Ruler Calibration (Class 6)
         </button>
         <button
           onClick={() => setActiveTab('motion')}
-          className={`flex-1 py-1.5 rounded transition-all ${activeTab === 'motion' ? 'bg-purple-500 text-black shadow' : 'text-slate-400'}`}
+          className={`flex-1 py-1.5 rounded transition-all ${activeTab === 'motion' ? 'bg-purple-500 text-black shadow' : 'text-[#52504a]'}`}
         >
           Motion Classifications
         </button>
       </div>
 
       {activeTab === 'measure' ? (
-        <div className="bg-slate-950 p-4 rounded-xl border border-white/5 space-y-4">
-          <h6 className="text-[10px] font-black uppercase text-purple-400 tracking-widest">Broken Ruler Alignment Challenge</h6>
-          <p className="text-[10px] text-slate-400 font-semibold leading-relaxed">
+        <div className="bg-[#fbfbfa] p-4 rounded-xl border border-[#e5e1d5] space-y-4">
+          <h6 className="text-[10px] font-black uppercase text-[#1b3b2b] tracking-widest">Broken Ruler Alignment Challenge</h6>
+          <p className="text-[10px] text-[#52504a] font-semibold leading-relaxed">
             The ruler is broken at the zero mark. To measure the wooden bar, you align its left edge with the **2.0 cm** mark. The right edge reaches the **18.5 cm** mark.
           </p>
 
           {/* Visual ruler block */}
-          <div className="relative h-16 bg-slate-900 border border-white/10 rounded-lg flex flex-col justify-end p-2 overflow-hidden select-none">
+          <div className="relative h-16 bg-white border border-[#e5e1d5] rounded-lg flex flex-col justify-end p-2 overflow-hidden select-none">
             {/* The Wooden Bar */}
             <div className="absolute left-[20%] right-[15%] top-2 h-4 bg-amber-700/80 rounded border border-amber-600 flex items-center justify-center text-[7px] font-black text-amber-200">
               WOODEN BAR
             </div>
 
             {/* Ruler markings */}
-            <div className="w-full flex justify-between text-[8px] font-mono text-slate-500 border-t border-white/15 pt-1">
+            <div className="w-full flex justify-between text-[8px] font-mono text-[#827f76] border-t border-white/15 pt-1">
               <span>[X]</span>
               <span>1</span>
-              <span className="text-cyan-400 font-black">2</span>
+              <span className="text-[#1b3b2b] font-black">2</span>
               <span>4</span>
               <span>6</span>
               <span>8</span>
@@ -787,14 +787,14 @@ const MeasurementMotionSandbox = () => {
 
           <div className="flex gap-2 items-center">
             <div className="flex-1 space-y-1">
-              <label className="text-[8px] font-black text-slate-500 uppercase tracking-widest block">Enter Actual Length (cm)</label>
+              <label className="text-[8px] font-black text-[#827f76] uppercase tracking-widest block">Enter Actual Length (cm)</label>
               <input
                 type="number"
                 step="0.1"
                 placeholder="e.g. 15.0"
                 value={userGuess}
                 onChange={(e) => setUserGuess(e.target.value)}
-                className="w-full bg-slate-900 border border-white/10 text-xs font-bold text-slate-200 px-3 py-2 rounded focus:outline-none focus:border-purple-500"
+                className="w-full bg-white border border-[#e5e1d5] text-xs font-bold text-slate-200 px-3 py-2 rounded focus:outline-none focus:border-purple-500"
               />
             </div>
             <button
@@ -824,11 +824,11 @@ const MeasurementMotionSandbox = () => {
                 className={`p-2.5 rounded-lg border text-left flex items-center justify-between transition-all ${
                   selectedMotion === m 
                     ? 'bg-purple-500/20 border-purple-500 text-purple-300 shadow'
-                    : 'bg-slate-900 border-white/5 text-slate-400 hover:bg-slate-800'
+                    : 'bg-white border-[#e5e1d5] text-[#52504a] hover:bg-[#ede9de]'
                 }`}
               >
                 <span className="text-[9px] font-black uppercase tracking-widest">{m} Motion</span>
-                <span className="text-[8px] font-semibold text-slate-500">
+                <span className="text-[8px] font-semibold text-[#827f76]">
                   {m === 'rectilinear' ? "Straight Line" : m === 'circular' ? "Rotational" : "Repeating Cycle"}
                 </span>
               </button>
@@ -836,9 +836,9 @@ const MeasurementMotionSandbox = () => {
           </div>
 
           {/* Visual animation block */}
-          <div className="md:col-span-7 bg-slate-950 p-4 rounded-xl border border-white/5 space-y-4">
-            <div className="h-28 bg-slate-900 border border-white/5 rounded-xl relative overflow-hidden flex items-center justify-center select-none">
-              <span className="absolute top-2 left-2 text-[7px] font-black text-slate-500 uppercase tracking-widest">Motion Simulator</span>
+          <div className="md:col-span-7 bg-[#fbfbfa] p-4 rounded-xl border border-[#e5e1d5] space-y-4">
+            <div className="h-28 bg-white border border-[#e5e1d5] rounded-xl relative overflow-hidden flex items-center justify-center select-none">
+              <span className="absolute top-2 left-2 text-[7px] font-black text-[#827f76] uppercase tracking-widest">Motion Simulator</span>
 
               {selectedMotion === 'rectilinear' && (
                 <motion.div
@@ -871,7 +871,7 @@ const MeasurementMotionSandbox = () => {
               )}
             </div>
 
-            <div className="p-2.5 bg-slate-900 border border-white/5 rounded text-[9px] text-slate-400 font-semibold leading-relaxed">
+            <div className="p-2.5 bg-white border border-[#e5e1d5] rounded text-[9px] text-[#52504a] font-semibold leading-relaxed">
               {selectedMotion === 'rectilinear' && "Rectilinear motion is travel along a straight path. Examples: a rocket launching straight up, or a train on straight tracks."}
               {selectedMotion === 'circular' && "Circular motion is travel in a circle around a central point, keeping a constant radius. Examples: a Ferris wheel, or the hands of a clock."}
               {selectedMotion === 'periodic' && "Periodic motion is movement that repeats in regular cycles over equal intervals of time. Examples: a swing, a pendulum, or guitar string vibrations."}
@@ -905,8 +905,8 @@ const MaterialsSorterSandbox = () => {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center border-b border-white/5 pb-2">
-        <span className="text-[10px] font-black text-purple-400 uppercase tracking-widest">
+      <div className="flex justify-between items-center border-b border-[#e5e1d5] pb-2">
+        <span className="text-[10px] font-black text-[#1b3b2b] uppercase tracking-widest">
           Experiment 6.1: Physical Properties Sorter
         </span>
       </div>
@@ -914,7 +914,7 @@ const MaterialsSorterSandbox = () => {
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
         {/* Materials list */}
         <div className="md:col-span-5 space-y-1.5">
-          <label className="text-[8px] font-black text-slate-500 uppercase tracking-widest block">Select Material</label>
+          <label className="text-[8px] font-black text-[#827f76] uppercase tracking-widest block">Select Material</label>
           <div className="flex flex-col gap-1.5">
             {Object.keys(materials).map(name => (
               <button
@@ -926,7 +926,7 @@ const MaterialsSorterSandbox = () => {
                 className={`p-2 rounded-lg border text-left flex items-center gap-2 transition-all ${
                   selectedMaterial === name 
                     ? 'bg-purple-500/20 border-purple-500 text-purple-300'
-                    : 'bg-slate-900 border-white/5 text-slate-400 hover:bg-slate-800'
+                    : 'bg-white border-[#e5e1d5] text-[#52504a] hover:bg-[#ede9de]'
                 }`}
               >
                 <span className="text-lg">{materials[name].emoji}</span>
@@ -937,37 +937,37 @@ const MaterialsSorterSandbox = () => {
         </div>
 
         {/* Diagnostics Table Grid */}
-        <div className="md:col-span-7 bg-slate-950 p-4 rounded-xl border border-white/5 space-y-3.5">
-          <div className="flex justify-between items-center border-b border-white/5 pb-2">
-            <span className="text-[9px] font-black uppercase text-white tracking-wider flex items-center gap-1.5">
+        <div className="md:col-span-7 bg-[#fbfbfa] p-4 rounded-xl border border-[#e5e1d5] space-y-3.5">
+          <div className="flex justify-between items-center border-b border-[#e5e1d5] pb-2">
+            <span className="text-[9px] font-black uppercase text-[#1a1917] tracking-wider flex items-center gap-1.5">
               <span className="text-xl">{active.emoji}</span> {selectedMaterial} Diagnostics
             </span>
           </div>
 
           <div className="space-y-2 text-[9px] font-semibold leading-relaxed">
-            <div className="flex justify-between border-b border-white/5 pb-1">
-              <span className="text-slate-400">LUSTER / SHINE</span>
-              <strong className="text-cyan-400 font-black uppercase">{active.luster}</strong>
+            <div className="flex justify-between border-b border-[#e5e1d5] pb-1">
+              <span className="text-[#52504a]">LUSTER / SHINE</span>
+              <strong className="text-[#1b3b2b] font-black uppercase">{active.luster}</strong>
             </div>
-            <div className="flex justify-between border-b border-white/5 pb-1">
-              <span className="text-slate-400">HARDNESS</span>
+            <div className="flex justify-between border-b border-[#e5e1d5] pb-1">
+              <span className="text-[#52504a]">HARDNESS</span>
               <strong className="text-amber-400 font-black uppercase">{active.hardness}</strong>
             </div>
-            <div className="flex justify-between border-b border-white/5 pb-1">
-              <span className="text-slate-400">WATER SOLUBILITY</span>
+            <div className="flex justify-between border-b border-[#e5e1d5] pb-1">
+              <span className="text-[#52504a]">WATER SOLUBILITY</span>
               <strong className="text-rose-400 font-black uppercase">{active.solubility}</strong>
             </div>
-            <div className="flex justify-between border-b border-white/5 pb-1">
-              <span className="text-slate-400">TRANSPARENCY</span>
-              <strong className="text-purple-400 font-black uppercase">{active.transparency}</strong>
+            <div className="flex justify-between border-b border-[#e5e1d5] pb-1">
+              <span className="text-[#52504a]">TRANSPARENCY</span>
+              <strong className="text-[#1b3b2b] font-black uppercase">{active.transparency}</strong>
             </div>
             <div className="flex justify-between pb-1">
-              <span className="text-slate-400">WATER DENSITY</span>
+              <span className="text-[#52504a]">WATER DENSITY</span>
               <strong className="text-emerald-400 font-black uppercase">{active.density}</strong>
             </div>
           </div>
 
-          <div className="bg-slate-900 p-2.5 rounded border border-white/5 text-[9px] text-slate-500 font-semibold leading-normal">
+          <div className="bg-white p-2.5 rounded border border-[#e5e1d5] text-[9px] text-[#827f76] font-semibold leading-normal">
             Classifying materials helps us select materials systematically. E.g., we use transparent glass for windows, and insoluble opaque metals for door keys.
           </div>
         </div>
@@ -997,31 +997,31 @@ const TemperatureSandbox = () => {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center border-b border-white/5 pb-2">
-        <span className="text-[10px] font-black text-purple-400 uppercase tracking-widest">
+      <div className="flex justify-between items-center border-b border-[#e5e1d5] pb-2">
+        <span className="text-[10px] font-black text-[#1b3b2b] uppercase tracking-widest">
           Thermal Laboratory: Thermometer Calibration
         </span>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
         {/* Thermometers Render */}
-        <div className="md:col-span-7 bg-slate-950 p-4 rounded-xl border border-white/5 flex flex-col justify-between space-y-4">
+        <div className="md:col-span-7 bg-[#fbfbfa] p-4 rounded-xl border border-[#e5e1d5] flex flex-col justify-between space-y-4">
           <div className="flex justify-around items-end h-48 py-4 relative">
             {/* Lab Thermometer */}
             <div className="flex flex-col items-center relative h-full">
-              <span className="text-[6px] text-slate-500 font-black uppercase mb-1">Laboratory (-10 to 110°C)</span>
-              <div className="w-2.5 h-36 bg-slate-900 border border-white/10 rounded-full relative flex flex-col justify-end p-0.5">
+              <span className="text-[6px] text-[#827f76] font-black uppercase mb-1">Laboratory (-10 to 110°C)</span>
+              <div className="w-2.5 h-36 bg-white border border-[#e5e1d5] rounded-full relative flex flex-col justify-end p-0.5">
                 <div 
                   className="w-full bg-red-500 rounded-full transition-all duration-300"
                   style={{ height: `${((temp - (-10)) / 120) * 100}%` }}
                 />
               </div>
-              <strong className="text-[10px] font-mono text-cyan-400 mt-1">{temp}°C</strong>
+              <strong className="text-[10px] font-mono text-[#1b3b2b] mt-1">{temp}°C</strong>
             </div>
 
             {/* Clinical Thermometer */}
             <div className="flex flex-col items-center relative h-full">
-              <span className="text-[6px] text-slate-500 font-black uppercase mb-1">Clinical (35 to 42°C)</span>
+              <span className="text-[6px] text-[#827f76] font-black uppercase mb-1">Clinical (35 to 42°C)</span>
               {temp > 42 ? (
                 <div className="w-16 h-36 border-2 border-dashed border-red-500/40 rounded flex flex-col items-center justify-center p-2 text-center text-red-500 animate-pulse bg-red-950/20">
                   <ShieldAlert className="w-5 h-5 mb-1" />
@@ -1029,7 +1029,7 @@ const TemperatureSandbox = () => {
                 </div>
               ) : (
                 <>
-                  <div className="w-2.5 h-36 bg-slate-900 border border-white/10 rounded-full relative flex flex-col justify-end p-0.5">
+                  <div className="w-2.5 h-36 bg-white border border-[#e5e1d5] rounded-full relative flex flex-col justify-end p-0.5">
                     {/* Visual Kink lock */}
                     <div className="absolute bottom-8 left-0 right-0 h-1 bg-purple-500/80 z-10" title="Kink" />
                     <div 
@@ -1037,7 +1037,7 @@ const TemperatureSandbox = () => {
                       style={{ height: temp < 35 ? '0%' : `${((temp - 35) / 7) * 100}%` }}
                     />
                   </div>
-                  <strong className="text-[10px] font-mono text-cyan-400 mt-1">
+                  <strong className="text-[10px] font-mono text-[#1b3b2b] mt-1">
                     {temp < 35 ? "Below 35°C" : `${Math.min(42, temp)}°C`}
                   </strong>
                 </>
@@ -1047,7 +1047,7 @@ const TemperatureSandbox = () => {
 
           {/* Temperature Slider */}
           <div className="space-y-1">
-            <div className="flex justify-between text-[9px] font-black text-slate-400">
+            <div className="flex justify-between text-[9px] font-black text-[#52504a]">
               <span>WATER BEAKER HEAT</span>
               <span className="font-mono text-amber-400">{temp}°C</span>
             </div>
@@ -1057,7 +1057,7 @@ const TemperatureSandbox = () => {
               max="110"
               value={temp}
               onChange={(e) => setTemp(parseInt(e.target.value))}
-              className="w-full accent-purple-500"
+              className="w-full accent-[#1b3b2b]"
             />
           </div>
         </div>
@@ -1065,15 +1065,15 @@ const TemperatureSandbox = () => {
         {/* Liquid Beaker Visual and warnings */}
         <div className="md:col-span-5 space-y-4">
           <div className={`p-4 rounded-xl border flex flex-col items-center justify-center text-center space-y-3 min-h-[120px] transition-all ${getLiquidColor()}`}>
-            <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Liquid Beaker Chamber</span>
+            <span className="text-[8px] font-black text-[#52504a] uppercase tracking-widest">Liquid Beaker Chamber</span>
             <span className="text-4xl">
               {temp <= 0 ? "🧊" : temp >= 100 ? "💨🥛" : "💧"}
             </span>
-            <span className="text-[9px] font-black uppercase text-white">{getBeakerEffect()}</span>
+            <span className="text-[9px] font-black uppercase text-[#1a1917]">{getBeakerEffect()}</span>
           </div>
 
           {/* Warnings Panel */}
-          <div className="p-3 bg-slate-900 border border-white/5 rounded-lg space-y-2 text-[9px] leading-relaxed font-semibold">
+          <div className="p-3 bg-white border border-[#e5e1d5] rounded-lg space-y-2 text-[9px] leading-relaxed font-semibold">
             {temp === 37 && (
               <div className="text-green-400 flex gap-1 items-start">
                 <Check className="w-3.5 h-3.5 shrink-0" />
@@ -1087,12 +1087,12 @@ const TemperatureSandbox = () => {
               </div>
             )}
             {temp < 35 && (
-              <div className="text-slate-500 flex gap-1 items-start">
+              <div className="text-[#827f76] flex gap-1 items-start">
                 <Info className="w-3.5 h-3.5 shrink-0" />
                 <span>Below clinical scale threshold (35°C). Clinical thermometer reads empty/inactive.</span>
               </div>
             )}
-            <p className="text-slate-450 border-t border-white/5 pt-2">
+            <p className="text-[#52504a] border-t border-[#e5e1d5] pt-2">
               Clinical thermometers have a **kink** so that mercury doesn't fall down when removed from a patient's mouth.
             </p>
           </div>
@@ -1118,17 +1118,17 @@ const WaterStateSandbox = () => {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center border-b border-white/5 pb-2">
-        <span className="text-[10px] font-black text-purple-400 uppercase tracking-widest">
+      <div className="flex justify-between items-center border-b border-[#e5e1d5] pb-2">
+        <span className="text-[10px] font-black text-[#1b3b2b] uppercase tracking-widest">
           States of Water: Molecular Kinetic Simulator
         </span>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
         {/* Kinetic Box */}
-        <div className="md:col-span-7 bg-slate-950 p-4 rounded-xl border border-white/5 flex flex-col justify-between space-y-4">
-          <div className="relative h-44 bg-slate-900 border border-white/10 rounded-xl overflow-hidden flex items-center justify-center shadow-inner">
-            <span className="absolute top-2 left-2 text-[7px] font-black text-slate-500 uppercase tracking-widest">
+        <div className="md:col-span-7 bg-[#fbfbfa] p-4 rounded-xl border border-[#e5e1d5] flex flex-col justify-between space-y-4">
+          <div className="relative h-44 bg-white border border-[#e5e1d5] rounded-xl overflow-hidden flex items-center justify-center shadow-inner">
+            <span className="absolute top-2 left-2 text-[7px] font-black text-[#827f76] uppercase tracking-widest">
               H₂O Molecule Micro-chamber
             </span>
 
@@ -1150,7 +1150,7 @@ const WaterStateSandbox = () => {
                 return (
                   <motion.div
                     key={idx}
-                    className={`w-3 h-3 rounded-full bg-cyan-400 border border-white/20 ${getAnimSpeed()}`}
+                    className={`w-3 h-3 rounded-full bg-cyan-400 border border-[#d8d4c7] ${getAnimSpeed()}`}
                     style={{
                       transition: 'all 0.5s ease'
                     }}
@@ -1162,9 +1162,9 @@ const WaterStateSandbox = () => {
 
           {/* Temperature Slider */}
           <div className="space-y-1">
-            <div className="flex justify-between text-[9px] font-black text-slate-400">
+            <div className="flex justify-between text-[9px] font-black text-[#52504a]">
               <span>THERMAL KINETIC INPUT</span>
-              <span className="font-mono text-cyan-400">{temperature}°C</span>
+              <span className="font-mono text-[#1b3b2b]">{temperature}°C</span>
             </div>
             <input
               type="range"
@@ -1172,34 +1172,34 @@ const WaterStateSandbox = () => {
               max="115"
               value={temperature}
               onChange={(e) => setTemperature(parseInt(e.target.value))}
-              className="w-full accent-purple-500"
+              className="w-full accent-[#1b3b2b]"
             />
           </div>
         </div>
 
         {/* Phase descriptors */}
         <div className="md:col-span-5 space-y-4">
-          <div className="glass-panel p-4 border-purple-500/20 shadow space-y-2 min-h-[140px]">
-            <span className="px-2 py-0.5 bg-purple-500/10 border border-purple-500/20 text-purple-400 text-[8px] font-black uppercase rounded">
+          <div className="glass-panel p-4 border-[#e5e1d5] shadow space-y-2 min-h-[140px]">
+            <span className="px-2 py-0.5 bg-[#f5f3ec] border border-[#e5e1d5] text-[#1b3b2b] text-[8px] font-black uppercase rounded">
               Current State Details
             </span>
             {phase === 'ice' && (
-              <div className="space-y-1.5 pt-1 text-[10px] text-slate-350">
-                <h5 className="font-black text-white uppercase text-[11px]">Solid State (Ice)</h5>
+              <div className="space-y-1.5 pt-1 text-[10px] text-[#52504a]">
+                <h5 className="font-black text-[#1a1917] uppercase text-[11px]">Solid State (Ice)</h5>
                 <p className="leading-relaxed">Molecules are locked in a rigid hexagonal lattice structure. Thermal energy is low, so they only vibrate in fixed positions.</p>
-                <div className="text-cyan-400 font-bold uppercase text-[8px] pt-1">Melting point threshold: 0°C</div>
+                <div className="text-[#1b3b2b] font-bold uppercase text-[8px] pt-1">Melting point threshold: 0°C</div>
               </div>
             )}
             {phase === 'liquid' && (
-              <div className="space-y-1.5 pt-1 text-[10px] text-slate-350">
-                <h5 className="font-black text-white uppercase text-[11px]">Liquid State (Water)</h5>
+              <div className="space-y-1.5 pt-1 text-[10px] text-[#52504a]">
+                <h5 className="font-black text-[#1a1917] uppercase text-[11px]">Liquid State (Water)</h5>
                 <p className="leading-relaxed">Molecules have enough kinetic energy to break rigid lattices. They move around fluidly, sliding over one another.</p>
                 <div className="text-yellow-400 font-bold uppercase text-[8px] pt-1">Freezing threshold: 0°C | Boiling: 100°C</div>
               </div>
             )}
             {phase === 'steam' && (
-              <div className="space-y-1.5 pt-1 text-[10px] text-slate-350">
-                <h5 className="font-black text-white uppercase text-[11px]">Gaseous State (Steam/Vapor)</h5>
+              <div className="space-y-1.5 pt-1 text-[10px] text-[#52504a]">
+                <h5 className="font-black text-[#1a1917] uppercase text-[11px]">Gaseous State (Steam/Vapor)</h5>
                 <p className="leading-relaxed">High thermal kinetic energy. Intermolecular forces are broken, and water molecules fly rapidly, colliding and expanding.</p>
                 <div className="text-rose-400 font-bold uppercase text-[8px] pt-1">Transition: Evaporation / Condensation</div>
               </div>
@@ -1262,8 +1262,8 @@ const SeparationSandbox = () => {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center border-b border-white/5 pb-2">
-        <span className="text-[10px] font-black text-purple-400 uppercase tracking-widest">
+      <div className="flex justify-between items-center border-b border-[#e5e1d5] pb-2">
+        <span className="text-[10px] font-black text-[#1b3b2b] uppercase tracking-widest">
           Chemistry Separator: Mixture Purification Lab
         </span>
       </div>
@@ -1272,14 +1272,14 @@ const SeparationSandbox = () => {
         {/* Mixture Selector */}
         <div className="md:col-span-5 space-y-4">
           <div className="space-y-1.5">
-            <label className="text-[8px] font-black text-slate-500 uppercase tracking-widest block">
+            <label className="text-[8px] font-black text-[#827f76] uppercase tracking-widest block">
               Choose Mixture
             </label>
-            <div className="flex bg-slate-900 border border-white/5 p-1 rounded-lg">
+            <div className="flex bg-white border border-[#e5e1d5] p-1 rounded-lg">
               <button
                 onClick={() => setActiveMixture('grain-husk')}
                 className={`flex-1 py-1.5 rounded text-[8px] font-black uppercase tracking-wider transition-all ${
-                  activeMixture === 'grain-husk' ? 'bg-purple-500 text-black' : 'text-slate-400 hover:text-white'
+                  activeMixture === 'grain-husk' ? 'bg-purple-500 text-black' : 'text-[#52504a] hover:text-white'
                 }`}
               >
                 Wheat + Husk
@@ -1287,7 +1287,7 @@ const SeparationSandbox = () => {
               <button
                 onClick={() => setActiveMixture('brine-sand')}
                 className={`flex-1 py-1.5 rounded text-[8px] font-black uppercase tracking-wider transition-all ${
-                  activeMixture === 'brine-sand' ? 'bg-purple-500 text-black' : 'text-slate-400 hover:text-white'
+                  activeMixture === 'brine-sand' ? 'bg-purple-500 text-black' : 'text-[#52504a] hover:text-white'
                 }`}
               >
                 Sand + Salt Water
@@ -1297,7 +1297,7 @@ const SeparationSandbox = () => {
 
           {/* Tools Box */}
           <div className="space-y-2">
-            <label className="text-[8px] font-black text-slate-500 uppercase tracking-widest block">
+            <label className="text-[8px] font-black text-[#827f76] uppercase tracking-widest block">
               Click tool to apply
             </label>
             <div className="grid grid-cols-3 gap-2">
@@ -1306,7 +1306,7 @@ const SeparationSandbox = () => {
                   key={tool}
                   onClick={() => selectTool(tool)}
                   disabled={separationState === 'clean' || separationState === 'incorrect'}
-                  className="p-2.5 bg-slate-900 border border-white/5 hover:bg-slate-800 text-white rounded-lg flex flex-col items-center justify-center text-center gap-1 cursor-pointer disabled:opacity-40 transition-colors"
+                  className="p-2.5 bg-white border border-[#e5e1d5] hover:bg-[#ede9de] text-[#1a1917] rounded-lg flex flex-col items-center justify-center text-center gap-1 cursor-pointer disabled:opacity-40 transition-colors"
                 >
                   <span className="text-lg">
                     {tool === 'Winnowing' ? "💨" : tool === 'Filtration' ? "☕" : "🔥"}
@@ -1319,9 +1319,9 @@ const SeparationSandbox = () => {
         </div>
 
         {/* Action Window */}
-        <div className="md:col-span-7 bg-slate-950 p-4 rounded-xl border border-white/5 space-y-4">
-          <div className="h-32 bg-slate-900 border border-white/5 rounded-xl flex items-center justify-center p-4 relative shadow-inner text-center">
-            <span className="absolute top-2 left-2 text-[7px] font-black text-slate-500 uppercase tracking-widest">Simulation Chamber</span>
+        <div className="md:col-span-7 bg-[#fbfbfa] p-4 rounded-xl border border-[#e5e1d5] space-y-4">
+          <div className="h-32 bg-white border border-[#e5e1d5] rounded-xl flex items-center justify-center p-4 relative shadow-inner text-center">
+            <span className="absolute top-2 left-2 text-[7px] font-black text-[#827f76] uppercase tracking-widest">Simulation Chamber</span>
 
             {/* Grain husk animation */}
             {activeMixture === 'grain-husk' && (
@@ -1329,7 +1329,7 @@ const SeparationSandbox = () => {
                 {separationState === 'mixed' && (
                   <div>
                     <span className="text-4xl animate-bounce inline-block">🌾🍂</span>
-                    <p className="text-[9px] text-slate-400 font-bold uppercase mt-2">Grains mixed with light husk fibers</p>
+                    <p className="text-[9px] text-[#52504a] font-bold uppercase mt-2">Grains mixed with light husk fibers</p>
                   </div>
                 )}
                 {separationState === 'incorrect' && (
@@ -1353,13 +1353,13 @@ const SeparationSandbox = () => {
                 {separationState === 'mixed' && (
                   <div>
                     <span className="text-4xl inline-block">⏳🥛🧂</span>
-                    <p className="text-[9px] text-slate-400 font-bold uppercase mt-2">Salty water mixed with coarse sand</p>
+                    <p className="text-[9px] text-[#52504a] font-bold uppercase mt-2">Salty water mixed with coarse sand</p>
                   </div>
                 )}
                 {separationState === 'filtered' && (
                   <div>
                     <span className="text-4xl inline-block">☕🥛🧂</span>
-                    <p className="text-[9px] text-cyan-400 font-black uppercase mt-2">Sand filtered out! Clear salt water remains.</p>
+                    <p className="text-[9px] text-[#1b3b2b] font-black uppercase mt-2">Sand filtered out! Clear salt water remains.</p>
                   </div>
                 )}
                 {separationState === 'clean' && (
@@ -1381,7 +1381,7 @@ const SeparationSandbox = () => {
           {(separationState === 'clean' || separationState === 'incorrect') && (
             <button
               onClick={resetActivity}
-              className="w-full py-2 bg-slate-800 hover:bg-slate-700 text-white text-[9px] font-black uppercase tracking-widest rounded transition-all flex items-center justify-center gap-1"
+              className="w-full py-2 bg-[#ede9de] hover:bg-slate-700 text-[#1a1917] text-[9px] font-black uppercase tracking-widest rounded transition-all flex items-center justify-center gap-1"
             >
               <RotateCcw className="w-3 h-3" /> Reset Mixture
             </button>
@@ -1423,8 +1423,8 @@ const LifeCharacteristicsSandbox = () => {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center border-b border-white/5 pb-2">
-        <span className="text-[10px] font-black text-purple-400 uppercase tracking-widest">
+      <div className="flex justify-between items-center border-b border-[#e5e1d5] pb-2">
+        <span className="text-[10px] font-black text-[#1b3b2b] uppercase tracking-widest">
           Biology Laboratory: Seedling Growth Care
         </span>
       </div>
@@ -1432,20 +1432,20 @@ const LifeCharacteristicsSandbox = () => {
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
         {/* Action Panel */}
         <div className="md:col-span-5 space-y-2.5">
-          <label className="text-[8px] font-black text-slate-500 uppercase tracking-widest block">Apply Life Inputs</label>
+          <label className="text-[8px] font-black text-[#827f76] uppercase tracking-widest block">Apply Life Inputs</label>
           
           <button
             onClick={() => setNutrition(true)}
             className={`w-full p-2.5 rounded-lg border text-left flex items-center gap-2.5 transition-all ${
               nutrition 
                 ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' 
-                : 'bg-slate-900 border-white/5 text-slate-350 hover:bg-slate-800'
+                : 'bg-white border-[#e5e1d5] text-[#52504a] hover:bg-[#ede9de]'
             }`}
           >
             <span className="text-lg">💧</span>
             <div className="flex flex-col">
               <span className="text-[9px] font-black uppercase tracking-wider">Supply Nutrition</span>
-              <span className="text-[7px] text-slate-450 leading-tight">Pour water & add soil minerals</span>
+              <span className="text-[7px] text-[#52504a] leading-tight">Pour water & add soil minerals</span>
             </div>
           </button>
 
@@ -1454,13 +1454,13 @@ const LifeCharacteristicsSandbox = () => {
             className={`w-full p-2.5 rounded-lg border text-left flex items-center gap-2.5 transition-all ${
               respiration 
                 ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' 
-                : 'bg-slate-900 border-white/5 text-slate-350 hover:bg-slate-800'
+                : 'bg-white border-[#e5e1d5] text-[#52504a] hover:bg-[#ede9de]'
             }`}
           >
             <span className="text-lg">🍃</span>
             <div className="flex flex-col">
               <span className="text-[9px] font-black uppercase tracking-wider">Air Respiration</span>
-              <span className="text-[7px] text-slate-450 leading-tight">Provide oxygen flow inside cell tissues</span>
+              <span className="text-[7px] text-[#52504a] leading-tight">Provide oxygen flow inside cell tissues</span>
             </div>
           </button>
 
@@ -1469,13 +1469,13 @@ const LifeCharacteristicsSandbox = () => {
             className={`w-full p-2.5 rounded-lg border text-left flex items-center gap-2.5 transition-all ${
               stimulus 
                 ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' 
-                : 'bg-slate-900 border-white/5 text-slate-350 hover:bg-slate-800'
+                : 'bg-white border-[#e5e1d5] text-[#52504a] hover:bg-[#ede9de]'
             }`}
           >
             <span className="text-lg">⚡</span>
             <div className="flex flex-col">
               <span className="text-[9px] font-black uppercase tracking-wider">Trigger Stimulus</span>
-              <span className="text-[7px] text-slate-450 leading-tight">Tap leaves to trigger response (folding)</span>
+              <span className="text-[7px] text-[#52504a] leading-tight">Tap leaves to trigger response (folding)</span>
             </div>
           </button>
 
@@ -1484,21 +1484,21 @@ const LifeCharacteristicsSandbox = () => {
             className={`w-full p-2.5 rounded-lg border text-left flex items-center gap-2.5 transition-all ${
               excretion 
                 ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' 
-                : 'bg-slate-900 border-white/5 text-slate-350 hover:bg-slate-800'
+                : 'bg-white border-[#e5e1d5] text-[#52504a] hover:bg-[#ede9de]'
             }`}
           >
             <span className="text-lg">🍂</span>
             <div className="flex flex-col">
               <span className="text-[9px] font-black uppercase tracking-wider">Waste Excretion</span>
-              <span className="text-[7px] text-slate-450 leading-tight">Shed old decaying cells to stay healthy</span>
+              <span className="text-[7px] text-[#52504a] leading-tight">Shed old decaying cells to stay healthy</span>
             </div>
           </button>
         </div>
 
         {/* Animation Visualizer */}
-        <div className="md:col-span-7 bg-slate-950 p-4 rounded-xl border border-white/5 flex flex-col justify-between space-y-4">
-          <div className="h-36 bg-slate-900 border border-white/5 rounded-xl relative overflow-hidden flex flex-col items-center justify-center select-none text-center">
-            <span className="absolute top-2 left-2 text-[7px] font-black text-slate-500 uppercase tracking-widest">Growth Matrix</span>
+        <div className="md:col-span-7 bg-[#fbfbfa] p-4 rounded-xl border border-[#e5e1d5] flex flex-col justify-between space-y-4">
+          <div className="h-36 bg-white border border-[#e5e1d5] rounded-xl relative overflow-hidden flex flex-col items-center justify-center select-none text-center">
+            <span className="absolute top-2 left-2 text-[7px] font-black text-[#827f76] uppercase tracking-widest">Growth Matrix</span>
 
             {/* Growing plant stage */}
             <div className="text-4xl mt-3 transition-all duration-500 transform">
@@ -1509,7 +1509,7 @@ const LifeCharacteristicsSandbox = () => {
               {allCompleted && "🌸🪴"}
             </div>
 
-            <p className="text-[9px] text-slate-400 font-bold uppercase mt-3 px-4 leading-relaxed">
+            <p className="text-[9px] text-[#52504a] font-bold uppercase mt-3 px-4 leading-relaxed">
               {!nutrition && "Dormant Seed: Needs water & nutrients to begin germination."}
               {nutrition && !respiration && "Sprout: Needs respiration to convert glucose into cellular energy."}
               {nutrition && respiration && !stimulus && "Plant: Tap the leaves to check for active environmental reflex."}
@@ -1521,7 +1521,7 @@ const LifeCharacteristicsSandbox = () => {
           {allCompleted && (
             <button
               onClick={resetActivity}
-              className="w-full py-2 bg-slate-800 hover:bg-slate-700 text-white text-[9px] font-black uppercase tracking-widest rounded transition-all flex items-center justify-center gap-1"
+              className="w-full py-2 bg-[#ede9de] hover:bg-slate-700 text-[#1a1917] text-[9px] font-black uppercase tracking-widest rounded transition-all flex items-center justify-center gap-1"
             >
               <RotateCcw className="w-3 h-3" /> Replant New Seed
             </button>
@@ -1576,17 +1576,17 @@ const NaturalResourcesSandbox = () => {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center border-b border-white/5 pb-2">
-        <span className="text-[10px] font-black text-purple-400 uppercase tracking-widest">
+      <div className="flex justify-between items-center border-b border-[#e5e1d5] pb-2">
+        <span className="text-[10px] font-black text-[#1b3b2b] uppercase tracking-widest">
           Ecology Laboratory: Forest Cover & Soil Erosion
         </span>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
         {/* Visual Hillside Simulator */}
-        <div className="md:col-span-7 bg-slate-950 p-4 rounded-xl border border-white/5 flex flex-col justify-between space-y-4">
-          <div className="relative h-44 bg-slate-900 border border-white/10 rounded-xl overflow-hidden flex flex-col justify-between p-4">
-            <span className="text-[7px] font-black text-slate-500 uppercase tracking-widest absolute top-2 left-2 z-10">
+        <div className="md:col-span-7 bg-[#fbfbfa] p-4 rounded-xl border border-[#e5e1d5] flex flex-col justify-between space-y-4">
+          <div className="relative h-44 bg-white border border-[#e5e1d5] rounded-xl overflow-hidden flex flex-col justify-between p-4">
+            <span className="text-[7px] font-black text-[#827f76] uppercase tracking-widest absolute top-2 left-2 z-10">
               Erosion Visualization Chamber
             </span>
 
@@ -1603,7 +1603,7 @@ const NaturalResourcesSandbox = () => {
               </div>
 
               {/* The river flow changing colors */}
-              <div className={`w-24 h-16 rounded-tl-full flex flex-col items-center justify-center transition-all duration-500 z-5 border-l border-t border-white/10 ${
+              <div className={`w-24 h-16 rounded-tl-full flex flex-col items-center justify-center transition-all duration-500 z-5 border-l border-t border-[#e5e1d5] ${
                 erosionComplete && forestCover < 60 ? 'bg-amber-800/80 text-amber-200' : 'bg-cyan-600/80 text-cyan-200'
               }`}>
                 <span className="text-[8px] font-black uppercase tracking-wider">River Bed</span>
@@ -1617,7 +1617,7 @@ const NaturalResourcesSandbox = () => {
             {rainActive && (
               <div className="absolute inset-0 bg-blue-950/40 flex flex-col items-center justify-center z-25 text-3xl select-none animate-pulse">
                 🌧️🌧️🌧️
-                <span className="text-[8px] font-black uppercase text-cyan-400 mt-1 tracking-widest">Heavy Precipitation Active</span>
+                <span className="text-[8px] font-black uppercase text-[#1b3b2b] mt-1 tracking-widest">Heavy Precipitation Active</span>
               </div>
             )}
           </div>
@@ -1625,9 +1625,9 @@ const NaturalResourcesSandbox = () => {
           {/* Deforestation Slider */}
           <div className="flex gap-4 items-center">
             <div className="flex-1 space-y-1">
-              <div className="flex justify-between text-[9px] font-black text-slate-400">
+              <div className="flex justify-between text-[9px] font-black text-[#52504a]">
                 <span>SLOPE FOREST COVER DEPLOYED</span>
-                <span className="font-mono text-purple-400">{forestCover}%</span>
+                <span className="font-mono text-[#1b3b2b]">{forestCover}%</span>
               </div>
               <input
                 type="range"
@@ -1640,7 +1640,7 @@ const NaturalResourcesSandbox = () => {
                   setForestCover(parseInt(e.target.value));
                   setErosionComplete(false);
                 }}
-                className="w-full accent-purple-500 cursor-pointer"
+                className="w-full accent-[#1b3b2b] cursor-pointer"
               />
             </div>
 
@@ -1656,23 +1656,23 @@ const NaturalResourcesSandbox = () => {
 
         {/* Diagnostics & Metrics Panel */}
         <div className="md:col-span-5 space-y-4">
-          <div className="p-4 bg-slate-900 border border-white/5 rounded-xl space-y-3.5 min-h-[140px] text-[10px] text-slate-350 leading-relaxed font-semibold">
-            <span className="font-black text-[9px] uppercase tracking-wider text-amber-400 block border-b border-white/5 pb-1.5 flex items-center gap-1">
+          <div className="p-4 bg-white border border-[#e5e1d5] rounded-xl space-y-3.5 min-h-[140px] text-[10px] text-[#52504a] leading-relaxed font-semibold">
+            <span className="font-black text-[9px] uppercase tracking-wider text-amber-400 block border-b border-[#e5e1d5] pb-1.5 flex items-center gap-1">
               <Trees className="w-3.5 h-3.5" /> Soil Cover Metrics
             </span>
             
             <div className="space-y-2 text-[9px] font-black">
               <div className="flex justify-between">
-                <span className="text-slate-450 uppercase">Topsoil Retention:</span>
+                <span className="text-[#52504a] uppercase">Topsoil Retention:</span>
                 <span className={getTopsoilIntegrity() < 50 ? 'text-rose-400' : 'text-green-400'}>{getTopsoilIntegrity()}%</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-450 uppercase">River Silt Level:</span>
+                <span className="text-[#52504a] uppercase">River Silt Level:</span>
                 <span className={getRiverSilt() > 200 ? 'text-rose-400' : 'text-green-400'}>{getRiverSilt()} ppm</span>
               </div>
             </div>
 
-            <div className="border-t border-white/5 pt-2 text-slate-400 font-semibold leading-relaxed">
+            <div className="border-t border-[#e5e1d5] pt-2 text-[#52504a] font-semibold leading-relaxed">
               {erosionComplete ? (
                 forestCover >= 60 ? (
                   <span className="text-green-400">✓ Excellent: Plant and tree roots firmly anchored the slope's topsoil. Clear river flow.</span>
@@ -1688,7 +1688,7 @@ const NaturalResourcesSandbox = () => {
           {erosionComplete && (
             <button
               onClick={resetActivity}
-              className="w-full py-2 bg-slate-800 hover:bg-slate-700 text-white text-[9px] font-black uppercase tracking-widest rounded transition-all flex items-center justify-center gap-1"
+              className="w-full py-2 bg-[#ede9de] hover:bg-slate-700 text-[#1a1917] text-[9px] font-black uppercase tracking-widest rounded transition-all flex items-center justify-center gap-1"
             >
               <RotateCcw className="w-3 h-3" /> Reset Landscaping
             </button>
@@ -1722,16 +1722,16 @@ const SpaceExplorerSandbox = () => {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center border-b border-white/5 pb-2">
-        <span className="text-[10px] font-black text-purple-400 uppercase tracking-widest">
+      <div className="flex justify-between items-center border-b border-[#e5e1d5] pb-2">
+        <span className="text-[10px] font-black text-[#1b3b2b] uppercase tracking-widest">
           Space Observatory: Moon Phase Orbit Simulator
         </span>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
         {/* Orbit Graphics */}
-        <div className="md:col-span-7 bg-slate-950 p-4 rounded-xl border border-white/5 flex flex-col justify-between space-y-4">
-          <div className="relative h-44 bg-slate-900 border border-white/10 rounded-xl overflow-hidden flex items-center justify-center shadow-inner">
+        <div className="md:col-span-7 bg-[#fbfbfa] p-4 rounded-xl border border-[#e5e1d5] flex flex-col justify-between space-y-4">
+          <div className="relative h-44 bg-white border border-[#e5e1d5] rounded-xl overflow-hidden flex items-center justify-center shadow-inner">
             {/* The Sun light rays from right */}
             <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-yellow-500/20 to-transparent flex items-center justify-center">
               <Sun className="w-5 h-5 text-yellow-400 animate-pulse" />
@@ -1743,7 +1743,7 @@ const SpaceExplorerSandbox = () => {
             </div>
 
             {/* Moon Orbit ring */}
-            <div className="absolute w-28 h-28 border border-dashed border-white/10 rounded-full" />
+            <div className="absolute w-28 h-28 border border-dashed border-[#e5e1d5] rounded-full" />
 
             {/* Orbiting Moon dot */}
             <div 
@@ -1758,7 +1758,7 @@ const SpaceExplorerSandbox = () => {
 
           {/* Orbit Angle slider */}
           <div className="space-y-1">
-            <div className="flex justify-between text-[9px] font-black text-slate-400">
+            <div className="flex justify-between text-[9px] font-black text-[#52504a]">
               <span>MOON ORBIT ANGLE</span>
               <span className="font-mono text-yellow-400">{moonAngle}°</span>
             </div>
@@ -1768,19 +1768,19 @@ const SpaceExplorerSandbox = () => {
               max="360"
               value={moonAngle}
               onChange={(e) => setMoonAngle(parseInt(e.target.value))}
-              className="w-full accent-purple-500"
+              className="w-full accent-[#1b3b2b]"
             />
           </div>
         </div>
 
         {/* Phase preview display */}
         <div className="md:col-span-5 space-y-4">
-          <div className="glass-panel p-4 border-purple-500/20 shadow text-center space-y-3 min-h-[140px] flex flex-col justify-center items-center">
-            <span className="text-[6px] text-slate-500 font-black uppercase tracking-widest">Earth view representation</span>
+          <div className="glass-panel p-4 border-[#e5e1d5] shadow text-center space-y-3 min-h-[140px] flex flex-col justify-center items-center">
+            <span className="text-[6px] text-[#827f76] font-black uppercase tracking-widest">Earth view representation</span>
             <span className="text-5xl animate-pulse select-none">{phase.emoji}</span>
             <div>
-              <h5 className="text-[10px] font-black text-white uppercase tracking-tight">{phase.name}</h5>
-              <p className="text-[9px] text-slate-400 font-semibold mt-1.5 leading-relaxed">{phase.desc}</p>
+              <h5 className="text-[10px] font-black text-[#1a1917] uppercase tracking-tight">{phase.name}</h5>
+              <p className="text-[9px] text-[#52504a] font-semibold mt-1.5 leading-relaxed">{phase.desc}</p>
             </div>
           </div>
         </div>
@@ -1835,11 +1835,11 @@ const Class6ScienceSandbox = ({ chapterTitle, activeConcept }) => {
 
     // Default Fallback
     return (
-      <div className="bg-slate-900 p-6 border border-white/5 rounded-xl space-y-4 text-center">
-        <Sparkles className="w-10 h-10 text-purple-400 mx-auto animate-pulse" />
-        <h5 className="text-xs font-black uppercase text-white">Concept Illustration</h5>
-        <div className="p-4 bg-slate-950 border border-white/5 rounded-lg text-[11px] leading-relaxed text-slate-350">
-          <strong className="text-cyan-400 block mb-1">Interactive Diagnostic:</strong>
+      <div className="bg-white p-6 border border-[#e5e1d5] rounded-xl space-y-4 text-center">
+        <Sparkles className="w-10 h-10 text-[#1b3b2b] mx-auto animate-pulse" />
+        <h5 className="text-xs font-black uppercase text-[#1a1917]">Concept Illustration</h5>
+        <div className="p-4 bg-[#fbfbfa] border border-[#e5e1d5] rounded-lg text-[11px] leading-relaxed text-[#52504a]">
+          <strong className="text-[#1b3b2b] block mb-1">Interactive Diagnostic:</strong>
           {activeConcept?.definition || "Explore the subtopics to trigger targeted laboratory simulations."}
         </div>
       </div>
@@ -1847,13 +1847,13 @@ const Class6ScienceSandbox = ({ chapterTitle, activeConcept }) => {
   };
 
   return (
-    <div className="w-full bg-slate-900/60 p-5 border border-white/10 rounded-xl space-y-5 text-left shadow-lg">
+    <div className="w-full bg-white p-5 border border-[#e5e1d5] rounded-xl space-y-5 text-left shadow-lg">
       <div className="space-y-0.5">
-        <span className="block text-[8px] font-black text-purple-400 uppercase tracking-widest">
+        <span className="block text-[8px] font-black text-[#1b3b2b] uppercase tracking-widest">
           Class 6 NCERT Science Laboratory
         </span>
-        <h4 className="text-sm font-black uppercase text-white truncate">{chapterTitle}</h4>
-        <p className="text-slate-400 text-[9px] font-semibold leading-relaxed">
+        <h4 className="text-sm font-black uppercase text-[#1a1917] truncate">{chapterTitle}</h4>
+        <p className="text-[#52504a] text-[9px] font-semibold leading-relaxed">
           Interact with variables and sliders to visualize core experimental concepts.
         </p>
       </div>

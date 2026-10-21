@@ -253,10 +253,10 @@ const SignatureStudyNexus = () => {
       />
       
       {/* Tactical Telemetry Badge at bottom */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-3 px-3.5 py-1.5 rounded-full bg-slate-900/80 border border-white/10 backdrop-blur-md">
-        <div className="w-1.5 h-1.5 rounded-full bg-nuvio-cyan animate-pulse" />
-        <span className="text-[9px] font-black uppercase tracking-[0.25em] text-text-secondary">
-          Autonomous Knowledge Orrery v2.0
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/95 border border-[#e5e1d5] shadow-sm backdrop-blur-md">
+        <div className="w-1.5 h-1.5 rounded-full bg-[#1b3b2b] animate-pulse" />
+        <span className="text-[9px] font-mono font-bold uppercase tracking-[0.2em] text-[#1b3b2b]">
+          Interactive Knowledge Nexus
         </span>
       </div>
     </div>

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
-import { Layers, Lightbulb, Compass, Award, Star } from 'lucide-react';
+import { Lightbulb, BookOpen } from 'lucide-react';
 import CartesianPlotter from './Sandboxes/CartesianPlotter';
 import MotionSimulator from './Sandboxes/MotionSimulator';
 import NarrativeMap from './Sandboxes/NarrativeMap';
@@ -12,16 +12,16 @@ import Class6ScienceSandbox from './Sandboxes/Class6ScienceSandbox';
 import './styles.css';
 
 const LearningBlocks = ({ subject, chapter, grade = "9" }) => {
-  const sLower = subject.toLowerCase();
-  const cTitle = chapter.title.toLowerCase();
+  const sLower = subject?.toLowerCase() || '';
+  const cTitle = chapter?.title?.toLowerCase() || '';
 
   // Pick visual block
   const renderInteractiveBlock = () => {
     if (grade === "6" && sLower.includes('math')) {
-      return <Class6MathSandbox chapterTitle={chapter.title} activeConcept={null} />;
+      return <Class6MathSandbox chapterTitle={chapter?.title} activeConcept={null} />;
     }
     if (grade === "6" && sLower.includes('science')) {
-      return <Class6ScienceSandbox chapterTitle={chapter.title} activeConcept={null} />;
+      return <Class6ScienceSandbox chapterTitle={chapter?.title} activeConcept={null} />;
     }
     if (cTitle.includes('cell')) {
       return <CellExplorer />;
@@ -38,41 +38,41 @@ const LearningBlocks = ({ subject, chapter, grade = "9" }) => {
     if (cTitle.includes('motion') || cTitle.includes('force') || sLower.includes('phys')) {
       return <MotionSimulator />;
     }
-    if (sLower.includes('english') || cTitle.includes(' grandmother') || cTitle.includes('read')) {
+    if (sLower.includes('english') || cTitle.includes('grandmother') || cTitle.includes('read')) {
       return <NarrativeMap />;
     }
 
-    // Default Fallback: Civilization Timeline Sandbox (For Social Science & general topics)
+    // Default Fallback: Concept Timeline Sandbox
     return (
-      <div className="bg-slate-950 p-6 border border-white/10 rounded-xl space-y-6 text-left shadow-lg">
+      <div className="bg-white p-6 md:p-8 border border-[#e5e1d5] rounded-2xl space-y-6 text-left shadow-sm">
         <div className="text-center space-y-1">
-          <span className="block text-[8px] font-black text-purple-400 uppercase tracking-widest">
+          <span className="block text-[10px] font-mono font-bold text-[#1b3b2b] uppercase tracking-wider">
             Syllabus Explorer
           </span>
-          <h4 className="text-sm font-black uppercase text-white">Interactive Concept Timeline</h4>
-          <p className="text-slate-400 text-[10px] font-semibold">
+          <h4 className="text-lg font-serif font-bold text-[#1a1917]">Concept Progression Sequence</h4>
+          <p className="text-[#52504a] text-xs">
             Follow the chronological sequence of topics inside this NCERT module.
           </p>
         </div>
 
-        <div className="relative pl-6 border-l border-white/10 space-y-6 py-2">
-          {chapter.keyIdeas?.map((idea, idx) => (
+        <div className="relative pl-6 border-l-2 border-[#e5e1d5] space-y-5 py-2">
+          {chapter?.keyIdeas?.map((idea, idx) => (
             <div key={idx} className="relative">
               {/* Dot stop indicator */}
-              <div className="absolute w-4 h-4 rounded-full bg-slate-900 border border-white/20 left-[-31px] top-1 flex items-center justify-center text-[7px] text-purple-400 font-black">
+              <div className="absolute w-5 h-5 rounded-full bg-[#f5f3ec] border border-[#e5e1d5] left-[-35px] top-1 flex items-center justify-center text-[10px] text-[#1b3b2b] font-mono font-bold">
                 {idx + 1}
               </div>
-              <div className="space-y-1 bg-slate-900 p-4 border border-white/5 rounded shadow-sm hover:border-purple-500/20 transition-colors">
-                <span className="block text-[8px] font-black text-purple-400 uppercase tracking-widest">
-                  Timeline Milestone
+              <div className="space-y-1 bg-[#fbfbfa] p-4 border border-[#e5e1d5] rounded-xl shadow-sm hover:border-[#1b3b2b]/40 transition-colors">
+                <span className="block text-[9px] font-mono font-bold text-[#1b3b2b] uppercase tracking-wider">
+                  Checkpoint {idx + 1}
                 </span>
-                <h5 className="text-xs font-black text-white uppercase">{idea.split(':')[0] || `Key Concept ${idx + 1}`}</h5>
-                <p className="text-[10px] text-slate-400 font-semibold leading-normal mt-1">{idea.split(':')[1] || idea}</p>
+                <h5 className="text-xs font-serif font-bold text-[#1a1917]">{idea.split(':')[0] || `Key Concept ${idx + 1}`}</h5>
+                <p className="text-xs text-[#52504a] leading-relaxed mt-1">{idea.split(':')[1] || idea}</p>
               </div>
             </div>
           )) || (
-            <div className="text-slate-400 text-xs text-center py-6 italic font-bold">
-              Reviewing general timeline nodes.
+            <div className="text-[#827f76] text-xs text-center py-6 italic font-mono uppercase">
+              No timeline nodes available.
             </div>
           )}
         </div>
@@ -87,32 +87,32 @@ const LearningBlocks = ({ subject, chapter, grade = "9" }) => {
       exit={{ opacity: 0, y: -15 }}
       className="max-w-4xl mx-auto space-y-6"
     >
-      <div className="text-center space-y-1 mb-8">
-        <span className="px-3 py-1 bg-purple-500/10 border border-purple-500/20 rounded-full text-[9px] font-black tracking-widest text-purple-400 uppercase">
+      <div className="text-center space-y-1 mb-6">
+        <span className="px-3 py-1 bg-[#ede9de] border border-[#d8d4c7] rounded-full text-[10px] font-mono font-bold tracking-widest text-[#1b3b2b] uppercase">
           Step 3: Laboratory Sandbox
         </span>
-        <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tight text-white mt-2">
+        <h2 className="text-2xl md:text-3xl font-serif font-bold text-[#1a1917] mt-2">
           Interactive Learning Block
         </h2>
-        <p className="text-slate-400 text-xs font-semibold">
-          Engage directly with core formulas, simulations, and narrative visual graphs.
+        <p className="text-[#52504a] text-xs">
+          Engage directly with core diagrams, simulations, and narrative visual graphs.
         </p>
       </div>
 
       <div className="space-y-6">
         {renderInteractiveBlock()}
 
-        {/* Diagnostic Hint Badge */}
-        <div className="glass-panel p-5 flex items-start gap-3.5 border border-white/10">
-          <div className="w-9 h-9 rounded-lg bg-yellow-500/10 border border-yellow-500/30 flex items-center justify-center text-yellow-400 shrink-0 shadow">
-            <Lightbulb className="w-5 h-5" />
+        {/* Experiment Instructions Card */}
+        <div className="bg-white p-5 rounded-xl flex items-start gap-3.5 border border-[#e5e1d5] shadow-sm">
+          <div className="w-9 h-9 rounded-lg bg-[#f5f3ec] border border-[#e5e1d5] flex items-center justify-center text-[#1b3b2b] shrink-0">
+            <Lightbulb className="w-4 h-4 text-[#1b3b2b]" />
           </div>
           <div className="text-left space-y-1">
-            <h4 className="text-xs font-black uppercase text-white tracking-wide">
+            <h4 className="text-xs font-serif font-bold text-[#1a1917]">
               Active Experiment Instructions
             </h4>
-            <p className="text-[10px] text-slate-400 leading-relaxed font-semibold">
-              Observe outputs by tweaking parameters. Active observation primes your memory pathways, achieving up to 2.5x higher recall scores when answering tests in the Practice Arena.
+            <p className="text-xs text-[#52504a] leading-relaxed">
+              Observe outputs by tweaking parameters. Active observation primes your memory pathways, helping solidify concepts for board exams and practice tests.
             </p>
           </div>
         </div>

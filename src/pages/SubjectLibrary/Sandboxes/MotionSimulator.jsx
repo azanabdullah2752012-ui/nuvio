@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Play, RotateCcw, Info } from 'lucide-react';
+import { RotateCcw } from 'lucide-react';
 import '../styles.css';
 
 const MotionSimulator = () => {
-  const [position, setPosition] = useState(0); // percentage 0 to 100
+  const [position, setPosition] = useState(0);
   const [isDriving, setIsDriving] = useState(false);
-  const [direction, setDirection] = useState('forward'); // 'forward' | 'backward'
+  const [direction, setDirection] = useState('forward');
   const [maxDistance, setMaxDistance] = useState(0);
 
   useEffect(() => {
@@ -47,37 +47,36 @@ const MotionSimulator = () => {
     setMaxDistance(0);
   };
 
-  // Calculate parameters
   const currentDistance = direction === 'forward' 
     ? Math.max(maxDistance, position) 
     : 100 + (100 - position);
 
   return (
-    <div className="bg-slate-950 p-6 border border-white/10 rounded-xl space-y-6 text-left shadow-lg">
+    <div className="bg-white p-6 md:p-8 border border-[#e5e1d5] rounded-2xl space-y-6 text-left shadow-sm">
       <div className="text-center space-y-1">
-        <span className="block text-[8px] font-black text-purple-400 uppercase tracking-widest">
-          Syllabus Laboratory
+        <span className="block text-[10px] font-mono font-bold text-[#1b3b2b] uppercase tracking-wider">
+          Physics Laboratory
         </span>
-        <h4 className="text-sm font-black uppercase text-white">Motion Vector Simulator</h4>
-        <p className="text-slate-400 text-[10px] font-semibold">
-          Observe how odometer distance grows while net displacement drops back to 0m.
+        <h4 className="text-lg font-serif font-bold text-[#1a1917]">Motion & Displacement Simulator</h4>
+        <p className="text-[#52504a] text-xs">
+          Observe how scalar path distance increases continuously while vector displacement resets to 0 m upon round-trip return.
         </p>
       </div>
 
       {/* Track layout */}
-      <div className="relative h-16 bg-slate-900 border border-white/10 rounded-lg flex items-center px-6 shadow-inner">
-        <div className="absolute left-6 w-5 h-5 rounded-full bg-blue-500/20 border border-blue-500 flex items-center justify-center text-[8px] font-black text-blue-400 shadow">A</div>
-        <div className="absolute right-6 w-5 h-5 rounded-full bg-red-500/20 border border-red-500 flex items-center justify-center text-[8px] font-black text-red-400 shadow">B</div>
+      <div className="relative h-20 bg-[#fbfbfa] border border-[#e5e1d5] rounded-xl flex items-center px-8 shadow-inner">
+        <div className="absolute left-6 w-6 h-6 rounded-full bg-[#f5f3ec] border border-[#e5e1d5] flex items-center justify-center text-xs font-mono font-bold text-[#1b3b2b] shadow-sm">A</div>
+        <div className="absolute right-6 w-6 h-6 rounded-full bg-[#f5f3ec] border border-[#e5e1d5] flex items-center justify-center text-xs font-mono font-bold text-[#1b3b2b] shadow-sm">B</div>
         
         {/* Road line */}
-        <div className="absolute left-12 right-12 h-1 bg-white/10 rounded" />
+        <div className="absolute left-14 right-14 h-1.5 bg-[#ede9de] rounded-full" />
 
-        {/* Animated vehicle emoji */}
+        {/* Marker */}
         <div 
-          className="absolute text-2xl select-none transition-all duration-75"
-          style={{ left: `calc(1.5rem + ${position}% * 0.85)` }}
+          className="absolute text-xl select-none transition-all duration-75"
+          style={{ left: `calc(2rem + ${position}% * 0.78)` }}
         >
-          🚀
+          📍
         </div>
       </div>
 
@@ -87,44 +86,53 @@ const MotionSimulator = () => {
           <button
             disabled={isDriving || position >= 100}
             onClick={() => handleStart('forward')}
-            className="px-4 py-2 border border-transparent bg-green-500 hover:bg-green-600 disabled:opacity-30 text-black text-[9px] font-black uppercase tracking-wider rounded shadow active:scale-95 transition-all"
+            className="px-4 py-2 border border-transparent bg-[#1b3b2b] hover:bg-[#26523c] disabled:opacity-30 text-white text-xs font-mono font-bold uppercase tracking-wider rounded-lg shadow-sm active:scale-95 transition-all"
           >
-            Launch to B ➔
+            Travel A ➔ B
           </button>
           <button
             disabled={isDriving || position <= 0}
             onClick={() => handleStart('backward')}
-            className="px-4 py-2 border border-transparent bg-blue-500 hover:bg-blue-600 disabled:opacity-30 text-black text-[9px] font-black uppercase tracking-wider rounded shadow active:scale-95 transition-all"
+            className="px-4 py-2 border border-[#e5e1d5] bg-white hover:bg-[#fbfbfa] disabled:opacity-30 text-[#1a1917] text-xs font-mono font-bold uppercase tracking-wider rounded-lg shadow-sm active:scale-95 transition-all"
           >
-            ➔ Return to A
-          </button>
-          <button
-            onClick={handleReset}
-            className="px-4 py-2 border border-white/10 bg-slate-800 text-slate-350 text-[9px] font-black uppercase tracking-wider rounded shadow hover:bg-slate-700 hover:text-white transition-colors"
-          >
-            <RotateCcw className="w-3.5 h-3.5 inline mr-1" /> Reset
+            Return B ➔ A
           </button>
         </div>
 
-        {/* Telemetry Output */}
-        <div className="flex gap-4 bg-slate-900 px-4 py-2 border border-white/15 rounded text-[11px] font-semibold">
-          <div>
-            <span className="text-slate-500 uppercase tracking-widest text-[7px] block">Odometer Distance</span>
-            <strong className="text-green-400 font-mono">{currentDistance}m</strong>
+        <button
+          onClick={handleReset}
+          className="p-2 border border-[#e5e1d5] bg-white hover:bg-[#ede9de] text-[#52504a] hover:text-[#1a1917] rounded-lg transition-colors flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider"
+        >
+          <RotateCcw className="w-3.5 h-3.5" /> Reset
+        </button>
+      </div>
+
+      {/* Live Readouts */}
+      <div className="grid grid-cols-2 gap-4">
+        <div className="p-4 bg-[#fbfbfa] border border-[#e5e1d5] rounded-xl space-y-1">
+          <span className="block text-[10px] font-mono font-bold text-[#827f76] uppercase tracking-wider">
+            Total Distance (Scalar)
+          </span>
+          <div className="text-xl font-mono font-bold text-[#1b3b2b]">
+            {currentDistance} m
           </div>
-          <div className="h-6 w-[1px] bg-slate-800" />
-          <div>
-            <span className="text-slate-500 uppercase tracking-widest text-[7px] block">Displacement Vector</span>
-            <strong className="text-cyan-400 font-mono">{position}m East</strong>
+          <span className="text-[10px] text-[#52504a] block">Cumulative path length</span>
+        </div>
+
+        <div className="p-4 bg-[#fbfbfa] border border-[#e5e1d5] rounded-xl space-y-1">
+          <span className="block text-[10px] font-mono font-bold text-[#827f76] uppercase tracking-wider">
+            Displacement (Vector)
+          </span>
+          <div className="text-xl font-mono font-bold text-[#1a1917]">
+            {position} m
           </div>
+          <span className="text-[10px] text-[#52504a] block">Shortest straight line from origin</span>
         </div>
       </div>
 
-      <div className="p-4 bg-blue-950/20 border border-blue-500/20 rounded-lg text-xs leading-relaxed text-slate-400 font-semibold flex gap-2">
-        <Info className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
-        <p>
-          Distance measures the actual path lengths you travelled. Displacement is a vector quantity that only cares about the shortest path from the start point to the end point.
-        </p>
+      <div className="p-4 bg-[#f5f3ec] border border-[#e5e1d5] rounded-xl text-xs leading-relaxed text-[#52504a]">
+        <strong className="text-[#1b3b2b] block mb-0.5 font-mono uppercase text-[10px]">NCERT Physics Checkpoint:</strong>
+        Distance is scalar and never decreases along a path. Displacement is a vector describing the change in position; when returning to the origin, displacement drops to exactly 0 m.
       </div>
     </div>
   );
