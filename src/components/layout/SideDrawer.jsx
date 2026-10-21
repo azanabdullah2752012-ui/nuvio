@@ -112,13 +112,17 @@ const SideDrawer = ({ isOpen, onClose, user }) => {
                       }
                     `}
                   >
-                    <item.icon className="w-4 h-4 shrink-0 mt-0.5" />
-                    <div>
-                      <div className="text-xs">{item.name}</div>
-                      <div className={`text-[10px] font-mono ${isActive ? 'text-emerald-100' : 'text-[#827f76]'}`}>
-                        {item.desc}
-                      </div>
-                    </div>
+                    {({ isActive }) => (
+                      <>
+                        <item.icon className="w-4 h-4 shrink-0 mt-0.5" />
+                        <div>
+                          <div className="text-xs">{item.name}</div>
+                          <div className={`text-[10px] font-mono ${isActive ? 'text-emerald-100' : 'text-[#827f76]'}`}>
+                            {item.desc}
+                          </div>
+                        </div>
+                      </>
+                    )}
                   </NavLink>
                 ))}
               </nav>
