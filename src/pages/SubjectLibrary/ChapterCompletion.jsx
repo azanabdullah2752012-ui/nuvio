@@ -1,117 +1,76 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
-import { Trophy, Award, ArrowRight, Star, RefreshCw, Zap } from 'lucide-react';
-import confetti from 'canvas-confetti';
+import { CheckCircle2, ArrowRight, BookOpen, Clock, Target } from 'lucide-react';
 import './styles.css';
 
 const ChapterCompletion = ({ chapter, subject, onReturn }) => {
-  useEffect(() => {
-    // Show confetti on mount
-    const duration = 2.5 * 1000;
-    const end = Date.now() + duration;
-
-    const frame = () => {
-      confetti({
-        particleCount: 4,
-        angle: 60,
-        spread: 55,
-        origin: { x: 0 },
-        colors: ['#a855f7', '#06b6d4', '#22c55e']
-      });
-      confetti({
-        particleCount: 4,
-        angle: 120,
-        spread: 55,
-        origin: { x: 1 },
-        colors: ['#a855f7', '#06b6d4', '#22c55e']
-      });
-
-      if (Date.now() < end) {
-        requestAnimationFrame(frame);
-      }
-    };
-    frame();
-  }, []);
-
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95 }}
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -15 }}
       className="max-w-xl mx-auto space-y-6 text-center"
     >
-      {/* Trophy and Chapter Completed Banner */}
-      <div className="glass-panel p-8 space-y-4 border-green-500/20 shadow-lg relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(34,197,94,0.08)_0%,transparent_70%)] pointer-events-none" />
-        
-        <Trophy className="w-20 h-20 text-yellow-400 mx-auto drop-shadow-[0_0_20px_rgba(234,179,8,0.4)] animate-bounce" />
-        
-        <div className="space-y-1 relative z-10">
-          <span className="px-3 py-1 bg-green-500/10 border border-green-500/20 rounded-full text-[9px] font-black tracking-widest text-green-400 uppercase">
-            Quest Completed!
-          </span>
-          <h2 className="text-3xl font-black uppercase tracking-tight text-white mt-3">
-            {chapter.title} Complete!
-          </h2>
-          <p className="text-slate-400 text-xs font-semibold max-w-sm mx-auto leading-relaxed">
-            Congratulations! You have successfully completed this NCERT module and unlocked new quests.
-          </p>
-        </div>
-      </div>
-
-      {/* Rewards Grid */}
-      <div className="grid grid-cols-2 gap-4">
-        <div className="glass-panel p-5 border border-white/5 space-y-1 shadow">
-          <span className="block text-[8px] font-black text-slate-500 uppercase tracking-widest">Medal Rewards</span>
-          <strong className="text-2xl font-black text-purple-400 font-mono">+120 XP</strong>
-        </div>
-
-        <div className="glass-panel p-5 border border-white/5 space-y-1 shadow">
-          <span className="block text-[8px] font-black text-slate-500 uppercase tracking-widest">Loot Coins</span>
-          <strong className="text-2xl font-black text-amber-400 font-mono">+40 Coins</strong>
-        </div>
-      </div>
-
-      {/* Unlocked Badges Panel */}
-      <div className="glass-panel p-6 space-y-4 text-left border border-white/10 shadow">
-        <span className="block text-[8px] font-black text-slate-500 uppercase tracking-widest">
-          Unlocked Badges & Achievements
-        </span>
-
-        <div className="flex gap-4">
-          <div className="flex items-center gap-3 bg-white/5 p-3 rounded-lg border border-white/5 flex-1">
-            <div className="w-10 h-10 rounded-full bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-xl shrink-0 shadow">
-              🏆
-            </div>
-            <div>
-              <h5 className="text-[11px] font-black text-white uppercase leading-none">Syllabus Slayer</h5>
-              <span className="text-[9px] text-slate-500 uppercase font-bold">Defeated this chapter's milestones</span>
-            </div>
+      {/* Chapter Completed Banner */}
+      <div className="p-8 border border-white/10 bg-[#0d0f14] rounded-2xl relative overflow-hidden text-left">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 rounded-xl bg-[#ff4625]/10 border border-[#ff4625]/20 flex items-center justify-center text-[#ff4625]">
+            <CheckCircle2 className="w-5 h-5" />
           </div>
-
-          <div className="flex items-center gap-3 bg-white/5 p-3 rounded-lg border border-white/5 flex-1">
-            <div className="w-10 h-10 rounded-full bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-xl shrink-0 shadow">
-              🔥
-            </div>
-            <div>
-              <h5 className="text-[11px] font-black text-white uppercase leading-none">Active Recall Ace</h5>
-              <span className="text-[9px] text-slate-500 uppercase font-bold">Unveiled all worked example paths</span>
-            </div>
+          <div>
+            <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#ff4625]">
+              NCERT Syllabus Protocol
+            </span>
+            <h2 className="text-2xl font-bold uppercase tracking-tight text-white font-clash">
+              {chapter.title} Verified
+            </h2>
           </div>
         </div>
+
+        <p className="text-zinc-400 text-xs font-sans leading-relaxed">
+          All core concepts, worked problem sets, and recall benchmarks for this unit have been systematically registered in your academic study record.
+        </p>
       </div>
 
-      {/* Unlocked Next steps */}
-      <div className="glass-panel p-5 bg-green-500/5 border border-green-500/15 text-left flex items-center justify-between">
-        <div className="space-y-0.5">
-          <span className="block text-[8px] font-black text-green-400 uppercase tracking-widest">Next Chapter Unlocked</span>
-          <h5 className="text-xs font-black text-white uppercase tracking-tight">Ready for Next Quest stop</h5>
+      {/* Academic Metrics Summary */}
+      <div className="grid grid-cols-3 gap-3">
+        <div className="p-4 border border-white/10 bg-[#0d0f14] rounded-xl text-left">
+          <div className="flex items-center gap-2 text-zinc-400 text-[10px] font-mono uppercase tracking-wider mb-1">
+            <BookOpen className="w-3.5 h-3.5 text-[#ff4625]" /> Concepts
+          </div>
+          <div className="text-lg font-bold text-white font-clash">100%</div>
+          <span className="text-[9px] text-zinc-500 font-mono">Curriculum Covered</span>
+        </div>
+
+        <div className="p-4 border border-white/10 bg-[#0d0f14] rounded-xl text-left">
+          <div className="flex items-center gap-2 text-zinc-400 text-[10px] font-mono uppercase tracking-wider mb-1">
+            <Target className="w-3.5 h-3.5 text-[#ff4625]" /> Recall
+          </div>
+          <div className="text-lg font-bold text-white font-clash">Verified</div>
+          <span className="text-[9px] text-zinc-500 font-mono">Arena Cleared</span>
+        </div>
+
+        <div className="p-4 border border-white/10 bg-[#0d0f14] rounded-xl text-left">
+          <div className="flex items-center gap-2 text-zinc-400 text-[10px] font-mono uppercase tracking-wider mb-1">
+            <Clock className="w-3.5 h-3.5 text-[#ff4625]" /> Status
+          </div>
+          <div className="text-lg font-bold text-emerald-400 font-clash">Ready</div>
+          <span className="text-[9px] text-zinc-500 font-mono">Next Module</span>
+        </div>
+      </div>
+
+      {/* Return Action */}
+      <div className="p-5 bg-white/[0.02] border border-white/10 rounded-xl flex items-center justify-between">
+        <div className="text-left">
+          <span className="block text-[9px] font-mono text-zinc-400 uppercase tracking-widest">Syllabus Navigation</span>
+          <h5 className="text-xs font-bold text-white uppercase font-clash">Return to Subject Overview</h5>
         </div>
         <button
           onClick={onReturn}
-          className="px-5 py-3.5 bg-green-500 hover:bg-green-600 text-black font-black uppercase tracking-widest text-[9px] rounded-lg transition-all shadow flex items-center gap-1.5 active:scale-95"
+          className="px-5 py-2.5 bg-[#ff4625] hover:bg-[#ff5738] text-white font-mono uppercase tracking-widest text-[10px] rounded-lg transition-all flex items-center gap-2"
         >
-          Next stop <ArrowRight className="w-4 h-4 shrink-0" />
+          <span>Continue</span>
+          <ArrowRight className="w-3.5 h-3.5" />
         </button>
       </div>
     </motion.div>

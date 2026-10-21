@@ -141,22 +141,6 @@ const ConceptExplorer = ({ concepts = [], quiz = [], chapterTitle = "", subject 
   };
 
   const handleSelfGrade = (scoreType) => {
-    let xp = 0;
-    let coins = 0;
-
-    if (scoreType === 'perfect') {
-      xp = 15;
-      coins = 5;
-    } else if (scoreType === 'partial') {
-      xp = 5;
-      coins = 2;
-    }
-
-    setQuestXP(prev => prev + xp);
-    setQuestCoins(prev => prev + coins);
-    xpService.awardXp(xp, `Recall Quest: ${activeConcept?.title || ''}`);
-    authService.addTokens(coins);
-
     setRecallRevealed(true);
   };
 
@@ -607,26 +591,26 @@ const ConceptExplorer = ({ concepts = [], quiz = [], chapterTitle = "", subject 
 
                           <div className="space-y-2 border-t border-white/5 pt-4">
                             <span className="block text-[8px] font-black text-slate-500 uppercase tracking-widest text-center">
-                              How close was your answer? Select to claim XP rewards:
+                              How close was your recall? Select to advance:
                             </span>
                             <div className="grid grid-cols-3 gap-2">
                               <button
                                 onClick={() => { playLocalSynth('correct'); setQuestStep(5); }}
                                 className="py-3 bg-green-500/10 border border-green-500/30 hover:bg-green-500 hover:text-black text-green-400 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all"
                               >
-                                Got it! 🟢 (+15 XP)
+                                Confident 🟢
                               </button>
                               <button
                                 onClick={() => { playLocalSynth('correct'); setQuestStep(5); }}
                                 className="py-3 bg-yellow-500/10 border border-yellow-500/30 hover:bg-yellow-500 hover:text-black text-yellow-400 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all"
                               >
-                                Partial 🟡 (+5 XP)
+                                Partial 🟡
                               </button>
                               <button
                                 onClick={() => { playLocalSynth('incorrect'); setQuestStep(5); }}
                                 className="py-3 bg-rose-500/10 border border-rose-500/30 hover:bg-rose-500 hover:text-black text-rose-400 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all"
                               >
-                                Missed 🔴 (+0 XP)
+                                Needs Review 🔴
                               </button>
                             </div>
                           </div>
@@ -702,33 +686,35 @@ const ConceptExplorer = ({ concepts = [], quiz = [], chapterTitle = "", subject 
                     </motion.div>
                   )}
 
-                  {/* Step 6: Rewards */}
+                  {/* Step 6: Concept Mastered */}
                   {questStep === 6 && (
                     <motion.div
                       key="reward"
-                      initial={{ scale: 0.9, opacity: 0 }}
+                      initial={{ scale: 0.95, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
-                      exit={{ scale: 0.9, opacity: 0 }}
+                      exit={{ scale: 0.95, opacity: 0 }}
                       className="space-y-6 text-center py-6 flex flex-col items-center"
                     >
-                      <Trophy className="w-16 h-16 text-yellow-400 animate-bounce" />
+                      <div className="w-14 h-14 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                        <CheckCircle2 className="w-7 h-7" />
+                      </div>
                       
                       <div className="space-y-1">
-                        <h4 className="text-2xl font-black text-white uppercase tracking-tight">Quest Completed!</h4>
-                        <p className="text-xs text-slate-400 font-semibold max-w-[240px] mx-auto leading-relaxed">
-                          You conquered "{activeConcept?.title || ''}" following the Acadevance formula.
+                        <h4 className="text-xl font-bold text-white uppercase font-clash">Concept Verified</h4>
+                        <p className="text-xs text-zinc-400 font-sans max-w-[280px] mx-auto leading-relaxed">
+                          You completed "{activeConcept?.title || ''}" through definition, simulation, and recall.
                         </p>
                       </div>
 
-                      <div className="bg-slate-950 px-6 py-4.5 border border-white/5 rounded-2xl flex gap-8 text-xs font-black">
+                      <div className="bg-[#08090b] px-6 py-4 border border-white/5 rounded-xl flex gap-8 text-xs">
                         <div>
-                          <span className="text-[7px] text-slate-500 uppercase tracking-widest block">Total XP Gained</span>
-                          <span className="text-purple-400 font-mono text-base font-black">+{questXP} XP ✨</span>
+                          <span className="text-[8px] font-mono text-zinc-500 uppercase tracking-widest block">Active Recall</span>
+                          <span className="text-emerald-400 font-mono text-sm font-bold">Verified ✓</span>
                         </div>
                         <div className="w-[1px] bg-white/5" />
                         <div>
-                          <span className="text-[7px] text-slate-500 uppercase tracking-widest block">Total Coins Gained</span>
-                          <span className="text-amber-400 font-mono text-base font-black">+{questCoins} Coins 🪙</span>
+                          <span className="text-[8px] font-mono text-zinc-500 uppercase tracking-widest block">Checkpoint</span>
+                          <span className="text-white font-mono text-sm font-bold">Completed</span>
                         </div>
                       </div>
 
@@ -736,16 +722,16 @@ const ConceptExplorer = ({ concepts = [], quiz = [], chapterTitle = "", subject 
                         {activeConceptIndex + 1 < concepts.length ? (
                           <button
                             onClick={() => startQuest(activeConceptIndex + 1)}
-                            className="flex-1 py-4 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-white hover:to-white hover:text-black text-white text-[10px] font-black uppercase tracking-widest rounded-xl transition-all shadow-md active:scale-95"
+                            className="flex-1 py-3.5 bg-[#ff4625] hover:bg-[#ff5738] text-white text-[10px] font-mono font-bold uppercase tracking-widest rounded-xl transition-all shadow-sm"
                           >
-                            Next Concept Quest ➔
+                            Next Concept Unit ➔
                           </button>
                         ) : (
                           <button
                             onClick={finishQuest}
-                            className="flex-1 py-4 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-white hover:to-white hover:text-black text-white text-[10px] font-black uppercase tracking-widest rounded-xl transition-all shadow-md active:scale-95"
+                            className="flex-1 py-3.5 bg-emerald-500 hover:bg-emerald-600 text-black text-[10px] font-mono font-bold uppercase tracking-widest rounded-xl transition-all shadow-sm"
                           >
-                            Conquer Concept Stage 🏆
+                            Complete Concept Module ✓
                           </button>
                         )}
                       </div>

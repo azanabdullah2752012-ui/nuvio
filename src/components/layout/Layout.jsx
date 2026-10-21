@@ -4,7 +4,6 @@ import { AnimatePresence } from 'framer-motion';
 import UniversalHeader from './UniversalHeader';
 import SideDrawer from './SideDrawer';
 import { authService } from '../../services/authService';
-import QuestFAB from './QuestFAB';
 import AnimatedBackground from '../AnimatedBackground';
 import PageTransition from '../PageTransition';
 
@@ -106,7 +105,7 @@ const Layout = () => {
     return (
       <div className="min-h-screen bg-background-base flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-nuvio-purple-500/20 border-t-nuvio-purple-500 rounded-full animate-spin" />
+          <div className="w-10 h-10 border-2 border-white/10 border-t-brand-vermilion rounded-full animate-spin" />
           <p className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] animate-pulse">Scholar Identity Syncing...</p>
         </div>
       </div>
@@ -141,9 +140,6 @@ const Layout = () => {
           </main>
         </PageTransition>
       </AnimatePresence>
-
-      {/* Global Quests */}
-      <QuestFAB />
     </div>
   );
 };

@@ -12,7 +12,6 @@ import { EXPANDED_CURRICULUM } from '../../services/expandedCurriculum';
 import { dataService } from '../../services/dataService';
 import { xpService } from '../../services/xpService';
 import { authService } from '../../services/authService';
-import { gamificationService, BOSSES } from '../../services/gamificationService';
 
 // Import sub-components
 import ChapterIntro from './ChapterIntro';
@@ -97,8 +96,6 @@ const SubjectLibraryHub = () => {
   const [soundMuted, setSoundMuted] = useState(false);
   const [showFormulaDrawer, setShowFormulaDrawer] = useState(false);
   const [copiedFormula, setCopiedFormula] = useState(null);
-  const [combatEffects, setCombatEffects] = useState([]);
-  const [bossShake, setBossShake] = useState(false);
   const [user, setUser] = useState(authService.me());
 
   useEffect(() => {
@@ -124,56 +121,7 @@ const SubjectLibraryHub = () => {
     setTimeout(() => setCopiedFormula(null), 2000);
   };
 
-  // Subject boss sync hook
-  const getSubjectBoss = () => {
-    const progress = user?.boss_chapter_progress || {};
-    const subLower = subject.toLowerCase();
-
-    let bossId = null;
-    if (subLower.includes('math') || subLower.includes('algebra') || subLower.includes('geometry')) {
-      bossId = ['dragon', 'algebra', 'geometry'].find(id => progress[id]?.status === 'active') || 'dragon';
-    } else if (subLower.includes('sci') || subLower.includes('phys') || subLower.includes('chem') || subLower.includes('bio')) {
-      bossId = ['cell', 'motion', 'atom'].find(id => progress[id]?.status === 'active') || 'cell';
-    } else if (subLower.includes('social') || subLower.includes('hist') || subLower.includes('geo')) {
-      bossId = ['empire', 'leviathan'].find(id => progress[id]?.status === 'active') || 'empire';
-    }
-
-    if (!bossId) return null;
-    const bossMeta = BOSSES.find(b => b.id === bossId);
-    const bossProgress = progress[bossId] || { hp: 100, max: 100, status: 'locked' };
-
-    return {
-      ...bossMeta,
-      hp: bossProgress.hp,
-      max: bossProgress.max,
-      status: bossProgress.status
-    };
-  };
-
-  const activeBoss = getSubjectBoss();
-
-  const handleBossDamage = (amount) => {
-    gamificationService.dealDamage(subject, amount);
-    
-    // Spawn floaters
-    const id = Date.now() + Math.random();
-    const effect = {
-      id,
-      text: `-${amount} HP 💥`,
-      x: Math.floor(Math.random() * 40) + 30,
-      y: Math.floor(Math.random() * 30) + 10
-    };
-    setCombatEffects(prev => [...prev, effect]);
-    setBossShake(true);
-    playSynthAudio('boss_hit', soundMuted);
-
-    setTimeout(() => setBossShake(false), 300);
-    setTimeout(() => {
-      setCombatEffects(prev => prev.filter(e => e.id !== id));
-    }, 1200);
-  };
-
-// Smart option generator to avoid dummy fillers (like A, B, C, D or Option B)
+  // Smart option generator to avoid dummy fillers (like A, B, C, D or Option B)
 const generateSmartOptions = (correctAnswer, questionText, allQna) => {
   if (!correctAnswer) return ["A", "B", "C", "D"];
   const correct = String(correctAnswer).trim();
@@ -431,34 +379,8 @@ const getChapterExpandedData = (ch) => {
                 </div>
               </div>
 
-              {/* Combat Overlay HUD for bosses */}
-              <div className="flex items-center gap-6 relative">
-                {activeBoss && activeBoss.hp > 0 && (
-                  <motion.div 
-                    animate={bossShake ? { x: [-5, 5, -5, 5, 0] } : {}}
-                    className="flex items-center gap-3 bg-slate-950 px-4 py-1.5 border border-white/10 rounded-full relative"
-                  >
-                    {/* Floating damage effect output */}
-                    <div className="absolute inset-0 pointer-events-none z-30">
-                      {combatEffects.map(effect => (
-                        <span
-                          key={effect.id}
-                          className="absolute text-rose-500 font-black text-xl combat-floater select-none"
-                          style={{ left: `${effect.x}%`, top: `-20px` }}
-                        >
-                          {effect.text}
-                        </span>
-                      ))}
-                    </div>
-
-                    <span className="text-xl animate-bounce shrink-0 select-none">{activeBoss.emoji}</span>
-                    <div className="text-[9px] text-left shrink-0">
-                      <span className="block font-black text-rose-400 uppercase tracking-widest leading-none">{activeBoss.name}</span>
-                      <span className="block text-[8px] font-bold text-slate-500 uppercase font-mono mt-0.5">HP: {activeBoss.hp}/{activeBoss.max}</span>
-                    </div>
-                  </motion.div>
-                )}
-
+              {/* Action buttons */}
+              <div className="flex items-center gap-4">
                 {/* Formula cheatsheet quick link */}
                 <button
                   onClick={() => setShowFormulaDrawer(true)}
@@ -609,7 +531,6 @@ const getChapterExpandedData = (ch) => {
                       key="step5"
                       questions={chData.quiz}
                       subject={subject}
-                      onCorrectAnswer={handleBossDamage}
                       playSound={(t) => playSynthAudio(t, soundMuted)}
                     />
                   )}
