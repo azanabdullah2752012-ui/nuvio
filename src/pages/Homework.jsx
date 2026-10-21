@@ -3,25 +3,25 @@ import {
   CheckSquare, Plus, Clock, 
   Trash2, Filter, AlertCircle, 
   Check, Calendar, BookOpen, ChevronRight,
-  ListFilter, Target
+  ListFilter, Target, Star, Compass, Zap
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { dataService } from '../services/dataService';
+import { dataService, PILLARS, ENERGY_LEVELS } from '../services/dataService';
 import { notificationService } from '../services/notificationService';
-
-const SUBJECTS = ['All', 'Mathematics', 'Science', 'English', 'Social Science'];
 
 const Homework = () => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState('pending'); // 'pending' | 'completed' | 'all'
-  const [filterSubject, setFilterSubject] = useState('All');
+  const [filterPillar, setFilterPillar] = useState('All');
   
   // New task input state
   const [title, setTitle] = useState('');
-  const [subject, setSubject] = useState('Mathematics');
-  const [dueDate, setDueDate] = useState('');
-  const [priority, setPriority] = useState('medium'); // 'high' | 'medium' | 'low'
+  const [pillar, setPillar] = useState('Craft');
+  const [energy, setEnergy] = useState('Deep 90m');
+  const [due, setDue] = useState('Today');
+  const [priority, setPriority] = useState('Medium');
+  const [isHighlight, setIsHighlight] = useState(false);
   const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
@@ -48,41 +48,53 @@ const Homework = () => {
 
     const newTask = {
       title: title.trim(),
-      subject: subject,
-      due_date: dueDate || new Date(Date.now() + 86400000 * 2).toISOString().split('T')[0],
+      pillar: pillar,
+      energy: energy,
+      due: due,
       priority: priority,
+      isHighlight: isHighlight,
       completed: false
     };
 
     try {
       const created = await dataService.create('tasks', newTask);
+      if (isHighlight) {
+        await dataService.setHighlight(created.id);
+      }
       setTasks(prev => [created, ...prev]);
       setTitle('');
+      setIsHighlight(false);
       setShowForm(false);
-      notificationService.send("Task Registered", `Directive logged under ${subject}.`, "success");
+      notificationService.send("Directive Registered", `Logged under ${pillar} (${energy}).`, "success");
     } catch (err) {
-      notificationService.send("Registration Error", "Could not commit task to local store.", "error");
+      notificationService.send("Registration Error", "Could not commit directive to local store.", "error");
     }
   };
 
   const handleToggleTask = async (task) => {
     const updatedStatus = !task.completed;
     try {
-      const updated = await dataService.update('tasks', task.id, { completed: updatedStatus });
+      await dataService.update('tasks', task.id, { completed: updatedStatus });
       setTasks(tasks.map(t => t.id === task.id ? { ...t, completed: updatedStatus } : t));
       if (updatedStatus) {
-        notificationService.send("Objective Concluded", `Task marked complete.`, "info");
+        notificationService.send("Directive Concluded", `Action item marked complete.`, "info");
       }
     } catch (err) {
       console.warn("Could not toggle task status:", err);
     }
   };
 
+  const handleSetHighlight = async (id) => {
+    await dataService.setHighlight(id);
+    setTasks(tasks.map(t => ({ ...t, isHighlight: t.id === id })));
+    notificationService.send("Anchor Locked", "Selected as today's #1 Daily Highlight.", "success");
+  };
+
   const handleDeleteTask = async (id) => {
     try {
       await dataService.delete('tasks', id);
       setTasks(tasks.filter(t => t.id !== id));
-      notificationService.send("Task Removed", "Directive excised from planner.", "info");
+      notificationService.send("Directive Removed", "Excised from action registry.", "info");
     } catch (err) {
       console.warn("Could not delete task:", err);
     }
@@ -93,45 +105,45 @@ const Homework = () => {
       filterStatus === 'all' ? true :
       filterStatus === 'completed' ? task.completed : !task.completed;
     
-    const matchesSubject = 
-      filterSubject === 'All' ? true : task.subject === filterSubject;
+    const matchesPillar = 
+      filterPillar === 'All' ? true : (task.pillar || 'Craft') === filterPillar;
 
-    return matchesStatus && matchesSubject;
+    return matchesStatus && matchesPillar;
   });
 
   const pendingCount = tasks.filter(t => !t.completed).length;
   const completedCount = tasks.filter(t => t.completed).length;
 
   return (
-    <div className="max-w-6xl mx-auto space-y-10 pb-32 px-4 sm:px-6 font-sans">
+    <div className="max-w-6xl mx-auto space-y-10 pb-32 px-4 sm:px-6 font-sans text-left">
       
-      {/* HEADER */}
+      {/* ── HEADER ─────────────────────────────────────────────────── */}
       <header className="border-b border-[#e5e1d5] pb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
           <div className="flex items-center gap-2 mb-2">
             <span className="w-2 h-2 rounded-full bg-[#1b3b2b]" />
             <span className="font-mono text-[10px] tracking-[0.25em] uppercase text-[#827f76]">
-              Academic Directives / Task Registry
+              Life Directives // Action Desk
             </span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-serif font-bold tracking-tight text-[#1a1917]">
-            Study Planner & Tasks
+            Action Registry & Pillars
           </h1>
           <p className="text-[#52504a] text-sm mt-1 max-w-xl">
-            Register homework deliverables, syllabus revision targets, and exam preparation milestones.
+            A single, unfragmented action desk organized by the 4 life pillars: Craft, Vitality, Mind, and Tribe.
           </p>
         </div>
 
         <button
           onClick={() => setShowForm(!showForm)}
-          className="px-5 py-3 bg-[#1b3b2b] hover:bg-[#26523c] text-white font-mono uppercase tracking-widest text-xs font-semibold rounded-lg transition-all flex items-center gap-2 shadow-[0_2px_8px_rgba(27,59,43,0.2)] self-start md:self-end"
+          className="px-5 py-3 bg-[#1b3b2b] hover:bg-[#26523c] text-white font-mono uppercase tracking-widest text-xs font-semibold rounded-xl transition-all flex items-center gap-2 shadow-[0_2px_8px_rgba(27,59,43,0.2)] self-start md:self-end"
         >
           <Plus className="w-4 h-4" />
-          <span>{showForm ? 'Cancel Input' : 'Add Directive'}</span>
+          <span>{showForm ? 'Close Input' : 'Add Directive'}</span>
         </button>
       </header>
 
-      {/* QUICK TASK CREATOR DRAWER */}
+      {/* ── QUICK DIRECTIVE CREATOR ─────────────────────────────────── */}
       <AnimatePresence>
         {showForm && (
           <motion.form
@@ -141,50 +153,73 @@ const Homework = () => {
             onSubmit={handleCreateTask}
             className="p-6 border border-[#e5e1d5] bg-white rounded-2xl shadow-[0_4px_20px_rgba(27,59,43,0.04)] space-y-4 overflow-hidden"
           >
-            <span className="font-mono text-xs uppercase tracking-widest text-[#52504a] font-bold block">
-              New Study Directive
+            <span className="font-mono text-xs uppercase tracking-widest text-[#1b3b2b] font-bold block">
+              Log New Action Item
             </span>
 
             <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
               <div className="md:col-span-6">
                 <input
                   type="text"
-                  required
-                  placeholder="Task title (e.g. NCERT Science Chapter 3 Exercise 3.2)"
+                  placeholder="Directive title (e.g., Code API endpoints, 5km run, read 20 pages)..."
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-4 py-3 bg-[#fbfbfa] border border-[#e5e1d5] rounded-lg text-sm text-[#1a1917] placeholder-[#827f76] focus:outline-none focus:border-[#1b3b2b] transition-colors"
+                  className="w-full px-4 py-3 bg-[#fbfbfa] border border-[#e5e1d5] rounded-xl text-sm focus:outline-none focus:border-[#1b3b2b]"
+                  autoFocus
                 />
               </div>
 
-              <div className="md:col-span-2">
+              <div className="md:col-span-3">
                 <select
-                  value={subject}
-                  onChange={(e) => setSubject(e.target.value)}
-                  className="w-full px-4 py-3 bg-[#fbfbfa] border border-[#e5e1d5] rounded-lg text-xs font-mono uppercase text-[#1a1917] focus:outline-none focus:border-[#1b3b2b]"
+                  value={pillar}
+                  onChange={(e) => setPillar(e.target.value)}
+                  className="w-full px-3 py-3 bg-[#fbfbfa] border border-[#e5e1d5] rounded-xl text-xs font-mono"
                 >
-                  <option value="Mathematics">Mathematics</option>
-                  <option value="Science">Science</option>
-                  <option value="English">English</option>
-                  <option value="Social Science">Social Science</option>
+                  {PILLARS.map(p => (
+                    <option key={p.id} value={p.id}>{p.icon} {p.label}</option>
+                  ))}
                 </select>
               </div>
 
-              <div className="md:col-span-2">
-                <input
-                  type="date"
-                  value={dueDate}
-                  onChange={(e) => setDueDate(e.target.value)}
-                  className="w-full px-4 py-3 bg-[#fbfbfa] border border-[#e5e1d5] rounded-lg text-xs font-mono uppercase text-[#1a1917] focus:outline-none focus:border-[#1b3b2b]"
-                />
+              <div className="md:col-span-3">
+                <select
+                  value={energy}
+                  onChange={(e) => setEnergy(e.target.value)}
+                  className="w-full px-3 py-3 bg-[#fbfbfa] border border-[#e5e1d5] rounded-xl text-xs font-mono"
+                >
+                  {ENERGY_LEVELS.map(el => (
+                    <option key={el.id} value={el.id}>{el.badge}</option>
+                  ))}
+                </select>
               </div>
+            </div>
 
-              <div className="md:col-span-2">
+            <div className="flex flex-wrap items-center justify-between gap-4 pt-2 border-t border-[#f4f1ea]">
+              <label className="flex items-center gap-2 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={isHighlight}
+                  onChange={(e) => setIsHighlight(e.target.checked)}
+                  className="w-4 h-4 rounded text-[#1b3b2b] border-[#e5e1d5] focus:ring-0"
+                />
+                <span className="text-xs font-serif text-[#1a1917]">
+                  Lock as Today's #1 Daily Highlight (Anchor)
+                </span>
+              </label>
+
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowForm(false)}
+                  className="px-4 py-2 border border-[#e5e1d5] rounded-lg text-xs font-mono text-[#827f76] hover:text-[#1a1917]"
+                >
+                  Cancel
+                </button>
                 <button
                   type="submit"
-                  className="w-full h-full py-3 bg-[#1b3b2b] text-white font-mono uppercase tracking-widest text-xs font-bold rounded-lg hover:bg-[#26523c] transition-colors flex items-center justify-center gap-2 shadow-sm"
+                  className="px-6 py-2 bg-[#1b3b2b] hover:bg-[#26523c] text-white font-mono uppercase tracking-wider text-xs font-bold rounded-lg shadow-xs"
                 >
-                  <span>Commit Task</span>
+                  Save Directive
                 </button>
               </div>
             </div>
@@ -192,117 +227,139 @@ const Homework = () => {
         )}
       </AnimatePresence>
 
-      {/* FILTER BAR & METRICS */}
+      {/* ── FILTER & METRICS BAR ─────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#e5e1d5] pb-4">
-        
-        {/* Status Filter */}
-        <div className="flex gap-1.5 p-1 bg-[#f5f3ec] border border-[#e5e1d5] rounded-lg self-start">
-          {[
-            { id: 'pending', label: 'Active', count: pendingCount },
-            { id: 'completed', label: 'Concluded', count: completedCount },
-            { id: 'all', label: 'All Tasks', count: tasks.length }
-          ].map(tab => (
+        {/* Status Filters */}
+        <div className="flex items-center gap-1.5 p-1 bg-[#f4f1ea] rounded-xl border border-[#e0dcce] self-start font-mono text-xs">
+          <button
+            onClick={() => setFilterStatus('pending')}
+            className={`px-3 py-1.5 rounded-lg transition-colors font-bold ${
+              filterStatus === 'pending' ? 'bg-white text-[#1a1917] shadow-xs' : 'text-[#827f76] hover:text-[#1a1917]'
+            }`}
+          >
+            ACTIVE ({pendingCount})
+          </button>
+          <button
+            onClick={() => setFilterStatus('completed')}
+            className={`px-3 py-1.5 rounded-lg transition-colors font-bold ${
+              filterStatus === 'completed' ? 'bg-white text-[#1a1917] shadow-xs' : 'text-[#827f76] hover:text-[#1a1917]'
+            }`}
+          >
+            CONCLUDED ({completedCount})
+          </button>
+          <button
+            onClick={() => setFilterStatus('all')}
+            className={`px-3 py-1.5 rounded-lg transition-colors font-bold ${
+              filterStatus === 'all' ? 'bg-white text-[#1a1917] shadow-xs' : 'text-[#827f76] hover:text-[#1a1917]'
+            }`}
+          >
+            ALL ({tasks.length})
+          </button>
+        </div>
+
+        {/* Pillar Filter Pills */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
+          <button
+            onClick={() => setFilterPillar('All')}
+            className={`px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-colors ${
+              filterPillar === 'All' ? 'bg-[#1b3b2b] text-white' : 'text-[#827f76] hover:bg-[#f4f1ea]'
+            }`}
+          >
+            ALL
+          </button>
+          {PILLARS.map(p => (
             <button
-              key={tab.id}
-              onClick={() => setFilterStatus(tab.id)}
-              className={`px-3 py-1.5 rounded-md font-mono text-xs uppercase tracking-wider transition-all flex items-center gap-2 ${
-                filterStatus === tab.id
-                  ? 'bg-[#1b3b2b] text-white font-bold shadow-sm'
-                  : 'text-[#52504a] hover:text-[#1a1917]'
+              key={p.id}
+              onClick={() => setFilterPillar(p.id)}
+              className={`px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-colors flex items-center gap-1 shrink-0 ${
+                filterPillar === p.id ? 'bg-[#1b3b2b] text-white' : 'text-[#827f76] hover:bg-[#f4f1ea]'
               }`}
             >
-              <span>{tab.label}</span>
-              <span className={`text-[9px] px-1.5 py-0.2 rounded font-mono ${
-                filterStatus === tab.id ? 'bg-white/20 text-white' : 'bg-black/5 text-[#52504a]'
-              }`}>
-                {tab.count}
-              </span>
+              <span>{p.icon}</span>
+              <span>{p.id}</span>
             </button>
           ))}
         </div>
-
-        {/* Subject Filter Pills */}
-        <div className="flex gap-1.5 flex-wrap">
-          {SUBJECTS.map(sub => (
-            <button
-              key={sub}
-              onClick={() => setFilterSubject(sub)}
-              className={`px-3 py-1 rounded-md font-mono text-[10px] uppercase tracking-wider transition-all border ${
-                filterSubject === sub
-                  ? 'border-[#1b3b2b] bg-[#1b3b2b] text-white font-bold shadow-sm'
-                  : 'border-[#e5e1d5] bg-white text-[#52504a] hover:bg-[#f5f3ec] hover:text-[#1a1917]'
-              }`}
-            >
-              {sub}
-            </button>
-          ))}
-        </div>
-
       </div>
 
-      {/* TASKS LIST */}
-      {filteredTasks.length === 0 ? (
-        <div className="p-16 border border-[#e5e1d5] bg-white rounded-2xl text-center space-y-3 shadow-[0_2px_12px_rgba(27,59,43,0.03)]">
-          <CheckSquare className="w-10 h-10 text-[#827f76] mx-auto opacity-40" />
-          <h3 className="font-serif text-lg font-bold text-[#1a1917]">No Directives in Queue</h3>
-          <p className="text-[#827f76] text-xs font-mono max-w-sm mx-auto">
-            {filterStatus === 'completed'
-              ? 'No completed tasks recorded under this filter.'
-              : 'All scheduled homework and study items have been cleared.'}
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {filteredTasks.map(task => (
+      {/* ── DIRECTIVES LIST ─────────────────────────────────────────── */}
+      <div className="space-y-3">
+        {filteredTasks.length === 0 ? (
+          <div className="py-16 text-center border border-dashed border-[#e5e1d5] rounded-2xl bg-white space-y-2">
+            <div className="font-serif text-base text-[#1a1917] font-bold">No directives found</div>
+            <p className="text-xs text-[#827f76] font-mono">
+              Adjust filters or register your next high-leverage objective above.
+            </p>
+          </div>
+        ) : (
+          filteredTasks.map(task => (
             <div
               key={task.id}
-              className={`p-5 border rounded-xl transition-all flex items-center justify-between gap-4 ${
-                task.completed
-                  ? 'border-[#e5e1d5] bg-[#fbfbfa] text-[#827f76]'
-                  : 'border-[#e5e1d5] bg-white hover:border-[#1b3b2b]/30 text-[#1a1917] shadow-[0_2px_10px_rgba(27,59,43,0.03)]'
+              className={`p-4 sm:p-5 rounded-2xl border transition-all flex items-center justify-between gap-4 ${
+                task.completed 
+                  ? 'border-[#f0ece1] bg-[#faf9f5] opacity-65' 
+                  : 'border-[#e5e1d5] bg-white hover:border-[#1b3b2b]/40 shadow-xs'
               }`}
             >
-              <div className="flex items-center gap-4 flex-1">
+              <div className="flex items-center gap-3.5 min-w-0">
                 <button
                   onClick={() => handleToggleTask(task)}
-                  className={`w-6 h-6 rounded border flex items-center justify-center shrink-0 transition-colors ${
-                    task.completed
-                      ? 'bg-[#1b3b2b] border-[#1b3b2b] text-white'
-                      : 'border-[#827f76] hover:border-[#1b3b2b] bg-white'
+                  className={`w-5 h-5 rounded-md border flex items-center justify-center transition-colors shrink-0 ${
+                    task.completed 
+                      ? 'bg-[#1b3b2b] border-[#1b3b2b] text-white' 
+                      : 'border-[#827f76] hover:border-[#1b3b2b]'
                   }`}
-                  title={task.completed ? "Mark pending" : "Mark complete"}
                 >
-                  {task.completed && <Check className="w-4 h-4 stroke-[3]" />}
+                  {task.completed && <Check className="w-3.5 h-3.5" />}
                 </button>
 
-                <div className="space-y-1">
-                  <span className={`text-sm font-semibold block ${task.completed ? 'line-through text-[#827f76]' : 'text-[#1a1917]'}`}>
-                    {task.title}
-                  </span>
-                  <div className="flex items-center gap-3 text-[10px] font-mono text-[#827f76]">
-                    <span className="uppercase text-[#1b3b2b] font-bold">{task.subject || 'Curriculum'}</span>
-                    <span>·</span>
-                    <span className="flex items-center gap-1">
-                      <Clock className="w-3 h-3 text-[#827f76]" />
-                      Due {task.due_date || 'Upcoming'}
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className={`text-base font-serif font-medium text-[#1a1917] truncate ${task.completed ? 'line-through text-[#827f76]' : ''}`}>
+                      {task.title}
                     </span>
+                    {task.isHighlight && (
+                      <span className="text-[9px] font-mono px-2 py-0.5 rounded bg-[#f4f7f4] text-[#1b3b2b] border border-[#1b3b2b]/20 font-bold uppercase flex items-center gap-1">
+                        <Star className="w-2.5 h-2.5 fill-current" />
+                        Anchor Highlight
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-2 text-[10px] font-mono text-[#827f76] mt-1">
+                    <span className="text-[#1a1917] font-bold">{task.pillar || 'Craft'}</span>
+                    <span>•</span>
+                    <span>{task.energy || 'Deep 90m'}</span>
+                    <span>•</span>
+                    <span>Due: {task.due || 'Today'}</span>
                   </div>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 shrink-0">
+                {!task.isHighlight && !task.completed && (
+                  <button
+                    onClick={() => handleSetHighlight(task.id)}
+                    className="hidden sm:flex items-center gap-1 text-[10px] font-mono text-[#827f76] hover:text-[#1b3b2b] px-2 py-1 rounded hover:bg-[#f4f1ea]"
+                    title="Lock as Today's Highlight"
+                  >
+                    <Star className="w-3 h-3" />
+                    <span>Set Highlight</span>
+                  </button>
+                )}
+
                 <button
                   onClick={() => handleDeleteTask(task.id)}
-                  className="p-2 text-[#827f76] hover:text-rose-600 rounded transition-colors"
-                  title="Purge Task"
+                  className="p-1.5 text-[#827f76] hover:text-red-700 rounded hover:bg-red-50 transition-colors"
+                  title="Delete directive"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
               </div>
             </div>
-          ))}
-        </div>
-      )}
+          ))
+        )}
+      </div>
 
     </div>
   );

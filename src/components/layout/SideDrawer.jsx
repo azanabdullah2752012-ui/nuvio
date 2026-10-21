@@ -1,17 +1,17 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { 
-  LayoutDashboard, Calendar, Timer,
-  ListChecks, Settings, X
+  Compass, Calendar, Timer,
+  CheckSquare, Settings, X, Moon, Zap
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const navItems = [
-  { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
-  { name: "Tasks & Homework", path: "/homework", icon: ListChecks },
-  { name: "Focus Timer", path: "/focus-timer", icon: Timer },
-  { name: "Academic Calendar", path: "/calendar", icon: Calendar },
-  { name: "Scholar Settings", path: "/profile", icon: Settings },
+  { name: "Daily Compass", path: "/dashboard", icon: Compass },
+  { name: "Action Desk", path: "/homework", icon: CheckSquare },
+  { name: "Focus Chronometer", path: "/focus-timer", icon: Timer },
+  { name: "Life Calendar", path: "/calendar", icon: Calendar },
+  { name: "Life OS Settings", path: "/profile", icon: Settings },
 ];
 
 const SideDrawer = ({ isOpen, onClose, user }) => {
@@ -55,7 +55,7 @@ const SideDrawer = ({ isOpen, onClose, user }) => {
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="fixed top-0 left-0 z-[70] h-full w-[280px] overflow-y-auto bg-[#f8f6f0] border-r border-[#e5e1d5] shadow-xl font-sans text-xs flex flex-col justify-between"
+            className="fixed top-0 left-0 z-[70] h-full w-[280px] overflow-y-auto bg-[#f8f6f0] border-r border-[#e5e1d5] shadow-xl font-sans text-xs flex flex-col justify-between text-left"
           >
             <div>
               {/* Header Identity */}
@@ -63,7 +63,10 @@ const SideDrawer = ({ isOpen, onClose, user }) => {
                 <div className="flex items-center gap-3">
                   <span className="w-2.5 h-2.5 bg-[#1b3b2b] rounded-sm" />
                   <span className="font-serif font-bold text-base tracking-tight text-[#1a1917]">
-                    ACADEVANCE
+                    NUVIO
+                  </span>
+                  <span className="text-[9px] font-mono px-1.5 py-0.5 rounded border border-[#e5e1d5] bg-white text-[#827f76] font-bold">
+                    LIFE OS
                   </span>
                 </div>
                 <button
@@ -74,15 +77,19 @@ const SideDrawer = ({ isOpen, onClose, user }) => {
                 </button>
               </div>
 
-              {/* Scholar Identity Strip */}
+              {/* User Identity Strip */}
               <div className="px-5 py-4 border-b border-[#e5e1d5] bg-white">
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-full bg-[#f4f1ea] flex items-center justify-center text-sm border border-[#e0dcce]">
-                    {user?.avatar_emoji || '🎓'}
+                    {user?.avatar_emoji || '⚡'}
                   </div>
                   <div className="truncate">
-                    <div className="font-bold text-[#1a1917] truncate font-serif text-sm">{user?.full_name || 'Scholar'}</div>
-                    <div className="text-[10px] text-[#827f76] font-mono">Productivity Workstation</div>
+                    <div className="font-bold text-[#1a1917] truncate font-serif text-sm">
+                      {user?.full_name || 'Navigator'}
+                    </div>
+                    <div className="text-[10px] text-[#827f76] font-mono truncate">
+                      {user?.grade_level || 'Universal Life Optimizer'}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -90,7 +97,7 @@ const SideDrawer = ({ isOpen, onClose, user }) => {
               {/* Navigation Sections */}
               <nav className="p-4 space-y-1.5">
                 <div className="text-[10px] font-mono font-bold uppercase tracking-[0.15em] text-[#827f76] px-3 py-1">
-                  Productivity Arsenal
+                  Life Operations
                 </div>
                 {navItems.map((item) => (
                   <NavLink
@@ -98,23 +105,29 @@ const SideDrawer = ({ isOpen, onClose, user }) => {
                     to={item.path}
                     onClick={onClose}
                     className={({ isActive }) => `
-                      flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-mono uppercase tracking-wider transition-all
+                      w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium transition-all
                       ${isActive 
-                        ? 'bg-[#1b3b2b] text-white font-bold shadow-sm' 
-                        : 'text-[#52504a] hover:bg-[#ede9de] hover:text-[#1a1917]'
+                        ? 'bg-[#1b3b2b] text-white shadow-xs font-semibold' 
+                        : 'text-[#52504a] hover:bg-[#eae6db] hover:text-[#1a1917]'
                       }
                     `}
                   >
                     <item.icon className="w-4 h-4 shrink-0" />
-                    <span>{item.name}</span>
+                    <span className="text-xs">{item.name}</span>
                   </NavLink>
                 ))}
               </nav>
             </div>
 
-            {/* Bottom Footer Note */}
-            <div className="p-4 border-t border-[#e5e1d5] bg-[#f4f1ea] text-[10px] font-mono text-[#827f76] text-center">
-              Student Productivity Suite
+            {/* Bottom Footer Info */}
+            <div className="p-5 border-t border-[#e5e1d5] bg-[#f4f1ea] space-y-2">
+              <div className="flex items-center gap-2 text-[10px] font-mono text-[#827f76]">
+                <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
+                <span>OFFLINE-FIRST ENGINE ACTIVE</span>
+              </div>
+              <div className="text-[9px] font-mono text-[#827f76]">
+                Huberman • Dan Koe • Cal Newport Protocols
+              </div>
             </div>
           </motion.aside>
         </>

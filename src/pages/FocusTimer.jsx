@@ -3,25 +3,62 @@ import {
   Play, Pause, RotateCcw, 
   Coffee, Brain, Clock, 
   CheckCircle2, ArrowRight, Volume2, VolumeX,
-  Plus, Check
+  Zap, Compass, Sparkles, Wind, Eye
 } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { dataService } from '../services/dataService';
+import { motion, AnimatePresence } from 'framer-motion';
+import { dataService, PILLARS } from '../services/dataService';
 import { notificationService } from '../services/notificationService';
 
 const PRESETS = [
-  { label: 'Pomodoro', minutes: 25, type: 'focus', desc: 'Standard 25m sprint' },
-  { label: 'Deep Sprint', minutes: 50, type: 'focus', desc: 'Extended 50m block' },
-  { label: 'Short Break', minutes: 5, type: 'break', desc: '5m cognitive reset' },
-  { label: 'Long Break', minutes: 15, type: 'break', desc: '15m recovery buffer' }
+  { 
+    id: 'ultradian-90', 
+    label: '90m Ultradian', 
+    minutes: 90, 
+    type: 'focus', 
+    badge: 'Huberman Peak',
+    desc: 'Full 90-minute biological focus cycle. Optimal for neuroplasticity and deep creative synthesis.' 
+  },
+  { 
+    id: 'sprint-50', 
+    label: '50m Deep Sprint', 
+    minutes: 50, 
+    type: 'focus', 
+    badge: 'Standard Deep',
+    desc: 'Uninterrupted maker block. Zero tabs, zero phone, single directive execution.' 
+  },
+  { 
+    id: 'admin-25', 
+    label: '25m Quick Pomodoro', 
+    minutes: 25, 
+    type: 'focus', 
+    badge: 'Logistics',
+    desc: 'Rapid execution for admin, emails, logistics, and cleaning up shallow tasks.' 
+  },
+  { 
+    id: 'nsdr-15', 
+    label: '15m NSDR / Reset', 
+    minutes: 15, 
+    type: 'break', 
+    badge: 'Panoramic Rest',
+    desc: 'Non-Sleep Deep Rest. Relax eyes into panoramic vision. Double inhale, long exhale.' 
+  },
+  { 
+    id: 'micro-5', 
+    label: '5m Micro Buffer', 
+    minutes: 5, 
+    type: 'break', 
+    badge: 'Hydrate',
+    desc: 'Step away from screen. Stand up, drink water, reset posture.' 
+  }
 ];
 
 const FocusTimer = () => {
-  const [targetMinutes, setTargetMinutes] = useState(25);
-  const [timeLeft, setTimeLeft] = useState(25 * 60);
+  const [selectedPreset, setSelectedPreset] = useState(PRESETS[0]);
+  const [targetMinutes, setTargetMinutes] = useState(90);
+  const [timeLeft, setTimeLeft] = useState(90 * 60);
   const [isActive, setIsActive] = useState(false);
   const [mode, setMode] = useState('focus'); // 'focus' | 'break'
-  const [subjectTag, setSubjectTag] = useState('Mathematics');
+  const [selectedPillar, setSelectedPillar] = useState('Craft');
   const [sessions, setSessions] = useState([]);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const timerRef = useRef(null);
@@ -36,7 +73,7 @@ const FocusTimer = () => {
       const list = await dataService.list('focus_sessions');
       if (list && Array.isArray(list)) {
         const sorted = [...list].sort((a, b) => new Date(b.completed_at || b.created_at) - new Date(a.completed_at || a.created_at));
-        setSessions(sorted.slice(0, 6));
+        setSessions(sorted.slice(0, 5));
       }
     } catch (e) {
       console.warn("Could not load focus sessions:", e);
@@ -53,14 +90,12 @@ const FocusTimer = () => {
       gain.connect(ctx.destination);
       osc.type = 'sine';
       osc.frequency.setValueAtTime(440, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.3);
-      gain.gain.setValueAtTime(0.1, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+      osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.35);
+      gain.gain.setValueAtTime(0.12, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
       osc.start();
-      osc.stop(ctx.currentTime + 0.5);
-    } catch (e) {
-      // AudioContext unavailable
-    }
+      osc.stop(ctx.currentTime + 0.6);
+    } catch (e) {}
   };
 
   useEffect(() => {
@@ -92,6 +127,7 @@ const FocusTimer = () => {
 
   const selectPreset = (preset) => {
     setIsActive(false);
+    setSelectedPreset(preset);
     setMode(preset.type);
     setTargetMinutes(preset.minutes);
     setTimeLeft(preset.minutes * 60);
@@ -104,7 +140,7 @@ const FocusTimer = () => {
     if (mode === 'focus') {
       const sessionData = {
         duration_minutes: targetMinutes,
-        subject: subjectTag,
+        pillar: selectedPillar,
         completed_at: new Date().toISOString()
       };
 
@@ -116,245 +152,198 @@ const FocusTimer = () => {
       }
 
       notificationService.send(
-        "Focus Block Concluded",
-        `Completed ${targetMinutes} minutes of focused study on ${subjectTag}. Take a breather!`,
+        "Ultradian Bout Completed",
+        `Concluded ${targetMinutes} minutes on ${selectedPillar}. Now execute a 15-minute NSDR / panoramic recovery break!`,
         "success"
       );
-      
-      // Auto-switch to break
-      setMode('break');
-      setTargetMinutes(5);
-      setTimeLeft(5 * 60);
     } else {
-      notificationService.send("Recess Finished", "Ready for your next study sprint?", "info");
-      setMode('focus');
-      setTargetMinutes(25);
-      setTimeLeft(25 * 60);
+      notificationService.send(
+        "Recovery Cycle Complete",
+        `Nervous system restored. Ready for your next high-leverage block.`,
+        "info"
+      );
     }
   };
 
+  // Time format calculations
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
-  const formattedTime = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-  
-  const totalSeconds = targetMinutes * 60;
-  const progressPercent = Math.max(0, Math.min(100, ((totalSeconds - timeLeft) / totalSeconds) * 100));
-
-  // Circular gauge coordinates (radius = 120, circumference = 2 * PI * 120 ≈ 753.98)
-  const radius = 120;
-  const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference - (progressPercent / 100) * circumference;
+  const progressPercent = ((targetMinutes * 60 - timeLeft) / (targetMinutes * 60)) * 100;
 
   return (
-    <div className="max-w-5xl mx-auto space-y-12 pb-32 px-4 sm:px-6 font-sans">
+    <div className="max-w-4xl mx-auto space-y-10 pb-32 px-4 sm:px-6 font-sans text-left">
       
-      {/* HEADER */}
-      <header className="border-b border-[#e5e1d5] pb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
+      {/* ── HEADER ─────────────────────────────────────────────────── */}
+      <header className="border-b border-[#e5e1d5] pb-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 mb-2">
+          <div className="flex items-center gap-2 mb-1.5">
             <span className="w-2 h-2 rounded-full bg-[#1b3b2b]" />
             <span className="font-mono text-[10px] tracking-[0.25em] uppercase text-[#827f76]">
-              Academic Disciplines / Focused Study Interval
+              Huberman Ultradian Chronometer // Deep Work Engine
             </span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-serif font-bold tracking-tight text-[#1a1917]">
-            Study Chronometer
+            Focus Chronometer
           </h1>
-          <p className="text-[#52504a] text-sm mt-1 max-w-xl">
-            Structured interval pacing for deep work sessions. Dedicated distraction-free sessions calibrated for cognitive stamina.
+          <p className="text-[#52504a] text-xs sm:text-sm mt-1 max-w-xl">
+            Human neuroplasticity and cognitive output naturally operate on 90-minute cycles. Structure deep execution with scientific recovery intervals.
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => setSoundEnabled(!soundEnabled)}
-            className={`p-2.5 rounded-lg border font-mono text-xs transition-colors flex items-center gap-2 ${
-              soundEnabled ? 'border-[#1b3b2b]/30 bg-[#1b3b2b]/5 text-[#1b3b2b]' : 'border-[#e5e1d5] text-[#827f76]'
-            }`}
-            title="Toggle Audio Cues"
-          >
-            {soundEnabled ? <Volume2 className="w-4 h-4 text-[#1b3b2b]" /> : <VolumeX className="w-4 h-4" />}
-            <span className="text-[10px] uppercase tracking-wider font-semibold">{soundEnabled ? 'Chime Active' : 'Muted'}</span>
-          </button>
-        </div>
+        <button
+          onClick={() => setSoundEnabled(!soundEnabled)}
+          className="p-2 border border-[#e5e1d5] hover:border-[#1b3b2b] bg-white rounded-xl text-[#52504a] flex items-center gap-2 text-xs font-mono self-start sm:self-auto"
+          title="Toggle completion sound chime"
+        >
+          {soundEnabled ? <Volume2 className="w-4 h-4 text-[#1b3b2b]" /> : <VolumeX className="w-4 h-4 text-[#827f76]" />}
+          <span className="text-[10px] uppercase font-bold">{soundEnabled ? 'Chime On' : 'Muted'}</span>
+        </button>
       </header>
 
-      {/* MAIN CONSOLE GRID */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-        
-        {/* LEFT / CENTER: CIRCULAR CHRONOMETER */}
-        <div className="lg:col-span-7 p-8 sm:p-12 border border-[#e5e1d5] bg-white rounded-2xl shadow-[0_4px_20px_rgba(27,59,43,0.04)] flex flex-col items-center justify-center space-y-8 relative overflow-hidden">
-          
-          {/* Subtle paper grid crosshairs */}
-          <div className="absolute inset-0 pointer-events-none opacity-40">
-            <div className="w-full h-[1px] bg-[#e5e1d5] top-1/2 absolute" />
-            <div className="h-full w-[1px] bg-[#e5e1d5] left-1/2 absolute" />
-          </div>
-
-          {/* Mode Pill */}
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#f5f3ec] border border-[#e5e1d5] rounded-full z-10">
-            <span className={`w-2 h-2 rounded-full ${mode === 'focus' ? 'bg-[#1b3b2b] animate-pulse' : 'bg-[#a46a29]'}`} />
-            <span className="font-mono text-[10px] uppercase tracking-widest text-[#52504a] font-semibold">
-              {mode === 'focus' ? 'Active Focus Session' : 'Scholastic Recess'}
-            </span>
-          </div>
-
-          {/* SVG Circular Chronometer Dial */}
-          <div className="relative w-72 h-72 sm:w-80 sm:h-80 flex items-center justify-center z-10">
-            <svg className="w-full h-full -rotate-90" viewBox="0 0 280 280">
-              {/* Dial Track */}
-              <circle
-                cx="140"
-                cy="140"
-                r={radius}
-                className="stroke-[#ede9de]"
-                strokeWidth="8"
-                fill="none"
-              />
-              {/* Dial Progress Arc */}
-              <circle
-                cx="140"
-                cy="140"
-                r={radius}
-                className={mode === 'focus' ? 'stroke-[#1b3b2b]' : 'stroke-[#a46a29]'}
-                strokeWidth="8"
-                strokeDasharray={circumference}
-                strokeDashoffset={strokeDashoffset}
-                strokeLinecap="round"
-                fill="none"
-                style={{ transition: 'stroke-dashoffset 0.5s ease' }}
-              />
-            </svg>
-
-            {/* Central Time Display */}
-            <div className="absolute flex flex-col items-center text-center">
-              <span className="font-mono text-5xl sm:text-6xl font-bold tracking-tight text-[#1a1917] select-none">
-                {formattedTime}
-              </span>
-              <span className="font-mono text-xs uppercase tracking-widest text-[#827f76] mt-2">
-                Target: {targetMinutes}m · {subjectTag}
-              </span>
-            </div>
-          </div>
-
-          {/* Action Controls */}
-          <div className="flex items-center gap-4 z-10">
+      {/* ── PRESET CADENCE SELECTOR ─────────────────────────────────── */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+        {PRESETS.map((p) => {
+          const isSelected = selectedPreset.id === p.id;
+          return (
             <button
-              onClick={resetTimer}
-              className="p-3.5 bg-[#f5f3ec] hover:bg-[#ede9de] border border-[#e5e1d5] rounded-xl text-[#52504a] hover:text-[#1a1917] transition-all active:scale-95 shadow-sm"
-              title="Reset Timer"
-            >
-              <RotateCcw className="w-5 h-5" />
-            </button>
-
-            <button
-              onClick={toggleTimer}
-              className={`px-8 py-3.5 rounded-xl font-mono text-xs font-bold uppercase tracking-widest flex items-center gap-2 shadow-sm transition-all active:scale-95 ${
-                isActive 
-                  ? 'bg-[#52504a] hover:bg-[#1a1917] text-white border border-transparent'
-                  : 'bg-[#1b3b2b] hover:bg-[#26523c] text-white border border-transparent shadow-[0_2px_8px_rgba(27,59,43,0.25)]'
+              key={p.id}
+              onClick={() => selectPreset(p)}
+              className={`p-3.5 rounded-xl border text-left transition-all relative ${
+                isSelected 
+                  ? 'border-[#1b3b2b] bg-[#f4f7f4] ring-1 ring-[#1b3b2b] shadow-xs' 
+                  : 'border-[#e5e1d5] bg-white hover:border-[#827f76]'
               }`}
             >
-              {isActive ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 fill-white" />}
-              <span>{isActive ? 'Pause Interval' : 'Commence Session'}</span>
+              <div className="text-[9px] font-mono uppercase tracking-wider text-[#1b3b2b] font-bold">
+                {p.badge}
+              </div>
+              <div className="font-serif font-bold text-sm text-[#1a1917] mt-0.5">
+                {p.label}
+              </div>
+              <div className="text-[10px] text-[#827f76] line-clamp-1 mt-1">
+                {p.desc}
+              </div>
             </button>
-          </div>
+          );
+        })}
+      </div>
 
-          {/* Subject Directives */}
-          <div className="flex items-center gap-2 pt-2 z-10 flex-wrap justify-center">
-            {['Mathematics', 'Science', 'English', 'Social Science', 'General Reading'].map((sub) => (
+      {/* ── MAIN CHRONOMETER CHASSIS ─────────────────────────────────── */}
+      <div className="p-8 sm:p-12 border border-[#e5e1d5] bg-white rounded-3xl shadow-[0_4px_30px_rgba(27,59,43,0.05)] text-center relative overflow-hidden">
+        
+        {/* Pillar Tag Indicator */}
+        <div className="flex items-center justify-center gap-2 mb-6">
+          <span className="font-mono text-[10px] uppercase tracking-widest text-[#827f76] font-bold">
+            Target Pillar:
+          </span>
+          <div className="flex items-center gap-1.5 bg-[#fbfbfa] border border-[#e5e1d5] p-1 rounded-xl">
+            {PILLARS.map(p => (
               <button
-                key={sub}
-                onClick={() => setSubjectTag(sub)}
-                className={`px-3 py-1 rounded text-[10px] font-mono uppercase tracking-wider transition-all border ${
-                  subjectTag === sub
-                    ? 'border-[#1b3b2b] bg-[#1b3b2b] text-white font-bold shadow-sm'
-                    : 'border-[#e5e1d5] bg-[#f5f3ec] text-[#52504a] hover:bg-[#ede9de] hover:text-[#1a1917]'
+                key={p.id}
+                onClick={() => setSelectedPillar(p.id)}
+                className={`px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-colors flex items-center gap-1 ${
+                  selectedPillar === p.id 
+                    ? 'bg-[#1b3b2b] text-white' 
+                    : 'text-[#827f76] hover:text-[#1a1917]'
                 }`}
               >
-                {sub}
+                <span>{p.icon}</span>
+                <span>{p.id}</span>
               </button>
             ))}
           </div>
         </div>
 
-        {/* RIGHT: PRESETS & SESSION HISTORY */}
-        <div className="lg:col-span-5 space-y-6">
+        {/* Big Digital Chronometer Display */}
+        <div className="my-6">
+          <div className="font-mono font-bold text-7xl sm:text-8xl md:text-9xl text-[#1a1917] tracking-tight tabular-nums select-none">
+            {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
+          </div>
           
-          {/* INTERVAL PRESETS */}
-          <div className="p-6 border border-[#e5e1d5] bg-white rounded-2xl space-y-4 shadow-[0_2px_12px_rgba(27,59,43,0.03)]">
-            <div className="flex items-center justify-between">
-              <span className="font-mono text-xs uppercase tracking-widest text-[#52504a] font-bold">
-                Interval Presets
-              </span>
-              <Clock className="w-3.5 h-3.5 text-[#827f76]" />
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              {PRESETS.map((p) => {
-                const isSelected = targetMinutes === p.minutes && mode === p.type;
-                return (
-                  <button
-                    key={p.label}
-                    onClick={() => selectPreset(p)}
-                    className={`p-4 border rounded-xl text-left transition-all flex flex-col justify-between h-24 ${
-                      isSelected
-                        ? 'border-[#1b3b2b] bg-[#1b3b2b]/5 text-[#1b3b2b] shadow-sm'
-                        : 'border-[#e5e1d5] bg-[#fbfbfa] hover:border-[#1b3b2b]/30 text-[#1a1917]'
-                    }`}
-                  >
-                    <div className="flex justify-between items-center w-full">
-                      <span className="font-serif text-sm font-bold">{p.label}</span>
-                      <span className="font-mono text-[10px] text-[#827f76]">{p.minutes}m</span>
-                    </div>
-                    <span className="text-[10px] text-[#52504a] leading-tight">{p.desc}</span>
-                  </button>
-                );
-              })}
-            </div>
+          <div className="text-xs font-mono text-[#827f76] uppercase tracking-widest mt-3">
+            {mode === 'focus' ? '⚡ Active Focus Window' : '🌿 Recovery / NSDR Reset'}
           </div>
+        </div>
 
-          {/* SESSION LOGS */}
-          <div className="p-6 border border-[#e5e1d5] bg-white rounded-2xl space-y-4 shadow-[0_2px_12px_rgba(27,59,43,0.03)]">
-            <div className="flex items-center justify-between">
-              <span className="font-mono text-xs uppercase tracking-widest text-[#52504a] font-bold">
-                Logged Study Blocks
-              </span>
-              <span className="font-mono text-[10px] text-[#827f76]">{sessions.length} logged</span>
+        {/* Progress Line */}
+        <div className="w-full max-w-md mx-auto bg-[#f0ece1] h-1.5 rounded-full overflow-hidden my-6">
+          <div 
+            className="h-full bg-[#1b3b2b] transition-all duration-300 rounded-full"
+            style={{ width: `${progressPercent}%` }}
+          />
+        </div>
+
+        {/* Guided Recovery / Focus Guidance */}
+        {mode === 'break' && (
+          <div className="max-w-md mx-auto p-4 border border-[#d4c39e] bg-[#fbf8f0] rounded-xl text-left space-y-1 mb-6 text-xs text-[#52504a]">
+            <div className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-[#8a4b16] font-bold">
+              <Eye className="w-3.5 h-3.5" />
+              <span>Panoramic Gaze & Physiological Sigh</span>
             </div>
-
-            {sessions.length === 0 ? (
-              <div className="p-6 border border-[#e5e1d5] bg-[#fbfbfa] rounded-xl text-center text-[#827f76] font-mono text-xs">
-                No focus blocks logged today. Complete a study session to record your progress.
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {sessions.map((sess, idx) => (
-                  <div
-                    key={sess.id || idx}
-                    className="p-3 border border-[#e5e1d5] bg-[#fbfbfa] rounded-xl flex items-center justify-between text-xs hover:border-[#1b3b2b]/20 transition-colors"
-                  >
-                    <div className="flex items-center gap-3">
-                      <CheckCircle2 className="w-4 h-4 text-[#1b3b2b]" />
-                      <div>
-                        <span className="text-[#1a1917] font-semibold block">{sess.subject || 'Curriculum Study'}</span>
-                        <span className="text-[10px] text-[#827f76] font-mono">
-                          {sess.duration_minutes || 25} minutes duration
-                        </span>
-                      </div>
-                    </div>
-                    <span className="font-mono text-[9px] text-[#52504a] bg-[#f5f3ec] border border-[#e5e1d5] px-2 py-1 rounded">
-                      {sess.completed_at ? new Date(sess.completed_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Verified'}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
+            <p>
+              Relax your ocular focal point. Look far into the distance or peripheral edges. Inhale twice through the nose, then complete a slow, extended exhale through the mouth to lower autonomic arousal.
+            </p>
           </div>
+        )}
 
+        {/* Control Buttons */}
+        <div className="flex items-center justify-center gap-4 pt-2">
+          <button
+            onClick={resetTimer}
+            className="p-3.5 border border-[#e5e1d5] hover:border-[#1b3b2b] bg-white rounded-2xl text-[#52504a] hover:text-[#1a1917] transition-all"
+            title="Reset interval"
+          >
+            <RotateCcw className="w-5 h-5" />
+          </button>
+
+          <button
+            onClick={toggleTimer}
+            className="px-8 py-4 bg-[#1b3b2b] hover:bg-[#26523c] text-white font-mono uppercase tracking-widest text-sm font-bold rounded-2xl shadow-[0_4px_16px_rgba(27,59,43,0.25)] active:scale-95 transition-all flex items-center gap-3"
+          >
+            {isActive ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5 fill-current" />}
+            <span>{isActive ? 'Pause Interval' : 'Engage Focus'}</span>
+          </button>
         </div>
 
       </div>
+
+      {/* ── RECENT COMPLETED BOUTS ─────────────────────────────────── */}
+      <div className="p-6 border border-[#e5e1d5] bg-white rounded-2xl space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="font-mono text-xs uppercase tracking-wider font-bold text-[#1a1917]">
+            Recent Deep Bouts
+          </div>
+          <span className="font-mono text-[10px] text-[#827f76]">
+            {sessions.length} logged bouts
+          </span>
+        </div>
+
+        {sessions.length === 0 ? (
+          <div className="text-xs font-mono text-[#827f76] py-3 text-center">
+            No focus blocks logged yet. Complete your first 90-minute bout!
+          </div>
+        ) : (
+          <div className="divide-y divide-[#f0ece1]">
+            {sessions.map((s, idx) => (
+              <div key={s.id || idx} className="py-2.5 flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-[#1b3b2b]" />
+                  <span className="font-serif font-bold text-[#1a1917]">
+                    {s.duration_minutes || 25}m Deep Bout
+                  </span>
+                  <span className="font-mono text-[9px] px-2 py-0.5 rounded bg-[#f4f1ea] text-[#52504a]">
+                    {s.pillar || 'Craft'}
+                  </span>
+                </div>
+                <span className="font-mono text-[10px] text-[#827f76]">
+                  {(s.completed_at || s.created_at || '').substring(0, 16).replace('T', ' ')}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
     </div>
   );
 };
