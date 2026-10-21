@@ -105,8 +105,8 @@ const Layout = () => {
     return (
       <div className="min-h-screen bg-background-base flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-10 h-10 border-2 border-white/10 border-t-brand-vermilion rounded-full animate-spin" />
-          <p className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] animate-pulse">Scholar Identity Syncing...</p>
+          <div className="w-9 h-9 border-2 border-[#e5e1d5] border-t-[#1b3b2b] rounded-full animate-spin" />
+          <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider">Syncing academic records...</p>
         </div>
       </div>
     );

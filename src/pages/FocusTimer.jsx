@@ -149,19 +149,19 @@ const FocusTimer = () => {
     <div className="max-w-5xl mx-auto space-y-12 pb-32 px-4 sm:px-6 font-sans">
       
       {/* HEADER */}
-      <header className="border-b border-white/10 pb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
+      <header className="border-b border-[#e5e1d5] pb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <span className="w-2 h-2 rounded-full bg-[#ff4625]" />
-            <span className="font-mono text-[10px] tracking-[0.25em] uppercase text-zinc-400">
-              Cognitive Ergonomics / Deep Work Engine
+            <span className="w-2 h-2 rounded-full bg-[#1b3b2b]" />
+            <span className="font-mono text-[10px] tracking-[0.25em] uppercase text-[#827f76]">
+              Academic Disciplines / Focused Study Interval
             </span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold uppercase tracking-tight text-white font-clash">
-            Focus Chronometer
+          <h1 className="text-3xl sm:text-4xl font-serif font-bold tracking-tight text-[#1a1917]">
+            Study Chronometer
           </h1>
-          <p className="text-zinc-400 text-sm mt-1 max-w-xl">
-            Structured interval training for NCERT curriculum mastery. Eliminate cognitive drift with high-precision focus sprints.
+          <p className="text-[#52504a] text-sm mt-1 max-w-xl">
+            Structured interval reading for CBSE curriculum mastery. Dedicated distraction-free sessions calibrated for retention.
           </p>
         </div>
 
@@ -169,12 +169,12 @@ const FocusTimer = () => {
           <button
             onClick={() => setSoundEnabled(!soundEnabled)}
             className={`p-2.5 rounded-lg border font-mono text-xs transition-colors flex items-center gap-2 ${
-              soundEnabled ? 'border-white/20 bg-white/5 text-white' : 'border-white/10 text-zinc-500'
+              soundEnabled ? 'border-[#1b3b2b]/30 bg-[#1b3b2b]/5 text-[#1b3b2b]' : 'border-[#e5e1d5] text-[#827f76]'
             }`}
             title="Toggle Audio Cues"
           >
-            {soundEnabled ? <Volume2 className="w-4 h-4 text-[#ff4625]" /> : <VolumeX className="w-4 h-4" />}
-            <span className="text-[10px] uppercase tracking-wider">{soundEnabled ? 'Audio On' : 'Muted'}</span>
+            {soundEnabled ? <Volume2 className="w-4 h-4 text-[#1b3b2b]" /> : <VolumeX className="w-4 h-4" />}
+            <span className="text-[10px] uppercase tracking-wider font-semibold">{soundEnabled ? 'Chime Active' : 'Muted'}</span>
           </button>
         </div>
       </header>
@@ -183,19 +183,19 @@ const FocusTimer = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
         
         {/* LEFT / CENTER: CIRCULAR CHRONOMETER */}
-        <div className="lg:col-span-7 p-8 sm:p-12 border border-white/10 bg-[#0d0f14] rounded-2xl flex flex-col items-center justify-center space-y-8 relative overflow-hidden">
+        <div className="lg:col-span-7 p-8 sm:p-12 border border-[#e5e1d5] bg-white rounded-2xl shadow-[0_4px_20px_rgba(27,59,43,0.04)] flex flex-col items-center justify-center space-y-8 relative overflow-hidden">
           
-          {/* Subtle architectural crosshairs */}
-          <div className="absolute inset-0 pointer-events-none opacity-10">
-            <div className="w-full h-[1px] bg-white top-1/2 absolute" />
-            <div className="h-full w-[1px] bg-white left-1/2 absolute" />
+          {/* Subtle paper grid crosshairs */}
+          <div className="absolute inset-0 pointer-events-none opacity-40">
+            <div className="w-full h-[1px] bg-[#e5e1d5] top-1/2 absolute" />
+            <div className="h-full w-[1px] bg-[#e5e1d5] left-1/2 absolute" />
           </div>
 
           {/* Mode Pill */}
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#08090b] border border-white/10 rounded-full z-10">
-            <span className={`w-2 h-2 rounded-full ${mode === 'focus' ? 'bg-[#ff4625] animate-pulse' : 'bg-emerald-400'}`} />
-            <span className="font-mono text-[10px] uppercase tracking-widest text-zinc-300">
-              {mode === 'focus' ? 'Active Focus Sprint' : 'Restorative Recess'}
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#f5f3ec] border border-[#e5e1d5] rounded-full z-10">
+            <span className={`w-2 h-2 rounded-full ${mode === 'focus' ? 'bg-[#1b3b2b] animate-pulse' : 'bg-[#a46a29]'}`} />
+            <span className="font-mono text-[10px] uppercase tracking-widest text-[#52504a] font-semibold">
+              {mode === 'focus' ? 'Active Focus Session' : 'Scholastic Recess'}
             </span>
           </div>
 
@@ -207,7 +207,7 @@ const FocusTimer = () => {
                 cx="140"
                 cy="140"
                 r={radius}
-                className="stroke-white/5"
+                className="stroke-[#ede9de]"
                 strokeWidth="8"
                 fill="none"
               />
@@ -216,7 +216,7 @@ const FocusTimer = () => {
                 cx="140"
                 cy="140"
                 r={radius}
-                className={mode === 'focus' ? 'stroke-[#ff4625]' : 'stroke-emerald-400'}
+                className={mode === 'focus' ? 'stroke-[#1b3b2b]' : 'stroke-[#a46a29]'}
                 strokeWidth="8"
                 strokeDasharray={circumference}
                 strokeDashoffset={strokeDashoffset}
@@ -228,10 +228,10 @@ const FocusTimer = () => {
 
             {/* Central Time Display */}
             <div className="absolute flex flex-col items-center text-center">
-              <span className="font-mono text-5xl sm:text-6xl font-bold tracking-tight text-white select-none">
+              <span className="font-mono text-5xl sm:text-6xl font-bold tracking-tight text-[#1a1917] select-none">
                 {formattedTime}
               </span>
-              <span className="font-mono text-xs uppercase tracking-widest text-zinc-500 mt-2">
+              <span className="font-mono text-xs uppercase tracking-widest text-[#827f76] mt-2">
                 Target: {targetMinutes}m · {subjectTag}
               </span>
             </div>
@@ -241,7 +241,7 @@ const FocusTimer = () => {
           <div className="flex items-center gap-4 z-10">
             <button
               onClick={resetTimer}
-              className="p-3.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-zinc-300 hover:text-white transition-all active:scale-95"
+              className="p-3.5 bg-[#f5f3ec] hover:bg-[#ede9de] border border-[#e5e1d5] rounded-xl text-[#52504a] hover:text-[#1a1917] transition-all active:scale-95 shadow-sm"
               title="Reset Timer"
             >
               <RotateCcw className="w-5 h-5" />
@@ -251,25 +251,25 @@ const FocusTimer = () => {
               onClick={toggleTimer}
               className={`px-8 py-3.5 rounded-xl font-mono text-xs font-bold uppercase tracking-widest flex items-center gap-2 shadow-sm transition-all active:scale-95 ${
                 isActive 
-                  ? 'bg-zinc-800 hover:bg-zinc-700 text-white border border-white/10'
-                  : 'bg-[#ff4625] hover:bg-[#ff5738] text-white border border-transparent'
+                  ? 'bg-[#52504a] hover:bg-[#1a1917] text-white border border-transparent'
+                  : 'bg-[#1b3b2b] hover:bg-[#26523c] text-white border border-transparent shadow-[0_2px_8px_rgba(27,59,43,0.25)]'
               }`}
             >
               {isActive ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 fill-white" />}
-              <span>{isActive ? 'Pause Block' : 'Initiate Session'}</span>
+              <span>{isActive ? 'Pause Interval' : 'Commence Session'}</span>
             </button>
           </div>
 
           {/* Subject Directives */}
           <div className="flex items-center gap-2 pt-2 z-10 flex-wrap justify-center">
-            {['Mathematics', 'Science', 'English', 'General Revision'].map((sub) => (
+            {['Mathematics', 'Science', 'English', 'Social Science', 'General Reading'].map((sub) => (
               <button
                 key={sub}
                 onClick={() => setSubjectTag(sub)}
                 className={`px-3 py-1 rounded text-[10px] font-mono uppercase tracking-wider transition-all border ${
                   subjectTag === sub
-                    ? 'border-[#ff4625] bg-[#ff4625]/10 text-white font-bold'
-                    : 'border-white/5 bg-[#08090b] text-zinc-400 hover:text-zinc-200'
+                    ? 'border-[#1b3b2b] bg-[#1b3b2b] text-white font-bold shadow-sm'
+                    : 'border-[#e5e1d5] bg-[#f5f3ec] text-[#52504a] hover:bg-[#ede9de] hover:text-[#1a1917]'
                 }`}
               >
                 {sub}
@@ -282,12 +282,12 @@ const FocusTimer = () => {
         <div className="lg:col-span-5 space-y-6">
           
           {/* INTERVAL PRESETS */}
-          <div className="p-6 border border-white/10 bg-[#0d0f14] rounded-2xl space-y-4">
+          <div className="p-6 border border-[#e5e1d5] bg-white rounded-2xl space-y-4 shadow-[0_2px_12px_rgba(27,59,43,0.03)]">
             <div className="flex items-center justify-between">
-              <span className="font-mono text-xs uppercase tracking-widest text-zinc-400 font-bold">
+              <span className="font-mono text-xs uppercase tracking-widest text-[#52504a] font-bold">
                 Interval Presets
               </span>
-              <Clock className="w-3.5 h-3.5 text-zinc-500" />
+              <Clock className="w-3.5 h-3.5 text-[#827f76]" />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
@@ -299,15 +299,15 @@ const FocusTimer = () => {
                     onClick={() => selectPreset(p)}
                     className={`p-4 border rounded-xl text-left transition-all flex flex-col justify-between h-24 ${
                       isSelected
-                        ? 'border-[#ff4625] bg-[#ff4625]/10 text-white'
-                        : 'border-white/5 bg-[#08090b] hover:border-white/15 text-zinc-300'
+                        ? 'border-[#1b3b2b] bg-[#1b3b2b]/5 text-[#1b3b2b] shadow-sm'
+                        : 'border-[#e5e1d5] bg-[#fbfbfa] hover:border-[#1b3b2b]/30 text-[#1a1917]'
                     }`}
                   >
                     <div className="flex justify-between items-center w-full">
-                      <span className="font-clash text-sm font-bold uppercase">{p.label}</span>
-                      <span className="font-mono text-[10px] text-zinc-400">{p.minutes}m</span>
+                      <span className="font-serif text-sm font-bold">{p.label}</span>
+                      <span className="font-mono text-[10px] text-[#827f76]">{p.minutes}m</span>
                     </div>
-                    <span className="text-[10px] text-zinc-500 leading-tight">{p.desc}</span>
+                    <span className="text-[10px] text-[#52504a] leading-tight">{p.desc}</span>
                   </button>
                 );
               })}
@@ -315,35 +315,35 @@ const FocusTimer = () => {
           </div>
 
           {/* SESSION LOGS */}
-          <div className="p-6 border border-white/10 bg-[#0d0f14] rounded-2xl space-y-4">
+          <div className="p-6 border border-[#e5e1d5] bg-white rounded-2xl space-y-4 shadow-[0_2px_12px_rgba(27,59,43,0.03)]">
             <div className="flex items-center justify-between">
-              <span className="font-mono text-xs uppercase tracking-widest text-zinc-400 font-bold">
-                Completed Sprints
+              <span className="font-mono text-xs uppercase tracking-widest text-[#52504a] font-bold">
+                Logged Study Blocks
               </span>
-              <span className="font-mono text-[10px] text-zinc-500">{sessions.length} logged</span>
+              <span className="font-mono text-[10px] text-[#827f76]">{sessions.length} logged</span>
             </div>
 
             {sessions.length === 0 ? (
-              <div className="p-6 border border-white/5 bg-[#08090b] rounded-xl text-center text-zinc-500 font-mono text-xs">
-                No focus blocks logged today. Complete a session to populate records.
+              <div className="p-6 border border-[#e5e1d5] bg-[#fbfbfa] rounded-xl text-center text-[#827f76] font-mono text-xs">
+                No focus blocks logged today. Complete a study session to record your progress.
               </div>
             ) : (
               <div className="space-y-2">
                 {sessions.map((sess, idx) => (
                   <div
                     key={sess.id || idx}
-                    className="p-3 border border-white/5 bg-[#08090b] rounded-xl flex items-center justify-between text-xs"
+                    className="p-3 border border-[#e5e1d5] bg-[#fbfbfa] rounded-xl flex items-center justify-between text-xs hover:border-[#1b3b2b]/20 transition-colors"
                   >
                     <div className="flex items-center gap-3">
-                      <CheckCircle2 className="w-4 h-4 text-[#ff4625]" />
+                      <CheckCircle2 className="w-4 h-4 text-[#1b3b2b]" />
                       <div>
-                        <span className="text-white font-bold block">{sess.subject || 'Deep Study'}</span>
-                        <span className="text-[10px] text-zinc-500 font-mono">
+                        <span className="text-[#1a1917] font-semibold block">{sess.subject || 'Curriculum Study'}</span>
+                        <span className="text-[10px] text-[#827f76] font-mono">
                           {sess.duration_minutes || 25} minutes duration
                         </span>
                       </div>
                     </div>
-                    <span className="font-mono text-[9px] text-zinc-400 bg-white/5 px-2 py-1 rounded">
+                    <span className="font-mono text-[9px] text-[#52504a] bg-[#f5f3ec] border border-[#e5e1d5] px-2 py-1 rounded">
                       {sess.completed_at ? new Date(sess.completed_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Verified'}
                     </span>
                   </div>

@@ -40,14 +40,14 @@ const Onboarding = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#090a0d] text-white flex items-center justify-center p-4 relative overflow-hidden font-sans">
-      {/* Background Architectural Grid */}
+    <div className="min-h-screen bg-[#fbfbfa] text-[#1a1917] flex items-center justify-center p-4 relative overflow-hidden font-sans">
+      {/* Background Subtle Paper Grid */}
       <div 
-        className="absolute inset-0 pointer-events-none opacity-25"
+        className="absolute inset-0 pointer-events-none opacity-40"
         style={{
           backgroundImage: `
-            linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(255,255,255,0.04) 1px, transparent 1px)
+            linear-gradient(to right, rgba(27,59,43,0.04) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(27,59,43,0.04) 1px, transparent 1px)
           `,
           backgroundSize: '48px 48px'
         }}
@@ -61,21 +61,21 @@ const Onboarding = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="p-8 sm:p-10 bg-[#0d0f14] border border-white/10 rounded-2xl shadow-2xl space-y-8"
+              className="p-8 sm:p-10 bg-white border border-[#e5e1d5] rounded-2xl shadow-[0_4px_24px_rgba(27,59,43,0.06)] space-y-8"
             >
               {/* Header */}
               <div className="space-y-3">
-                <div className="w-12 h-12 rounded-xl bg-[#ff4625]/10 border border-[#ff4625]/20 flex items-center justify-center text-[#ff4625]">
+                <div className="w-12 h-12 rounded-xl bg-[#1b3b2b]/10 border border-[#1b3b2b]/20 flex items-center justify-center text-[#1b3b2b]">
                   <GraduationCap className="w-6 h-6" />
                 </div>
                 <div>
-                  <span className="font-mono text-[9px] uppercase tracking-[0.25em] text-[#ff4625]">
+                  <span className="font-mono text-[9px] uppercase tracking-[0.25em] text-[#1b3b2b] font-bold">
                     System Configuration
                   </span>
-                  <h1 className="text-2xl sm:text-3xl font-bold uppercase tracking-tight text-white font-clash mt-1">
+                  <h1 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-[#1a1917] mt-1">
                     Scholar Setup
                   </h1>
-                  <p className="text-zinc-400 text-xs mt-1 leading-relaxed">
+                  <p className="text-[#52504a] text-xs mt-1 leading-relaxed">
                     Set up your workstation identity and target CBSE curriculum level.
                   </p>
                 </div>
@@ -85,7 +85,7 @@ const Onboarding = () => {
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Scholar Name */}
                 <div className="space-y-2">
-                  <label className="block font-mono text-[10px] uppercase tracking-wider text-zinc-400">
+                  <label className="block font-mono text-[10px] uppercase tracking-wider text-[#52504a]">
                     Scholar Name
                   </label>
                   <input
@@ -94,13 +94,13 @@ const Onboarding = () => {
                     placeholder="Enter full name"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-4 py-3 bg-[#08090b] border border-white/10 rounded-lg text-sm text-white font-sans focus:outline-none focus:border-[#ff4625] transition-colors"
+                    className="w-full px-4 py-3 bg-[#fbfbfa] border border-[#e5e1d5] rounded-lg text-sm text-[#1a1917] font-sans focus:outline-none focus:border-[#1b3b2b] transition-colors"
                   />
                 </div>
 
                 {/* Academic Class */}
                 <div className="space-y-2">
-                  <label className="block font-mono text-[10px] uppercase tracking-wider text-zinc-400">
+                  <label className="block font-mono text-[10px] uppercase tracking-wider text-[#52504a]">
                     Academic Class (NCERT Syllabus)
                   </label>
                   <div className="grid grid-cols-4 sm:grid-cols-7 gap-1.5">
@@ -111,8 +111,8 @@ const Onboarding = () => {
                         onClick={() => setFormData({ ...formData, grade })}
                         className={`py-2 rounded-md border font-mono text-xs uppercase transition-all ${
                           formData.grade === grade
-                            ? 'bg-[#ff4625] border-[#ff4625] text-white font-bold'
-                            : 'bg-[#08090b] border-white/10 text-zinc-400 hover:text-white'
+                            ? 'bg-[#1b3b2b] border-[#1b3b2b] text-white font-bold shadow-sm'
+                            : 'bg-[#fbfbfa] border-[#e5e1d5] text-[#52504a] hover:bg-white'
                         }`}
                       >
                         {grade}
@@ -125,7 +125,7 @@ const Onboarding = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting || !formData.name.trim()}
-                  className="w-full py-3.5 bg-[#ff4625] hover:bg-[#ff5738] disabled:opacity-40 text-white font-mono uppercase tracking-widest text-xs font-semibold rounded-lg transition-all flex items-center justify-center gap-2"
+                  className="w-full py-3.5 bg-[#1b3b2b] hover:bg-[#26523c] disabled:opacity-40 text-white font-mono uppercase tracking-widest text-xs font-semibold rounded-lg transition-all flex items-center justify-center gap-2 shadow-[0_2px_8px_rgba(27,59,43,0.2)]"
                 >
                   <span>Initialize Workstation</span>
                   <ArrowRight className="w-4 h-4" />
@@ -137,15 +137,15 @@ const Onboarding = () => {
               key="success"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="p-10 bg-[#0d0f14] border border-white/10 rounded-2xl text-center space-y-4"
+              className="p-10 bg-white border border-[#e5e1d5] rounded-2xl text-center space-y-4 shadow-[0_4px_24px_rgba(27,59,43,0.06)]"
             >
-              <div className="w-14 h-14 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto">
+              <div className="w-14 h-14 rounded-full bg-[#1b3b2b]/10 border border-[#1b3b2b]/20 text-[#1b3b2b] flex items-center justify-center mx-auto">
                 <Check className="w-7 h-7 stroke-[2.5]" />
               </div>
-              <h2 className="text-2xl font-bold uppercase tracking-tight text-white font-clash">
+              <h2 className="text-2xl font-serif font-bold text-[#1a1917]">
                 Workstation Ready
               </h2>
-              <p className="text-zinc-400 text-xs font-mono">
+              <p className="text-[#52504a] text-xs font-mono">
                 Redirecting to scholar dashboard...
               </p>
             </motion.div>

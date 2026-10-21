@@ -145,18 +145,18 @@ const Flashcards = () => {
     <div className="max-w-5xl mx-auto space-y-10 pb-32 px-4 sm:px-6 font-sans">
       
       {/* HEADER */}
-      <header className="border-b border-white/10 pb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
+      <header className="border-b border-[#e5e1d5] pb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <span className="w-2 h-2 rounded-full bg-[#ff4625]" />
-            <span className="font-mono text-[10px] tracking-[0.25em] uppercase text-zinc-400">
-              Active Recall / Spaced Repetition Console
+            <span className="w-2 h-2 rounded-full bg-[#1b3b2b]" />
+            <span className="font-mono text-[10px] tracking-[0.25em] uppercase text-[#827f76]">
+              Active Retrieval / Spaced Repetition Decks
             </span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold uppercase tracking-tight text-white font-clash">
+          <h1 className="text-3xl sm:text-4xl font-serif font-bold tracking-tight text-[#1a1917]">
             Flashcard Decks
           </h1>
-          <p className="text-zinc-400 text-sm mt-1 max-w-xl">
+          <p className="text-[#52504a] text-sm mt-1 max-w-xl">
             Self-testing mnemonic cards designed for rapid NCERT definitions, theorems, and formula retrieval.
           </p>
         </div>
@@ -164,7 +164,7 @@ const Flashcards = () => {
         {view === 'library' ? (
           <button
             onClick={() => setView('create')}
-            className="px-5 py-3 bg-[#ff4625] hover:bg-[#ff5738] text-white font-mono uppercase tracking-widest text-xs font-semibold rounded-lg transition-all flex items-center gap-2 shadow-sm self-start sm:self-end"
+            className="px-5 py-3 bg-[#1b3b2b] hover:bg-[#26523c] text-white font-mono uppercase tracking-widest text-xs font-semibold rounded-lg transition-all flex items-center gap-2 shadow-[0_2px_8px_rgba(27,59,43,0.2)] self-start sm:self-end"
           >
             <Plus className="w-4 h-4" />
             <span>Create New Deck</span>
@@ -172,7 +172,7 @@ const Flashcards = () => {
         ) : (
           <button
             onClick={() => { setView('library'); setSelectedDeck(null); }}
-            className="px-4 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg font-mono text-xs uppercase tracking-wider text-zinc-300 transition-colors flex items-center gap-2 self-start sm:self-end"
+            className="px-4 py-2.5 bg-[#f5f3ec] hover:bg-[#ede9de] border border-[#e5e1d5] rounded-lg font-mono text-xs uppercase tracking-wider text-[#52504a] hover:text-[#1a1917] transition-colors flex items-center gap-2 self-start sm:self-end"
           >
             <ChevronLeft className="w-4 h-4" />
             <span>Return to Decks</span>
@@ -185,10 +185,10 @@ const Flashcards = () => {
         <div className="max-w-2xl mx-auto space-y-8">
           
           {/* Deck Status Bar */}
-          <div className="flex items-center justify-between text-xs font-mono text-zinc-400 border-b border-white/10 pb-4">
+          <div className="flex items-center justify-between text-xs font-mono text-[#52504a] border-b border-[#e5e1d5] pb-4">
             <div>
-              <span className="text-white font-bold">{selectedDeck.title}</span>
-              <span className="text-[#ff4625] ml-2">({selectedDeck.subject})</span>
+              <span className="text-[#1a1917] font-bold">{selectedDeck.title}</span>
+              <span className="text-[#1b3b2b] ml-2 font-semibold">({selectedDeck.subject})</span>
             </div>
             <div>
               Card {Math.min(currentCardIdx + 1, selectedDeck.cards.length)} of {selectedDeck.cards.length}
@@ -197,29 +197,29 @@ const Flashcards = () => {
 
           {isStudyComplete ? (
             /* Study Completion Card */
-            <div className="p-10 border border-white/10 bg-[#0d0f14] rounded-2xl text-center space-y-6">
-              <div className="w-14 h-14 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto">
+            <div className="p-10 border border-[#e5e1d5] bg-white rounded-2xl text-center space-y-6 shadow-[0_4px_20px_rgba(27,59,43,0.04)]">
+              <div className="w-14 h-14 rounded-full bg-[#1b3b2b]/10 border border-[#1b3b2b]/20 text-[#1b3b2b] flex items-center justify-center mx-auto">
                 <CheckCircle2 className="w-7 h-7" />
               </div>
               <div>
-                <span className="font-mono text-[9px] uppercase tracking-widest text-zinc-500">Session Concluded</span>
-                <h3 className="text-2xl font-bold uppercase text-white font-clash mt-1">
+                <span className="font-mono text-[9px] uppercase tracking-widest text-[#827f76]">Session Concluded</span>
+                <h3 className="text-2xl font-serif font-bold text-[#1a1917] mt-1">
                   Active Retrieval Complete
                 </h3>
               </div>
-              <div className="p-4 bg-[#08090b] border border-white/5 rounded-xl max-w-sm mx-auto grid grid-cols-2 gap-4 text-center">
+              <div className="p-4 bg-[#fbfbfa] border border-[#e5e1d5] rounded-xl max-w-sm mx-auto grid grid-cols-2 gap-4 text-center">
                 <div>
-                  <span className="text-[9px] font-mono uppercase text-zinc-500">Retained</span>
-                  <div className="text-2xl font-bold text-emerald-400 font-clash">{score.remembered}</div>
+                  <span className="text-[9px] font-mono uppercase text-[#827f76]">Retained</span>
+                  <div className="text-2xl font-serif font-bold text-[#1b3b2b]">{score.remembered}</div>
                 </div>
                 <div>
-                  <span className="text-[9px] font-mono uppercase text-zinc-500">Needs Review</span>
-                  <div className="text-2xl font-bold text-rose-400 font-clash">{score.review}</div>
+                  <span className="text-[9px] font-mono uppercase text-[#827f76]">Needs Review</span>
+                  <div className="text-2xl font-serif font-bold text-[#a46a29]">{score.review}</div>
                 </div>
               </div>
               <button
                 onClick={() => startStudy(selectedDeck)}
-                className="px-6 py-3 bg-[#ff4625] hover:bg-[#ff5738] text-white font-mono uppercase tracking-widest text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-2 mx-auto"
+                className="px-6 py-3 bg-[#1b3b2b] hover:bg-[#26523c] text-white font-mono uppercase tracking-widest text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-2 mx-auto shadow-sm"
               >
                 <RotateCcw className="w-4 h-4" />
                 <span>Repeat Deck</span>
@@ -230,23 +230,23 @@ const Flashcards = () => {
             <div className="space-y-6">
               <div
                 onClick={() => setIsFlipped(!isFlipped)}
-                className="min-h-[280px] p-8 border border-white/10 bg-[#0d0f14] hover:border-white/20 rounded-2xl cursor-pointer transition-all flex flex-col justify-between select-none relative"
+                className="min-h-[280px] p-8 border border-[#e5e1d5] bg-white hover:border-[#1b3b2b]/30 rounded-2xl cursor-pointer transition-all flex flex-col justify-between select-none relative shadow-[0_4px_20px_rgba(27,59,43,0.04)]"
               >
-                <div className="flex justify-between items-center text-[10px] font-mono uppercase text-zinc-500">
-                  <span>{isFlipped ? 'Answer / Reference' : 'Prompt / Question'}</span>
-                  <span>Click anywhere to flip</span>
+                <div className="flex justify-between items-center text-[10px] font-mono uppercase text-[#827f76]">
+                  <span>{isFlipped ? 'Answer / Explanation' : 'Prompt / Query'}</span>
+                  <span className="text-[#1b3b2b]">Click anywhere to flip</span>
                 </div>
 
                 <div className="py-8 text-center">
-                  <h3 className="text-xl sm:text-2xl font-bold text-white font-sans leading-relaxed">
+                  <h3 className="text-xl sm:text-2xl font-serif font-bold text-[#1a1917] leading-relaxed">
                     {isFlipped 
                       ? selectedDeck.cards[currentCardIdx]?.back 
                       : selectedDeck.cards[currentCardIdx]?.front}
                   </h3>
                 </div>
 
-                <div className="text-center font-mono text-[10px] text-zinc-500 uppercase tracking-widest">
-                  {isFlipped ? 'Tap to view prompt' : 'Tap to unveil answer'}
+                <div className="text-center font-mono text-[10px] text-[#827f76] uppercase tracking-widest">
+                  {isFlipped ? 'Click to view prompt' : 'Click to unveil answer'}
                 </div>
               </div>
 
@@ -255,7 +255,7 @@ const Flashcards = () => {
                 <div className="grid grid-cols-2 gap-4 animate-fadeIn">
                   <button
                     onClick={() => handleCardFeedback(false)}
-                    className="p-4 border border-rose-500/20 bg-rose-500/5 hover:bg-rose-500/10 text-rose-400 rounded-xl font-mono text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all"
+                    className="p-4 border border-[#e5e1d5] bg-white hover:bg-[#fbfbfa] text-[#a46a29] rounded-xl font-mono text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-sm"
                   >
                     <X className="w-4 h-4" />
                     <span>Needs More Review</span>
@@ -263,7 +263,7 @@ const Flashcards = () => {
 
                   <button
                     onClick={() => handleCardFeedback(true)}
-                    className="p-4 border border-emerald-500/20 bg-emerald-500/5 hover:bg-emerald-500/10 text-emerald-400 rounded-xl font-mono text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all"
+                    className="p-4 border border-[#1b3b2b]/30 bg-[#1b3b2b]/5 hover:bg-[#1b3b2b]/10 text-[#1b3b2b] rounded-xl font-mono text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-sm font-bold"
                   >
                     <Check className="w-4 h-4" />
                     <span>Retrieved Accurately</span>
@@ -277,30 +277,31 @@ const Flashcards = () => {
       )}
 
       {/* VIEW: CREATE DECK */}
+      {/* VIEW: CREATE DECK */}
       {view === 'create' && (
         <form onSubmit={handleSaveDeck} className="max-w-2xl mx-auto space-y-8">
-          <div className="p-8 border border-white/10 bg-[#0d0f14] rounded-2xl space-y-6">
-            <h2 className="font-clash text-xl font-bold uppercase text-white">Construct Mnemonic Deck</h2>
+          <div className="p-8 border border-[#e5e1d5] bg-white rounded-2xl shadow-[0_4px_20px_rgba(27,59,43,0.04)] space-y-6">
+            <h2 className="font-serif text-xl font-bold text-[#1a1917]">Construct Mnemonic Deck</h2>
             
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="sm:col-span-2 space-y-2">
-                <label className="block font-mono text-[10px] uppercase tracking-wider text-zinc-400">Deck Title</label>
+                <label className="block font-mono text-[10px] uppercase tracking-wider text-[#52504a]">Deck Title</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. NCERT Science Chapter 9 Formulas"
                   value={newDeck.title}
                   onChange={(e) => setNewDeck({ ...newDeck, title: e.target.value })}
-                  className="w-full px-4 py-3 bg-[#08090b] border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-[#ff4625]"
+                  className="w-full px-4 py-3 bg-[#fbfbfa] border border-[#e5e1d5] rounded-lg text-sm text-[#1a1917] focus:outline-none focus:border-[#1b3b2b]"
                 />
               </div>
 
               <div className="space-y-2">
-                <label className="block font-mono text-[10px] uppercase tracking-wider text-zinc-400">Subject</label>
+                <label className="block font-mono text-[10px] uppercase tracking-wider text-[#52504a]">Subject</label>
                 <select
                   value={newDeck.subject}
                   onChange={(e) => setNewDeck({ ...newDeck, subject: e.target.value })}
-                  className="w-full px-4 py-3 bg-[#08090b] border border-white/10 rounded-lg text-xs font-mono uppercase text-zinc-300 focus:outline-none focus:border-[#ff4625]"
+                  className="w-full px-4 py-3 bg-[#fbfbfa] border border-[#e5e1d5] rounded-lg text-xs font-mono uppercase text-[#1a1917] focus:outline-none focus:border-[#1b3b2b]"
                 >
                   <option value="Mathematics">Mathematics</option>
                   <option value="Science">Science</option>
@@ -312,15 +313,15 @@ const Flashcards = () => {
             </div>
 
             {/* Dynamic Card Fields */}
-            <div className="space-y-4 pt-4 border-t border-white/5">
+            <div className="space-y-4 pt-4 border-t border-[#e5e1d5]">
               <div className="flex justify-between items-center">
-                <span className="font-mono text-xs uppercase tracking-widest text-zinc-400 font-bold">
+                <span className="font-mono text-xs uppercase tracking-widest text-[#52504a] font-bold">
                   Card Pairs ({newDeck.cards.length})
                 </span>
                 <button
                   type="button"
                   onClick={handleAddCardInput}
-                  className="text-xs font-mono uppercase text-[#ff4625] hover:text-[#ff5738] flex items-center gap-1 font-bold"
+                  className="text-xs font-mono uppercase text-[#1b3b2b] hover:text-[#26523c] flex items-center gap-1 font-bold"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add Another Card</span>
@@ -328,15 +329,15 @@ const Flashcards = () => {
               </div>
 
               {newDeck.cards.map((card, idx) => (
-                <div key={idx} className="p-4 border border-white/5 bg-[#08090b] rounded-xl space-y-3">
-                  <div className="text-[10px] font-mono text-zinc-500 uppercase">Card #{idx + 1}</div>
+                <div key={idx} className="p-4 border border-[#e5e1d5] bg-[#fbfbfa] rounded-xl space-y-3">
+                  <div className="text-[10px] font-mono text-[#827f76] uppercase">Card #{idx + 1}</div>
                   <input
                     type="text"
                     required
                     placeholder="Front: Concept or question prompt"
                     value={card.front}
                     onChange={(e) => handleCardInputChange(idx, 'front', e.target.value)}
-                    className="w-full px-3 py-2 bg-transparent border border-white/10 rounded-md text-xs text-white focus:outline-none focus:border-[#ff4625]"
+                    className="w-full px-3 py-2 bg-white border border-[#e5e1d5] rounded-md text-xs text-[#1a1917] focus:outline-none focus:border-[#1b3b2b]"
                   />
                   <textarea
                     required
@@ -344,7 +345,7 @@ const Flashcards = () => {
                     placeholder="Back: Accurate definition or explanation"
                     value={card.back}
                     onChange={(e) => handleCardInputChange(idx, 'back', e.target.value)}
-                    className="w-full px-3 py-2 bg-transparent border border-white/10 rounded-md text-xs text-white focus:outline-none focus:border-[#ff4625]"
+                    className="w-full px-3 py-2 bg-white border border-[#e5e1d5] rounded-md text-xs text-[#1a1917] focus:outline-none focus:border-[#1b3b2b]"
                   />
                 </div>
               ))}
@@ -352,7 +353,7 @@ const Flashcards = () => {
 
             <button
               type="submit"
-              className="w-full py-3.5 bg-[#ff4625] hover:bg-[#ff5738] text-white font-mono uppercase tracking-widest text-xs font-semibold rounded-lg transition-all"
+              className="w-full py-3.5 bg-[#1b3b2b] hover:bg-[#26523c] text-white font-mono uppercase tracking-widest text-xs font-semibold rounded-lg transition-all shadow-[0_2px_8px_rgba(27,59,43,0.2)]"
             >
               Commit Deck to Storage
             </button>
@@ -367,15 +368,15 @@ const Flashcards = () => {
             <div
               key={deck.id}
               onClick={() => startStudy(deck)}
-              className="p-6 border border-white/10 bg-[#0d0f14] hover:border-[#ff4625]/40 hover:bg-[#12151c] rounded-2xl cursor-pointer transition-all flex flex-col justify-between h-56 group relative"
+              className="p-6 border border-[#e5e1d5] bg-white hover:border-[#1b3b2b]/40 rounded-2xl cursor-pointer transition-all flex flex-col justify-between h-56 group relative shadow-[0_2px_12px_rgba(27,59,43,0.03)]"
             >
               <div className="flex justify-between items-start">
-                <span className="font-mono text-[9px] uppercase tracking-wider text-[#ff4625] font-bold bg-[#ff4625]/10 px-2 py-0.5 rounded">
+                <span className="font-mono text-[9px] uppercase tracking-wider text-[#1b3b2b] font-bold bg-[#1b3b2b]/10 px-2 py-0.5 rounded">
                   {deck.subject || 'Curriculum'}
                 </span>
                 <button
                   onClick={(e) => deleteDeck(deck.id, e)}
-                  className="p-1.5 text-zinc-600 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="p-1.5 text-[#827f76] hover:text-rose-600 opacity-0 group-hover:opacity-100 transition-opacity"
                   title="Delete Deck"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
@@ -383,17 +384,17 @@ const Flashcards = () => {
               </div>
 
               <div>
-                <h3 className="font-clash text-lg font-bold text-white uppercase group-hover:text-[#ff4625] transition-colors line-clamp-2">
+                <h3 className="font-serif text-lg font-bold text-[#1a1917] group-hover:text-[#1b3b2b] transition-colors line-clamp-2">
                   {deck.title}
                 </h3>
-                <span className="font-mono text-[10px] text-zinc-500 mt-2 block">
+                <span className="font-mono text-[10px] text-[#827f76] mt-2 block">
                   {deck.cards?.length || 0} retrieval cards
                 </span>
               </div>
 
-              <div className="flex items-center justify-between pt-3 border-t border-white/5 text-xs text-zinc-400 font-mono">
+              <div className="flex items-center justify-between pt-3 border-t border-[#e5e1d5] text-xs text-[#52504a] font-mono">
                 <span>Start Review</span>
-                <ArrowRight className="w-4 h-4 text-zinc-600 group-hover:text-[#ff4625] transition-colors" />
+                <ArrowRight className="w-4 h-4 text-[#827f76] group-hover:text-[#1b3b2b] transition-colors" />
               </div>
             </div>
           ))}

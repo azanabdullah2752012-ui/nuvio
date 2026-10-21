@@ -103,27 +103,27 @@ const StudyHub = () => {
     <div className="max-w-6xl mx-auto space-y-12 pb-32 px-4 sm:px-6 font-sans">
       
       {/* HEADER */}
-      <header className="border-b border-white/10 pb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <header className="border-b border-[#e5e1d5] pb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <span className="w-2 h-2 rounded-full bg-[#ff4625]" />
-            <span className="font-mono text-[10px] tracking-[0.25em] uppercase text-zinc-400">
-              Academic Protocol / Workspace & Techniques
+            <span className="w-2 h-2 rounded-full bg-[#1b3b2b]" />
+            <span className="font-mono text-[10px] tracking-[0.25em] uppercase text-[#827f76]">
+              Academic Disciplines / Workstation & Protocols
             </span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold uppercase tracking-tight text-white font-clash">
+          <h1 className="text-3xl sm:text-4xl font-serif font-bold tracking-tight text-[#1a1917]">
             Study Arsenal
           </h1>
-          <p className="text-zinc-400 text-sm mt-1 max-w-xl">
+          <p className="text-[#52504a] text-sm mt-1 max-w-xl">
             Evidence-based cognitive retention frameworks, daily discipline protocols, and direct launchers to academic modules.
           </p>
         </div>
 
-        <div className="flex items-center gap-4 bg-[#0d0f14] border border-white/10 px-5 py-3 rounded-xl self-start md:self-end">
-          <Clock className="w-4 h-4 text-[#ff4625]" />
+        <div className="flex items-center gap-4 bg-white border border-[#e5e1d5] px-5 py-3 rounded-xl shadow-sm self-start md:self-end">
+          <Clock className="w-4 h-4 text-[#1b3b2b]" />
           <div>
-            <span className="block font-mono text-[9px] uppercase tracking-wider text-zinc-500">Curriculum Tier</span>
-            <span className="font-mono text-xs font-bold text-white">Class {user?.grade_level || '9th'} CBSE</span>
+            <span className="block font-mono text-[9px] uppercase tracking-wider text-[#827f76]">Curriculum Tier</span>
+            <span className="font-mono text-xs font-bold text-[#1a1917]">Class {user?.grade_level || '9th'} CBSE</span>
           </div>
         </div>
       </header>
@@ -131,10 +131,10 @@ const StudyHub = () => {
       {/* WORKSPACE LAUNCHERS */}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="font-mono text-xs uppercase tracking-widest text-zinc-400 font-bold">
+          <h2 className="font-mono text-xs uppercase tracking-widest text-[#52504a] font-bold">
             Academic Modules & Tools
           </h2>
-          <span className="font-mono text-[10px] text-zinc-600 uppercase">5 Workstation Tools</span>
+          <span className="font-mono text-[10px] text-[#827f76] uppercase">5 Workstation Tools</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -142,20 +142,20 @@ const StudyHub = () => {
             <div
               key={mod.name}
               onClick={() => navigate(mod.path)}
-              className="p-6 border border-white/10 bg-[#0d0f14] hover:border-[#ff4625]/40 hover:bg-[#12151c] rounded-2xl transition-all cursor-pointer group flex flex-col justify-between h-44"
+              className="p-6 border border-[#e5e1d5] bg-white hover:border-[#1b3b2b]/40 rounded-2xl transition-all cursor-pointer group flex flex-col justify-between h-44 shadow-[0_2px_12px_rgba(27,59,43,0.03)]"
             >
               <div className="flex justify-between items-start">
-                <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-zinc-300 group-hover:text-[#ff4625] transition-colors">
+                <div className="w-10 h-10 rounded-xl bg-[#f5f3ec] border border-[#e5e1d5] flex items-center justify-center text-[#1b3b2b] group-hover:bg-[#1b3b2b] group-hover:text-white transition-colors">
                   <mod.icon className="w-5 h-5" />
                 </div>
-                <ChevronRight className="w-4 h-4 text-zinc-600 group-hover:text-[#ff4625] transition-all group-hover:translate-x-1" />
+                <ChevronRight className="w-4 h-4 text-[#827f76] group-hover:text-[#1b3b2b] transition-all group-hover:translate-x-1" />
               </div>
 
               <div>
-                <h3 className="font-clash text-lg font-bold text-white uppercase group-hover:text-[#ff4625] transition-colors">
+                <h3 className="font-serif text-lg font-bold text-[#1a1917] group-hover:text-[#1b3b2b] transition-colors">
                   {mod.name}
                 </h3>
-                <p className="text-xs text-zinc-400 mt-1 leading-relaxed line-clamp-2">
+                <p className="text-xs text-[#52504a] mt-1 leading-relaxed line-clamp-2">
                   {mod.desc}
                 </p>
               </div>
@@ -169,20 +169,20 @@ const StudyHub = () => {
         
         {/* LEFT COLUMN: DAILY STUDY PROTOCOLS */}
         <div className="lg:col-span-1 space-y-6">
-          <div className="p-6 border border-white/10 bg-[#0d0f14] rounded-2xl space-y-6">
+          <div className="p-6 border border-[#e5e1d5] bg-white rounded-2xl shadow-[0_4px_20px_rgba(27,59,43,0.04)] space-y-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Target className="w-4 h-4 text-[#ff4625]" />
-                <h3 className="font-mono text-xs uppercase tracking-widest text-white font-bold">
+                <Target className="w-4 h-4 text-[#1b3b2b]" />
+                <h3 className="font-mono text-xs uppercase tracking-widest text-[#1a1917] font-bold">
                   Daily Protocols
                 </h3>
               </div>
-              <span className="font-mono text-[10px] text-[#ff4625] bg-[#ff4625]/10 px-2 py-0.5 rounded">
+              <span className="font-mono text-[10px] text-[#1b3b2b] bg-[#1b3b2b]/10 border border-[#1b3b2b]/20 px-2 py-0.5 rounded font-bold">
                 {dailyChecklist.filter(c => c.completed).length} / {dailyChecklist.length} Complete
               </span>
             </div>
 
-            <p className="text-xs text-zinc-400 leading-relaxed">
+            <p className="text-xs text-[#52504a] leading-relaxed">
               Complete these three daily rituals to maintain unbroken retention across your CBSE subjects.
             </p>
 
@@ -193,16 +193,16 @@ const StudyHub = () => {
                   onClick={() => toggleChecklist(item.id)}
                   className={`p-4 border rounded-xl cursor-pointer transition-all flex items-start gap-3 ${
                     item.completed 
-                      ? 'border-emerald-500/20 bg-emerald-500/5 text-zinc-400' 
-                      : 'border-white/5 bg-[#08090b] hover:border-white/15 text-white'
+                      ? 'border-[#e5e1d5] bg-[#fbfbfa] text-[#827f76]' 
+                      : 'border-[#e5e1d5] bg-white hover:border-[#1b3b2b]/30 text-[#1a1917] shadow-sm'
                   }`}
                 >
                   <div className={`w-5 h-5 rounded border mt-0.5 flex items-center justify-center shrink-0 transition-colors ${
-                    item.completed ? 'bg-emerald-500 border-emerald-500 text-black' : 'border-zinc-700 bg-transparent'
+                    item.completed ? 'bg-[#1b3b2b] border-[#1b3b2b] text-white' : 'border-[#827f76] bg-white'
                   }`}>
                     {item.completed && <Check className="w-3.5 h-3.5 stroke-[3]" />}
                   </div>
-                  <span className={`text-xs font-medium leading-snug ${item.completed ? 'line-through text-zinc-500' : 'text-zinc-200'}`}>
+                  <span className={`text-xs font-medium leading-snug ${item.completed ? 'line-through text-[#827f76]' : 'text-[#1a1917]'}`}>
                     {item.title}
                   </span>
                 </div>
@@ -213,10 +213,10 @@ const StudyHub = () => {
 
         {/* RIGHT COLUMN: COGNITIVE SCIENCE TECHNIQUES */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="p-8 border border-white/10 bg-[#0d0f14] rounded-2xl space-y-6">
+          <div className="p-8 border border-[#e5e1d5] bg-white rounded-2xl shadow-[0_4px_20px_rgba(27,59,43,0.04)] space-y-6">
             <div className="flex items-center gap-2">
-              <Lightbulb className="w-4 h-4 text-[#ff4625]" />
-              <h3 className="font-mono text-xs uppercase tracking-widest text-white font-bold">
+              <Lightbulb className="w-4 h-4 text-[#1b3b2b]" />
+              <h3 className="font-mono text-xs uppercase tracking-widest text-[#1a1917] font-bold">
                 Cognitive Science Techniques
               </h3>
             </div>
@@ -227,18 +227,18 @@ const StudyHub = () => {
                 return (
                   <div
                     key={tip.id}
-                    className="p-5 border border-white/5 bg-[#08090b] rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                    className="p-5 border border-[#e5e1d5] bg-[#fbfbfa] rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4"
                   >
                     <div className="space-y-1 max-w-xl">
                       <div className="flex items-center gap-2">
-                        <span className="font-mono text-[9px] uppercase tracking-wider text-[#ff4625]">
+                        <span className="font-mono text-[9px] uppercase tracking-wider text-[#1b3b2b] font-bold">
                           {tip.subject}
                         </span>
-                        <h4 className="font-clash text-base font-bold text-white uppercase">
+                        <h4 className="font-serif text-base font-bold text-[#1a1917]">
                           {tip.title}
                         </h4>
                       </div>
-                      <p className="text-xs text-zinc-400 leading-relaxed font-sans">
+                      <p className="text-xs text-[#52504a] leading-relaxed font-sans">
                         {tip.desc}
                       </p>
                     </div>
@@ -248,8 +248,8 @@ const StudyHub = () => {
                       onClick={() => toggleTip(tip.id)}
                       className={`px-4 py-2 rounded-lg font-mono text-[10px] uppercase tracking-wider shrink-0 transition-all ${
                         isApplied
-                          ? 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-bold'
-                          : 'bg-white/5 hover:bg-white/10 border border-white/10 text-zinc-300'
+                          ? 'bg-[#1b3b2b]/10 border border-[#1b3b2b]/30 text-[#1b3b2b] font-bold'
+                          : 'bg-[#1b3b2b] hover:bg-[#26523c] text-white shadow-sm font-semibold'
                       }`}
                     >
                       {isApplied ? 'Applied to Routine' : 'Integrate'}

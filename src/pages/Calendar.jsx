@@ -94,25 +94,25 @@ const Calendar = () => {
     <div className="max-w-6xl mx-auto space-y-10 pb-32 px-4 sm:px-6 font-sans">
       
       {/* HEADER */}
-      <header className="border-b border-white/10 pb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
+      <header className="border-b border-[#e5e1d5] pb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <span className="w-2 h-2 rounded-full bg-[#ff4625]" />
-            <span className="font-mono text-[10px] tracking-[0.25em] uppercase text-zinc-400">
+            <span className="w-2 h-2 rounded-full bg-[#1b3b2b]" />
+            <span className="font-mono text-[10px] tracking-[0.25em] uppercase text-[#827f76]">
               Academic Timetable / Examination Schedule
             </span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold uppercase tracking-tight text-white font-clash">
+          <h1 className="text-3xl sm:text-4xl font-serif font-bold tracking-tight text-[#1a1917]">
             Academic Calendar
           </h1>
-          <p className="text-zinc-400 text-sm mt-1 max-w-xl">
+          <p className="text-[#52504a] text-sm mt-1 max-w-xl">
             Coordinate exam timelines, assignment deadlines, and spaced revision sprints across terms.
           </p>
         </div>
 
         <button
           onClick={() => setShowAddModal(true)}
-          className="px-5 py-3 bg-[#ff4625] hover:bg-[#ff5738] text-white font-mono uppercase tracking-widest text-xs font-semibold rounded-lg transition-all flex items-center gap-2 shadow-sm self-start sm:self-end"
+          className="px-5 py-3 bg-[#1b3b2b] hover:bg-[#26523c] text-white font-mono uppercase tracking-widest text-xs font-semibold rounded-lg transition-all flex items-center gap-2 shadow-[0_2px_8px_rgba(27,59,43,0.2)] self-start sm:self-end"
         >
           <Plus className="w-4 h-4" />
           <span>Schedule Event</span>
@@ -123,18 +123,18 @@ const Calendar = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
         {/* LEFT: MONTH GRID */}
-        <div className="lg:col-span-8 p-6 sm:p-8 border border-white/10 bg-[#0d0f14] rounded-2xl space-y-6">
+        <div className="lg:col-span-8 p-6 sm:p-8 border border-[#e5e1d5] bg-white rounded-2xl shadow-[0_4px_20px_rgba(27,59,43,0.04)] space-y-6">
           
           {/* Month Navigation Bar */}
-          <div className="flex items-center justify-between border-b border-white/5 pb-4">
-            <h2 className="font-clash text-2xl font-bold uppercase text-white tracking-tight">
+          <div className="flex items-center justify-between border-b border-[#e5e1d5] pb-4">
+            <h2 className="font-serif text-2xl font-bold text-[#1a1917] tracking-tight">
               {format(currentMonth, 'MMMM yyyy')}
             </h2>
 
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-                className="p-2 bg-[#08090b] hover:bg-white/10 border border-white/10 rounded-lg text-zinc-300 transition-colors"
+                className="p-2 bg-[#f5f3ec] hover:bg-[#ede9de] border border-[#e5e1d5] rounded-lg text-[#52504a] transition-colors"
                 title="Previous Month"
               >
                 <ChevronLeft className="w-4 h-4" />
@@ -142,14 +142,14 @@ const Calendar = () => {
 
               <button
                 onClick={() => setCurrentMonth(new Date())}
-                className="px-3 py-1.5 bg-[#08090b] hover:bg-white/10 border border-white/10 rounded-lg font-mono text-[10px] uppercase text-zinc-300"
+                className="px-3 py-1.5 bg-[#f5f3ec] hover:bg-[#ede9de] border border-[#e5e1d5] rounded-lg font-mono text-[10px] uppercase text-[#52504a] font-semibold"
               >
                 Current
               </button>
 
               <button
                 onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-                className="p-2 bg-[#08090b] hover:bg-white/10 border border-white/10 rounded-lg text-zinc-300 transition-colors"
+                className="p-2 bg-[#f5f3ec] hover:bg-[#ede9de] border border-[#e5e1d5] rounded-lg text-[#52504a] transition-colors"
                 title="Next Month"
               >
                 <ChevronRight className="w-4 h-4" />
@@ -158,14 +158,14 @@ const Calendar = () => {
           </div>
 
           {/* Days of Week Header */}
-          <div className="grid grid-cols-7 text-center font-mono text-[10px] uppercase tracking-widest text-zinc-500 pb-2">
+          <div className="grid grid-cols-7 text-center font-mono text-[10px] uppercase tracking-widest text-[#827f76] pb-2">
             {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => (
               <div key={d} className="py-1">{d}</div>
             ))}
           </div>
 
           {/* Day Cells Matrix */}
-          <div className="grid grid-cols-7 gap-px bg-white/5 border border-white/5 rounded-xl overflow-hidden">
+          <div className="grid grid-cols-7 gap-px bg-[#e5e1d5] border border-[#e5e1d5] rounded-xl overflow-hidden">
             {calendarDays.map((day, idx) => {
               const dateStr = format(day, 'yyyy-MM-dd');
               const isSelected = isSameDay(day, selectedDate);
@@ -179,20 +179,20 @@ const Calendar = () => {
                   onClick={() => setSelectedDate(day)}
                   className={`min-h-[90px] sm:min-h-[105px] p-2.5 cursor-pointer transition-colors relative flex flex-col justify-between ${
                     isSelected
-                      ? 'bg-[#ff4625]/10 border border-[#ff4625]'
+                      ? 'bg-[#1b3b2b]/10 border border-[#1b3b2b]'
                       : inCurrentMonth
-                      ? 'bg-[#090a0d] hover:bg-white/[0.03]'
-                      : 'bg-[#08090b]/40 opacity-30'
+                      ? 'bg-white hover:bg-[#fbfbfa]'
+                      : 'bg-[#f8f6f0] opacity-40'
                   }`}
                 >
                   <div className="flex justify-between items-center">
                     <span className={`font-mono text-xs font-bold ${
-                      isSelected ? 'text-[#ff4625]' : isToday ? 'text-white underline decoration-[#ff4625] decoration-2' : 'text-zinc-400'
+                      isSelected ? 'text-[#1b3b2b]' : isToday ? 'text-[#1a1917] underline decoration-[#1b3b2b] decoration-2' : 'text-[#52504a]'
                     }`}>
                       {format(day, 'd')}
                     </span>
                     {dayEventList.length > 0 && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#ff4625]" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#1b3b2b]" />
                     )}
                   </div>
 
@@ -203,15 +203,15 @@ const Calendar = () => {
                         key={i}
                         className={`text-[8px] font-mono uppercase tracking-tight px-1.5 py-0.5 rounded truncate ${
                           ev.event_type === 'Exam'
-                            ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
-                            : 'bg-white/5 text-zinc-300'
+                            ? 'bg-[#a46a29]/15 text-[#a46a29] border border-[#a46a29]/30 font-semibold'
+                            : 'bg-[#1b3b2b]/10 text-[#1b3b2b] border border-[#1b3b2b]/20 font-semibold'
                         }`}
                       >
                         {ev.title}
                       </div>
                     ))}
                     {dayEventList.length > 2 && (
-                      <span className="text-[7px] font-mono text-zinc-500 block">
+                      <span className="text-[7px] font-mono text-[#827f76] block">
                         +{dayEventList.length - 2} more
                       </span>
                     )}
@@ -225,14 +225,14 @@ const Calendar = () => {
 
         {/* RIGHT: SELECTED DATE INSPECTION PANEL */}
         <div className="lg:col-span-4 p-6 sm:p-8 border border-white/10 bg-[#0d0f14] rounded-2xl space-y-6">
-          <div className="border-b border-white/5 pb-4">
-            <span className="font-mono text-[9px] uppercase tracking-widest text-[#ff4625] font-bold">
+          <div className="border-b border-[#e5e1d5] pb-4">
+            <span className="font-mono text-[9px] uppercase tracking-widest text-[#1b3b2b] font-bold">
               Timetable Details
             </span>
-            <h3 className="font-clash text-xl font-bold uppercase text-white mt-1">
+            <h3 className="font-serif text-xl font-bold text-[#1a1917] mt-1">
               {format(selectedDate, 'eeee')}
             </h3>
-            <span className="font-mono text-xs text-zinc-400 block mt-0.5">
+            <span className="font-mono text-xs text-[#52504a] block mt-0.5">
               {format(selectedDate, 'MMMM do, yyyy')}
             </span>
           </div>
@@ -245,8 +245,8 @@ const Calendar = () => {
                 onClick={() => setActiveFilter(t.id)}
                 className={`px-2.5 py-1 rounded text-[9px] font-mono uppercase tracking-wider transition-all border ${
                   activeFilter === t.id
-                    ? 'border-[#ff4625] bg-[#ff4625]/10 text-white font-bold'
-                    : 'border-white/5 bg-[#08090b] text-zinc-400 hover:text-white'
+                    ? 'border-[#1b3b2b] bg-[#1b3b2b] text-white font-bold shadow-sm'
+                    : 'border-[#e5e1d5] bg-[#fbfbfa] text-[#52504a] hover:text-[#1a1917]'
                 }`}
               >
                 {t.label}
@@ -257,12 +257,12 @@ const Calendar = () => {
           {/* Events List for Day */}
           <div className="space-y-3 min-h-[220px]">
             {filteredDayEvents.length === 0 ? (
-              <div className="p-8 border border-white/5 bg-[#08090b] rounded-xl text-center space-y-2">
-                <CalendarIcon className="w-8 h-8 text-zinc-600 mx-auto" />
-                <span className="text-zinc-500 font-mono text-xs block">No events logged for this date.</span>
+              <div className="p-8 border border-[#e5e1d5] bg-[#fbfbfa] rounded-xl text-center space-y-2">
+                <CalendarIcon className="w-8 h-8 text-[#827f76] mx-auto opacity-40" />
+                <span className="text-[#827f76] font-mono text-xs block">No events logged for this date.</span>
                 <button
                   onClick={() => setShowAddModal(true)}
-                  className="text-[#ff4625] font-mono text-[10px] uppercase tracking-wider hover:underline font-bold"
+                  className="text-[#1b3b2b] font-mono text-[10px] uppercase tracking-wider hover:underline font-bold"
                 >
                   + Add schedule entry
                 </button>
@@ -271,24 +271,24 @@ const Calendar = () => {
               filteredDayEvents.map((ev) => (
                 <div
                   key={ev.id}
-                  className="p-4 border border-white/5 bg-[#08090b] rounded-xl flex items-start justify-between gap-3 group"
+                  className="p-4 border border-[#e5e1d5] bg-[#fbfbfa] rounded-xl flex items-start justify-between gap-3 group hover:border-[#1b3b2b]/30 transition-colors"
                 >
                   <div className="space-y-1">
                     <span className={`text-[8px] font-mono uppercase tracking-wider font-bold px-1.5 py-0.2 rounded ${
-                      ev.event_type === 'Exam' ? 'bg-rose-500/20 text-rose-400' : 'bg-white/10 text-zinc-300'
+                      ev.event_type === 'Exam' ? 'bg-[#a46a29]/15 text-[#a46a29] border border-[#a46a29]/30' : 'bg-[#1b3b2b]/10 text-[#1b3b2b] border border-[#1b3b2b]/20'
                     }`}>
                       {ev.event_type}
                     </span>
-                    <h4 className="text-xs font-semibold text-white mt-1">{ev.title}</h4>
-                    <div className="flex items-center gap-1.5 text-[10px] font-mono text-zinc-400">
-                      <Clock className="w-3 h-3 text-zinc-500" />
+                    <h4 className="text-xs font-semibold text-[#1a1917] mt-1">{ev.title}</h4>
+                    <div className="flex items-center gap-1.5 text-[10px] font-mono text-[#827f76]">
+                      <Clock className="w-3 h-3 text-[#827f76]" />
                       <span>{ev.event_time || '10:00 AM'}</span>
                     </div>
                   </div>
 
                   <button
                     onClick={() => deleteEvent(ev.id)}
-                    className="p-1.5 text-zinc-600 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="p-1.5 text-[#827f76] hover:text-rose-600 opacity-0 group-hover:opacity-100 transition-opacity"
                     title="Remove event"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -305,21 +305,21 @@ const Calendar = () => {
       {/* MODAL: ADD EVENT */}
       <AnimatePresence>
         {showAddModal && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-md p-8 border border-white/10 bg-[#0d0f14] rounded-2xl space-y-6 shadow-2xl font-sans"
+              className="w-full max-w-md p-8 border border-[#e5e1d5] bg-white rounded-2xl space-y-6 shadow-2xl font-sans"
             >
-              <div className="flex justify-between items-center border-b border-white/5 pb-4">
+              <div className="flex justify-between items-center border-b border-[#e5e1d5] pb-4">
                 <div>
-                  <span className="font-mono text-[9px] uppercase tracking-wider text-[#ff4625]">Academic Schedule</span>
-                  <h3 className="font-clash text-xl font-bold uppercase text-white mt-0.5">Add Timetable Event</h3>
+                  <span className="font-mono text-[9px] uppercase tracking-wider text-[#1b3b2b] font-semibold">Academic Schedule</span>
+                  <h3 className="font-serif text-xl font-bold text-[#1a1917] mt-0.5">Add Timetable Event</h3>
                 </div>
                 <button
                   onClick={() => setShowAddModal(false)}
-                  className="p-1 text-zinc-400 hover:text-white"
+                  className="p-1 text-[#827f76] hover:text-[#1a1917]"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -327,21 +327,21 @@ const Calendar = () => {
 
               <form onSubmit={handleAddEvent} className="space-y-4">
                 <div className="space-y-1.5">
-                  <label className="block font-mono text-[10px] uppercase tracking-wider text-zinc-400">Event Title</label>
+                  <label className="block font-mono text-[10px] uppercase tracking-wider text-[#52504a]">Event Title</label>
                   <input
                     name="title"
                     required
                     placeholder="e.g. Science Chapter 4 Unit Test"
-                    className="w-full px-4 py-2.5 bg-[#08090b] border border-white/10 rounded-lg text-xs text-white focus:outline-none focus:border-[#ff4625]"
+                    className="w-full px-4 py-2.5 bg-[#fbfbfa] border border-[#e5e1d5] rounded-lg text-xs text-[#1a1917] focus:outline-none focus:border-[#1b3b2b]"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="block font-mono text-[10px] uppercase tracking-wider text-zinc-400">Event Type</label>
+                    <label className="block font-mono text-[10px] uppercase tracking-wider text-[#52504a]">Event Type</label>
                     <select
                       name="type"
-                      className="w-full px-3 py-2.5 bg-[#08090b] border border-white/10 rounded-lg text-xs font-mono uppercase text-zinc-300 focus:outline-none focus:border-[#ff4625]"
+                      className="w-full px-3 py-2.5 bg-[#fbfbfa] border border-[#e5e1d5] rounded-lg text-xs font-mono uppercase text-[#1a1917] focus:outline-none focus:border-[#1b3b2b]"
                     >
                       <option value="Study">Study Sprint</option>
                       <option value="Exam">Examination</option>
@@ -351,24 +351,24 @@ const Calendar = () => {
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="block font-mono text-[10px] uppercase tracking-wider text-zinc-400">Target Time</label>
+                    <label className="block font-mono text-[10px] uppercase tracking-wider text-[#52504a]">Target Time</label>
                     <input
                       name="time"
                       type="time"
                       defaultValue="10:00"
-                      className="w-full px-3 py-2.5 bg-[#08090b] border border-white/10 rounded-lg text-xs font-mono uppercase text-zinc-300 focus:outline-none focus:border-[#ff4625]"
+                      className="w-full px-3 py-2.5 bg-[#fbfbfa] border border-[#e5e1d5] rounded-lg text-xs font-mono uppercase text-[#1a1917] focus:outline-none focus:border-[#1b3b2b]"
                     />
                   </div>
                 </div>
 
-                <div className="p-3 bg-[#08090b] border border-white/5 rounded-lg flex items-center justify-between text-xs">
-                  <span className="font-mono text-[10px] text-zinc-500 uppercase">Selected Date</span>
-                  <span className="font-mono text-zinc-200 font-bold">{format(selectedDate, 'MMMM do, yyyy')}</span>
+                <div className="p-3 bg-[#f5f3ec] border border-[#e5e1d5] rounded-lg flex items-center justify-between text-xs">
+                  <span className="font-mono text-[10px] text-[#52504a] uppercase">Selected Date</span>
+                  <span className="font-mono text-[#1a1917] font-bold">{format(selectedDate, 'MMMM do, yyyy')}</span>
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full py-3 bg-[#ff4625] hover:bg-[#ff5738] text-white font-mono uppercase tracking-widest text-xs font-semibold rounded-lg transition-all"
+                  className="w-full py-3 bg-[#1b3b2b] hover:bg-[#26523c] text-white font-mono uppercase tracking-widest text-xs font-semibold rounded-lg transition-all shadow-[0_2px_8px_rgba(27,59,43,0.2)]"
                 >
                   Commit to Timetable
                 </button>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   Target, BookOpen, Clock, CheckCircle2,
   Calendar as CalendarIcon, ArrowRight, Plus,
-  Check, BookMarked, Library
+  Check, BookMarked, Library, GraduationCap
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
@@ -54,78 +54,78 @@ const Dashboard = () => {
   const completedTasks = tasks.filter(t => t.completed);
 
   return (
-    <div className="space-y-8 font-mono text-left">
+    <div className="space-y-8 font-sans text-left">
       
-      {/* ── WORKSTATION HEADER ───────────────────────────────────── */}
-      <div className="p-6 md:p-8 border border-white/10 bg-[#111318] rounded-xl flex flex-col md:flex-row md:items-end justify-between gap-6">
+      {/* ── ACADEMIC DESK HEADER ───────────────────────────────────── */}
+      <div className="p-8 border border-[#e5e1d5] bg-white rounded-xl shadow-sm flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <div className="text-[10px] uppercase tracking-[0.25em] text-brand-vermilion font-bold mb-2 flex items-center gap-2">
-            <span className="w-2 h-2 bg-brand-vermilion" />
-            ACADEMIC COMMAND // CLASS 9 CBSE
+          <div className="text-[11px] uppercase tracking-[0.2em] text-[#1b3b2b] font-mono font-bold mb-2 flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-[#1b3b2b]" />
+            CLASS 9 CBSE // SCHOLAR WORKSTATION
           </div>
-          <h1 className="text-3xl md:text-4xl font-display font-bold text-white tracking-tight">
+          <h1 className="text-3xl md:text-4xl font-display font-bold text-[#1a1917] tracking-tight">
             Welcome back, {user?.full_name || 'Scholar'}.
           </h1>
-          <p className="text-xs text-text-secondary mt-1 font-sans">
-            Here is your current study itinerary and syllabus review queue for today.
+          <p className="text-sm text-zinc-600 mt-1 max-w-xl">
+            Here is your daily study itinerary, spaced retrieval queue, and NCERT curriculum roadmap.
           </p>
         </div>
 
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate('/focus-timer')}
-            className="nv-btn-primary"
+            className="nv-btn-primary shadow-sm"
           >
             <Clock className="w-3.5 h-3.5" />
-            <span>START 25M FOCUS</span>
+            <span>START 25M SPRINT</span>
           </button>
         </div>
       </div>
 
-      {/* ── QUICK METRICS STRIP ──────────────────────────────────── */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="p-4 border border-white/10 bg-[#111318] rounded-lg">
-          <div className="text-[10px] text-text-muted uppercase tracking-wider mb-1">TASKS PENDING</div>
-          <div className="text-2xl font-bold font-display text-white">{pendingTasks.length}</div>
-          <div className="text-[10px] text-text-muted mt-1">{completedTasks.length} completed today</div>
+      {/* ── METRICS STRIP ──────────────────────────────────── */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="p-5 border border-[#e5e1d5] bg-white rounded-lg shadow-sm">
+          <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1">TASKS IN QUEUE</div>
+          <div className="text-2xl font-bold font-display text-[#1a1917]">{pendingTasks.length}</div>
+          <div className="text-[11px] text-zinc-500 mt-1">{completedTasks.length} completed today</div>
         </div>
 
-        <div className="p-4 border border-white/10 bg-[#111318] rounded-lg">
-          <div className="text-[10px] text-text-muted uppercase tracking-wider mb-1">FLASHCARD DECKS</div>
-          <div className="text-2xl font-bold font-display text-white">{decks.length}</div>
-          <div className="text-[10px] text-text-muted mt-1">Spaced retrieval active</div>
+        <div className="p-5 border border-[#e5e1d5] bg-white rounded-lg shadow-sm">
+          <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1">RETRIEVAL DECKS</div>
+          <div className="text-2xl font-bold font-display text-[#1a1917]">{decks.length}</div>
+          <div className="text-[11px] text-zinc-500 mt-1">Spaced recall active</div>
         </div>
 
-        <div className="p-4 border border-white/10 bg-[#111318] rounded-lg">
-          <div className="text-[10px] text-text-muted uppercase tracking-wider mb-1">SYLLABUS COVERAGE</div>
-          <div className="text-2xl font-bold font-display text-emerald-400">100%</div>
-          <div className="text-[10px] text-text-muted mt-1">NCERT Class 9 Matrix</div>
+        <div className="p-5 border border-[#e5e1d5] bg-white rounded-lg shadow-sm">
+          <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1">SYLLABUS MODULES</div>
+          <div className="text-2xl font-bold font-display text-[#1b3b2b]">100%</div>
+          <div className="text-[11px] text-zinc-500 mt-1">Class 9 NCERT Verified</div>
         </div>
 
-        <div className="p-4 border border-white/10 bg-[#111318] rounded-lg">
-          <div className="text-[10px] text-text-muted uppercase tracking-wider mb-1">ENGINE STATUS</div>
-          <div className="text-2xl font-bold font-display text-brand-vermilion">OFFLINE</div>
-          <div className="text-[10px] text-text-muted mt-1">Local persistence verified</div>
+        <div className="p-5 border border-[#e5e1d5] bg-white rounded-lg shadow-sm">
+          <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1">DATA REPOSITORY</div>
+          <div className="text-2xl font-bold font-display text-[#162744]">READY</div>
+          <div className="text-[11px] text-zinc-500 mt-1">Local persistence synced</div>
         </div>
       </div>
 
-      {/* ── CORE WORKSTATION COLUMNS ─────────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      {/* ── CORE WORKBENCH COLUMNS ─────────────────────────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         
         {/* Left Column: Tasks & Assignments */}
         <div className="lg:col-span-7 space-y-4">
-          <div className="border border-white/10 bg-[#111318] rounded-xl p-5">
-            <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-white/[0.08]">
+          <div className="border border-[#e5e1d5] bg-white rounded-xl p-6 shadow-sm">
+            <div className="flex items-center justify-between pb-4 mb-4 border-b border-[#e5e1d5]">
               <div className="flex items-center gap-2">
-                <Target className="w-4 h-4 text-brand-vermilion" />
-                <h3 className="font-display font-bold text-base text-white">Study Tasks & Assignments</h3>
+                <Target className="w-4 h-4 text-[#1b3b2b]" />
+                <h3 className="font-display font-bold text-lg text-[#1a1917]">Study Tasks & Assignments</h3>
               </div>
               <button
                 onClick={() => navigate('/homework')}
-                className="text-[11px] text-text-muted hover:text-white transition-colors flex items-center gap-1"
+                className="text-[11px] font-mono text-zinc-500 hover:text-black transition-colors flex items-center gap-1 font-semibold"
               >
                 <span>OPEN PLANNER</span>
-                <ArrowRight className="w-3 h-3" />
+                <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
 
@@ -133,14 +133,14 @@ const Dashboard = () => {
             <form onSubmit={handleAddTask} className="flex gap-2 mb-4">
               <input
                 type="text"
-                placeholder="Add academic objective..."
+                placeholder="Add academic objective or homework task..."
                 value={newTaskTitle}
                 onChange={(e) => setNewTaskTitle(e.target.value)}
-                className="flex-1 bg-white/[0.03] border border-white/10 rounded px-3 py-2 text-xs text-white outline-none focus:border-brand-vermilion"
+                className="flex-1 bg-[#fbfbfa] border border-[#e5e1d5] rounded-md px-3.5 py-2 text-xs text-[#1a1917] outline-none focus:border-[#1b3b2b]"
               />
               <button
                 type="submit"
-                className="px-3 py-2 bg-white/10 hover:bg-white/15 text-white rounded text-xs font-bold transition-colors flex items-center gap-1"
+                className="px-4 py-2 bg-[#1b3b2b] hover:bg-[#254e3a] text-white rounded-md text-xs font-semibold transition-colors flex items-center gap-1"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>ADD</span>
@@ -150,32 +150,32 @@ const Dashboard = () => {
             {/* Task Item List */}
             <div className="space-y-2">
               {tasks.length === 0 ? (
-                <div className="text-center py-8 text-xs text-text-muted">
-                  No active study tasks. Add an objective above.
+                <div className="text-center py-10 text-xs text-zinc-500 font-mono">
+                  No active study tasks in queue. Add an objective above.
                 </div>
               ) : (
                 tasks.slice(0, 6).map((task) => (
                   <div
                     key={task.id}
                     onClick={() => handleToggleTask(task.id, task.completed)}
-                    className="p-3 border border-white/[0.06] hover:border-white/15 bg-white/[0.01] rounded flex items-center justify-between gap-3 cursor-pointer transition-colors"
+                    className="p-3 border border-[#ebe7dc] hover:border-[#d4cfbf] bg-[#fbfbfa] rounded-md flex items-center justify-between gap-3 cursor-pointer transition-colors"
                   >
                     <div className="flex items-center gap-3 flex-1 min-w-0">
                       <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${
-                        task.completed ? 'bg-emerald-500 border-emerald-500 text-black' : 'border-white/20'
+                        task.completed ? 'bg-[#1b3b2b] border-[#1b3b2b] text-white' : 'border-[#d0c9b8] bg-white'
                       }`}>
-                        {task.completed && <Check className="w-3 h-3" />}
+                        {task.completed && <Check className="w-3 h-3 stroke-[3]" />}
                       </div>
-                      <span className={`text-xs truncate font-sans ${task.completed ? 'line-through text-text-muted' : 'text-white'}`}>
+                      <span className={`text-xs truncate font-sans ${task.completed ? 'line-through text-zinc-400' : 'text-[#1a1917]'}`}>
                         {task.title}
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-2 flex-shrink-0 text-[10px]">
-                      <span className="px-1.5 py-0.5 rounded bg-white/[0.04] text-text-muted border border-white/5">
+                    <div className="flex items-center gap-2 flex-shrink-0 text-[10px] font-mono">
+                      <span className="px-2 py-0.5 rounded bg-white text-zinc-600 border border-[#e5e1d5]">
                         {task.subject}
                       </span>
-                      <span className="text-text-muted">{task.due}</span>
+                      <span className="text-zinc-500">{task.due}</span>
                     </div>
                   </div>
                 ))
@@ -188,18 +188,18 @@ const Dashboard = () => {
         <div className="lg:col-span-5 space-y-6">
           
           {/* Active Recall Decks */}
-          <div className="border border-white/10 bg-[#111318] rounded-xl p-5">
-            <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-white/[0.08]">
+          <div className="border border-[#e5e1d5] bg-white rounded-xl p-6 shadow-sm">
+            <div className="flex items-center justify-between pb-4 mb-4 border-b border-[#e5e1d5]">
               <div className="flex items-center gap-2">
-                <BookMarked className="w-4 h-4 text-blue-400" />
-                <h3 className="font-display font-bold text-base text-white">Active Flashcards</h3>
+                <BookMarked className="w-4 h-4 text-[#162744]" />
+                <h3 className="font-display font-bold text-lg text-[#1a1917]">Active Flashcards</h3>
               </div>
               <button
                 onClick={() => navigate('/flashcards')}
-                className="text-[11px] text-text-muted hover:text-white transition-colors flex items-center gap-1"
+                className="text-[11px] font-mono text-zinc-500 hover:text-black transition-colors flex items-center gap-1 font-semibold"
               >
                 <span>ALL DECKS</span>
-                <ArrowRight className="w-3 h-3" />
+                <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
 
@@ -208,13 +208,13 @@ const Dashboard = () => {
                 <div
                   key={deck.id}
                   onClick={() => navigate('/flashcards')}
-                  className="p-3 border border-white/[0.06] hover:border-white/20 bg-white/[0.01] rounded flex items-center justify-between cursor-pointer transition-colors"
+                  className="p-3 border border-[#ebe7dc] hover:border-[#d4cfbf] bg-[#fbfbfa] rounded-md flex items-center justify-between cursor-pointer transition-colors"
                 >
                   <div>
-                    <h4 className="text-xs font-bold text-white font-sans">{deck.title}</h4>
-                    <span className="text-[10px] text-text-muted">{deck.cards?.length || 0} recall cards · {deck.subject}</span>
+                    <h4 className="text-xs font-semibold text-[#1a1917]">{deck.title}</h4>
+                    <span className="text-[10px] font-mono text-zinc-500">{deck.cards?.length || 0} retrieval cards · {deck.subject}</span>
                   </div>
-                  <button className="px-2 py-1 bg-white/5 hover:bg-white/10 text-[10px] font-bold text-white rounded border border-white/10">
+                  <button className="px-2.5 py-1 bg-white hover:bg-[#f2efe6] text-[10px] font-mono font-bold text-[#1b3b2b] rounded border border-[#e5e1d5] shadow-xs">
                     REVIEW
                   </button>
                 </div>
@@ -223,47 +223,47 @@ const Dashboard = () => {
           </div>
 
           {/* Quick Curriculum Navigation */}
-          <div className="border border-white/10 bg-[#111318] rounded-xl p-5">
-            <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-white/[0.08]">
+          <div className="border border-[#e5e1d5] bg-white rounded-xl p-6 shadow-sm">
+            <div className="flex items-center justify-between pb-4 mb-4 border-b border-[#e5e1d5]">
               <div className="flex items-center gap-2">
-                <Library className="w-4 h-4 text-emerald-400" />
-                <h3 className="font-display font-bold text-base text-white">Curriculum Vaults</h3>
+                <Library className="w-4 h-4 text-[#1b3b2b]" />
+                <h3 className="font-display font-bold text-lg text-[#1a1917]">Curriculum Vaults</h3>
               </div>
               <button
                 onClick={() => navigate('/curriculum')}
-                className="text-[11px] text-text-muted hover:text-white transition-colors flex items-center gap-1"
+                className="text-[11px] font-mono text-zinc-500 hover:text-black transition-colors flex items-center gap-1 font-semibold"
               >
                 <span>EXPLORE</span>
-                <ArrowRight className="w-3 h-3" />
+                <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
 
             <div className="grid grid-cols-3 gap-2">
               <button
                 onClick={() => navigate('/curriculum')}
-                className="p-3 border border-white/10 hover:border-brand-vermilion rounded bg-white/[0.02] text-left transition-colors"
+                className="p-3 border border-[#e5e1d5] hover:border-[#1b3b2b] rounded-md bg-[#fbfbfa] text-left transition-colors"
               >
-                <div className="text-[9px] text-brand-vermilion font-bold">CBSE-M9</div>
-                <div className="text-xs font-bold text-white mt-1">Math</div>
-                <div className="text-[9px] text-text-muted mt-0.5">15 Units</div>
+                <div className="text-[9px] text-[#1b3b2b] font-mono font-bold">CBSE-M9</div>
+                <div className="text-xs font-bold text-[#1a1917] mt-1 font-sans">Math</div>
+                <div className="text-[9px] text-zinc-500 font-mono mt-0.5">15 Units</div>
               </button>
 
               <button
                 onClick={() => navigate('/curriculum')}
-                className="p-3 border border-white/10 hover:border-blue-400 rounded bg-white/[0.02] text-left transition-colors"
+                className="p-3 border border-[#e5e1d5] hover:border-[#162744] rounded-md bg-[#fbfbfa] text-left transition-colors"
               >
-                <div className="text-[9px] text-blue-400 font-bold">CBSE-S9</div>
-                <div className="text-xs font-bold text-white mt-1">Science</div>
-                <div className="text-[9px] text-text-muted mt-0.5">15 Units</div>
+                <div className="text-[9px] text-[#162744] font-mono font-bold">CBSE-S9</div>
+                <div className="text-xs font-bold text-[#1a1917] mt-1 font-sans">Science</div>
+                <div className="text-[9px] text-zinc-500 font-mono mt-0.5">15 Units</div>
               </button>
 
               <button
                 onClick={() => navigate('/curriculum')}
-                className="p-3 border border-white/10 hover:border-amber-400 rounded bg-white/[0.02] text-left transition-colors"
+                className="p-3 border border-[#e5e1d5] hover:border-[#a46a29] rounded-md bg-[#fbfbfa] text-left transition-colors"
               >
-                <div className="text-[9px] text-amber-400 font-bold">CBSE-SS9</div>
-                <div className="text-xs font-bold text-white mt-1">Social</div>
-                <div className="text-[9px] text-text-muted mt-0.5">20 Units</div>
+                <div className="text-[9px] text-[#a46a29] font-mono font-bold">CBSE-E9</div>
+                <div className="text-xs font-bold text-[#1a1917] mt-1 font-sans">English</div>
+                <div className="text-[9px] text-zinc-500 font-mono mt-0.5">12 Units</div>
               </button>
             </div>
           </div>

@@ -1,5 +1,4 @@
-@import url('https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -7,40 +6,43 @@
 
 :root {
   /* ==========================================================================
-     ART BIBLE: ATELIER 09 // Swiss Precision Industrial Aesthetic
-     Primary: Signal Vermilion (#ff4625)
-     Base: Obsidian Pitch (#090a0d) & Rich Graphite (#111318)
-     Text: Bone White (#f5f4ef) & Technical Slate (#8b93a4)
+     ART BIBLE: WARM EDITORIAL ACADEMIC
+     Atmosphere: Oxford Library / Harvard Study Carrel / Warm Parchment Paper
+     Base Ground: Parchment Cream (#fbfbfa)
+     Surfaces: Crisp Paper White (#ffffff) & Warm Vellum (#f5f3ec)
+     Ink: Deep Espresso / Book Ink (#1a1917) & Slate Charcoal (#52504a)
+     Primary Anchor: Deep Forest Green (#1b3b2b)
+     Secondary Anchor: Academic Navy (#162744)
+     Accent: Antiquarian Warm Brass/Amber (#a46a29)
      ========================================================================== */
-  --bg-base: #090a0d;
-  --bg-card: #111318;
-  --bg-surface: #171a22;
-  --bg-elevated: #1e222d;
+  --bg-base: #fbfbfa;
+  --bg-card: #ffffff;
+  --bg-surface: #f5f3ec;
+  --bg-elevated: #ece8dc;
   
-  --text-primary: #f5f4ef;
-  --text-secondary: #9da5b5;
-  --text-muted: #5f6677;
+  --text-primary: #1a1917;
+  --text-secondary: #52504a;
+  --text-muted: #827f76;
   
-  --brand-vermilion: #ff4625;
-  --brand-vermilion-hover: #ff5c3d;
-  --brand-ochre: #e5a93c;
-  --brand-cobalt: #2563eb;
-  --brand-emerald: #10b981;
+  --brand-forest: #1b3b2b;
+  --brand-forest-hover: #254e3a;
+  --brand-navy: #162744;
+  --brand-amber: #a46a29;
   
-  --nuvio-purple-400: #ff6a4f;
-  --nuvio-purple-500: #ff4625;
-  --nuvio-purple-600: #d93516;
-  --nuvio-green: #10b981;
-  --nuvio-orange: #f97316;
-  --nuvio-blue: #3b82f6;
-  --nuvio-red: #ef4444;
-  --nuvio-yellow: #e5a93c;
-  --nuvio-cyan: #06b6d4;
-  --nuvio-pink: #ff4625;
+  --nuvio-purple-400: #1b3b2b;
+  --nuvio-purple-500: #1b3b2b;
+  --nuvio-purple-600: #12281d;
+  --nuvio-green: #205739;
+  --nuvio-orange: #a46a29;
+  --nuvio-blue: #162744;
+  --nuvio-red: #8c2825;
+  --nuvio-yellow: #b57a26;
+  --nuvio-cyan: #1f485b;
+  --nuvio-pink: #1b3b2b;
   
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.16);
-  --border-vermilion: rgba(255, 70, 37, 0.4);
+  --border-subtle: #e5e1d5;
+  --border-strong: #d2ccc0;
+  --border-accent: rgba(27, 59, 43, 0.25);
   
   --radius-sm: 6px;
   --radius-md: 10px;
@@ -59,25 +61,25 @@
     font-size: 15px;
     line-height: 1.6;
     letter-spacing: -0.01em;
-    @apply antialiased overflow-x-hidden selection:bg-brand-vermilion selection:text-white;
+    @apply antialiased overflow-x-hidden selection:bg-[#1b3b2b] selection:text-white;
   }
 
-  /* Architectural Clash Display Typography */
-  h1, h2, h3, h4 {
-    font-family: 'Clash Display', -apple-system, BlinkMacSystemFont, sans-serif;
+  /* Elegant Editorial Serif Typography */
+  h1, h2, h3, h4, .font-clash, .font-display {
+    font-family: 'Lora', 'Newsreader', Georgia, serif;
     color: var(--text-primary);
-    font-weight: 700;
-    letter-spacing: -0.025em;
+    font-weight: 600;
+    letter-spacing: -0.02em;
   }
 
   h1 {
-    font-size: clamp(2.5rem, 5vw, 4.5rem);
-    line-height: 0.96;
+    font-size: clamp(2.25rem, 4.5vw, 3.75rem);
+    line-height: 1.1;
   }
 
   h2 {
-    font-size: clamp(1.75rem, 3.5vw, 2.75rem);
-    line-height: 1.05;
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    line-height: 1.15;
   }
 
   code, pre, .font-mono {
@@ -86,151 +88,136 @@
 }
 
 /* ==========================================================================
-   PRECISION COMPONENTS
+   WARM EDITORIAL COMPONENTS
    ========================================================================== */
 
 @layer components {
-  /* Physical Atelier Card: Self-colored, crisp hairlines, zero float boops */
+  /* Paper Card: Crisp white surface with tactile warm depth */
   .nv-card, .card-atelier {
-    background: var(--bg-card);
+    background: #ffffff;
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-md);
-    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
-    transition: border-color 0.15s ease, background-color 0.15s ease;
+    box-shadow: 0 2px 8px -1px rgba(26, 25, 23, 0.04), 0 1px 3px rgba(26, 25, 23, 0.02);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
   }
 
   .nv-card:hover, .card-atelier:hover {
     border-color: var(--border-strong);
-    background: #14171e;
+    box-shadow: 0 6px 20px -2px rgba(26, 25, 23, 0.07);
   }
 
-  /* Solid Signal Vermilion Action Button: Physical, authoritative */
-  .nv-btn-primary, .btn-vermilion {
-    background: var(--brand-vermilion);
-    color: #ffffff !important;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 
-      0 1px 0 rgba(255, 255, 255, 0.3) inset,
-      0 2px 8px rgba(255, 70, 37, 0.35);
-    font-family: 'JetBrains Mono', monospace;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    font-size: 12px;
-    padding: 12px 22px;
-    border-radius: var(--radius-sm);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    transition: background 0.12s ease, transform 0.08s ease, box-shadow 0.12s ease;
-  }
-
-  .nv-btn-primary:hover, .btn-vermilion:hover {
-    background: var(--brand-vermilion-hover);
-    box-shadow: 
-      0 1px 0 rgba(255, 255, 255, 0.45) inset,
-      0 4px 14px rgba(255, 70, 37, 0.5);
-  }
-
-  .nv-btn-primary:active, .btn-vermilion:active {
-    transform: translateY(1px);
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
-  }
-
-  /* Tactile Secondary Button */
-  .nv-btn-secondary, .btn-secondary {
-    background: rgba(255, 255, 255, 0.04);
-    color: var(--text-primary);
-    border: 1px solid var(--border-subtle);
-    font-family: 'JetBrains Mono', monospace;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    font-size: 12px;
-    padding: 12px 20px;
-    border-radius: var(--radius-sm);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    transition: background 0.12s ease, border-color 0.12s ease;
-  }
-
-  .nv-btn-secondary:hover, .btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: var(--border-strong);
+  /* Deep Forest Primary Button */
+  .nv-btn-primary {
+    background: #1b3b2b;
     color: #ffffff;
-  }
-
-  /* Technical Stamp / Status Pill */
-  .nv-pill, .badge-stamp {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    padding: 4px 10px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
     border-radius: var(--radius-sm);
-    border: 1px solid var(--border-subtle);
-    background: rgba(255, 255, 255, 0.03);
-    color: var(--text-secondary);
+    padding: 10px 20px;
+    border: 1px solid transparent;
+    box-shadow: 0 1px 3px rgba(27, 59, 43, 0.2);
+    transition: background-color 0.15s ease, transform 0.1s ease;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    justify-content: center;
+    gap: 8px;
   }
 
-  /* Technical Input Fields */
+  .nv-btn-primary:hover {
+    background: #254e3a;
+  }
+
+  .nv-btn-primary:active {
+    transform: translateY(1px);
+  }
+
+  /* Secondary Button */
+  .nv-btn-secondary {
+    background: #ffffff;
+    color: var(--text-primary);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: var(--radius-sm);
+    padding: 10px 20px;
+    border: 1px solid var(--border-subtle);
+    box-shadow: 0 1px 2px rgba(26, 25, 23, 0.04);
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .nv-btn-secondary:hover {
+    background: #f7f5ee;
+    border-color: var(--border-strong);
+  }
+
+  /* Refined Academic Input */
   .nv-input {
-    background: #0d0f14;
+    background: #ffffff;
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-sm);
-    padding: 12px 16px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
     color: var(--text-primary);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14px;
+    padding: 10px 14px;
     outline: none;
-    transition: border-color 0.15s ease;
+    box-shadow: inset 0 1px 2px rgba(26, 25, 23, 0.03);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
   }
 
   .nv-input:focus {
-    border-color: var(--brand-vermilion);
-    box-shadow: 0 0 0 1px var(--brand-vermilion);
+    border-color: var(--brand-forest);
+    box-shadow: 0 0 0 3px rgba(27, 59, 43, 0.08);
   }
 
   .nv-label {
-    font-family: 'JetBrains Mono', monospace;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 11px;
-    font-weight: 700;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.08em;
     color: var(--text-secondary);
+    margin-bottom: 4px;
+    display: block;
   }
 
-  .nv-divider {
-    height: 1px;
-    background: var(--border-subtle);
-    width: 100%;
-  }
-
-  /* Mechanical Grid Background */
-  .bg-industrial-grid {
-    background-image: 
-      linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-    background-size: 32px 32px;
+  /* Academic Badge */
+  .nv-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    background: #f4f1ea;
+    color: var(--text-primary);
+    border: 1px solid var(--border-subtle);
   }
 }
 
-/* ==========================================================================
-   ACCESSIBILITY & REDUCED MOTION GATE
-   ========================================================================== */
+/* Custom Scrollbar for warm paper theme */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
 
-@media (prefers-reduced-motion: reduce) {
-  *, ::before, ::after {
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
-    scroll-behavior: auto !important;
-  }
+::-webkit-scrollbar-track {
+  background: #f5f3ec;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d4cfbf;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #b8b19e;
 }

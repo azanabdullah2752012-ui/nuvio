@@ -106,25 +106,25 @@ const Homework = () => {
     <div className="max-w-6xl mx-auto space-y-10 pb-32 px-4 sm:px-6 font-sans">
       
       {/* HEADER */}
-      <header className="border-b border-white/10 pb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <header className="border-b border-[#e5e1d5] pb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <span className="w-2 h-2 rounded-full bg-[#ff4625]" />
-            <span className="font-mono text-[10px] tracking-[0.25em] uppercase text-zinc-400">
-              Task Directive / Academic Planning Matrix
+            <span className="w-2 h-2 rounded-full bg-[#1b3b2b]" />
+            <span className="font-mono text-[10px] tracking-[0.25em] uppercase text-[#827f76]">
+              Academic Directives / Task Registry
             </span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold uppercase tracking-tight text-white font-clash">
+          <h1 className="text-3xl sm:text-4xl font-serif font-bold tracking-tight text-[#1a1917]">
             Study Planner & Tasks
           </h1>
-          <p className="text-zinc-400 text-sm mt-1 max-w-xl">
+          <p className="text-[#52504a] text-sm mt-1 max-w-xl">
             Register homework deliverables, syllabus revision targets, and exam preparation milestones.
           </p>
         </div>
 
         <button
           onClick={() => setShowForm(!showForm)}
-          className="px-5 py-3 bg-[#ff4625] hover:bg-[#ff5738] text-white font-mono uppercase tracking-widest text-xs font-semibold rounded-lg transition-all flex items-center gap-2 shadow-sm self-start md:self-end"
+          className="px-5 py-3 bg-[#1b3b2b] hover:bg-[#26523c] text-white font-mono uppercase tracking-widest text-xs font-semibold rounded-lg transition-all flex items-center gap-2 shadow-[0_2px_8px_rgba(27,59,43,0.2)] self-start md:self-end"
         >
           <Plus className="w-4 h-4" />
           <span>{showForm ? 'Cancel Input' : 'Add Directive'}</span>
@@ -139,9 +139,9 @@ const Homework = () => {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             onSubmit={handleCreateTask}
-            className="p-6 border border-white/10 bg-[#0d0f14] rounded-2xl space-y-4 overflow-hidden"
+            className="p-6 border border-[#e5e1d5] bg-white rounded-2xl shadow-[0_4px_20px_rgba(27,59,43,0.04)] space-y-4 overflow-hidden"
           >
-            <span className="font-mono text-xs uppercase tracking-widest text-zinc-400 font-bold block">
+            <span className="font-mono text-xs uppercase tracking-widest text-[#52504a] font-bold block">
               New Study Directive
             </span>
 
@@ -153,7 +153,7 @@ const Homework = () => {
                   placeholder="Task title (e.g. NCERT Science Chapter 3 Exercise 3.2)"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-4 py-3 bg-[#08090b] border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-[#ff4625] transition-colors"
+                  className="w-full px-4 py-3 bg-[#fbfbfa] border border-[#e5e1d5] rounded-lg text-sm text-[#1a1917] placeholder-[#827f76] focus:outline-none focus:border-[#1b3b2b] transition-colors"
                 />
               </div>
 
@@ -161,7 +161,7 @@ const Homework = () => {
                 <select
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
-                  className="w-full px-4 py-3 bg-[#08090b] border border-white/10 rounded-lg text-xs font-mono uppercase text-zinc-300 focus:outline-none focus:border-[#ff4625]"
+                  className="w-full px-4 py-3 bg-[#fbfbfa] border border-[#e5e1d5] rounded-lg text-xs font-mono uppercase text-[#1a1917] focus:outline-none focus:border-[#1b3b2b]"
                 >
                   <option value="Mathematics">Mathematics</option>
                   <option value="Science">Science</option>
@@ -175,14 +175,14 @@ const Homework = () => {
                   type="date"
                   value={dueDate}
                   onChange={(e) => setDueDate(e.target.value)}
-                  className="w-full px-4 py-3 bg-[#08090b] border border-white/10 rounded-lg text-xs font-mono uppercase text-zinc-300 focus:outline-none focus:border-[#ff4625]"
+                  className="w-full px-4 py-3 bg-[#fbfbfa] border border-[#e5e1d5] rounded-lg text-xs font-mono uppercase text-[#1a1917] focus:outline-none focus:border-[#1b3b2b]"
                 />
               </div>
 
               <div className="md:col-span-2">
                 <button
                   type="submit"
-                  className="w-full h-full py-3 bg-white text-black font-mono uppercase tracking-widest text-xs font-bold rounded-lg hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2"
+                  className="w-full h-full py-3 bg-[#1b3b2b] text-white font-mono uppercase tracking-widest text-xs font-bold rounded-lg hover:bg-[#26523c] transition-colors flex items-center justify-center gap-2 shadow-sm"
                 >
                   <span>Commit Task</span>
                 </button>
@@ -193,10 +193,10 @@ const Homework = () => {
       </AnimatePresence>
 
       {/* FILTER BAR & METRICS */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#e5e1d5] pb-4">
         
         {/* Status Filter */}
-        <div className="flex gap-1.5 p-1 bg-[#0d0f14] border border-white/10 rounded-lg self-start">
+        <div className="flex gap-1.5 p-1 bg-[#f5f3ec] border border-[#e5e1d5] rounded-lg self-start">
           {[
             { id: 'pending', label: 'Active', count: pendingCount },
             { id: 'completed', label: 'Concluded', count: completedCount },
@@ -207,13 +207,13 @@ const Homework = () => {
               onClick={() => setFilterStatus(tab.id)}
               className={`px-3 py-1.5 rounded-md font-mono text-xs uppercase tracking-wider transition-all flex items-center gap-2 ${
                 filterStatus === tab.id
-                  ? 'bg-white text-black font-bold'
-                  : 'text-zinc-400 hover:text-white'
+                  ? 'bg-[#1b3b2b] text-white font-bold shadow-sm'
+                  : 'text-[#52504a] hover:text-[#1a1917]'
               }`}
             >
               <span>{tab.label}</span>
               <span className={`text-[9px] px-1.5 py-0.2 rounded font-mono ${
-                filterStatus === tab.id ? 'bg-black text-white' : 'bg-white/10 text-zinc-400'
+                filterStatus === tab.id ? 'bg-white/20 text-white' : 'bg-black/5 text-[#52504a]'
               }`}>
                 {tab.count}
               </span>
@@ -229,8 +229,8 @@ const Homework = () => {
               onClick={() => setFilterSubject(sub)}
               className={`px-3 py-1 rounded-md font-mono text-[10px] uppercase tracking-wider transition-all border ${
                 filterSubject === sub
-                  ? 'border-[#ff4625] bg-[#ff4625]/10 text-white font-bold'
-                  : 'border-white/5 bg-[#0d0f14] text-zinc-400 hover:text-white'
+                  ? 'border-[#1b3b2b] bg-[#1b3b2b] text-white font-bold shadow-sm'
+                  : 'border-[#e5e1d5] bg-white text-[#52504a] hover:bg-[#f5f3ec] hover:text-[#1a1917]'
               }`}
             >
               {sub}
@@ -242,10 +242,10 @@ const Homework = () => {
 
       {/* TASKS LIST */}
       {filteredTasks.length === 0 ? (
-        <div className="p-16 border border-white/10 bg-[#0d0f14] rounded-2xl text-center space-y-3">
-          <CheckSquare className="w-10 h-10 text-zinc-600 mx-auto" />
-          <h3 className="font-clash text-lg font-bold uppercase text-white">No Directives in Queue</h3>
-          <p className="text-zinc-500 text-xs font-mono max-w-sm mx-auto">
+        <div className="p-16 border border-[#e5e1d5] bg-white rounded-2xl text-center space-y-3 shadow-[0_2px_12px_rgba(27,59,43,0.03)]">
+          <CheckSquare className="w-10 h-10 text-[#827f76] mx-auto opacity-40" />
+          <h3 className="font-serif text-lg font-bold text-[#1a1917]">No Directives in Queue</h3>
+          <p className="text-[#827f76] text-xs font-mono max-w-sm mx-auto">
             {filterStatus === 'completed'
               ? 'No completed tasks recorded under this filter.'
               : 'All scheduled homework and study items have been cleared.'}
@@ -258,8 +258,8 @@ const Homework = () => {
               key={task.id}
               className={`p-5 border rounded-xl transition-all flex items-center justify-between gap-4 ${
                 task.completed
-                  ? 'border-emerald-500/20 bg-[#08090b] text-zinc-500'
-                  : 'border-white/10 bg-[#0d0f14] hover:border-white/20 text-white'
+                  ? 'border-[#e5e1d5] bg-[#fbfbfa] text-[#827f76]'
+                  : 'border-[#e5e1d5] bg-white hover:border-[#1b3b2b]/30 text-[#1a1917] shadow-[0_2px_10px_rgba(27,59,43,0.03)]'
               }`}
             >
               <div className="flex items-center gap-4 flex-1">
@@ -267,8 +267,8 @@ const Homework = () => {
                   onClick={() => handleToggleTask(task)}
                   className={`w-6 h-6 rounded border flex items-center justify-center shrink-0 transition-colors ${
                     task.completed
-                      ? 'bg-emerald-500 border-emerald-500 text-black'
-                      : 'border-zinc-700 hover:border-white'
+                      ? 'bg-[#1b3b2b] border-[#1b3b2b] text-white'
+                      : 'border-[#827f76] hover:border-[#1b3b2b] bg-white'
                   }`}
                   title={task.completed ? "Mark pending" : "Mark complete"}
                 >
@@ -276,14 +276,14 @@ const Homework = () => {
                 </button>
 
                 <div className="space-y-1">
-                  <span className={`text-sm font-semibold block ${task.completed ? 'line-through text-zinc-500' : 'text-zinc-100'}`}>
+                  <span className={`text-sm font-semibold block ${task.completed ? 'line-through text-[#827f76]' : 'text-[#1a1917]'}`}>
                     {task.title}
                   </span>
-                  <div className="flex items-center gap-3 text-[10px] font-mono text-zinc-400">
-                    <span className="uppercase text-[#ff4625] font-bold">{task.subject || 'Curriculum'}</span>
+                  <div className="flex items-center gap-3 text-[10px] font-mono text-[#827f76]">
+                    <span className="uppercase text-[#1b3b2b] font-bold">{task.subject || 'Curriculum'}</span>
                     <span>·</span>
                     <span className="flex items-center gap-1">
-                      <Clock className="w-3 h-3 text-zinc-500" />
+                      <Clock className="w-3 h-3 text-[#827f76]" />
                       Due {task.due_date || 'Upcoming'}
                     </span>
                   </div>
@@ -293,7 +293,7 @@ const Homework = () => {
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => handleDeleteTask(task.id)}
-                  className="p-2 text-zinc-600 hover:text-rose-400 rounded transition-colors"
+                  className="p-2 text-[#827f76] hover:text-rose-600 rounded transition-colors"
                   title="Purge Task"
                 >
                   <Trash2 className="w-4 h-4" />

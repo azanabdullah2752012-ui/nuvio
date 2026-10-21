@@ -68,18 +68,18 @@ const WritingWorkshop = () => {
     <div className="max-w-5xl mx-auto space-y-10 pb-32 px-4 sm:px-6 font-sans">
       
       {/* HEADER */}
-      <header className="border-b border-white/10 pb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
+      <header className="border-b border-[#e5e1d5] pb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <span className="w-2 h-2 rounded-full bg-[#ff4625]" />
-            <span className="font-mono text-[10px] tracking-[0.25em] uppercase text-zinc-400">
+            <span className="w-2 h-2 rounded-full bg-[#1b3b2b]" />
+            <span className="font-mono text-[10px] tracking-[0.25em] uppercase text-[#827f76]">
               Literary Architecture / CBSE Essay Forge
             </span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold uppercase tracking-tight text-white font-clash">
+          <h1 className="text-3xl sm:text-4xl font-serif font-bold tracking-tight text-[#1a1917]">
             Essay Forge
           </h1>
-          <p className="text-zinc-400 text-sm mt-1 max-w-xl">
+          <p className="text-[#52504a] text-sm mt-1 max-w-xl">
             Structured composition workbench. Practice argumentative essays, formal letters, and evaluate against CBSE board rubrics.
           </p>
         </div>
@@ -87,7 +87,7 @@ const WritingWorkshop = () => {
         {phase !== 'select' && (
           <button
             onClick={() => setPhase('select')}
-            className="px-4 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg font-mono text-xs uppercase tracking-wider text-zinc-300 transition-colors self-start sm:self-end"
+            className="px-4 py-2.5 bg-[#f5f3ec] hover:bg-[#ede9de] border border-[#e5e1d5] rounded-lg font-mono text-xs uppercase tracking-wider text-[#52504a] hover:text-[#1a1917] transition-colors self-start sm:self-end"
           >
             ← Select Different Prompt
           </button>
@@ -99,15 +99,15 @@ const WritingWorkshop = () => {
         <div className="space-y-8">
           
           {/* Daily Writing Principle Card */}
-          <div className="p-6 border border-white/10 bg-[#0d0f14] rounded-2xl flex items-start gap-4">
-            <div className="w-10 h-10 rounded-xl bg-[#ff4625]/10 border border-[#ff4625]/20 flex items-center justify-center text-[#ff4625] shrink-0">
+          <div className="p-6 border border-[#e5e1d5] bg-white rounded-2xl flex items-start gap-4 shadow-[0_2px_12px_rgba(27,59,43,0.03)]">
+            <div className="w-10 h-10 rounded-xl bg-[#1b3b2b]/10 border border-[#1b3b2b]/20 flex items-center justify-center text-[#1b3b2b] shrink-0">
               <Lightbulb className="w-5 h-5" />
             </div>
             <div>
-              <span className="font-mono text-[9px] uppercase tracking-widest text-[#ff4625] font-bold">
+              <span className="font-mono text-[9px] uppercase tracking-widest text-[#1b3b2b] font-bold">
                 Composition Directive
               </span>
-              <p className="text-sm text-zinc-200 mt-1 font-sans">
+              <p className="text-sm text-[#1a1917] mt-1 font-sans">
                 {WRITING_PRINCIPLES[tipIdx]}
               </p>
             </div>
@@ -115,7 +115,7 @@ const WritingWorkshop = () => {
 
           {/* Prompts Matrix */}
           <div className="space-y-4">
-            <span className="font-mono text-xs uppercase tracking-widest text-zinc-400 font-bold block">
+            <span className="font-mono text-xs uppercase tracking-widest text-[#52504a] font-bold block">
               Curriculum Writing Prompts
             </span>
 
@@ -124,27 +124,27 @@ const WritingWorkshop = () => {
                 <div
                   key={prompt.id}
                   onClick={() => handleStartWriting(prompt)}
-                  className="p-6 border border-white/10 bg-[#0d0f14] hover:border-[#ff4625]/40 hover:bg-[#12151c] rounded-2xl cursor-pointer transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-6 group"
+                  className="p-6 border border-[#e5e1d5] bg-white hover:border-[#1b3b2b]/40 rounded-2xl cursor-pointer transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-6 group shadow-[0_2px_12px_rgba(27,59,43,0.03)]"
                 >
                   <div className="space-y-2 max-w-2xl">
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-[9px] uppercase tracking-wider text-[#ff4625] bg-[#ff4625]/10 px-2 py-0.5 rounded font-bold">
+                      <span className="font-mono text-[9px] uppercase tracking-wider text-[#1b3b2b] bg-[#1b3b2b]/10 px-2 py-0.5 rounded font-bold">
                         {prompt.type}
                       </span>
-                      <span className="font-mono text-[10px] text-zinc-500">
+                      <span className="font-mono text-[10px] text-[#827f76]">
                         {prompt.subject} · Class {prompt.grade}
                       </span>
                     </div>
-                    <p className="text-sm font-semibold text-white leading-relaxed font-sans">
+                    <p className="text-sm font-semibold text-[#1a1917] leading-relaxed font-sans">
                       {prompt.prompt}
                     </p>
                   </div>
 
                   <div className="flex items-center gap-3 shrink-0">
-                    <span className="font-mono text-xs text-zinc-400 font-bold">
+                    <span className="font-mono text-xs text-[#52504a] font-bold">
                       {prompt.marks} Marks
                     </span>
-                    <button className="px-4 py-2 bg-white/5 group-hover:bg-[#ff4625] text-zinc-300 group-hover:text-white rounded-lg font-mono text-xs uppercase tracking-wider transition-all flex items-center gap-1.5">
+                    <button className="px-4 py-2 bg-[#1b3b2b] text-white hover:bg-[#26523c] rounded-lg font-mono text-xs uppercase tracking-wider transition-all flex items-center gap-1.5 shadow-sm">
                       <span>Draft</span>
                       <ArrowRight className="w-3.5 h-3.5" />
                     </button>
@@ -162,27 +162,27 @@ const WritingWorkshop = () => {
         <div className="space-y-6">
           
           {/* Prompt Banner */}
-          <div className="p-6 border border-white/10 bg-[#0d0f14] rounded-2xl space-y-2">
+          <div className="p-6 border border-[#e5e1d5] bg-white rounded-2xl shadow-[0_2px_12px_rgba(27,59,43,0.03)] space-y-2">
             <div className="flex items-center gap-2">
-              <span className="font-mono text-[9px] uppercase tracking-wider text-[#ff4625] font-bold">
+              <span className="font-mono text-[9px] uppercase tracking-wider text-[#1b3b2b] font-bold">
                 {selectedPrompt.type} · {selectedPrompt.marks} Marks
               </span>
             </div>
-            <h3 className="text-base font-semibold text-white leading-relaxed">
+            <h3 className="text-base font-serif font-bold text-[#1a1917] leading-relaxed">
               {selectedPrompt.prompt}
             </h3>
           </div>
 
           {/* Writing Surface */}
-          <div className="border border-white/10 bg-[#0d0f14] rounded-2xl overflow-hidden">
+          <div className="border border-[#e5e1d5] bg-white rounded-2xl shadow-[0_4px_20px_rgba(27,59,43,0.04)] overflow-hidden">
             {/* Live Telemetry Bar */}
-            <div className="px-6 py-3 border-b border-white/5 bg-[#08090b] flex items-center justify-between font-mono text-xs text-zinc-400">
+            <div className="px-6 py-3 border-b border-[#e5e1d5] bg-[#fbfbfa] flex items-center justify-between font-mono text-xs text-[#52504a]">
               <div className="flex items-center gap-6">
                 <span>{wordCount} Words</span>
                 <span>{paragraphCount} Paragraphs</span>
                 <span>~{readTimeMinutes} min read</span>
               </div>
-              <span className="text-[10px] text-zinc-500 uppercase">Live Metrics</span>
+              <span className="text-[10px] text-[#827f76] uppercase">Live Metrics</span>
             </div>
 
             <textarea
@@ -190,18 +190,18 @@ const WritingWorkshop = () => {
               onChange={(e) => setEssay(e.target.value)}
               placeholder="Begin drafting your thesis and supporting arguments here..."
               rows={14}
-              className="w-full p-6 bg-transparent text-white font-sans text-sm sm:text-base leading-relaxed focus:outline-none placeholder:text-zinc-600 resize-y"
+              className="w-full p-6 bg-transparent text-[#1a1917] font-serif text-sm sm:text-base leading-relaxed focus:outline-none placeholder:text-[#827f76] resize-y"
             />
           </div>
 
           {/* Action Row */}
           <div className="flex justify-between items-center pt-2">
-            <span className="text-xs font-mono text-zinc-500">
+            <span className="text-xs font-mono text-[#827f76]">
               Recommended minimum: 150 words for standard Class 9 essays.
             </span>
             <button
               onClick={handleFinishWriting}
-              className="px-6 py-3 bg-[#ff4625] hover:bg-[#ff5738] text-white font-mono uppercase tracking-widest text-xs font-semibold rounded-lg transition-all flex items-center gap-2"
+              className="px-6 py-3 bg-[#1b3b2b] hover:bg-[#26523c] text-white font-mono uppercase tracking-widest text-xs font-semibold rounded-lg transition-all flex items-center gap-2 shadow-[0_2px_8px_rgba(27,59,43,0.2)]"
             >
               <span>Evaluate Against Rubric</span>
               <ArrowRight className="w-4 h-4" />
@@ -214,14 +214,14 @@ const WritingWorkshop = () => {
       {/* PHASE 3: SELF-ASSESS WITH RUBRIC */}
       {phase === 'assess' && selectedPrompt && (
         <div className="space-y-8 max-w-3xl mx-auto">
-          <div className="border-b border-white/10 pb-4">
-            <span className="font-mono text-[9px] uppercase tracking-widest text-[#ff4625] font-bold">
+          <div className="border-b border-[#e5e1d5] pb-4">
+            <span className="font-mono text-[9px] uppercase tracking-widest text-[#1b3b2b] font-bold">
               CBSE Marking Standard
             </span>
-            <h2 className="font-clash text-2xl font-bold uppercase text-white mt-1">
+            <h2 className="font-serif text-2xl font-bold text-[#1a1917] mt-1">
               Self-Rubric Assessment
             </h2>
-            <p className="text-xs text-zinc-400 mt-1">
+            <p className="text-xs text-[#52504a] mt-1">
               Evaluate your draft against official CBSE evaluation dimensions.
             </p>
           </div>
@@ -230,11 +230,11 @@ const WritingWorkshop = () => {
             {SELF_RUBRIC.map((item) => (
               <div
                 key={item.id}
-                className="p-6 border border-white/10 bg-[#0d0f14] rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                className="p-6 border border-[#e5e1d5] bg-white rounded-2xl shadow-[0_2px_12px_rgba(27,59,43,0.03)] flex flex-col sm:flex-row sm:items-center justify-between gap-4"
               >
                 <div className="space-y-1 max-w-md">
-                  <h4 className="font-clash text-base font-bold text-white uppercase">{item.label}</h4>
-                  <p className="text-xs text-zinc-400 font-sans">{item.desc}</p>
+                  <h4 className="font-serif text-base font-bold text-[#1a1917]">{item.label}</h4>
+                  <p className="text-xs text-[#52504a] font-sans">{item.desc}</p>
                 </div>
 
                 <div className="flex gap-1.5 self-start sm:self-center">
@@ -245,8 +245,8 @@ const WritingWorkshop = () => {
                       onClick={() => setScores({ ...scores, [item.id]: scoreVal })}
                       className={`w-9 h-9 rounded-lg font-mono text-xs transition-all border ${
                         scores[item.id] === scoreVal
-                          ? 'border-[#ff4625] bg-[#ff4625] text-white font-bold'
-                          : 'border-white/10 bg-[#08090b] text-zinc-400 hover:text-white'
+                          ? 'border-[#1b3b2b] bg-[#1b3b2b] text-white font-bold shadow-sm'
+                          : 'border-[#e5e1d5] bg-[#fbfbfa] text-[#52504a] hover:bg-white'
                       }`}
                     >
                       {scoreVal}
@@ -259,7 +259,7 @@ const WritingWorkshop = () => {
 
           <button
             onClick={handleSubmitAssessment}
-            className="w-full py-4 bg-[#ff4625] hover:bg-[#ff5738] text-white font-mono uppercase tracking-widest text-xs font-semibold rounded-lg transition-all"
+            className="w-full py-4 bg-[#1b3b2b] hover:bg-[#26523c] text-white font-mono uppercase tracking-widest text-xs font-semibold rounded-lg transition-all shadow-[0_2px_8px_rgba(27,59,43,0.2)]"
           >
             Finalize Assessment & Review
           </button>
@@ -268,24 +268,24 @@ const WritingWorkshop = () => {
 
       {/* PHASE 4: RESULTS */}
       {phase === 'results' && (
-        <div className="max-w-xl mx-auto p-10 border border-white/10 bg-[#0d0f14] rounded-2xl text-center space-y-6">
-          <div className="w-14 h-14 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto">
+        <div className="max-w-xl mx-auto p-10 border border-[#e5e1d5] bg-white rounded-2xl text-center space-y-6 shadow-[0_4px_20px_rgba(27,59,43,0.04)]">
+          <div className="w-14 h-14 rounded-full bg-[#1b3b2b]/10 border border-[#1b3b2b]/20 text-[#1b3b2b] flex items-center justify-center mx-auto">
             <CheckCircle2 className="w-7 h-7" />
           </div>
 
           <div>
-            <span className="font-mono text-[9px] uppercase tracking-widest text-zinc-500">Composition Verified</span>
-            <h3 className="font-clash text-2xl font-bold uppercase text-white mt-1">
+            <span className="font-mono text-[9px] uppercase tracking-widest text-[#827f76]">Composition Verified</span>
+            <h3 className="font-serif text-2xl font-bold text-[#1a1917] mt-1">
               Rubric Assessment Result
             </h3>
           </div>
 
-          <div className="p-6 bg-[#08090b] border border-white/5 rounded-xl space-y-3">
-            <div className="font-clash text-4xl font-bold text-white">{percentage}%</div>
-            <span className="font-mono text-xs text-zinc-400 block">
+          <div className="p-6 bg-[#fbfbfa] border border-[#e5e1d5] rounded-xl space-y-3">
+            <div className="font-serif text-4xl font-bold text-[#1b3b2b]">{percentage}%</div>
+            <span className="font-mono text-xs text-[#52504a] block">
               {totalScore} out of {maxScore} available rubric points
             </span>
-            <div className="pt-2 border-t border-white/5 flex justify-center gap-6 font-mono text-[10px] text-zinc-500 uppercase">
+            <div className="pt-2 border-t border-[#e5e1d5] flex justify-center gap-6 font-mono text-[10px] text-[#827f76] uppercase">
               <span>{wordCount} Words Drafted</span>
               <span>·</span>
               <span>Class 9 Standard Met</span>
@@ -294,7 +294,7 @@ const WritingWorkshop = () => {
 
           <button
             onClick={() => setPhase('select')}
-            className="w-full py-3 bg-[#ff4625] hover:bg-[#ff5738] text-white font-mono uppercase tracking-widest text-xs font-semibold rounded-lg transition-all"
+            className="w-full py-3 bg-[#1b3b2b] hover:bg-[#26523c] text-white font-mono uppercase tracking-widest text-xs font-semibold rounded-lg transition-all shadow-[0_2px_8px_rgba(27,59,43,0.2)]"
           >
             Start Another Composition
           </button>

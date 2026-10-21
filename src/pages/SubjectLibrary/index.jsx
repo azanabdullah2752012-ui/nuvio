@@ -242,7 +242,7 @@ const getChapterExpandedData = (ch) => {
   );
 
   return (
-    <div className="min-h-screen pb-32 nv-page-transition bg-background-base text-text-primary overflow-x-hidden">
+    <div className="min-h-screen pb-32 nv-page-transition bg-[#fbfbfa] text-[#1a1917] overflow-x-hidden font-sans">
       <AnimatePresence mode="wait">
         {!immersiveMode ? (
           /* STANDARD SUBJECT OVERVIEW CHAPTERS LIST */
@@ -254,31 +254,33 @@ const getChapterExpandedData = (ch) => {
             className="max-w-6xl mx-auto px-6 py-10 space-y-12"
           >
             {/* Top Navigation Row */}
-            <div className="flex items-center justify-between border-b border-white/5 pb-4">
+            <div className="flex items-center justify-between border-b border-[#e5e1d5] pb-4">
               <button 
                 onClick={() => navigate('/curriculum')}
-                className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors"
+                className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[#52504a] hover:text-[#1a1917] transition-colors"
               >
-                <ArrowLeft className="w-4.5 h-4.5" /> Back to Matrix
+                <ArrowLeft className="w-4 h-4" /> Back to Curriculum Matrix
               </button>
             </div>
 
             {/* Subject Hero Header */}
-            <div className="glass-panel p-8 md:p-12 space-y-4 relative overflow-hidden text-left shadow-lg">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/10 rounded-full blur-[90px] pointer-events-none" />
-              <span className="px-3 py-1 bg-purple-500/10 border border-purple-500/20 text-purple-400 text-[10px] font-black uppercase tracking-widest rounded-full">
-                Class {grade} NCERT Syllabus
-              </span>
-              <h1 className="text-5xl md:text-6xl font-black uppercase tracking-tighter text-white leading-none">
+            <div className="p-8 md:p-12 border border-[#e5e1d5] bg-white rounded-2xl space-y-4 relative overflow-hidden text-left shadow-[0_4px_24px_rgba(27,59,43,0.04)]">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-[#1b3b2b]" />
+                <span className="font-mono text-[10px] tracking-[0.25em] uppercase text-[#827f76]">
+                  CBSE Class {grade} NCERT Syllabus
+                </span>
+              </div>
+              <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#1a1917] leading-tight">
                 {subject}
               </h1>
-              <p className="text-slate-400 text-sm max-w-2xl leading-relaxed font-semibold">
+              <p className="text-[#52504a] text-sm max-w-2xl leading-relaxed">
                 Access verified NCERT curriculum outlines, solve worked problems, study flashcards, and run interactive simulations.
               </p>
             </div>
 
             {/* Sub-Tabs Grid Selector */}
-            <div className="flex bg-slate-900/60 p-1.5 border border-white/10 rounded-lg shadow max-w-md mx-auto justify-between">
+            <div className="flex bg-[#f5f3ec] p-1.5 border border-[#e5e1d5] rounded-xl shadow-sm max-w-md mx-auto justify-between">
               {[
                 { id: 'chapters', label: 'Timeline Chapters', icon: BookOpen },
                 { id: 'formulas', label: 'Subject Formulas', icon: Zap }
@@ -286,10 +288,10 @@ const getChapterExpandedData = (ch) => {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex-1 flex items-center justify-center gap-2 py-3 rounded text-[10px] font-black uppercase tracking-widest transition-all ${
+                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs font-mono uppercase tracking-wider transition-all ${
                     activeTab === tab.id 
-                      ? 'bg-purple-500 text-black shadow scale-[1.02]' 
-                      : 'text-slate-400 hover:text-white'
+                      ? 'bg-[#1b3b2b] text-white shadow-sm font-bold' 
+                      : 'text-[#52504a] hover:text-[#1a1917]'
                   }`}
                 >
                   <tab.icon className="w-4 h-4" /> {tab.label}
@@ -304,24 +306,24 @@ const getChapterExpandedData = (ch) => {
                   {subjectData.chapters.map((chapter, i) => (
                     <div 
                       key={i} 
-                      className="glass-panel p-6 md:p-8 flex flex-col md:flex-row md:items-center gap-6 border-white/5 hover:border-purple-500/30 transition-all hover:translate-y-[-2px] shadow hover:shadow-[0_8px_32px_rgba(168,85,247,0.1)]"
+                      className="p-6 md:p-8 border border-[#e5e1d5] bg-white rounded-2xl flex flex-col md:flex-row md:items-center gap-6 shadow-[0_2px_12px_rgba(27,59,43,0.03)] hover:border-[#1b3b2b]/40 transition-all"
                     >
-                      <div className="w-16 h-16 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-350 text-xl font-black shrink-0">
+                      <div className="w-14 h-14 rounded-xl bg-[#f5f3ec] border border-[#e5e1d5] flex items-center justify-center text-[#1b3b2b] text-lg font-serif font-bold shrink-0">
                         {i + 1}
                       </div>
                       <div className="flex-1 space-y-1">
-                        <h3 className="text-xl font-black text-white uppercase tracking-tight">
+                        <h3 className="text-xl font-serif font-bold text-[#1a1917]">
                           {chapter.title}
                         </h3>
-                        <p className="text-slate-455 text-xs font-semibold leading-relaxed">
+                        <p className="text-[#52504a] text-xs leading-relaxed">
                           {chapter.summary}
                         </p>
                       </div>
                       <button 
                         onClick={() => startQuest(chapter)}
-                        className="px-8 py-3.5 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-cyan-500 hover:to-blue-600 text-white rounded-lg text-[10px] font-black uppercase tracking-widest shadow active:scale-95 transition-all flex items-center gap-2"
+                        className="px-6 py-3.5 bg-[#1b3b2b] hover:bg-[#26523c] text-white rounded-xl text-xs font-mono uppercase tracking-wider font-bold shadow-[0_2px_8px_rgba(27,59,43,0.2)] active:scale-95 transition-all flex items-center gap-2 shrink-0"
                       >
-                        Enter Quest <ChevronRight className="w-4 h-4 shrink-0" />
+                        Enter Study Unit <ChevronRight className="w-4 h-4 shrink-0" />
                       </button>
                     </div>
                   ))}
@@ -331,17 +333,17 @@ const getChapterExpandedData = (ch) => {
               {activeTab === 'formulas' && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {allSubjectFormulas.map((item, idx) => (
-                    <div key={idx} className="glass-panel p-5 space-y-2 relative group hover:border-purple-500/30 transition-all shadow-sm">
-                      <span className="block text-[8px] font-black text-purple-400 uppercase tracking-widest">
+                    <div key={idx} className="p-5 border border-[#e5e1d5] bg-white rounded-2xl space-y-2 shadow-[0_2px_12px_rgba(27,59,43,0.03)] hover:border-[#1b3b2b]/30 transition-all">
+                      <span className="block text-[10px] font-mono text-[#1b3b2b] uppercase tracking-wider font-bold">
                         {item.chapterTitle}
                       </span>
-                      <div className="bg-slate-950 p-3.5 rounded font-mono text-xs text-green-400 border border-white/5 select-all">
+                      <div className="bg-[#fbfbfa] p-3.5 rounded-lg font-mono text-xs text-[#1a1917] border border-[#e5e1d5] select-all">
                         {item.formula}
                       </div>
                     </div>
                   ))}
                   {allSubjectFormulas.length === 0 && (
-                    <div className="col-span-full text-center py-12 text-slate-500 font-mono text-xs uppercase">
+                    <div className="col-span-full text-center py-12 text-[#827f76] font-mono text-xs uppercase">
                       No formula lists recorded in this subject.
                     </div>
                   )}
@@ -357,23 +359,23 @@ const getChapterExpandedData = (ch) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-slate-950/98 flex flex-col overflow-hidden text-slate-200"
+            className="fixed inset-0 z-50 bg-[#fbfbfa] flex flex-col overflow-hidden text-[#1a1917] font-sans"
           >
             {/* Immersive Top Navigation Row */}
-            <div className="bg-slate-900/80 border-b border-white/10 px-6 py-4 flex flex-wrap items-center justify-between gap-4 shrink-0 shadow-lg relative z-20">
+            <div className="bg-white/95 backdrop-blur-md border-b border-[#e5e1d5] px-6 py-4 flex flex-wrap items-center justify-between gap-4 shrink-0 shadow-sm relative z-20">
               <div className="flex items-center gap-4">
                 <button
                   onClick={() => setImmersiveMode(false)}
-                  className="flex items-center gap-2 px-4 py-2 border border-white/10 bg-slate-800 hover:bg-slate-700 text-[10px] font-black uppercase text-slate-350 tracking-widest rounded transition-all active:scale-95 shadow"
+                  className="flex items-center gap-2 px-4 py-2 border border-[#e5e1d5] bg-[#f5f3ec] hover:bg-[#ede9de] text-[10px] font-mono font-bold uppercase text-[#1a1917] tracking-widest rounded-lg transition-all active:scale-95 shadow-sm"
                 >
-                  <ArrowLeft className="w-4 h-4 text-purple-400 shrink-0" /> Close Hub
+                  <ArrowLeft className="w-4 h-4 text-[#1b3b2b] shrink-0" /> Close Study Unit
                 </button>
-                <div className="h-6 w-[1px] bg-white/10" />
+                <div className="h-6 w-[1px] bg-[#e5e1d5]" />
                 <div className="text-left space-y-0.5">
-                  <span className="text-[8px] font-black text-cyan-400 uppercase tracking-widest leading-none block">
-                    Class {grade} {subject} Quest
+                  <span className="text-[9px] font-mono font-bold text-[#1b3b2b] uppercase tracking-widest leading-none block">
+                    Class {grade} {subject} Syllabus
                   </span>
-                  <h2 className="text-lg font-black uppercase tracking-tight text-white leading-none">
+                  <h2 className="text-lg font-serif font-bold text-[#1a1917] leading-none">
                     {selectedChapter.title}
                   </h2>
                 </div>
@@ -384,9 +386,9 @@ const getChapterExpandedData = (ch) => {
                 {/* Formula cheatsheet quick link */}
                 <button
                   onClick={() => setShowFormulaDrawer(true)}
-                  className="px-4 py-2 border border-white/10 bg-slate-800 hover:bg-slate-700 text-[9px] font-black uppercase text-slate-350 tracking-widest rounded transition-colors"
+                  className="px-4 py-2 border border-[#e5e1d5] bg-[#f5f3ec] hover:bg-[#ede9de] text-[10px] font-mono font-semibold uppercase text-[#52504a] tracking-widest rounded-lg transition-colors"
                 >
-                  Equations
+                  Reference Formulas
                 </button>
               </div>
             </div>
@@ -395,7 +397,7 @@ const getChapterExpandedData = (ch) => {
             <div className="flex-1 flex flex-col md:flex-row overflow-hidden relative">
               
               {/* Horizontal Steps Bar for Mobile/Tablet */}
-              <div className="md:hidden bg-slate-900/90 border-b border-white/10 p-3 shrink-0 overflow-x-auto flex gap-2.5 no-scrollbar z-20">
+              <div className="md:hidden bg-[#f8f6f0] border-b border-[#e5e1d5] p-3 shrink-0 overflow-x-auto flex gap-2.5 no-scrollbar z-20">
                 {[
                   { id: 1, label: '1. Intro', icon: Play },
                   { id: 2, label: '2. Concepts', icon: Star },
@@ -414,12 +416,12 @@ const getChapterExpandedData = (ch) => {
                       key={step.id}
                       onClick={() => isUnlocked && setActiveStep(step.id)}
                       disabled={!isUnlocked}
-                      className={`flex items-center gap-1.5 px-3.5 py-2 border rounded whitespace-nowrap text-[9px] font-black uppercase tracking-wider transition-all ${
+                      className={`flex items-center gap-1.5 px-3.5 py-2 border rounded-lg whitespace-nowrap text-[10px] font-mono uppercase tracking-wider transition-all ${
                         isActive 
-                          ? 'bg-purple-500 text-black border-transparent shadow' 
+                          ? 'bg-[#1b3b2b] text-white border-transparent shadow-sm font-bold' 
                           : isUnlocked 
-                            ? 'bg-slate-950 border-white/5 text-slate-350 hover:bg-slate-850' 
-                            : 'bg-slate-950/40 border-white/5 text-slate-600 cursor-not-allowed opacity-50'
+                            ? 'bg-white border-[#e5e1d5] text-[#1a1917] hover:bg-[#fbfbfa]' 
+                            : 'bg-[#f5f3ec] border-[#e5e1d5] text-[#827f76] cursor-not-allowed opacity-40'
                       }`}
                     >
                       <step.icon className="w-3.5 h-3.5 shrink-0" />
@@ -430,10 +432,10 @@ const getChapterExpandedData = (ch) => {
               </div>
 
               {/* Timeline Steps Progress Sidebar */}
-              <div className="hidden md:flex w-72 bg-slate-900/40 border-r border-white/10 p-5 flex-col justify-between shrink-0 overflow-y-auto no-scrollbar">
+              <div className="hidden md:flex w-72 bg-[#f8f6f0] border-r border-[#e5e1d5] p-5 flex-col justify-between shrink-0 overflow-y-auto no-scrollbar">
                 <div className="space-y-6">
-                  <span className="block text-[8px] font-black text-slate-500 uppercase tracking-[0.2em] border-b border-white/5 pb-2 text-left">
-                    Quest Roadmap Flow
+                  <span className="block text-[9px] font-mono font-bold text-[#827f76] uppercase tracking-[0.2em] border-b border-[#e5e1d5] pb-2 text-left">
+                    Curriculum Study Flow
                   </span>
 
                   <nav className="space-y-2">
@@ -455,12 +457,12 @@ const getChapterExpandedData = (ch) => {
                           key={step.id}
                           onClick={() => isUnlocked && setActiveStep(step.id)}
                           disabled={!isUnlocked}
-                          className={`w-full flex items-center gap-3 px-4 py-3.5 border-2 rounded text-left text-[11px] font-black uppercase tracking-widest transition-all ${
+                          className={`w-full flex items-center gap-3 px-4 py-3 border rounded-xl text-left text-xs font-mono uppercase tracking-wider transition-all ${
                             isActive 
-                              ? 'bg-purple-500 text-black border-transparent shadow-[0_0_15px_rgba(168,85,247,0.2)]' 
+                              ? 'bg-[#1b3b2b] text-white border-transparent shadow-sm font-bold' 
                               : isUnlocked 
-                                ? 'bg-slate-900 border-white/5 text-slate-350 hover:bg-slate-850' 
-                                : 'bg-slate-950 border-white/5 text-slate-600 cursor-not-allowed opacity-50'
+                                ? 'bg-white border-[#e5e1d5] text-[#1a1917] hover:bg-[#fbfbfa]' 
+                                : 'bg-[#f8f6f0] border-[#e5e1d5] text-[#827f76] cursor-not-allowed opacity-40'
                           }`}
                         >
                           <step.icon className="w-4 h-4 shrink-0" />
@@ -472,21 +474,21 @@ const getChapterExpandedData = (ch) => {
                 </div>
 
                 {/* Progress Indicators footer */}
-                <div className="p-4 bg-slate-900 border border-white/5 rounded-lg text-left shadow">
-                  <span className="block text-[8px] font-black text-slate-500 uppercase tracking-widest leading-none">
-                    Quest Completion
+                <div className="p-4 bg-white border border-[#e5e1d5] rounded-xl text-left shadow-sm">
+                  <span className="block text-[9px] font-mono text-[#827f76] uppercase tracking-widest leading-none">
+                    Unit Progress
                   </span>
-                  <strong className="block text-lg font-black text-purple-400 font-mono mt-1">
+                  <strong className="block text-xl font-serif font-bold text-[#1b3b2b] mt-1">
                     {Math.round(((activeStep - 1) / 7) * 100)}%
                   </strong>
-                  <div className="h-2 w-full bg-black border border-white/5 rounded-full overflow-hidden p-0.5 mt-2">
-                    <div className="h-full bg-purple-500 rounded-full transition-all duration-300" style={{ width: `${((activeStep - 1) / 7) * 100}%` }} />
+                  <div className="h-2 w-full bg-[#ede9de] rounded-full overflow-hidden p-0.5 mt-2">
+                    <div className="h-full bg-[#1b3b2b] rounded-full transition-all duration-300" style={{ width: `${((activeStep - 1) / 7) * 100}%` }} />
                   </div>
                 </div>
               </div>
 
               {/* Core Study Step Panel viewport (Right column) */}
-              <div className="flex-1 p-4 sm:p-8 md:p-10 overflow-y-auto bg-slate-950/20 relative z-10">
+              <div className="flex-1 p-4 sm:p-8 md:p-10 overflow-y-auto bg-[#fbfbfa] relative z-10">
                 <AnimatePresence mode="wait">
                   
                   {activeStep === 1 && (
@@ -568,20 +570,20 @@ const getChapterExpandedData = (ch) => {
 
                 {/* Bottom Navigation controls (Only shown on non-completed final stages) */}
                 {activeStep < 8 && (
-                  <div className="max-w-4xl mx-auto flex justify-between pt-10 border-t border-white/5 mt-10">
+                  <div className="max-w-4xl mx-auto flex justify-between pt-10 border-t border-[#e5e1d5] mt-10">
                     <button
                       disabled={activeStep === 1}
                       onClick={() => setActiveStep(prev => prev - 1)}
-                      className="px-5 py-3 border border-white/10 bg-slate-900 hover:bg-slate-800 disabled:opacity-35 text-[10px] font-black uppercase text-slate-350 tracking-widest rounded shadow active:scale-95 transition-all"
+                      className="px-5 py-3 border border-[#e5e1d5] bg-white hover:bg-[#fbfbfa] disabled:opacity-35 text-xs font-mono uppercase text-[#52504a] tracking-wider rounded-xl shadow-sm active:scale-95 transition-all"
                     >
-                      ◀ Back Step
+                      ◀ Previous Step
                     </button>
                     
                     <button
                       onClick={() => setActiveStep(prev => prev + 1)}
-                      className="px-5 py-3 border border-transparent bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-cyan-500 hover:to-blue-600 text-white font-black uppercase tracking-widest text-[10px] rounded shadow active:scale-95 transition-all flex items-center gap-1.5"
+                      className="px-6 py-3 border border-transparent bg-[#1b3b2b] hover:bg-[#26523c] text-white font-mono uppercase tracking-wider text-xs font-bold rounded-xl shadow-[0_2px_8px_rgba(27,59,43,0.2)] active:scale-95 transition-all flex items-center gap-1.5"
                     >
-                      Continue Quest <ChevronRight className="w-4 h-4 shrink-0" />
+                      Continue Unit <ChevronRight className="w-4 h-4 shrink-0" />
                     </button>
                   </div>
                 )}

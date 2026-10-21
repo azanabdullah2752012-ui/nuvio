@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { 
   LayoutDashboard, BookOpen, Calendar, Timer, PenTool,
-  ListChecks, BookMarked, Settings, Globe, Library
+  ListChecks, BookMarked, Settings, Globe, Library, X
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -30,7 +30,7 @@ const navSections = [
       { name: "Study Hub Notes", path: "/study-hub", icon: BookOpen },
       { name: "Essay Forge", path: "/essay-forge", icon: PenTool },
       { name: "Study Bookmarks", path: "/study-sites", icon: Globe },
-      { name: "Settings", path: "/profile", icon: Settings },
+      { name: "Scholar Settings", path: "/profile", icon: Settings },
     ]
   }
 ];
@@ -65,7 +65,7 @@ const SideDrawer = ({ isOpen, onClose, user }) => {
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 z-[60] bg-black/30 backdrop-blur-sm"
             onClick={onClose}
           />
 
@@ -76,30 +76,33 @@ const SideDrawer = ({ isOpen, onClose, user }) => {
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="fixed top-0 left-0 z-[70] h-full w-[270px] overflow-y-auto bg-[#0d0f14] border-r border-white/10 shadow-2xl font-mono text-xs flex flex-col"
+            className="fixed top-0 left-0 z-[70] h-full w-[280px] overflow-y-auto bg-[#f8f6f0] border-r border-[#e5e1d5] shadow-xl font-sans text-xs flex flex-col"
           >
             {/* Header Identity */}
-            <div className="p-5 border-b border-white/[0.08] flex items-center justify-between">
+            <div className="p-5 border-b border-[#e5e1d5] flex items-center justify-between bg-[#f4f1ea]">
               <div className="flex items-center gap-3">
-                <span className="w-2.5 h-2.5 bg-brand-vermilion rounded-none" />
-                <span className="font-display font-bold text-sm tracking-wider text-white">
+                <span className="w-2.5 h-2.5 bg-[#1b3b2b] rounded-sm" />
+                <span className="font-display font-bold text-sm tracking-tight text-[#1a1917]">
                   ACADEVANCE
                 </span>
               </div>
-              <span className="text-[10px] text-text-muted px-1.5 py-0.5 border border-white/10 rounded">
-                CLASS 9
-              </span>
+              <button
+                onClick={onClose}
+                className="p-1 text-zinc-500 hover:text-black rounded"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
 
             {/* Scholar Identity Strip */}
-            <div className="px-5 py-4 border-b border-white/[0.06] bg-white/[0.01]">
+            <div className="px-5 py-4 border-b border-[#e5e1d5] bg-white">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded bg-[#171a22] flex items-center justify-center text-sm border border-white/10">
-                  {user?.avatar_emoji || '⚡'}
+                <div className="w-9 h-9 rounded-full bg-[#f4f1ea] flex items-center justify-center text-sm border border-[#e0dcce]">
+                  {user?.avatar_emoji || '📖'}
                 </div>
                 <div className="truncate">
-                  <div className="font-bold text-white truncate font-sans text-xs">{user?.full_name || 'Scholar'}</div>
-                  <div className="text-[10px] text-text-muted font-mono">{user?.grade_level || 'Grade 9'} · CBSE</div>
+                  <div className="font-bold text-[#1a1917] truncate font-sans text-xs">{user?.full_name || 'Scholar'}</div>
+                  <div className="text-[10px] text-zinc-500 font-mono">Class {user?.grade_level || '9th'} CBSE</div>
                 </div>
               </div>
             </div>
@@ -108,7 +111,7 @@ const SideDrawer = ({ isOpen, onClose, user }) => {
             <nav className="p-4 space-y-6 flex-1">
               {navSections.map((section, sIdx) => (
                 <div key={sIdx} className="space-y-1">
-                  <div className="text-[9px] font-bold uppercase tracking-[0.2em] text-text-muted px-3 py-1">
+                  <div className="text-[10px] font-mono font-bold uppercase tracking-[0.15em] text-zinc-500 px-3 py-1">
                     {section.label}
                   </div>
                   {section.items.map((item) => (
@@ -117,15 +120,15 @@ const SideDrawer = ({ isOpen, onClose, user }) => {
                       to={item.path}
                       onClick={onClose}
                       className={({ isActive }) => `
-                        flex items-center gap-3 px-3 py-2.5 rounded font-medium transition-colors
+                        flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors
                         ${isActive
-                          ? 'bg-brand-vermilion/15 text-white border border-brand-vermilion/30'
-                          : 'text-text-secondary hover:bg-white/[0.04] hover:text-white border border-transparent'}
+                          ? 'bg-white text-[#1b3b2b] font-semibold border border-[#d8d2c0] shadow-sm'
+                          : 'text-[#4e4c46] hover:bg-[#ede9de] hover:text-[#1a1917] border border-transparent'}
                       `}
                     >
                       {({ isActive }) => (
                         <>
-                          <item.icon className={`w-4 h-4 ${isActive ? 'text-brand-vermilion' : 'text-text-muted'}`} />
+                          <item.icon className={`w-4 h-4 ${isActive ? 'text-[#1b3b2b]' : 'text-zinc-500'}`} />
                           <span className="text-xs">{item.name}</span>
                         </>
                       )}
@@ -136,9 +139,9 @@ const SideDrawer = ({ isOpen, onClose, user }) => {
             </nav>
 
             {/* Footer Tag */}
-            <div className="p-4 border-t border-white/[0.08] text-[10px] text-text-muted flex justify-between items-center">
-              <span>LOCAL // OFFLINE</span>
-              <span className="text-emerald-400">● READY</span>
+            <div className="p-4 border-t border-[#e5e1d5] text-[10px] font-mono text-zinc-500 flex justify-between items-center bg-[#f4f1ea]">
+              <span>CURRICULUM ARCHIVE</span>
+              <span className="text-[#1b3b2b] font-bold">● ACTIVE</span>
             </div>
           </motion.aside>
         </>

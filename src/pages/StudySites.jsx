@@ -80,25 +80,25 @@ const StudySites = () => {
     <div className="max-w-6xl mx-auto space-y-10 pb-32 px-4 sm:px-6 font-sans">
       
       {/* HEADER */}
-      <header className="border-b border-white/10 pb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
+      <header className="border-b border-[#e5e1d5] pb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <span className="w-2 h-2 rounded-full bg-[#ff4625]" />
-            <span className="font-mono text-[10px] tracking-[0.25em] uppercase text-zinc-400">
+            <span className="w-2 h-2 rounded-full bg-[#1b3b2b]" />
+            <span className="font-mono text-[10px] tracking-[0.25em] uppercase text-[#827f76]">
               Reference Index / Academic Portals
             </span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold uppercase tracking-tight text-white font-clash">
+          <h1 className="text-3xl sm:text-4xl font-serif font-bold tracking-tight text-[#1a1917]">
             Study Bookmarks
           </h1>
-          <p className="text-zinc-400 text-sm mt-1 max-w-xl">
+          <p className="text-[#52504a] text-sm mt-1 max-w-xl">
             Curated repository of official CBSE portals, interactive calculation tools, and textbook archives.
           </p>
         </div>
 
         <button
           onClick={() => setShowAdd(true)}
-          className="px-5 py-3 bg-[#ff4625] hover:bg-[#ff5738] text-white font-mono uppercase tracking-widest text-xs font-semibold rounded-lg transition-all flex items-center gap-2 shadow-sm self-start sm:self-end"
+          className="px-5 py-3 bg-[#1b3b2b] hover:bg-[#26523c] text-white font-mono uppercase tracking-widest text-xs font-semibold rounded-lg transition-all flex items-center gap-2 shadow-[0_2px_8px_rgba(27,59,43,0.2)] self-start sm:self-end"
         >
           <Plus className="w-4 h-4" />
           <span>Add Resource</span>
@@ -113,8 +113,8 @@ const StudySites = () => {
             onClick={() => setFilter(c)}
             className={`px-3.5 py-1.5 rounded-lg font-mono text-xs uppercase tracking-wider transition-all border whitespace-nowrap ${
               filter === c
-                ? 'border-[#ff4625] bg-[#ff4625]/10 text-white font-bold'
-                : 'border-white/5 bg-[#0d0f14] text-zinc-400 hover:text-white'
+                ? 'border-[#1b3b2b] bg-[#1b3b2b] text-white font-bold shadow-sm'
+                : 'border-[#e5e1d5] bg-white text-[#52504a] hover:bg-[#f5f3ec] hover:text-[#1a1917]'
             }`}
           >
             {c}
@@ -129,16 +129,16 @@ const StudySites = () => {
           .map((site) => (
             <div
               key={site.id}
-              className="p-6 border border-white/10 bg-[#0d0f14] hover:border-[#ff4625]/40 hover:bg-[#12151c] rounded-2xl transition-all flex flex-col justify-between h-56 group"
+              className="p-6 border border-[#e5e1d5] bg-white hover:border-[#1b3b2b]/40 rounded-2xl transition-all flex flex-col justify-between h-56 group shadow-[0_2px_12px_rgba(27,59,43,0.03)]"
             >
               <div className="space-y-3">
                 <div className="flex justify-between items-start">
-                  <span className="font-mono text-[9px] uppercase tracking-wider text-[#ff4625] bg-[#ff4625]/10 px-2 py-0.5 rounded font-bold">
+                  <span className="font-mono text-[9px] uppercase tracking-wider text-[#1b3b2b] bg-[#1b3b2b]/10 px-2 py-0.5 rounded font-bold">
                     {site.category || 'Reference'}
                   </span>
                   <button
                     onClick={(e) => deleteSite(site.id, e)}
-                    className="p-1 text-zinc-600 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="p-1 text-[#827f76] hover:text-rose-600 opacity-0 group-hover:opacity-100 transition-opacity"
                     title="Remove Link"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -146,10 +146,10 @@ const StudySites = () => {
                 </div>
 
                 <div>
-                  <h3 className="font-clash text-lg font-bold text-white uppercase group-hover:text-[#ff4625] transition-colors line-clamp-1">
+                  <h3 className="font-serif text-lg font-bold text-[#1a1917] group-hover:text-[#1b3b2b] transition-colors line-clamp-1">
                     {site.title}
                   </h3>
-                  <p className="text-xs text-zinc-400 mt-1 leading-relaxed line-clamp-2">
+                  <p className="text-xs text-[#52504a] mt-1 leading-relaxed line-clamp-2">
                     {site.desc || site.url}
                   </p>
                 </div>
@@ -159,12 +159,12 @@ const StudySites = () => {
                 href={site.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="pt-3 border-t border-white/5 flex items-center justify-between font-mono text-[11px] text-zinc-400 group-hover:text-white transition-colors"
+                className="pt-3 border-t border-[#e5e1d5] flex items-center justify-between font-mono text-[11px] text-[#52504a] group-hover:text-[#1a1917] transition-colors"
               >
-                <span className="truncate max-w-[200px] text-zinc-500 font-mono text-[10px]">
+                <span className="truncate max-w-[200px] text-[#827f76] font-mono text-[10px]">
                   {site.url.replace(/^https?:\/\//, '')}
                 </span>
-                <span className="flex items-center gap-1.5 uppercase font-bold text-[10px] text-[#ff4625]">
+                <span className="flex items-center gap-1.5 uppercase font-bold text-[10px] text-[#1b3b2b]">
                   Launch <ExternalLink className="w-3 h-3" />
                 </span>
               </a>
@@ -175,21 +175,21 @@ const StudySites = () => {
       {/* MODAL: ADD RESOURCE */}
       <AnimatePresence>
         {showAdd && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-md p-8 border border-white/10 bg-[#0d0f14] rounded-2xl space-y-6 shadow-2xl font-sans"
+              className="w-full max-w-md p-8 border border-[#e5e1d5] bg-white rounded-2xl space-y-6 shadow-2xl font-sans"
             >
-              <div className="flex justify-between items-center border-b border-white/5 pb-4">
+              <div className="flex justify-between items-center border-b border-[#e5e1d5] pb-4">
                 <div>
-                  <span className="font-mono text-[9px] uppercase tracking-wider text-[#ff4625]">Academic Reference</span>
-                  <h3 className="font-clash text-xl font-bold uppercase text-white mt-0.5">Add Resource Bookmark</h3>
+                  <span className="font-mono text-[9px] uppercase tracking-wider text-[#1b3b2b] font-semibold">Academic Reference</span>
+                  <h3 className="font-serif text-xl font-bold text-[#1a1917] mt-0.5">Add Resource Bookmark</h3>
                 </div>
                 <button
                   onClick={() => setShowAdd(false)}
-                  className="p-1 text-zinc-400 hover:text-white"
+                  className="p-1 text-[#827f76] hover:text-[#1a1917]"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -197,48 +197,48 @@ const StudySites = () => {
 
               <form onSubmit={addSite} className="space-y-4">
                 <div className="space-y-1.5">
-                  <label className="block font-mono text-[10px] uppercase tracking-wider text-zinc-400">Portal Title</label>
+                  <label className="block font-mono text-[10px] uppercase tracking-wider text-[#52504a]">Portal Title</label>
                   <input
                     name="title"
                     required
                     placeholder="e.g. NCERT Exemplar Solutions"
-                    className="w-full px-4 py-2.5 bg-[#08090b] border border-white/10 rounded-lg text-xs text-white focus:outline-none focus:border-[#ff4625]"
+                    className="w-full px-4 py-2.5 bg-[#fbfbfa] border border-[#e5e1d5] rounded-lg text-xs text-[#1a1917] focus:outline-none focus:border-[#1b3b2b]"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block font-mono text-[10px] uppercase tracking-wider text-zinc-400">URL Address</label>
+                  <label className="block font-mono text-[10px] uppercase tracking-wider text-[#52504a]">URL Address</label>
                   <input
                     name="url"
                     required
                     type="url"
                     placeholder="https://..."
-                    className="w-full px-4 py-2.5 bg-[#08090b] border border-white/10 rounded-lg text-xs text-white focus:outline-none focus:border-[#ff4625]"
+                    className="w-full px-4 py-2.5 bg-[#fbfbfa] border border-[#e5e1d5] rounded-lg text-xs text-[#1a1917] focus:outline-none focus:border-[#1b3b2b]"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block font-mono text-[10px] uppercase tracking-wider text-zinc-400">Category Tag</label>
+                  <label className="block font-mono text-[10px] uppercase tracking-wider text-[#52504a]">Category Tag</label>
                   <select
                     name="category"
-                    className="w-full px-3 py-2.5 bg-[#08090b] border border-white/10 rounded-lg text-xs font-mono uppercase text-zinc-300 focus:outline-none focus:border-[#ff4625]"
+                    className="w-full px-3 py-2.5 bg-[#fbfbfa] border border-[#e5e1d5] rounded-lg text-xs font-mono uppercase text-[#1a1917] focus:outline-none focus:border-[#1b3b2b]"
                   >
                     {categories.slice(1).map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block font-mono text-[10px] uppercase tracking-wider text-zinc-400">Brief Description</label>
+                  <label className="block font-mono text-[10px] uppercase tracking-wider text-[#52504a]">Brief Description</label>
                   <input
                     name="desc"
                     placeholder="Brief notes on resource content"
-                    className="w-full px-4 py-2.5 bg-[#08090b] border border-white/10 rounded-lg text-xs text-white focus:outline-none focus:border-[#ff4625]"
+                    className="w-full px-4 py-2.5 bg-[#fbfbfa] border border-[#e5e1d5] rounded-lg text-xs text-[#1a1917] focus:outline-none focus:border-[#1b3b2b]"
                   />
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full py-3 bg-[#ff4625] hover:bg-[#ff5738] text-white font-mono uppercase tracking-widest text-xs font-semibold rounded-lg transition-all"
+                  className="w-full py-3 bg-[#1b3b2b] hover:bg-[#26523c] text-white font-mono uppercase tracking-widest text-xs font-semibold rounded-lg transition-all shadow-[0_2px_8px_rgba(27,59,43,0.2)]"
                 >
                   Commit Bookmark
                 </button>

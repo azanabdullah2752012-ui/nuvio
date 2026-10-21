@@ -24,8 +24,8 @@ const Profile = lazy(() => import('./pages/Profile'));
 // Minimalist Loading Spinner
 const AppLoader = () => (
   <div className="min-h-screen bg-background-base flex flex-col items-center justify-center gap-3">
-    <div className="w-8 h-8 border-2 border-white/10 border-t-brand-vermilion rounded-full animate-spin" />
-    <div className="font-mono text-[10px] text-text-muted uppercase tracking-[0.25em]">Loading Academic Workstation...</div>
+    <div className="w-8 h-8 border-2 border-[#e5e1d5] border-t-[#1b3b2b] rounded-full animate-spin" />
+    <div className="font-mono text-xs text-zinc-500 uppercase tracking-widest">Loading Academic Curriculum...</div>
   </div>
 );
 
