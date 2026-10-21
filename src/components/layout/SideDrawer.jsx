@@ -1,17 +1,17 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { 
-  Compass, Calendar, Timer,
-  CheckSquare, Settings, X, Moon, Zap
+  Compass, Sun, Timer,
+  Sliders, Settings, X, Moon, Zap, Wind, Volume2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const navItems = [
-  { name: "Daily Compass", path: "/dashboard", icon: Compass },
-  { name: "Action Desk", path: "/homework", icon: CheckSquare },
-  { name: "Focus Chronometer", path: "/focus-timer", icon: Timer },
-  { name: "Life Calendar", path: "/calendar", icon: Calendar },
-  { name: "Life OS Settings", path: "/profile", icon: Settings },
+  { name: "Daily Compass", path: "/dashboard", icon: Compass, desc: "Command center & highlight" },
+  { name: "Circadian Stream", path: "/circadian", icon: Sun, desc: "24h biological timeline" },
+  { name: "Wheel of Life", path: "/wheel", icon: Sliders, desc: "Interactive energy radar" },
+  { name: "Focus Chronometer", path: "/focus-timer", icon: Timer, desc: "90m Ultradian engine" },
+  { name: "Life OS Settings", path: "/profile", icon: Settings, desc: "Circadian parameters" },
 ];
 
 const SideDrawer = ({ isOpen, onClose, user }) => {
@@ -55,7 +55,7 @@ const SideDrawer = ({ isOpen, onClose, user }) => {
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="fixed top-0 left-0 z-[70] h-full w-[280px] overflow-y-auto bg-[#f8f6f0] border-r border-[#e5e1d5] shadow-xl font-sans text-xs flex flex-col justify-between text-left"
+            className="fixed top-0 left-0 z-[70] h-full w-[290px] overflow-y-auto bg-[#f8f6f0] border-r border-[#e5e1d5] shadow-xl font-sans text-xs flex flex-col justify-between text-left"
           >
             <div>
               {/* Header Identity */}
@@ -97,7 +97,7 @@ const SideDrawer = ({ isOpen, onClose, user }) => {
               {/* Navigation Sections */}
               <nav className="p-4 space-y-1.5">
                 <div className="text-[10px] font-mono font-bold uppercase tracking-[0.15em] text-[#827f76] px-3 py-1">
-                  Life Operations
+                  Biological Modules
                 </div>
                 {navItems.map((item) => (
                   <NavLink
@@ -105,28 +105,33 @@ const SideDrawer = ({ isOpen, onClose, user }) => {
                     to={item.path}
                     onClick={onClose}
                     className={({ isActive }) => `
-                      w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium transition-all
+                      w-full flex items-start gap-3 px-3.5 py-2.5 rounded-xl transition-all
                       ${isActive 
                         ? 'bg-[#1b3b2b] text-white shadow-xs font-semibold' 
                         : 'text-[#52504a] hover:bg-[#eae6db] hover:text-[#1a1917]'
                       }
                     `}
                   >
-                    <item.icon className="w-4 h-4 shrink-0" />
-                    <span className="text-xs">{item.name}</span>
+                    <item.icon className="w-4 h-4 shrink-0 mt-0.5" />
+                    <div>
+                      <div className="text-xs">{item.name}</div>
+                      <div className={`text-[10px] font-mono ${isActive ? 'text-emerald-100' : 'text-[#827f76]'}`}>
+                        {item.desc}
+                      </div>
+                    </div>
                   </NavLink>
                 ))}
               </nav>
             </div>
 
-            {/* Bottom Footer Info */}
+            {/* Bottom Footer Protocols */}
             <div className="p-5 border-t border-[#e5e1d5] bg-[#f4f1ea] space-y-2">
               <div className="flex items-center gap-2 text-[10px] font-mono text-[#827f76]">
                 <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
-                <span>OFFLINE-FIRST ENGINE ACTIVE</span>
+                <span>OFFLINE BIOLOGICAL ENGINE</span>
               </div>
-              <div className="text-[9px] font-mono text-[#827f76]">
-                Huberman • Dan Koe • Cal Newport Protocols
+              <div className="text-[9px] font-mono text-[#827f76] leading-relaxed">
+                40Hz Binaural • NSDR Pacer • Cal Newport Shutdown
               </div>
             </div>
           </motion.aside>

@@ -1,9 +1,21 @@
-import React from 'react';
-import { Menu, Timer, CheckSquare, Calendar, Compass, Zap } from 'lucide-react';
+import React, { useState } from 'react';
+import { Menu, Timer, Sun, Compass, Zap, Volume2, Moon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { soundEngine } from '../../services/soundEngine';
 
 const UniversalHeader = ({ onMenuClick, user }) => {
   const navigate = useNavigate();
+  const [isPlayingSound, setIsPlayingSound] = useState(false);
+
+  const toggleSound = () => {
+    if (isPlayingSound) {
+      soundEngine.stop();
+      setIsPlayingSound(false);
+    } else {
+      soundEngine.play40HzBinaural(0.08);
+      setIsPlayingSound(true);
+    }
+  };
 
   return (
     <header
@@ -40,44 +52,50 @@ const UniversalHeader = ({ onMenuClick, user }) => {
       </div>
 
       <div className="flex items-center gap-2.5 font-mono text-xs">
-        {/* Fast Jump: Compass */}
+        {/* Fast Jump: Circadian Stream */}
         <button
-          onClick={() => navigate('/dashboard')}
+          onClick={() => navigate('/circadian')}
           className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 border border-[#e5e1d5] bg-white hover:bg-[#f7f5ee] rounded-md text-[#52504a] hover:text-[#1a1917] transition-colors shadow-xs"
-          title="Daily Compass"
+          title="24h Circadian Biological Stream"
+        >
+          <Sun className="w-3.5 h-3.5 text-[#8a4b16]" />
+          <span className="text-[11px] font-semibold tracking-wider">CIRCADIAN</span>
+        </button>
+
+        {/* Fast Jump: Wheel of Life */}
+        <button
+          onClick={() => navigate('/wheel')}
+          className="hidden md:flex items-center gap-1.5 px-3 py-1.5 border border-[#e5e1d5] bg-white hover:bg-[#f7f5ee] rounded-md text-[#52504a] hover:text-[#1a1917] transition-colors shadow-xs"
+          title="Wheel of Life Radar"
         >
           <Compass className="w-3.5 h-3.5 text-[#1b3b2b]" />
-          <span className="text-[11px] font-semibold tracking-wider">COMPASS</span>
+          <span className="text-[11px] font-semibold tracking-wider">RADAR</span>
         </button>
 
-        {/* Fast Jump: Actions */}
+        {/* Fast Jump: 40Hz Audio Focus Quick Switch */}
         <button
-          onClick={() => navigate('/homework')}
-          className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 border border-[#e5e1d5] bg-white hover:bg-[#f7f5ee] rounded-md text-[#52504a] hover:text-[#1a1917] transition-colors shadow-xs"
-          title="Life Directives"
+          onClick={toggleSound}
+          className={`flex items-center gap-1.5 px-3 py-1.5 border rounded-md transition-all shadow-xs ${
+            isPlayingSound 
+              ? 'bg-[#1b3b2b] text-white border-[#1b3b2b]' 
+              : 'border-[#e5e1d5] bg-white hover:bg-[#f7f5ee] text-[#52504a]'
+          }`}
+          title="Toggle 40Hz Binaural Beats (Huberman Focus Protocol)"
         >
-          <CheckSquare className="w-3.5 h-3.5 text-[#1b3b2b]" />
-          <span className="text-[11px] font-semibold tracking-wider">ACTIONS</span>
+          <Volume2 className="w-3.5 h-3.5" />
+          <span className="text-[11px] font-semibold tracking-wider">
+            {isPlayingSound ? '40HZ ON' : '40HZ BEATS'}
+          </span>
         </button>
 
-        {/* Fast Jump: Calendar */}
-        <button
-          onClick={() => navigate('/calendar')}
-          className="hidden md:flex items-center gap-1.5 px-3 py-1.5 border border-[#e5e1d5] bg-white hover:bg-[#f7f5ee] rounded-md text-[#52504a] hover:text-[#1a1917] transition-colors shadow-xs"
-          title="Life Calendar"
-        >
-          <Calendar className="w-3.5 h-3.5 text-[#1b3b2b]" />
-          <span className="text-[11px] font-semibold tracking-wider">CALENDAR</span>
-        </button>
-
-        {/* Fast Jump: Focus Timer */}
+        {/* Fast Jump: Chronometer */}
         <button
           onClick={() => navigate('/focus-timer')}
           className="flex items-center gap-1.5 px-3 py-1.5 border border-[#e5e1d5] bg-white hover:bg-[#f7f5ee] rounded-md text-[#52504a] hover:text-[#1a1917] transition-colors shadow-xs"
-          title="Launch Focus Session"
+          title="90m Ultradian Chronometer"
         >
           <Timer className="w-3.5 h-3.5 text-[#1b3b2b]" />
-          <span className="text-[11px] font-semibold tracking-wider">CHRONOMETER</span>
+          <span className="text-[11px] font-semibold tracking-wider">FOCUS</span>
         </button>
 
         {/* User Moniker & Avatar */}

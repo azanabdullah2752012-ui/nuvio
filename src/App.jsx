@@ -8,10 +8,10 @@ import Layout from './components/layout/Layout';
 import LandingPage from './pages/Landing';
 import Onboarding from './pages/Onboarding';
 
-// Core Productivity Arsenal
+// NUVIO Universal Life Operating System Arsenal
 const Dashboard = lazy(() => import('./pages/Dashboard'));
-const Homework = lazy(() => import('./pages/Homework'));
-const Calendar = lazy(() => import('./pages/Calendar'));
+const CircadianTimeline = lazy(() => import('./pages/CircadianTimeline'));
+const LifeWheel = lazy(() => import('./pages/LifeWheel'));
 const FocusTimer = lazy(() => import('./pages/FocusTimer'));
 const Profile = lazy(() => import('./pages/Profile'));
 
@@ -19,7 +19,7 @@ const Profile = lazy(() => import('./pages/Profile'));
 const AppLoader = () => (
   <div className="min-h-screen bg-[#fbfbfa] flex flex-col items-center justify-center gap-3">
     <div className="w-8 h-8 border-2 border-[#e5e1d5] border-t-[#1b3b2b] rounded-full animate-spin" />
-    <div className="font-mono text-xs text-[#827f76] uppercase tracking-widest">Loading Workstation...</div>
+    <div className="font-mono text-xs text-[#827f76] uppercase tracking-widest">Initializing Life Workstation...</div>
   </div>
 );
 
@@ -32,11 +32,13 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/onboarding" element={<Onboarding />} />
 
-          {/* Student Productivity Suite (Wrapped in Layout) */}
+          {/* Universal Life OS Arsenal */}
           <Route element={<Layout />}>
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/homework" element={<Homework />} />
-            <Route path="/calendar" element={<Calendar />} />
+            <Route path="/circadian" element={<CircadianTimeline />} />
+            <Route path="/homework" element={<Navigate to="/circadian" replace />} />
+            <Route path="/wheel" element={<LifeWheel />} />
+            <Route path="/calendar" element={<Navigate to="/wheel" replace />} />
             <Route path="/focus-timer" element={<FocusTimer />} />
             <Route path="/profile" element={<Profile />} />
           </Route>

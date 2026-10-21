@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Target, Clock, CheckCircle2,
-  Calendar as CalendarIcon, ArrowRight, Plus,
-  Check, Timer, AlertCircle, Sparkles, Moon, Sun, 
-  Zap, Compass, Star, ChevronRight
+  ArrowRight, Plus, Check, Timer, 
+  Moon, Sun, Zap, Compass, Star, ChevronRight,
+  Volume2, Wind, Sliders
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { authService } from '../services/authService';
 import { dataService, PILLARS, ENERGY_LEVELS } from '../services/dataService';
+import { soundEngine } from '../services/soundEngine';
 import EveningShutdownModal from '../components/EveningShutdownModal';
+import BreathPacer from '../components/BreathPacer';
 
 const getCircadianPhase = () => {
   const hour = new Date().getHours();
@@ -17,7 +19,7 @@ const getCircadianPhase = () => {
     return {
       phase: 'Phase 1: Circadian Anchor & Input',
       icon: '🌅',
-      guidance: 'Get 15m natural sunlight, hydrate, take a morning walk. Delay caffeine until 90m post-waking.',
+      guidance: 'Get 15m natural sunlight, hydrate with 500ml water. Delay caffeine 90m to clear adenosine.',
       theme: 'border-[#d4c39e] bg-[#fbf8f0]'
     };
   }
@@ -25,7 +27,7 @@ const getCircadianPhase = () => {
     return {
       phase: 'Phase 2: The Maker Peak Block',
       icon: '⚡',
-      guidance: 'Peak cognitive focus. Execute your 90-minute Ultradian Bout on your Daily Highlight now.',
+      guidance: 'Peak cognitive window. Run your 90-minute Ultradian Bout on your Daily Highlight with 40Hz audio.',
       theme: 'border-[#1b3b2b]/30 bg-[#f4f7f4]'
     };
   }
@@ -56,11 +58,12 @@ const getCircadianPhase = () => {
 const Dashboard = () => {
   const [user, setUser] = useState(authService.me());
   const [tasks, setTasks] = useState([]);
-  const [events, setEvents] = useState([]);
   const [focusSessions, setFocusSessions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [pillarFilter, setPillarFilter] = useState('All');
   const [isShutdownOpen, setIsShutdownOpen] = useState(false);
+  const [isBreathPacerOpen, setIsBreathPacerOpen] = useState(false);
+  const [activeSound, setActiveSound] = useState('none'); // 'none' | 'binaural' | 'brown'
   
   // Quick Add State
   const [newTitle, setNewTitle] = useState('');
@@ -75,19 +78,20 @@ const Dashboard = () => {
     loadData();
     const handleUpdate = () => loadData();
     window.addEventListener('nuvio_data_update', handleUpdate);
-    return () => window.removeEventListener('nuvio_data_update', handleUpdate);
+    return () => {
+      window.removeEventListener('nuvio_data_update', handleUpdate);
+      soundEngine.stop();
+    };
   }, []);
 
   const loadData = async () => {
     setLoading(true);
     try {
-      const [taskList, eventList, sessionList] = await Promise.all([
+      const [taskList, sessionList] = await Promise.all([
         dataService.list('tasks'),
-        dataService.list('calendar_events'),
         dataService.list('focus_sessions')
       ]);
       setTasks(taskList || []);
-      setEvents(eventList || []);
       setFocusSessions(sessionList || []);
     } catch (err) {
       console.warn("Failed to load dashboard data:", err);
@@ -96,14 +100,30 @@ const Dashboard = () => {
     }
   };
 
+  const handleToggleSound = (mode) => {
+    if (activeSound === mode) {
+      soundEngine.stop();
+      setActiveSound('none');
+    } else {
+      if (mode === 'binaural') {
+        soundEngine.play40HzBinaural(0.08);
+      } else {
+        soundEngine.playBrownNoise(0.05);
+      }
+      setActiveSound(mode);
+    }
+  };
+
   const handleToggleTask = async (task) => {
     const updated = !task.completed;
     await dataService.update('tasks', task.id, { completed: updated });
+    soundEngine.playBell(updated ? 660 : 440);
     loadData();
   };
 
   const handleSetHighlight = async (taskId) => {
     await dataService.setHighlight(taskId);
+    soundEngine.playBell(528);
     loadData();
   };
 
@@ -146,17 +166,19 @@ const Dashboard = () => {
     return (t.pillar || 'Craft') === pillarFilter;
   });
 
-  // Today's Focus Minutes
+  // Hormozi's Rule of 100: Total deep focus minutes today
   const todayStr = format(new Date(), 'yyyy-MM-dd');
   const todayFocusMinutes = focusSessions
     .filter(s => (s.completed_at || s.created_at || '').substring(0, 10) === todayStr)
     .reduce((acc, s) => acc + (s.duration_minutes || 25), 0);
+  
+  const ruleOf100Percent = Math.min(100, Math.round((todayFocusMinutes / 100) * 100));
 
   return (
     <div className="space-y-8 font-sans text-left pb-24 max-w-6xl mx-auto">
       
       {/* ── MASTHEAD & CIRCADIAN BANNER ───────────────────────────── */}
-      <div className="p-6 sm:p-8 border border-[#e5e1d5] bg-white rounded-2xl shadow-[0_4px_24px_rgba(27,59,43,0.04)] space-y-6">
+      <div className="p-6 sm:p-8 border border-[#e5e1d5] bg-white rounded-3xl shadow-[0_4px_24px_rgba(27,59,43,0.04)] space-y-6">
         
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 border-b border-[#f0ece1] pb-6">
           <div className="space-y-1.5">
@@ -165,34 +187,49 @@ const Dashboard = () => {
               UNIVERSAL LIFE OPERATING SYSTEM // {format(new Date(), 'EEEE, d MMMM yyyy').toUpperCase()}
             </div>
             <h1 className="text-3xl sm:text-4xl font-serif font-bold text-[#1a1917] tracking-tight">
-              Focus Desk // {user?.full_name || 'Navigator'}
+              Daily Compass // {user?.full_name || 'Navigator'}
             </h1>
             <p className="text-xs sm:text-sm text-[#52504a] max-w-xl leading-relaxed">
-              Ground your daily output in biological rhythms: 90-minute deep work cycles, balanced life pillars, and clean evening closure.
+              Ground your daily output in biological rhythms: 90-minute deep work cycles, 4-pillar balance, and the Cal Newport 60-second shutdown.
             </p>
           </div>
 
           <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
+            {/* Live 40Hz Audio Machine Switcher */}
             <button
-              onClick={() => navigate('/focus-timer')}
-              className="px-4 py-2.5 bg-[#1b3b2b] hover:bg-[#26523c] text-white font-mono uppercase tracking-wider text-xs font-bold rounded-xl shadow-xs transition-all flex items-center gap-2"
+              onClick={() => handleToggleSound('binaural')}
+              className={`px-3.5 py-2.5 rounded-xl font-mono text-xs font-bold transition-all flex items-center gap-2 ${
+                activeSound === 'binaural'
+                  ? 'bg-[#1b3b2b] text-white shadow-xs'
+                  : 'bg-white border border-[#e5e1d5] text-[#52504a] hover:border-[#1b3b2b]'
+              }`}
             >
-              <Zap className="w-3.5 h-3.5" />
-              <span>90m Ultradian Bout</span>
+              <Volume2 className="w-4 h-4" />
+              <span>{activeSound === 'binaural' ? '40Hz Gamma Active' : '40Hz Beats'}</span>
             </button>
 
+            {/* NSDR Physiological Sigh Pacer */}
+            <button
+              onClick={() => setIsBreathPacerOpen(true)}
+              className="px-3.5 py-2.5 border border-[#e5e1d5] hover:border-[#244e6b] bg-white text-[#52504a] font-mono text-xs font-bold rounded-xl transition-all flex items-center gap-2"
+            >
+              <Wind className="w-4 h-4 text-[#244e6b]" />
+              <span>NSDR Pacer</span>
+            </button>
+
+            {/* Newport Shutdown */}
             <button
               onClick={() => setIsShutdownOpen(true)}
-              className="px-4 py-2.5 border border-[#e5e1d5] hover:border-[#1b3b2b] bg-[#fbfbfa] text-[#1a1917] font-mono uppercase tracking-wider text-xs font-bold rounded-xl transition-all flex items-center gap-2"
+              className="px-4 py-2.5 border border-[#e5e1d5] hover:border-[#1b3b2b] bg-[#faf9f6] text-[#1a1917] font-mono uppercase tracking-wider text-xs font-bold rounded-xl transition-all flex items-center gap-2"
             >
               <Moon className="w-3.5 h-3.5 text-[#52504a]" />
-              <span>Evening Shutdown</span>
+              <span>Shutdown</span>
             </button>
           </div>
         </div>
 
         {/* Live Circadian Phase Alert */}
-        <div className={`p-4 rounded-xl border flex items-center justify-between gap-4 ${circadian.theme}`}>
+        <div className={`p-4 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${circadian.theme}`}>
           <div className="flex items-center gap-3">
             <span className="text-2xl">{circadian.icon}</span>
             <div>
@@ -204,16 +241,51 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-          <div className="hidden sm:block text-right shrink-0">
-            <span className="font-mono text-xs text-[#827f76]">Circadian Cadence</span>
-          </div>
+          
+          <button
+            onClick={() => navigate('/circadian')}
+            className="px-3 py-1.5 bg-white border border-[#e5e1d5] rounded-lg text-xs font-mono font-bold text-[#1b3b2b] hover:bg-[#faf9f6] transition-colors flex items-center gap-1 shrink-0 self-start sm:self-auto"
+          >
+            <span>View 24h Stream</span>
+            <ChevronRight className="w-3.5 h-3.5" />
+          </button>
         </div>
 
       </div>
 
+      {/* ── THE RULE OF 100 (Alex Hormozi Protocol) ─────────────────── */}
+      <div className="p-6 border border-[#e5e1d5] bg-white rounded-2xl shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-[#8a4b16] font-bold">
+            <Zap className="w-3.5 h-3.5" />
+            <span>Alex Hormozi's Rule of 100</span>
+          </div>
+          <h3 className="font-serif font-bold text-base text-[#1a1917]">
+            Daily 100-Minute High-Leverage Execution Threshold
+          </h3>
+          <p className="text-xs text-[#52504a]">
+            100 minutes of pure, uninterrupted deep craft per day separates high-earning builders from the rest.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-4 shrink-0">
+          <div className="text-right">
+            <div className="font-serif font-bold text-2xl text-[#1b3b2b]">{todayFocusMinutes} / 100m</div>
+            <div className="text-[10px] font-mono text-[#827f76]">{ruleOf100Percent}% Completed Today</div>
+          </div>
+          <div className="w-16 h-16 rounded-full border-4 border-[#f0ece1] flex items-center justify-center font-mono text-xs font-bold text-[#1b3b2b] relative">
+            <div 
+              className="absolute inset-0 rounded-full border-4 border-[#1b3b2b] transition-all duration-700"
+              style={{ clipPath: `polygon(0 0, 100% 0, 100% ${ruleOf100Percent}%, 0 ${ruleOf100Percent}%)` }}
+            />
+            {ruleOf100Percent}%
+          </div>
+        </div>
+      </div>
+
       {/* ── THE DAILY HIGHLIGHT (Jake Knapp / Ali Abdaal / Hormozi) ── */}
       {dailyHighlight && (
-        <div className="p-6 sm:p-7 border-2 border-[#1b3b2b]/25 bg-[#fafbf9] rounded-2xl shadow-sm relative overflow-hidden">
+        <div className="p-6 sm:p-7 border-2 border-[#1b3b2b]/25 bg-[#fafbf9] rounded-3xl shadow-sm relative overflow-hidden">
           <div className="absolute top-0 right-0 bg-[#1b3b2b] text-white font-mono text-[9px] uppercase tracking-widest font-bold px-3 py-1 rounded-bl-xl">
             Today's #1 Anchor Highlight
           </div>
@@ -272,9 +344,13 @@ const Dashboard = () => {
               The 4 Life Pillars Compass
             </h3>
           </div>
-          <span className="font-mono text-[10px] text-[#827f76]">
-            Target: Daily investment across all four
-          </span>
+          <button
+            onClick={() => navigate('/wheel')}
+            className="text-[11px] font-mono text-[#1b3b2b] font-bold hover:underline flex items-center gap-1"
+          >
+            <span>Open Interactive Radar</span>
+            <ChevronRight className="w-3 h-3" />
+          </button>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -282,7 +358,7 @@ const Dashboard = () => {
             <div 
               key={p.id}
               onClick={() => setPillarFilter(pillarFilter === p.id ? 'All' : p.id)}
-              className={`p-5 rounded-xl border transition-all cursor-pointer bg-white ${
+              className={`p-5 rounded-2xl border transition-all cursor-pointer bg-white ${
                 pillarFilter === p.id 
                   ? 'border-[#1b3b2b] ring-1 ring-[#1b3b2b] shadow-sm' 
                   : 'border-[#e5e1d5] hover:border-[#827f76]'
@@ -308,7 +384,7 @@ const Dashboard = () => {
       </div>
 
       {/* ── ACTION DESK (Task Board) ─────────────────────────────────── */}
-      <div className="p-6 sm:p-8 border border-[#e5e1d5] bg-white rounded-2xl shadow-sm space-y-6">
+      <div className="p-6 sm:p-8 border border-[#e5e1d5] bg-white rounded-3xl shadow-sm space-y-6">
         
         {/* Table Controls */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#f0ece1] pb-4">
@@ -350,7 +426,7 @@ const Dashboard = () => {
 
         {/* Quick Add Form Drawer */}
         {isFormOpen && (
-          <form onSubmit={handleQuickAdd} className="p-5 border border-[#e5e1d5] bg-[#faf9f6] rounded-xl space-y-4 animate-fadeIn">
+          <form onSubmit={handleQuickAdd} className="p-5 border border-[#e5e1d5] bg-[#faf9f6] rounded-2xl space-y-4 animate-fadeIn">
             <div className="font-mono text-xs uppercase tracking-wider font-bold text-[#1b3b2b]">
               Register New Life Directive
             </div>
@@ -493,6 +569,11 @@ const Dashboard = () => {
         tasks={tasks}
         onCompleteShutdown={() => loadData()}
       />
+
+      {/* ── INTERACTIVE BREATH PACER MODAL ──────────────────────────── */}
+      {isBreathPacerOpen && (
+        <BreathPacer onClose={() => setIsBreathPacerOpen(false)} />
+      )}
 
     </div>
   );

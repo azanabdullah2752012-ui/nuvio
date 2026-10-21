@@ -1,11 +1,27 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, CheckSquare, Clock, Calendar, Zap, Compass, Moon, ShieldCheck, Heart } from 'lucide-react';
+import { 
+  ArrowRight, CheckSquare, Clock, Calendar, 
+  Zap, Compass, Moon, ShieldCheck, Heart, 
+  Volume2, Wind, Sliders, Sun
+} from 'lucide-react';
 import AnimatedBackground from '../components/AnimatedBackground';
 import TactileStudyConsole from '../components/TactileStudyConsole';
+import { soundEngine } from '../services/soundEngine';
 
 const Landing = () => {
   const navigate = useNavigate();
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+
+  const toggleDemoAudio = () => {
+    if (isPlayingAudio) {
+      soundEngine.stop();
+      setIsPlayingAudio(false);
+    } else {
+      soundEngine.play40HzBinaural(0.08);
+      setIsPlayingAudio(true);
+    }
+  };
 
   return (
     <div className="min-h-screen text-[#1a1917] relative bg-[#fbfbfa] font-sans selection:bg-[#1b3b2b] selection:text-white">
@@ -27,9 +43,9 @@ const Landing = () => {
           </div>
 
           <nav className="hidden md:flex items-center gap-8 font-mono text-xs uppercase tracking-wider text-[#52504a]">
-            <a href="#protocols" className="hover:text-black transition-colors">01 / Biological Protocols</a>
-            <a href="#pillars" className="hover:text-black transition-colors">02 / The 4 Pillars</a>
-            <a href="#shutdown" className="hover:text-black transition-colors">03 / Evening Shutdown</a>
+            <a href="#circadian" className="hover:text-black transition-colors">01 / Circadian Stream</a>
+            <a href="#radar" className="hover:text-black transition-colors">02 / Energy Radar</a>
+            <a href="#audio" className="hover:text-black transition-colors">03 / 40Hz Audio Lab</a>
           </nav>
 
           <button
@@ -51,35 +67,35 @@ const Landing = () => {
             
             <div className="inline-flex items-center gap-2 px-3 py-1 border border-[#e5e1d5] bg-white text-[10px] font-mono uppercase tracking-[0.15em] text-[#1b3b2b] mb-6 rounded-full shadow-xs font-bold">
               <span className="w-1.5 h-1.5 rounded-full bg-[#1b3b2b]" />
-              <span>CIRCADIAN PRODUCTIVITY // OFFLINE-FIRST ARCHITECTURE</span>
+              <span>OFFLINE BIOLOGICAL ARCHITECTURE // ZERO AI SLOP</span>
             </div>
 
             <h1 className="text-4xl sm:text-6xl md:text-7xl font-serif font-bold tracking-tight text-[#1a1917] mb-6 leading-[1.05]">
-              Master Your Days with <br />
-              <span className="text-[#1b3b2b] italic">Biological Cadence.</span>
+              Stop using to-do lists. <br />
+              <span className="text-[#1b3b2b] italic">Run on biological rhythm.</span>
             </h1>
 
             <p className="max-w-xl text-[#52504a] text-base md:text-lg font-normal leading-relaxed mb-8">
-              A distraction-free operating system built for creators, professionals, and life optimizers. Grounded in the proven protocols of Dr. Andrew Huberman, Dan Koe, and Cal Newport: 90-minute ultradian focus bouts, 4 life pillars, and zero evening guilt.
+              A real life operating system built around how the human brain actually focuses: 90-minute ultradian bouts, built-in 40Hz gamma beats, an interactive Wheel of Life radar, and Cal Newport's 60-second shutdown ritual.
             </p>
 
             {/* Specifications Grid */}
             <div className="grid grid-cols-3 gap-3 w-full max-w-xl mb-10 font-mono text-left">
               <div className="p-3.5 border border-[#e5e1d5] bg-white rounded-xl shadow-xs">
-                <div className="text-[9px] uppercase tracking-wider text-[#827f76] mb-1 font-bold">CADENCE</div>
-                <div className="text-xs font-serif font-bold text-[#1b3b2b]">90M ULTRADIAN BOUTS</div>
+                <div className="text-[9px] uppercase tracking-wider text-[#827f76] mb-1 font-bold">TIMELINE</div>
+                <div className="text-xs font-serif font-bold text-[#1b3b2b]">24H CIRCADIAN STREAM</div>
               </div>
               <div className="p-3.5 border border-[#e5e1d5] bg-white rounded-xl shadow-xs">
-                <div className="text-[9px] uppercase tracking-wider text-[#827f76] mb-1 font-bold">BALANCE</div>
-                <div className="text-xs font-serif font-bold text-[#1a1917]">THE 4 LIFE PILLARS</div>
+                <div className="text-[9px] uppercase tracking-wider text-[#827f76] mb-1 font-bold">RADAR</div>
+                <div className="text-xs font-serif font-bold text-[#1a1917]">CANVAS WHEEL OF LIFE</div>
               </div>
               <div className="p-3.5 border border-[#e5e1d5] bg-white rounded-xl shadow-xs">
-                <div className="text-[9px] uppercase tracking-wider text-[#827f76] mb-1 font-bold">CLOSURE</div>
-                <div className="text-xs font-serif font-bold text-[#1a1917]">60S SHUTDOWN RITUAL</div>
+                <div className="text-[9px] uppercase tracking-wider text-[#827f76] mb-1 font-bold">AUDIO LAB</div>
+                <div className="text-xs font-serif font-bold text-[#1a1917]">40HZ BINAURAL BEATS</div>
               </div>
             </div>
 
-            {/* Primary Action Button */}
+            {/* Primary Action Buttons */}
             <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
               <button
                 onClick={() => navigate('/dashboard')}
@@ -88,10 +104,18 @@ const Landing = () => {
                 <span>Enter Life Workstation</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
+
+              <button
+                onClick={toggleDemoAudio}
+                className="w-full sm:w-auto px-6 py-4 border border-[#e5e1d5] hover:border-[#1b3b2b] bg-white text-[#1a1917] font-mono uppercase tracking-wider text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-2 shadow-xs"
+              >
+                <Volume2 className="w-4 h-4 text-[#1b3b2b]" />
+                <span>{isPlayingAudio ? 'Stop 40Hz Audio' : 'Test 40Hz Gamma Audio'}</span>
+              </button>
             </div>
           </div>
 
-          {/* Right: Signature Tactile Console */}
+          {/* Right: Signature Tactile Focus Resonator */}
           <div className="lg:col-span-5 flex justify-center w-full">
             <TactileStudyConsole />
           </div>
@@ -99,56 +123,56 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* ── SECTION 01: BIOLOGICAL PROTOCOLS ─────────────────────── */}
-      <section id="protocols" className="relative z-10 border-t border-[#e5e1d5] bg-[#f4f1ea]/50 py-20 px-6">
+      {/* ── SECTION 01: THE 24H CIRCADIAN STREAM ──────────────────── */}
+      <section id="circadian" className="relative z-10 border-t border-[#e5e1d5] bg-[#f4f1ea]/50 py-20 px-6">
         <div className="max-w-7xl mx-auto space-y-12">
           
           <div className="text-left space-y-2">
             <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#1b3b2b] font-bold">
-              01 // SCIENTIFIC FOCUS ARCHITECTURE
+              01 // CHRONOBIOLOGY ARCHITECTURE
             </span>
             <h2 className="text-3xl sm:text-4xl font-serif font-bold text-[#1a1917]">
-              Built Around Human Neurobiology
+              The 24-Hour Circadian Stream
             </h2>
             <p className="text-xs sm:text-sm text-[#52504a] max-w-xl">
-              Generic to-do apps treat humans like infinite linear machines. NUVIO respects biological rhythms and neuroplasticity.
+              Linear to-do lists dump 50 tasks in your face. NUVIO groups your day into circadian biological gates.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
             <div className="p-7 border border-[#e5e1d5] bg-white rounded-2xl shadow-xs space-y-3">
+              <div className="w-10 h-10 rounded-xl bg-[#8a4b16]/10 text-[#8a4b16] flex items-center justify-center font-bold">
+                <Sun className="w-5 h-5" />
+              </div>
+              <h3 className="font-serif font-bold text-lg text-[#1a1917]">
+                06:30 Sunlight & Cortisol Anchor
+              </h3>
+              <p className="text-xs text-[#52504a] leading-relaxed">
+                Log natural sky viewing, 500ml water, and delay caffeine 90 minutes so adenosine clears naturally without an afternoon crash.
+              </p>
+            </div>
+
+            <div className="p-7 border border-[#e5e1d5] bg-white rounded-2xl shadow-xs space-y-3">
               <div className="w-10 h-10 rounded-xl bg-[#1b3b2b]/10 text-[#1b3b2b] flex items-center justify-center font-bold">
                 <Zap className="w-5 h-5" />
               </div>
               <h3 className="font-serif font-bold text-lg text-[#1a1917]">
-                Huberman 90m Ultradian Bouts
+                08:30 Maker Peak & The Daily Highlight
               </h3>
               <p className="text-xs text-[#52504a] leading-relaxed">
-                Concentration naturally operates on 90-minute waves. High-intensity execution followed by deliberate 15-minute panoramic rest or NSDR resets.
+                Run your 90-minute ultradian bout exclusively on your #1 anchor task. Zero fragmented meetings during peak morning cognition.
               </p>
             </div>
 
             <div className="p-7 border border-[#e5e1d5] bg-white rounded-2xl shadow-xs space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-[#8a4b16]/10 text-[#8a4b16] flex items-center justify-center font-bold">
-                <Compass className="w-5 h-5" />
+              <div className="w-10 h-10 rounded-xl bg-[#244e6b]/10 text-[#244e6b] flex items-center justify-center font-bold">
+                <Wind className="w-5 h-5" />
               </div>
               <h3 className="font-serif font-bold text-lg text-[#1a1917]">
-                Jake Knapp's Daily Highlight
+                11:30 NSDR & Breath Pacer
               </h3>
               <p className="text-xs text-[#52504a] leading-relaxed">
-                Stop drowning in 50-item task backlogs. Pick the single highest-leverage directive for your day and protect your morning Maker block.
-              </p>
-            </div>
-
-            <div className="p-7 border border-[#e5e1d5] bg-white rounded-2xl shadow-xs space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-[#3a354c]/10 text-[#3a354c] flex items-center justify-center font-bold">
-                <Moon className="w-5 h-5" />
-              </div>
-              <h3 className="font-serif font-bold text-lg text-[#1a1917]">
-                Cal Newport Evening Shutdown
-              </h3>
-              <p className="text-xs text-[#52504a] leading-relaxed">
-                Combat the Zeigarnik effect. A structured 60-second closing ritual that safekeeps incomplete work and allows genuine psychological freedom.
+                Downshift autonomic arousal with the animated Physiological Sigh breath pacer: two quick inhales through the nose, one extended exhale through the mouth.
               </p>
             </div>
           </div>
@@ -156,53 +180,43 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* ── SECTION 02: THE 4 LIFE PILLARS ───────────────────────── */}
-      <section id="pillars" className="relative z-10 border-t border-[#e5e1d5] bg-white py-20 px-6">
+      {/* ── SECTION 02: THE WHEEL OF LIFE RADAR ───────────────────── */}
+      <section id="radar" className="relative z-10 border-t border-[#e5e1d5] bg-white py-20 px-6">
         <div className="max-w-7xl mx-auto space-y-12">
           
           <div className="text-left space-y-2">
             <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#1b3b2b] font-bold">
-              02 // HOLISTIC LIFE BALANCE
+              02 // HOLISTIC RADAR CANVAS
             </span>
             <h2 className="text-3xl sm:text-4xl font-serif font-bold text-[#1a1917]">
-              The 4 Non-Negotiable Pillars
+              Interactive Wheel of Life Radar
             </h2>
             <p className="text-xs sm:text-sm text-[#52504a] max-w-xl">
-              Dan Koe's universal framework: true sustainable achievement requires investing daily across all four dimensions.
+              An interactive 8-dimensional geometry canvas that catches hidden drag and generates 7-day rebalance prescriptions.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-left">
-            <div className="p-6 border border-[#e5e1d5] rounded-2xl bg-[#faf9f6] space-y-2">
-              <div className="text-2xl">💼</div>
-              <h3 className="font-serif font-bold text-base text-[#1a1917]">Craft & Leverage</h3>
-              <p className="text-xs text-[#52504a]">
-                High-leverage output, coding, writing, digital assets, and core business creation.
+          <div className="p-8 border border-[#e5e1d5] rounded-3xl bg-[#faf9f6] flex flex-col md:flex-row items-center justify-between gap-8 text-left">
+            <div className="space-y-4 max-w-md">
+              <div className="font-mono text-xs uppercase tracking-wider text-[#1b3b2b] font-bold">
+                Dynamic Polygon Geometry
+              </div>
+              <h3 className="text-2xl font-serif font-bold text-[#1a1917]">
+                Never let one pillar destroy your life.
+              </h3>
+              <p className="text-xs sm:text-sm text-[#52504a] leading-relaxed">
+                Tune Craft, Vitality, Mind, Tribe, Finances, Environment, Play, and Purpose with live sliders. The radar reveals asymmetrical burnout patterns and tells you what to stop doing.
               </p>
+              <button
+                onClick={() => navigate('/wheel')}
+                className="px-5 py-2.5 bg-[#1b3b2b] text-white font-mono text-xs uppercase font-bold rounded-xl"
+              >
+                Launch Radar Engine
+              </button>
             </div>
 
-            <div className="p-6 border border-[#e5e1d5] rounded-2xl bg-[#faf9f6] space-y-2">
-              <div className="text-2xl">⚡</div>
-              <h3 className="font-serif font-bold text-base text-[#1a1917]">Vitality & Body</h3>
-              <p className="text-xs text-[#52504a]">
-                Morning sunlight, compound resistance, hydration, clean nutrition, and restorative sleep.
-              </p>
-            </div>
-
-            <div className="p-6 border border-[#e5e1d5] rounded-2xl bg-[#faf9f6] space-y-2">
-              <div className="text-2xl">🧠</div>
-              <h3 className="font-serif font-bold text-base text-[#1a1917]">Mind & Clarity</h3>
-              <p className="text-xs text-[#52504a]">
-                Offline reading, stillness, NSDR, panoramic walks, and zero cheap dopamine.
-              </p>
-            </div>
-
-            <div className="p-6 border border-[#e5e1d5] rounded-2xl bg-[#faf9f6] space-y-2">
-              <div className="text-2xl">🤝</div>
-              <h3 className="font-serif font-bold text-base text-[#1a1917]">Tribe & Connection</h3>
-              <p className="text-xs text-[#52504a]">
-                Family presence, deep friendships, undistracted meals, and meaningful relationships.
-              </p>
+            <div className="w-48 h-48 rounded-full border-4 border-[#1b3b2b]/20 bg-white flex items-center justify-center font-serif text-3xl font-bold text-[#1b3b2b] shadow-sm">
+              88/100
             </div>
           </div>
 
@@ -216,11 +230,11 @@ const Landing = () => {
             <span className="w-2 h-2 rounded-full bg-[#1b3b2b]" />
             <span className="font-serif font-bold text-sm text-[#1a1917]">NUVIO LIFE OS</span>
             <span>—</span>
-            <span>Offline-first biological productivity</span>
+            <span>Biological cadence, 40Hz audio & life balance</span>
           </div>
 
           <div className="text-[11px]">
-            Calm, unbloated, distraction-free execution.
+            No AI Slop • Real Web Audio • Pure Offline Performance
           </div>
         </div>
       </footer>

@@ -7,6 +7,8 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { dataService, PILLARS } from '../services/dataService';
+import { soundEngine } from '../services/soundEngine';
+import BreathPacer from '../components/BreathPacer';
 import { notificationService } from '../services/notificationService';
 
 const PRESETS = [
@@ -60,12 +62,16 @@ const FocusTimer = () => {
   const [mode, setMode] = useState('focus'); // 'focus' | 'break'
   const [selectedPillar, setSelectedPillar] = useState('Craft');
   const [sessions, setSessions] = useState([]);
-  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [audioMode, setAudioMode] = useState('none'); // 'none' | 'binaural' | 'brown'
+  const [isBreathPacerOpen, setIsBreathPacerOpen] = useState(false);
   const timerRef = useRef(null);
 
   useEffect(() => {
     fetchSessions();
-    return () => clearInterval(timerRef.current);
+    return () => {
+      clearInterval(timerRef.current);
+      soundEngine.stop();
+    };
   }, []);
 
   const fetchSessions = async () => {
@@ -80,22 +86,18 @@ const FocusTimer = () => {
     }
   };
 
-  const playChime = () => {
-    if (!soundEnabled) return;
-    try {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(440, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.35);
-      gain.gain.setValueAtTime(0.12, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.6);
-    } catch (e) {}
+  const handleAudioSwitch = (newMode) => {
+    if (audioMode === newMode) {
+      soundEngine.stop();
+      setAudioMode('none');
+    } else {
+      if (newMode === 'binaural') {
+        soundEngine.play40HzBinaural(0.08);
+      } else if (newMode === 'brown') {
+        soundEngine.playBrownNoise(0.05);
+      }
+      setAudioMode(newMode);
+    }
   };
 
   useEffect(() => {
@@ -117,16 +119,25 @@ const FocusTimer = () => {
   }, [isActive, mode, targetMinutes]);
 
   const toggleTimer = () => {
-    setIsActive(!isActive);
+    const nextState = !isActive;
+    setIsActive(nextState);
+    if (!nextState) {
+      soundEngine.stop();
+      setAudioMode('none');
+    }
   };
 
   const resetTimer = () => {
     setIsActive(false);
     setTimeLeft(targetMinutes * 60);
+    soundEngine.stop();
+    setAudioMode('none');
   };
 
   const selectPreset = (preset) => {
     setIsActive(false);
+    soundEngine.stop();
+    setAudioMode('none');
     setSelectedPreset(preset);
     setMode(preset.type);
     setTargetMinutes(preset.minutes);
@@ -135,7 +146,9 @@ const FocusTimer = () => {
 
   const handleComplete = async () => {
     setIsActive(false);
-    playChime();
+    soundEngine.stop();
+    setAudioMode('none');
+    soundEngine.playBell(528);
 
     if (mode === 'focus') {
       const sessionData = {
@@ -179,25 +192,43 @@ const FocusTimer = () => {
           <div className="flex items-center gap-2 mb-1.5">
             <span className="w-2 h-2 rounded-full bg-[#1b3b2b]" />
             <span className="font-mono text-[10px] tracking-[0.25em] uppercase text-[#827f76]">
-              Huberman Ultradian Chronometer // Deep Work Engine
+              Huberman Ultradian Chronometer // 40Hz Audio Lab
             </span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-serif font-bold tracking-tight text-[#1a1917]">
             Focus Chronometer
           </h1>
           <p className="text-[#52504a] text-xs sm:text-sm mt-1 max-w-xl">
-            Human neuroplasticity and cognitive output naturally operate on 90-minute cycles. Structure deep execution with scientific recovery intervals.
+            Human neuroplasticity and cognitive output naturally operate on 90-minute cycles. Structure deep execution with scientific acoustic masking.
           </p>
         </div>
 
-        <button
-          onClick={() => setSoundEnabled(!soundEnabled)}
-          className="p-2 border border-[#e5e1d5] hover:border-[#1b3b2b] bg-white rounded-xl text-[#52504a] flex items-center gap-2 text-xs font-mono self-start sm:self-auto"
-          title="Toggle completion sound chime"
-        >
-          {soundEnabled ? <Volume2 className="w-4 h-4 text-[#1b3b2b]" /> : <VolumeX className="w-4 h-4 text-[#827f76]" />}
-          <span className="text-[10px] uppercase font-bold">{soundEnabled ? 'Chime On' : 'Muted'}</span>
-        </button>
+        {/* Live Audio Masking Buttons */}
+        <div className="flex items-center gap-2 self-start sm:self-auto">
+          <button
+            onClick={() => handleAudioSwitch('binaural')}
+            className={`px-3 py-1.5 rounded-lg border text-xs font-mono font-bold transition-all flex items-center gap-1.5 ${
+              audioMode === 'binaural'
+                ? 'bg-[#1b3b2b] text-white border-[#1b3b2b]'
+                : 'bg-white border-[#e5e1d5] text-[#52504a] hover:border-[#1b3b2b]'
+            }`}
+          >
+            <Volume2 className="w-3.5 h-3.5" />
+            <span>{audioMode === 'binaural' ? '40Hz Gamma Active' : '40Hz Beats'}</span>
+          </button>
+
+          <button
+            onClick={() => handleAudioSwitch('brown')}
+            className={`px-3 py-1.5 rounded-lg border text-xs font-mono font-bold transition-all flex items-center gap-1.5 ${
+              audioMode === 'brown'
+                ? 'bg-[#8a4b16] text-white border-[#8a4b16]'
+                : 'bg-white border-[#e5e1d5] text-[#52504a] hover:border-[#8a4b16]'
+            }`}
+          >
+            <Volume2 className="w-3.5 h-3.5" />
+            <span>{audioMode === 'brown' ? 'Brown Active' : 'Brown Noise'}</span>
+          </button>
+        </div>
       </header>
 
       {/* ── PRESET CADENCE SELECTOR ─────────────────────────────────── */}
@@ -260,8 +291,13 @@ const FocusTimer = () => {
             {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
           </div>
           
-          <div className="text-xs font-mono text-[#827f76] uppercase tracking-widest mt-3">
-            {mode === 'focus' ? '⚡ Active Focus Window' : '🌿 Recovery / NSDR Reset'}
+          <div className="text-xs font-mono text-[#827f76] uppercase tracking-widest mt-3 flex items-center justify-center gap-2">
+            <span>{mode === 'focus' ? '⚡ Active Focus Window' : '🌿 Recovery / NSDR Reset'}</span>
+            {audioMode !== 'none' && (
+              <span className="text-[#1b3b2b] font-bold">
+                • {audioMode === 'binaural' ? '40Hz Audio Streaming' : 'Brown Noise Active'}
+              </span>
+            )}
           </div>
         </div>
 
@@ -275,13 +311,22 @@ const FocusTimer = () => {
 
         {/* Guided Recovery / Focus Guidance */}
         {mode === 'break' && (
-          <div className="max-w-md mx-auto p-4 border border-[#d4c39e] bg-[#fbf8f0] rounded-xl text-left space-y-1 mb-6 text-xs text-[#52504a]">
-            <div className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-[#8a4b16] font-bold">
-              <Eye className="w-3.5 h-3.5" />
-              <span>Panoramic Gaze & Physiological Sigh</span>
+          <div className="max-w-md mx-auto p-4 border border-[#d4c39e] bg-[#fbf8f0] rounded-xl text-left space-y-2 mb-6 text-xs text-[#52504a]">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-[#8a4b16] font-bold">
+                <Eye className="w-3.5 h-3.5" />
+                <span>Panoramic Gaze & Physiological Sigh</span>
+              </div>
+              <button
+                onClick={() => setIsBreathPacerOpen(true)}
+                className="px-2.5 py-1 bg-[#1b3b2b] text-white font-mono text-[10px] font-bold rounded-lg flex items-center gap-1"
+              >
+                <Wind className="w-3 h-3" />
+                <span>Open Pacer</span>
+              </button>
             </div>
             <p>
-              Relax your ocular focal point. Look far into the distance or peripheral edges. Inhale twice through the nose, then complete a slow, extended exhale through the mouth to lower autonomic arousal.
+              Relax your ocular focal point. Look far into the distance. Inhale twice through the nose, then complete a slow, extended exhale through the mouth.
             </p>
           </div>
         )}
@@ -343,6 +388,11 @@ const FocusTimer = () => {
           </div>
         )}
       </div>
+
+      {/* ── INTERACTIVE BREATH PACER MODAL ──────────────────────────── */}
+      {isBreathPacerOpen && (
+        <BreathPacer onClose={() => setIsBreathPacerOpen(false)} />
+      )}
 
     </div>
   );
