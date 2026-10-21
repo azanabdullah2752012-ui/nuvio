@@ -1,30 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  CheckCircle2, Circle, Plus, 
-  Trash2, Zap, ShieldCheck,
-  Target, Rocket, ScrollText,
-  AlertCircle, ArrowUpRight, Filter,
-  Layers, Brain, Trophy, Sparkles, Terminal
+  CheckSquare, Plus, Clock, 
+  Trash2, Filter, AlertCircle, 
+  Check, Calendar, BookOpen, ChevronRight,
+  ListFilter, Target
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { dataService } from '../services/dataService';
-import { xpService } from '../services/xpService';
 import { notificationService } from '../services/notificationService';
-import { rewardService } from '../services/rewardService';
-import { gamificationService } from '../services/gamificationService';
 
-const QUICK_MISSIONS = [
-  { id: 'math', title: 'Math Prime', icon: Target, color: 'bg-nuvio-blue', glow: 'shadow-nuvio-blue' },
-  { id: 'science', title: 'Science Synapse', icon: Zap, color: 'bg-nuvio-green', glow: 'shadow-nuvio-green' },
-  { id: 'essay', title: 'Deep Draft', icon: ScrollText, color: 'bg-nuvio-purple-500', glow: 'shadow-nuvio-purple-500' },
-  { id: 'vocab', title: 'Lexicon Drill', icon: Brain, color: 'bg-nuvio-cyan', glow: 'shadow-nuvio-cyan' },
-];
+const SUBJECTS = ['All', 'Mathematics', 'Science', 'English', 'Social Science'];
 
 const Homework = () => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState('pending');
-  const [quickInput, setQuickInput] = useState('');
+  const [filterStatus, setFilterStatus] = useState('pending'); // 'pending' | 'completed' | 'all'
+  const [filterSubject, setFilterSubject] = useState('All');
+  
+  // New task input state
+  const [title, setTitle] = useState('');
+  const [subject, setSubject] = useState('Mathematics');
+  const [dueDate, setDueDate] = useState('');
+  const [priority, setPriority] = useState('medium'); // 'high' | 'medium' | 'low'
+  const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
     fetchTasks();
@@ -34,226 +32,278 @@ const Homework = () => {
     setLoading(true);
     try {
       const list = await dataService.list('tasks');
-      setTasks(list);
+      if (list && Array.isArray(list)) {
+        setTasks(list);
+      }
     } catch (err) {
-      console.error("Quest Log Sync Failed:", err);
+      console.warn("Tasks sync delayed:", err);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleQuestForge = async (titleOverride = null, subjectOverride = 'General Sector') => {
-    const title = typeof titleOverride === 'string' ? titleOverride : quickInput;
-    if (title.trim()) {
-      const newQuest = {
-        title: title,
-        subject: subjectOverride,
-        priority: 'Standard',
-        completed: false
-      };
-      setQuickInput('');
-      try {
-        const created = await dataService.create('tasks', newQuest);
-        setTasks(prev => [created, ...prev]);
-        notificationService.send("Objective Locked", `"${title}" forged successfully.`, "info");
-      } catch (err) {
-        notificationService.send("System Error", `Forge failed: ${err.message}`, "error");
-      }
-    } else {
-      notificationService.send("Input Required", "Objective cannot be empty.", "warning");
+  const handleCreateTask = async (e) => {
+    e.preventDefault();
+    if (!title.trim()) return;
+
+    const newTask = {
+      title: title.trim(),
+      subject: subject,
+      due_date: dueDate || new Date(Date.now() + 86400000 * 2).toISOString().split('T')[0],
+      priority: priority,
+      completed: false
+    };
+
+    try {
+      const created = await dataService.create('tasks', newTask);
+      setTasks(prev => [created, ...prev]);
+      setTitle('');
+      setShowForm(false);
+      notificationService.send("Task Registered", `Directive logged under ${subject}.`, "success");
+    } catch (err) {
+      notificationService.send("Registration Error", "Could not commit task to local store.", "error");
     }
   };
 
-  const handleMagicSuggest = () => {
-    const suggestions = ["Master Quantum Theory", "Write English Thesis", "Solve Calculus Set", "Review World History"];
-    handleQuestForge(suggestions[Math.floor(Math.random() * suggestions.length)]);
-  };
-
-  const toggleQuest = async (id) => {
-    const task = tasks.find(t => t.id === id);
-    if (!task) return;
-    const isCompleting = !task.completed;
+  const handleToggleTask = async (task) => {
+    const updatedStatus = !task.completed;
     try {
-      const updated = await dataService.update('tasks', id, { completed: isCompleting });
-      setTasks(tasks.map(t => t.id === id ? updated : t));
-      if (isCompleting) {
-        xpService.awardXp(50, `Objective Accomplished: ${task.title}`);
-        notificationService.send("Mission Complete", "+50 XP Synchronized.", "success");
-        rewardService.triggerLuckyDrop();
-        // Track stats for achievements
-        await gamificationService.incrementStat('stats_homework_completed', 1);
-        await gamificationService.incrementStat('stats_quests_completed', 1);
+      const updated = await dataService.update('tasks', task.id, { completed: updatedStatus });
+      setTasks(tasks.map(t => t.id === task.id ? { ...t, completed: updatedStatus } : t));
+      if (updatedStatus) {
+        notificationService.send("Objective Concluded", `Task marked complete.`, "info");
       }
-    } catch (err) {}
+    } catch (err) {
+      console.warn("Could not toggle task status:", err);
+    }
   };
 
-  const deleteQuest = async (id) => {
+  const handleDeleteTask = async (id) => {
     try {
       await dataService.delete('tasks', id);
       setTasks(tasks.filter(t => t.id !== id));
-      notificationService.send("Objective Purged", "Memory wiped.", "info");
-    } catch (err) {}
+      notificationService.send("Task Removed", "Directive excised from planner.", "info");
+    } catch (err) {
+      console.warn("Could not delete task:", err);
+    }
   };
 
-  const filteredTasks = tasks.filter(t => {
-    if (filter === 'completed') return t.completed;
-    if (filter === 'pending') return !t.completed;
-    return true;
+  const filteredTasks = tasks.filter(task => {
+    const matchesStatus = 
+      filterStatus === 'all' ? true :
+      filterStatus === 'completed' ? task.completed : !task.completed;
+    
+    const matchesSubject = 
+      filterSubject === 'All' ? true : task.subject === filterSubject;
+
+    return matchesStatus && matchesSubject;
   });
 
+  const pendingCount = tasks.filter(t => !t.completed).length;
+  const completedCount = tasks.filter(t => t.completed).length;
+
   return (
-    <div className="space-y-12 pb-32 nv-page-transition px-4 sm:px-8 max-w-7xl mx-auto">
-      {/* Cinematic Header */}
-      <header className="relative flex flex-col md:flex-row items-end justify-between gap-10 border-b-[6px] border-white/10 pb-12 mb-16 mt-8">
-        <div className="absolute -top-32 -left-32 w-96 h-96 bg-nuvio-purple-500/20 blur-[120px] pointer-events-none rounded-full" />
-        <div className="space-y-4 relative z-10">
-          <div className="inline-flex items-center gap-4 bg-black border-[3px] border-nuvio-purple-500 shadow-[6px_6px_0_#A855F7] px-6 py-2 transform -skew-x-6">
-            <Terminal className="w-6 h-6 text-nuvio-purple-400" />
-            <span className="text-sm font-black text-white uppercase tracking-widest">Active Objectives</span>
+    <div className="max-w-6xl mx-auto space-y-10 pb-32 px-4 sm:px-6 font-sans">
+      
+      {/* HEADER */}
+      <header className="border-b border-white/10 pb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="w-2 h-2 rounded-full bg-[#ff4625]" />
+            <span className="font-mono text-[10px] tracking-[0.25em] uppercase text-zinc-400">
+              Task Directive / Academic Planning Matrix
+            </span>
           </div>
-          <h1 className="text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-white/90 to-nuvio-purple-300 uppercase tracking-tighter leading-none filter drop-shadow-lg">
-            Mission <br /> Command
+          <h1 className="text-3xl sm:text-4xl font-bold uppercase tracking-tight text-white font-clash">
+            Study Planner & Tasks
           </h1>
+          <p className="text-zinc-400 text-sm mt-1 max-w-xl">
+            Register homework deliverables, syllabus revision targets, and exam preparation milestones.
+          </p>
         </div>
 
-        <div className="flex bg-black p-2 border-2 border-white/10 rounded-2xl relative z-10">
-          {['pending', 'completed', 'all'].map(t => (
-            <button 
-              key={t}
-              onClick={() => setFilter(t)}
-              className={`
-                px-8 py-4 text-xs font-black uppercase tracking-[0.2em] transition-all rounded-xl
-                ${filter === t ? 'bg-white text-black shadow-lg scale-105' : 'text-white/40 hover:text-white hover:bg-white/5'}
-              `}
+        <button
+          onClick={() => setShowForm(!showForm)}
+          className="px-5 py-3 bg-[#ff4625] hover:bg-[#ff5738] text-white font-mono uppercase tracking-widest text-xs font-semibold rounded-lg transition-all flex items-center gap-2 shadow-sm self-start md:self-end"
+        >
+          <Plus className="w-4 h-4" />
+          <span>{showForm ? 'Cancel Input' : 'Add Directive'}</span>
+        </button>
+      </header>
+
+      {/* QUICK TASK CREATOR DRAWER */}
+      <AnimatePresence>
+        {showForm && (
+          <motion.form
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            onSubmit={handleCreateTask}
+            className="p-6 border border-white/10 bg-[#0d0f14] rounded-2xl space-y-4 overflow-hidden"
+          >
+            <span className="font-mono text-xs uppercase tracking-widest text-zinc-400 font-bold block">
+              New Study Directive
+            </span>
+
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+              <div className="md:col-span-6">
+                <input
+                  type="text"
+                  required
+                  placeholder="Task title (e.g. NCERT Science Chapter 3 Exercise 3.2)"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="w-full px-4 py-3 bg-[#08090b] border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-[#ff4625] transition-colors"
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <select
+                  value={subject}
+                  onChange={(e) => setSubject(e.target.value)}
+                  className="w-full px-4 py-3 bg-[#08090b] border border-white/10 rounded-lg text-xs font-mono uppercase text-zinc-300 focus:outline-none focus:border-[#ff4625]"
+                >
+                  <option value="Mathematics">Mathematics</option>
+                  <option value="Science">Science</option>
+                  <option value="English">English</option>
+                  <option value="Social Science">Social Science</option>
+                </select>
+              </div>
+
+              <div className="md:col-span-2">
+                <input
+                  type="date"
+                  value={dueDate}
+                  onChange={(e) => setDueDate(e.target.value)}
+                  className="w-full px-4 py-3 bg-[#08090b] border border-white/10 rounded-lg text-xs font-mono uppercase text-zinc-300 focus:outline-none focus:border-[#ff4625]"
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <button
+                  type="submit"
+                  className="w-full h-full py-3 bg-white text-black font-mono uppercase tracking-widest text-xs font-bold rounded-lg hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2"
+                >
+                  <span>Commit Task</span>
+                </button>
+              </div>
+            </div>
+          </motion.form>
+        )}
+      </AnimatePresence>
+
+      {/* FILTER BAR & METRICS */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
+        
+        {/* Status Filter */}
+        <div className="flex gap-1.5 p-1 bg-[#0d0f14] border border-white/10 rounded-lg self-start">
+          {[
+            { id: 'pending', label: 'Active', count: pendingCount },
+            { id: 'completed', label: 'Concluded', count: completedCount },
+            { id: 'all', label: 'All Tasks', count: tasks.length }
+          ].map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setFilterStatus(tab.id)}
+              className={`px-3 py-1.5 rounded-md font-mono text-xs uppercase tracking-wider transition-all flex items-center gap-2 ${
+                filterStatus === tab.id
+                  ? 'bg-white text-black font-bold'
+                  : 'text-zinc-400 hover:text-white'
+              }`}
             >
-              {t}
+              <span>{tab.label}</span>
+              <span className={`text-[9px] px-1.5 py-0.2 rounded font-mono ${
+                filterStatus === tab.id ? 'bg-black text-white' : 'bg-white/10 text-zinc-400'
+              }`}>
+                {tab.count}
+              </span>
             </button>
           ))}
         </div>
-      </header>
 
-      {/* The Forge - Extreme Input */}
-      <div className="relative max-w-5xl mx-auto mb-16">
-        <div className="absolute inset-0 bg-gradient-to-r from-nuvio-cyan via-nuvio-purple-500 to-nuvio-pink opacity-20 blur-3xl rounded-full" />
-        <div className="nv-card bg-black p-2 !shadow-[16px_16px_0_rgba(168,85,247,0.3)] !border-4 border-nuvio-purple-500 relative z-10 overflow-hidden group">
-          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10" />
-          <div className="flex flex-col md:flex-row items-center gap-6 bg-[#0a0a0f] p-8 relative z-10 rounded-lg">
-            <div className="p-4 bg-nuvio-purple-500/10 rounded-xl border border-nuvio-purple-500/30">
-               <Plus className="w-10 h-10 text-nuvio-purple-400 animate-pulse" />
-            </div>
-            <input 
-              className="flex-1 bg-transparent text-3xl md:text-5xl font-black text-white outline-none placeholder:text-white/10 uppercase tracking-tight"
-              placeholder="INITIALIZE DIRECTIVE..."
-              value={quickInput}
-              onChange={(e) => setQuickInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  handleQuestForge();
-                }
-              }}
-              autoFocus
-            />
-            
-            <button 
-              onClick={handleMagicSuggest}
-              className="hidden md:flex items-center gap-3 px-6 py-4 bg-white/5 border-2 border-white/10 hover:border-nuvio-cyan hover:bg-nuvio-cyan/10 text-white hover:text-nuvio-cyan rounded-xl transition-all font-black uppercase tracking-widest text-[10px] group/btn"
+        {/* Subject Filter Pills */}
+        <div className="flex gap-1.5 flex-wrap">
+          {SUBJECTS.map(sub => (
+            <button
+              key={sub}
+              onClick={() => setFilterSubject(sub)}
+              className={`px-3 py-1 rounded-md font-mono text-[10px] uppercase tracking-wider transition-all border ${
+                filterSubject === sub
+                  ? 'border-[#ff4625] bg-[#ff4625]/10 text-white font-bold'
+                  : 'border-white/5 bg-[#0d0f14] text-zinc-400 hover:text-white'
+              }`}
             >
-              <Sparkles className="w-5 h-5 group-hover/btn:animate-spin" />
-              Auto-Generate
+              {sub}
             </button>
-          </div>
+          ))}
         </div>
+
       </div>
 
-      {/* Quick Launch Pad */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
-        {QUICK_MISSIONS.map(mission => (
-          <button 
-            key={mission.id}
-            onClick={() => handleQuestForge(mission.title, mission.subject)}
-            className="group relative flex items-center gap-4 p-6 bg-black border-2 border-white/5 hover:border-white/20 transition-all hover:bg-white/[0.02] active:scale-95 rounded-2xl overflow-hidden"
-          >
-            <div className={`absolute inset-0 ${mission.color} opacity-0 group-hover:opacity-5 transition-opacity`} />
-            <div className={`w-14 h-14 rounded-xl ${mission.color} flex items-center justify-center shadow-lg ${mission.glow}/20 border border-black/50 group-hover:scale-110 transition-transform duration-300`}>
-              <mission.icon className="w-7 h-7 text-black" />
-            </div>
-            <span className="text-xs font-black text-white uppercase tracking-widest text-left">{mission.title}</span>
-          </button>
-        ))}
-      </div>
+      {/* TASKS LIST */}
+      {filteredTasks.length === 0 ? (
+        <div className="p-16 border border-white/10 bg-[#0d0f14] rounded-2xl text-center space-y-3">
+          <CheckSquare className="w-10 h-10 text-zinc-600 mx-auto" />
+          <h3 className="font-clash text-lg font-bold uppercase text-white">No Directives in Queue</h3>
+          <p className="text-zinc-500 text-xs font-mono max-w-sm mx-auto">
+            {filterStatus === 'completed'
+              ? 'No completed tasks recorded under this filter.'
+              : 'All scheduled homework and study items have been cleared.'}
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {filteredTasks.map(task => (
+            <div
+              key={task.id}
+              className={`p-5 border rounded-xl transition-all flex items-center justify-between gap-4 ${
+                task.completed
+                  ? 'border-emerald-500/20 bg-[#08090b] text-zinc-500'
+                  : 'border-white/10 bg-[#0d0f14] hover:border-white/20 text-white'
+              }`}
+            >
+              <div className="flex items-center gap-4 flex-1">
+                <button
+                  onClick={() => handleToggleTask(task)}
+                  className={`w-6 h-6 rounded border flex items-center justify-center shrink-0 transition-colors ${
+                    task.completed
+                      ? 'bg-emerald-500 border-emerald-500 text-black'
+                      : 'border-zinc-700 hover:border-white'
+                  }`}
+                  title={task.completed ? "Mark pending" : "Mark complete"}
+                >
+                  {task.completed && <Check className="w-4 h-4 stroke-[3]" />}
+                </button>
 
-      {/* Objectives Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <AnimatePresence mode="popLayout">
-          {filteredTasks.length === 0 ? (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="col-span-full py-32 border-4 border-dashed border-white/5 text-center rounded-3xl bg-black/20 flex flex-col items-center justify-center relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-nuvio-purple-500/5 pointer-events-none" />
-              <ShieldCheck className="w-24 h-24 text-white/5 mx-auto mb-8" />
-              <h3 className="text-5xl font-black text-white/20 uppercase tracking-tighter mb-4">Sector Clear</h3>
-              <p className="text-sm font-bold text-white/20 uppercase tracking-widest">No active directives detected.</p>
-            </motion.div>
-          ) : (
-            filteredTasks.filter(t => t).map((task, idx) => (
-              <motion.div 
-                layout
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.9, filter: 'blur(10px)' }}
-                key={task.id}
-                className={`
-                  nv-card flex flex-col justify-between p-8 bg-[#0d0d12] border-2 transition-all duration-300 group rounded-[32px]
-                  ${task.completed ? 'border-nuvio-green/20 bg-nuvio-green/5' : 'border-white/5 hover:border-white/20 hover:shadow-2xl hover:shadow-white/5'}
-                `}
-              >
-                <div className="flex justify-between items-start mb-12">
-                  <div className={`p-4 rounded-2xl border-2 ${task.completed ? 'bg-nuvio-green border-nuvio-green text-black' : 'bg-white/5 border-white/10 text-white'}`}>
-                    <Target className="w-8 h-8" />
-                  </div>
-                  <div className="flex gap-3">
-                    <button 
-                      onClick={() => deleteQuest(task.id)}
-                      className="p-4 bg-black border-2 border-white/5 hover:border-nuvio-red hover:bg-nuvio-red/10 text-white/40 hover:text-nuvio-red rounded-xl transition-all opacity-0 group-hover:opacity-100"
-                    >
-                      <Trash2 className="w-5 h-5" />
-                    </button>
-                    <button 
-                      onClick={() => toggleQuest(task.id)}
-                      className={`
-                        p-4 rounded-xl border-2 transition-all shadow-lg
-                        ${task.completed ? 'bg-nuvio-green border-nuvio-green text-black' : 'bg-black border-white/10 text-white hover:border-nuvio-green hover:text-nuvio-green'}
-                      `}
-                    >
-                      <CheckCircle2 className="w-6 h-6" />
-                    </button>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="text-[10px] font-black text-nuvio-cyan uppercase tracking-[0.4em] flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-nuvio-cyan animate-pulse" /> Directive {idx + 1}
-                  </div>
-                  <h3 className={`text-4xl font-black text-white uppercase leading-tight tracking-tight ${task.completed ? 'line-through decoration-nuvio-green/50 text-white/40' : ''}`}>
+                <div className="space-y-1">
+                  <span className={`text-sm font-semibold block ${task.completed ? 'line-through text-zinc-500' : 'text-zinc-100'}`}>
                     {task.title}
-                  </h3>
+                  </span>
+                  <div className="flex items-center gap-3 text-[10px] font-mono text-zinc-400">
+                    <span className="uppercase text-[#ff4625] font-bold">{task.subject || 'Curriculum'}</span>
+                    <span>·</span>
+                    <span className="flex items-center gap-1">
+                      <Clock className="w-3 h-3 text-zinc-500" />
+                      Due {task.due_date || 'Upcoming'}
+                    </span>
+                  </div>
                 </div>
+              </div>
 
-                <div className="mt-10 pt-6 border-t border-white/5 flex items-center justify-between">
-                   <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[10px] font-black text-white">
-                        {task.subject ? task.subject.charAt(0) : 'G'}
-                      </div>
-                      <span className="text-[10px] font-black text-white/40 uppercase tracking-widest">{task.subject || 'General'}</span>
-                   </div>
-                   <div className="px-4 py-2 bg-white/5 text-white/60 text-[10px] font-black uppercase tracking-widest rounded-lg border border-white/5">
-                      50 XP
-                   </div>
-                </div>
-              </motion.div>
-            ))
-          )}
-        </AnimatePresence>
-      </div>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => handleDeleteTask(task.id)}
+                  className="p-2 text-zinc-600 hover:text-rose-400 rounded transition-colors"
+                  title="Purge Task"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
     </div>
   );
 };

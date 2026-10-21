@@ -13,9 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import confetti from 'canvas-confetti';
 import { dataService } from '../services/dataService';
 import { authService } from '../services/authService';
-import { xpService } from '../services/xpService';
 import { notificationService } from '../services/notificationService';
-import { gamificationService, BOSSES } from '../services/gamificationService';
 import { CURRICULUM_DATA } from '../services/curriculumData';
 
 const CLASSES = [
@@ -182,10 +180,6 @@ const CurriculumHub = () => {
   const [drivingDir, setDrivingDir] = useState('forward'); // 'forward' | 'backward'
   const [maxDistanceReached, setMaxDistanceReached] = useState(0);
   
-  // Floating combat feedback
-  const [combatEffects, setCombatEffects] = useState([]);
-  const [bossShake, setBossShake] = useState(false);
-
   // PYQ marking checksheets state
   const [pyqChecks, setPyqChecks] = useState({
     def: false,
@@ -264,28 +258,6 @@ const CurriculumHub = () => {
     return () => clearInterval(timer);
   }, [isDriving, drivingDir]);
 
-  // Trigger floating combat damage indicators
-  const spawnDamageEffect = (amount) => {
-    const id = Date.now() + Math.random();
-    const nextEffect = {
-      id,
-      text: `-${amount} HP 💥`,
-      x: Math.floor(Math.random() * 80) + 10,
-      y: Math.floor(Math.random() * 40) + 10
-    };
-    setCombatEffects(prev => [...prev, nextEffect]);
-    setBossShake(true);
-    playSynthSound('boss_hit', soundMuted);
-
-    setTimeout(() => {
-      setBossShake(false);
-    }, 400);
-
-    setTimeout(() => {
-      setCombatEffects(prev => prev.filter(e => e.id !== id));
-    }, 1200);
-  };
-
   // Filter grade subjects
   const currentClass = CLASSES.find(c => c.id === selectedClass);
   const filteredSubjects = currentClass?.subjects.filter(s => 
@@ -315,34 +287,6 @@ const CurriculumHub = () => {
       }
     });
     return Math.round((masteredCount / data.chapters.length) * 100);
-  };
-
-  // Fetch subject-boss status
-  const getSubjectBoss = (subName) => {
-    if (!subName) return null;
-    const subLower = subName.toLowerCase();
-    const progress = user?.boss_chapter_progress || {};
-    
-    let activeBossId = null;
-    if (subLower.includes('math') || subLower.includes('algebra') || subLower.includes('geometry')) {
-      activeBossId = ['dragon', 'algebra', 'geometry'].find(id => progress[id]?.status === 'active') || 'dragon';
-    } else if (subLower.includes('science') || subLower.includes('physics') || subLower.includes('chemistry') || subLower.includes('biology')) {
-      activeBossId = ['cell', 'motion', 'atom'].find(id => progress[id]?.status === 'active') || 'cell';
-    } else if (subLower.includes('social') || subLower.includes('history') || subLower.includes('geography')) {
-      activeBossId = ['empire', 'leviathan'].find(id => progress[id]?.status === 'active') || 'empire';
-    }
-
-    if (!activeBossId) return null;
-    const bossMeta = BOSSES.find(b => b.id === activeBossId);
-    const bossProgress = progress[activeBossId] || { hp: 100, max: 100, status: 'locked' };
-
-    return {
-      ...bossMeta,
-      hp: bossProgress.hp,
-      max: bossProgress.max,
-      status: bossProgress.status,
-      claimed: bossProgress.claimed
-    };
   };
 
   // Initialize interactive deck
@@ -392,13 +336,11 @@ const CurriculumHub = () => {
     
     if (isCorrect) {
       setQuizScore(prev => prev + 1);
-      spawnDamageEffect(100);
-      xpService.awardXp(10, `Quiz Correct Answer: ${currentQuestion.q.substring(0, 15)}...`);
       playSynthSound('correct', soundMuted);
     } else {
       playSynthSound('incorrect', soundMuted);
       window.dispatchEvent(new CustomEvent('acadevance_notification', {
-        detail: { title: `Practice Check ❌`, message: `Correct Answer: ${currentQuestion.a}`, type: 'warning' }
+        detail: { title: `Practice Check`, message: `Correct Answer: ${currentQuestion.a}`, type: 'warning' }
       }));
     }
   };
@@ -412,23 +354,10 @@ const CurriculumHub = () => {
       setQuizComplete(true);
       playSynthSound('complete', soundMuted);
       confetti({
-        particleCount: 80,
-        spread: 60,
+        particleCount: 60,
+        spread: 50,
         origin: { y: 0.7 }
       });
-      
-      const xpEarned = quizScore * 20;
-      const coinsEarned = quizScore * 5;
-      
-      if (xpEarned > 0) xpService.awardXp(xpEarned, `Mastered Quiz: ${expandedChapter.title}`);
-      if (coinsEarned > 0) authService.addTokens(coinsEarned);
-
-      // Log stats
-      gamificationService.incrementStat('stats_quizzes_correct', quizScore);
-      
-      const subLower = activeSubject.toLowerCase();
-      if (subLower.includes('math')) gamificationService.incrementStat('stats_math_completed', 1);
-      else if (subLower.includes('science') || subLower.includes('physics')) gamificationService.incrementStat('stats_science_completed', 1);
 
       // Check if perfect score -> complete chapter
       if (quizScore === quizQuestions.length) {
@@ -438,7 +367,7 @@ const CurriculumHub = () => {
         localStorage.setItem('acadevance_mastered_chapters', JSON.stringify(updated));
         
         notificationService.send(
-          'Syllabus Topic Mastered! 🏆',
+          'Syllabus Topic Mastered',
           `100% recall in ${expandedChapter.title}! Added to syllabus index.`,
           'success'
         );
@@ -448,12 +377,7 @@ const CurriculumHub = () => {
 
   // Flashcards navigation
   const nextFlashcard = (type) => {
-    gamificationService.incrementStat('stats_flashcards_reviewed', 1);
-    
-    const xpReward = type === 'easy' ? 5 : 2;
-    xpService.awardXp(xpReward, `Flashcard Rating: ${type}`);
     playSynthSound('correct', soundMuted);
-    
     setIsFlipped(false);
     
     setTimeout(() => {
@@ -462,7 +386,6 @@ const CurriculumHub = () => {
       } else {
         setFlashcardDeckComplete(true);
         playSynthSound('complete', soundMuted);
-        xpService.awardXp(15, `Reviewed Full Deck: ${expandedChapter.title}`);
       }
     }, 200);
   };
@@ -579,10 +502,9 @@ const CurriculumHub = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {filteredSubjects.map((subject) => {
                   const mastery = getSubjectMastery(subject);
-                  const boss = getSubjectBoss(subject);
                   
                   // Dynamically resolve neubrutalist hover styles
-                  let subjectColor = "hover:border-purple-500";
+                  let subjectColor = "hover:border-[#ff4625]";
                   if (subject.toLowerCase().includes('math')) subjectColor = "hover:border-blue-500";
                   if (subject.toLowerCase().includes('sci') || subject.toLowerCase().includes('phys') || subject.toLowerCase().includes('chem')) subjectColor = "hover:border-green-500";
                   if (subject.toLowerCase().includes('social')) subjectColor = "hover:border-orange-500";
@@ -604,7 +526,7 @@ const CurriculumHub = () => {
                           </div>
                         </div>
 
-                        <h3 className="text-2xl font-black text-white uppercase tracking-tight mb-2 group-hover:text-purple-400 transition-colors">
+                        <h3 className="text-2xl font-black text-white uppercase tracking-tight mb-2 group-hover:text-[#ff4625] transition-colors">
                           {subject}
                         </h3>
                         
@@ -615,26 +537,16 @@ const CurriculumHub = () => {
                             <span>{mastery}%</span>
                           </div>
                           <div className="h-3.5 w-full bg-black border-2 border-black rounded-full overflow-hidden p-0.5">
-                            <div className="h-full bg-purple-500 rounded-full" style={{ width: `${mastery}%` }} />
+                            <div className="h-full bg-[#ff4625] rounded-full" style={{ width: `${mastery}%` }} />
                           </div>
                         </div>
                       </div>
 
-                      {/* Boss Indicator */}
+                      {/* Explore Action */}
                       <div className="mt-6 pt-4 border-t-2 border-black/40 flex items-center justify-between">
-                        {boss ? (
-                          <div className="flex items-center gap-2">
-                            <span className="text-xl animate-pulse shrink-0">{boss.emoji}</span>
-                            <div className="text-[9px] text-left">
-                              <span className="block font-bold text-slate-500 uppercase tracking-widest">Active Boss</span>
-                              <span className="block font-black text-rose-400 uppercase leading-none">{boss.name}</span>
-                            </div>
-                          </div>
-                        ) : (
-                          <span className="text-[9px] font-black text-text-muted uppercase">No boss gate</span>
-                        )}
-                        <span className="flex items-center gap-1 text-[10px] font-black text-purple-400 uppercase group-hover:gap-2 transition-all shrink-0">
-                          Enter Deck <ArrowRight className="w-4 h-4" />
+                        <span className="text-[10px] font-mono text-zinc-500 uppercase">Interactive Units</span>
+                        <span className="flex items-center gap-1 text-[10px] font-black text-[#ff4625] uppercase group-hover:gap-2 transition-all shrink-0">
+                          Enter Units <ArrowRight className="w-4 h-4" />
                         </span>
                       </div>
                     </motion.div>
@@ -711,90 +623,23 @@ const CurriculumHub = () => {
 
                     <div className="space-y-2 pt-2">
                       <div className="h-4 w-full bg-black border-2 border-black rounded-full overflow-hidden p-0.5">
-                        <div className="h-full bg-gradient-to-r from-purple-500 to-cyan-400 rounded-full" style={{ width: `${getSubjectMastery(activeSubject)}%` }} />
+                        <div className="h-full bg-gradient-to-r from-[#ff4625] to-[#ff7354] rounded-full" style={{ width: `${getSubjectMastery(activeSubject)}%` }} />
                       </div>
                       <span className="block text-[9px] text-text-muted text-center font-bold uppercase tracking-wider">
-                        Complete quizzes to master chapters!
+                        NCERT Syllabus Unit Progression
                       </span>
                     </div>
                   </div>
 
-                  {/* RPG Subject Boss fight card */}
-                  {(() => {
-                    const boss = getSubjectBoss(activeSubject);
-                    if (!boss) return null;
-                    return (
-                      <motion.div 
-                        animate={bossShake ? {
-                          x: [0, -10, 10, -10, 10, 0],
-                          rotate: [0, -1, 1, -1, 1, 0]
-                        } : {}}
-                        transition={{ duration: 0.4 }}
-                        className="nv-card bg-slate-900 border-3 border-black border-l-rose-500 border-l-[8px] space-y-5 relative overflow-hidden shadow-[6px_6px_0_#000]"
-                      >
-                        {/* Combat Floating Numbers overlay */}
-                        <div className="absolute inset-0 pointer-events-none z-30">
-                          {combatEffects.map(effect => (
-                            <motion.span
-                              key={effect.id}
-                              initial={{ opacity: 1, y: 120, scale: 0.6 }}
-                              animate={{ opacity: 0, y: 30, scale: 1.4 }}
-                              transition={{ duration: 1 }}
-                              className="absolute font-black text-rose-500 text-2xl uppercase tracking-tighter text-shadow-nb select-none"
-                              style={{ left: `${effect.x}%`, top: `${effect.y}%` }}
-                            >
-                              {effect.text}
-                            </motion.span>
-                          ))}
-                        </div>
-
-                        <div className="flex items-center justify-between border-b-2 border-black pb-3">
-                          <span className="text-[10px] font-black text-rose-400 uppercase tracking-widest">Syllabus Boss gate</span>
-                          <span className="nv-badge bg-rose-500 text-black text-[8px] font-black px-2 py-0.5">
-                            Active target
-                          </span>
-                        </div>
-
-                        <div className="flex items-center gap-4 relative">
-                          <div className={`text-5xl select-none ${boss.hp > 0 ? 'animate-bounce' : 'opacity-40 filter grayscale'}`}>
-                            {boss.emoji}
-                          </div>
-                          <div>
-                            <h4 className="text-xl font-black text-white uppercase tracking-tight">{boss.name}</h4>
-                            <p className="text-[10px] text-text-secondary font-bold uppercase tracking-wider">
-                              HP: {boss.hp} / {boss.max}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="space-y-2">
-                          <div className="h-4.5 w-full bg-black border-2 border-black rounded-[4px] overflow-hidden p-0.5">
-                            <div 
-                              className="h-full bg-rose-500 rounded-[2px] transition-all duration-300" 
-                              style={{ width: `${(boss.hp / boss.max) * 100}%` }} 
-                            />
-                          </div>
-                          <div className="flex justify-between text-[8px] font-black text-slate-500 uppercase tracking-wider">
-                            <span>Guardian Health Bar</span>
-                            {boss.hp === 0 ? (
-                              <span className="text-green-400 font-bold">DEFEATED 🎉</span>
-                            ) : (
-                              <span>Damage multiplier x1.2</span>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="pt-2">
-                          <button
-                            onClick={() => navigate('/boss-raid')}
-                            className="w-full py-4 bg-rose-600 border-2 border-black text-black font-black uppercase tracking-widest text-[10px] rounded-[4px] hover:bg-rose-500 shadow-[3px_3px_0_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all flex items-center justify-center gap-2"
-                          >
-                            <Swords className="w-5 h-5 shrink-0" /> Enter Boss Arena
-                          </button>
-                        </div>
-                      </motion.div>
-                    );
-                  })()}
+                  {/* Focus Topic Notes */}
+                  <div className="p-6 bg-[#08090b] border-2 border-black rounded-[4px] space-y-3">
+                    <span className="text-[10px] font-mono text-[#ff4625] uppercase tracking-widest font-bold">
+                      Curriculum Scope
+                    </span>
+                    <p className="text-xs text-zinc-400 font-sans leading-relaxed">
+                      All units, NCERT core definitions, worked problem sets, and recall benchmarks are aligned with the CBSE academic framework.
+                    </p>
+                  </div>
                 </div>
 
                 {/* RIGHT BLOCK: CHAPTERS TIMELINE ROADMAP */}

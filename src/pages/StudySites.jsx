@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  ExternalLink, Plus, Search, 
-  Trash2, Filter, Globe, BookOpen,
-  Code, GraduationCap
+  ExternalLink, Plus, Trash2, Globe, BookOpen,
+  GraduationCap, X, ChevronRight, Bookmark
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { supabase } from '../lib/supabase';
-import { authService } from '../services/authService';
+import { dataService } from '../services/dataService';
+import { notificationService } from '../services/notificationService';
+
+const DEFAULT_RESOURCES = [
+  { id: 'res-1', title: 'NCERT Official Textbooks', url: 'https://ncert.nic.in/textbook.php', category: 'CBSE Core', desc: 'Digital editions of all official Class 9 textbooks and solutions.' },
+  { id: 'res-2', title: 'CBSE Academic Repository', url: 'https://cbseacademic.nic.in', category: 'Curriculum', desc: 'Syllabus guidelines, sample question papers, and marking schemes.' },
+  { id: 'res-3', title: 'Khan Academy Science & Math', url: 'https://www.khanacademy.org', category: 'Concept Video', desc: 'Interactive visual models for mathematics and physical sciences.' },
+  { id: 'res-4', title: 'Wolfram Alpha Computation', url: 'https://www.wolframalpha.com', category: 'Math Engine', desc: 'Step-by-step algebraic solver and coordinate geometry plotter.' }
+];
 
 const StudySites = () => {
   const [sites, setSites] = useState([]);
@@ -20,23 +26,21 @@ const StudySites = () => {
 
   const fetchSites = async () => {
     setLoading(true);
-    const data = await dataService.list('study_sites');
-    
-    if (data && data.length > 0) {
-      setSites(data);
-    } else {
-      // Seed default sites
-      const defaults = [
-        { id: 'd1', title: 'Google Scholar', url: 'https://scholar.google.com', category: 'General' },
-        { id: 'd2', title: 'Khan Academy', url: 'https://www.khanacademy.org', category: 'General' },
-        { id: 'd3', title: 'Wolfram Alpha', url: 'https://www.wolframalpha.com', category: 'Math' },
-        { id: 'd4', title: 'MDN Web Docs', url: 'https://developer.mozilla.org', category: 'Dev' },
-      ];
-      setSites(defaults);
-      // Persist defaults locally
-      defaults.forEach(d => dataService.create('study_sites', d));
+    try {
+      const data = await dataService.list('study_sites');
+      if (data && data.length > 0) {
+        setSites(data);
+      } else {
+        setSites(DEFAULT_RESOURCES);
+        for (const item of DEFAULT_RESOURCES) {
+          await dataService.create('study_sites', item);
+        }
+      }
+    } catch (err) {
+      setSites(DEFAULT_RESOURCES);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const addSite = async (e) => {
@@ -45,112 +49,205 @@ const StudySites = () => {
     const newSite = {
       title: formData.get('title'),
       url: formData.get('url'),
-      category: formData.get('category')
+      category: formData.get('category') || 'General',
+      desc: formData.get('desc') || 'Academic reference link.'
     };
 
-    const saved = await dataService.create('study_sites', newSite);
-    setSites([saved, ...sites]);
-    setShowAdd(false);
+    try {
+      const saved = await dataService.create('study_sites', newSite);
+      setSites([saved, ...sites]);
+      setShowAdd(false);
+      notificationService.send("Resource Saved", `"${newSite.title}" added to academic index.`, "success");
+    } catch (err) {
+      notificationService.send("Save Error", "Could not persist bookmark.", "error");
+    }
   };
 
-  const deleteSite = async (id) => {
-    await dataService.delete('study_sites', id);
-    setSites(sites.filter(s => s.id !== id));
+  const deleteSite = async (id, e) => {
+    e?.stopPropagation();
+    try {
+      await dataService.delete('study_sites', id);
+      setSites(sites.filter(s => s.id !== id));
+      notificationService.send("Resource Removed", "Link excised from index.", "info");
+    } catch (err) {
+      console.warn("Delete failed:", err);
+    }
   };
 
-  const categories = ['All', 'General', 'Math', 'Dev', 'Science'];
+  const categories = ['All', 'CBSE Core', 'Curriculum', 'Concept Video', 'Math Engine', 'General'];
 
   return (
-    <div className="space-y-10 pb-20">
-      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <div className="max-w-6xl mx-auto space-y-10 pb-32 px-4 sm:px-6 font-sans">
+      
+      {/* HEADER */}
+      <header className="border-b border-white/10 pb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
         <div>
-          <h1 className="text-4xl font-black text-white flex items-center gap-3 uppercase tracking-tighter">
-            <Globe className="w-10 h-10 text-nuvio-blue" />
-            Study Sites
+          <div className="flex items-center gap-2 mb-2">
+            <span className="w-2 h-2 rounded-full bg-[#ff4625]" />
+            <span className="font-mono text-[10px] tracking-[0.25em] uppercase text-zinc-400">
+              Reference Index / Academic Portals
+            </span>
+          </div>
+          <h1 className="text-3xl sm:text-4xl font-bold uppercase tracking-tight text-white font-clash">
+            Study Bookmarks
           </h1>
-          <p className="text-text-secondary font-medium mt-1">Cloud-synced library of your essential academic portals.</p>
+          <p className="text-zinc-400 text-sm mt-1 max-w-xl">
+            Curated repository of official CBSE portals, interactive calculation tools, and textbook archives.
+          </p>
         </div>
-        <button onClick={() => setShowAdd(true)} className="nv-btn-primary px-8 gap-3 h-14 bg-nuvio-blue hover:bg-nuvio-blue/80 shadow-xl shadow-nuvio-blue/20">
-          <Plus className="w-5 h-5" /> Add Resource
+
+        <button
+          onClick={() => setShowAdd(true)}
+          className="px-5 py-3 bg-[#ff4625] hover:bg-[#ff5738] text-white font-mono uppercase tracking-widest text-xs font-semibold rounded-lg transition-all flex items-center gap-2 shadow-sm self-start sm:self-end"
+        >
+          <Plus className="w-4 h-4" />
+          <span>Add Resource</span>
         </button>
       </header>
 
-      <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+      {/* CATEGORY FILTERS */}
+      <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
         {categories.map(c => (
-          <button 
+          <button
             key={c}
             onClick={() => setFilter(c)}
-            className={`px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all
-              ${filter === c ? 'bg-nuvio-blue text-white shadow-lg' : 'bg-white/5 text-text-muted hover:bg-white/10'}
-            `}
+            className={`px-3.5 py-1.5 rounded-lg font-mono text-xs uppercase tracking-wider transition-all border whitespace-nowrap ${
+              filter === c
+                ? 'border-[#ff4625] bg-[#ff4625]/10 text-white font-bold'
+                : 'border-white/5 bg-[#0d0f14] text-zinc-400 hover:text-white'
+            }`}
           >
             {c}
           </button>
         ))}
       </div>
 
+      {/* SITES GRID */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <AnimatePresence mode="popLayout">
-          {sites.filter(s => filter === 'All' || s.category === filter).map((site, i) => (
-            <motion.div 
+        {sites
+          .filter(s => filter === 'All' || s.category === filter)
+          .map((site) => (
+            <div
               key={site.id}
+              className="p-6 border border-white/10 bg-[#0d0f14] hover:border-[#ff4625]/40 hover:bg-[#12151c] rounded-2xl transition-all flex flex-col justify-between h-56 group"
+            >
+              <div className="space-y-3">
+                <div className="flex justify-between items-start">
+                  <span className="font-mono text-[9px] uppercase tracking-wider text-[#ff4625] bg-[#ff4625]/10 px-2 py-0.5 rounded font-bold">
+                    {site.category || 'Reference'}
+                  </span>
+                  <button
+                    onClick={(e) => deleteSite(site.id, e)}
+                    className="p-1 text-zinc-600 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                    title="Remove Link"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+
+                <div>
+                  <h3 className="font-clash text-lg font-bold text-white uppercase group-hover:text-[#ff4625] transition-colors line-clamp-1">
+                    {site.title}
+                  </h3>
+                  <p className="text-xs text-zinc-400 mt-1 leading-relaxed line-clamp-2">
+                    {site.desc || site.url}
+                  </p>
+                </div>
+              </div>
+
+              <a
+                href={site.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="pt-3 border-t border-white/5 flex items-center justify-between font-mono text-[11px] text-zinc-400 group-hover:text-white transition-colors"
+              >
+                <span className="truncate max-w-[200px] text-zinc-500 font-mono text-[10px]">
+                  {site.url.replace(/^https?:\/\//, '')}
+                </span>
+                <span className="flex items-center gap-1.5 uppercase font-bold text-[10px] text-[#ff4625]">
+                  Launch <ExternalLink className="w-3 h-3" />
+                </span>
+              </a>
+            </div>
+          ))}
+      </div>
+
+      {/* MODAL: ADD RESOURCE */}
+      <AnimatePresence>
+        {showAdd && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+            <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="nv-card p-8 border-white/5 bg-white/[0.01] hover:bg-white/[0.03] transition-all group flex flex-col justify-between"
+              className="w-full max-w-md p-8 border border-white/10 bg-[#0d0f14] rounded-2xl space-y-6 shadow-2xl font-sans"
             >
-              <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <div className="p-3 bg-nuvio-blue/10 rounded-xl">
-                    {site.category === 'Math' ? <GraduationCap className="w-6 h-6 text-nuvio-blue" /> : <BookOpen className="w-6 h-6 text-nuvio-blue" />}
-                  </div>
-                  <button onClick={() => deleteSite(site.id)} className="opacity-0 group-hover:opacity-100 p-2 text-text-muted hover:text-nuvio-red transition-all">
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-                
+              <div className="flex justify-between items-center border-b border-white/5 pb-4">
                 <div>
-                   <h3 className="text-xl font-black text-white uppercase tracking-tight">{site.title}</h3>
-                   <div className="text-[10px] text-text-muted font-bold uppercase tracking-widest mt-1 opacity-50 truncate">{site.url}</div>
+                  <span className="font-mono text-[9px] uppercase tracking-wider text-[#ff4625]">Academic Reference</span>
+                  <h3 className="font-clash text-xl font-bold uppercase text-white mt-0.5">Add Resource Bookmark</h3>
                 </div>
+                <button
+                  onClick={() => setShowAdd(false)}
+                  className="p-1 text-zinc-400 hover:text-white"
+                >
+                  <X className="w-5 h-5" />
+                </button>
               </div>
 
-              <div className="mt-8">
-                <a href={site.url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-3 w-full py-4 bg-white/5 border border-white/10 rounded-xl text-[10px] font-black text-white uppercase tracking-[0.2em] hover:bg-white/10 transition-all">
-                  Launch Portal <ExternalLink className="w-3 h-3" />
-                </a>
-              </div>
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      </div>
+              <form onSubmit={addSite} className="space-y-4">
+                <div className="space-y-1.5">
+                  <label className="block font-mono text-[10px] uppercase tracking-wider text-zinc-400">Portal Title</label>
+                  <input
+                    name="title"
+                    required
+                    placeholder="e.g. NCERT Exemplar Solutions"
+                    className="w-full px-4 py-2.5 bg-[#08090b] border border-white/10 rounded-lg text-xs text-white focus:outline-none focus:border-[#ff4625]"
+                  />
+                </div>
 
-      {loading && (
-        <div className="py-20 text-center animate-pulse opacity-20">
-          <Globe className="w-12 h-12 mx-auto mb-4" />
-          <p className="text-xs font-black uppercase tracking-widest">Residuing cloud archives...</p>
-        </div>
-      )}
+                <div className="space-y-1.5">
+                  <label className="block font-mono text-[10px] uppercase tracking-wider text-zinc-400">URL Address</label>
+                  <input
+                    name="url"
+                    required
+                    type="url"
+                    placeholder="https://..."
+                    className="w-full px-4 py-2.5 bg-[#08090b] border border-white/10 rounded-lg text-xs text-white focus:outline-none focus:border-[#ff4625]"
+                  />
+                </div>
 
-      {/* Add Modal */}
-      <AnimatePresence>
-        {showAdd && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowAdd(false)} className="absolute inset-0 bg-background-base/80 backdrop-blur-sm" />
-            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="nv-card w-full max-w-md p-10 space-y-8 relative z-10">
-              <h2 className="text-3xl font-black text-text-primary uppercase tracking-tighter">New Portal</h2>
-              <form onSubmit={addSite} className="space-y-6">
-                <input name="title" required placeholder="Resource Title" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-nuvio-blue" />
-                <input name="url" required placeholder="https://..." className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-nuvio-blue" />
-                <select name="category" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-nuvio-blue">
-                  {categories.slice(1).map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
-                <button type="submit" className="w-full nv-btn-primary h-14 uppercase tracking-widest text-xs bg-nuvio-blue">Link to Cloud</button>
+                <div className="space-y-1.5">
+                  <label className="block font-mono text-[10px] uppercase tracking-wider text-zinc-400">Category Tag</label>
+                  <select
+                    name="category"
+                    className="w-full px-3 py-2.5 bg-[#08090b] border border-white/10 rounded-lg text-xs font-mono uppercase text-zinc-300 focus:outline-none focus:border-[#ff4625]"
+                  >
+                    {categories.slice(1).map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="block font-mono text-[10px] uppercase tracking-wider text-zinc-400">Brief Description</label>
+                  <input
+                    name="desc"
+                    placeholder="Brief notes on resource content"
+                    className="w-full px-4 py-2.5 bg-[#08090b] border border-white/10 rounded-lg text-xs text-white focus:outline-none focus:border-[#ff4625]"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full py-3 bg-[#ff4625] hover:bg-[#ff5738] text-white font-mono uppercase tracking-widest text-xs font-semibold rounded-lg transition-all"
+                >
+                  Commit Bookmark
+                </button>
               </form>
             </motion.div>
           </div>
         )}
       </AnimatePresence>
+
     </div>
   );
 };

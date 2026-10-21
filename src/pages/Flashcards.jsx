@@ -1,25 +1,49 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Plus, Play, Trash2, 
-  ChevronLeft, Sparkles, Brain, 
-  CheckCircle2, XCircle, BookMarked, Layers,
-  X, ArrowRight, Zap, Orbit, Database
+  ChevronLeft, Brain, 
+  CheckCircle2, BookMarked,
+  ArrowRight, RotateCcw, Check, X,
+  Layers, ChevronRight, HelpCircle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { dataService } from '../services/dataService';
-import { xpService } from '../services/xpService';
 import { notificationService } from '../services/notificationService';
-import { gamificationService } from '../services/gamificationService';
+
+const DEFAULT_DECKS = [
+  {
+    id: 'deck-science-9',
+    title: 'Class 9 Science: Laws of Motion',
+    subject: 'Science',
+    cards: [
+      { front: 'State Newton’s First Law of Motion.', back: 'An object remains in a state of rest or uniform motion in a straight line unless acted upon by an external unbalanced force.' },
+      { front: 'What is the mathematical formulation of Newton’s Second Law?', back: 'F = m × a (Force = mass × acceleration). SI unit is Newton (N) or kg·m/s².' },
+      { front: 'Define Inertia and its relationship with mass.', back: 'Inertia is the natural tendency of an object to resist a change in its state of rest or motion. Mass is the measure of inertia.' },
+      { front: 'State Newton’s Third Law of Motion with an example.', back: 'To every action, there is an equal and opposite reaction. Example: When firing a bullet, the gun recoils backward.' }
+    ]
+  },
+  {
+    id: 'deck-math-9',
+    title: 'Class 9 Mathematics: Coordinate Geometry',
+    subject: 'Mathematics',
+    cards: [
+      { front: 'What are the names of the horizontal and vertical axes in the Cartesian plane?', back: 'The horizontal line is called the X-axis (Abscissa); the vertical line is the Y-axis (Ordinate).' },
+      { front: 'What are the coordinates of the origin?', back: '(0, 0) — the intersection point of the X and Y axes.' },
+      { front: 'In which quadrant does the point (-3, 5) lie?', back: 'Quadrant II (where x is negative and y is positive).' },
+      { front: 'What is the y-coordinate of any point lying on the x-axis?', back: 'Zero (0). Any point on the x-axis has coordinates (x, 0).' }
+    ]
+  }
+];
 
 const Flashcards = () => {
   const [decks, setDecks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [view, setView] = useState('library');
+  const [view, setView] = useState('library'); // 'library' | 'study' | 'create'
   const [selectedDeck, setSelectedDeck] = useState(null);
   const [currentCardIdx, setCurrentCardIdx] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
-  const [stats, setStats] = useState({ mastered: 0, tricky: 0 });
-  const [newDeck, setNewDeck] = useState({ title: '', subject: 'General', cards: [{ front: '', back: '' }] });
+  const [score, setScore] = useState({ remembered: 0, review: 0 });
+  const [newDeck, setNewDeck] = useState({ title: '', subject: 'Science', cards: [{ front: '', back: '' }] });
 
   useEffect(() => {
     fetchDecks();
@@ -29,375 +53,355 @@ const Flashcards = () => {
     setLoading(true);
     try {
       const list = await dataService.list('decks');
-      setDecks(list);
-    } catch (err) {} finally {
-      setLoading(false);
-    }
-  };
-
-  const deleteDeck = async (id) => {
-    try {
-      await dataService.delete('decks', id);
-      setDecks(decks.filter(d => d.id !== id));
-      notificationService.send("Vault Cleared", "Study deck successfully purged.", "info");
-    } catch (err) {}
-  };
-
-  const startStudy = (deck) => {
-    setSelectedDeck(deck);
-    setCurrentCardIdx(0);
-    setStats({ mastered: 0, tricky: 0 });
-    setIsFlipped(false);
-    setView('study');
-  };
-
-  const handleNext = (isMastered) => {
-    if (isMastered) setStats(prev => ({ ...prev, mastered: prev.mastered + 1 }));
-    else setStats(prev => ({ ...prev, tricky: prev.tricky + 1 }));
-
-    if (selectedDeck?.cards && currentCardIdx < selectedDeck.cards.length - 1) {
-      setIsFlipped(false);
-      setTimeout(() => setCurrentCardIdx(currentCardIdx + 1), 300);
-    } else if (selectedDeck?.cards) {
-      const totalMastered = stats.mastered + (isMastered ? 1 : 0);
-      const gainedXp = totalMastered * 15;
-      
-      xpService.awardXp(gainedXp, `Mastery: ${selectedDeck.title}`);
-      
-      // Gamification: increment flashcards reviewed
-      gamificationService.incrementStat('stats_flashcards_reviewed', selectedDeck.cards.length);
-
-      // Subject activity increments
-      const subLower = (selectedDeck.subject || '').toLowerCase();
-      if (subLower.includes('math')) {
-        gamificationService.incrementStat('stats_math_completed', 1);
-      } else if (subLower.includes('science')) {
-        gamificationService.incrementStat('stats_science_completed', 1);
+      if (list && list.length > 0) {
+        setDecks(list);
+      } else {
+        // Seed initial NCERT decks
+        setDecks(DEFAULT_DECKS);
+        for (const d of DEFAULT_DECKS) {
+          await dataService.create('decks', d);
+        }
       }
-
-      // Boss damage: 5 DMG per card reviewed
-      gamificationService.dealDamage(selectedDeck.subject || 'General', selectedDeck.cards.length * 5);
-
-      notificationService.send("Session Complete", `Gained +${gainedXp} XP.`, "success");
-      
-      setView('library');
-      setSelectedDeck(null);
-    }
-  };
-
-  const saveNewDeck = async () => {
-    if (!newDeck.title || newDeck.cards.some(c => !c.front || !c.back)) {
-      notificationService.send("Error", "All cards require a front and back.", "error");
-      return;
-    }
-    setLoading(true);
-    try {
-      const created = await dataService.create('decks', newDeck);
-      setDecks([created, ...decks]);
-      setView('library');
-      setNewDeck({ title: '', subject: 'General', cards: [{ front: '', back: '' }] });
-      notificationService.send("Deck Compiled", `"${newDeck.title}" secured in vault.`, "success");
     } catch (err) {
-      console.error("Deck Save Error:", err);
-      notificationService.send("System Error", `Save failed: ${err?.message || 'Unknown error'}`, "error");
+      setDecks(DEFAULT_DECKS);
     } finally {
       setLoading(false);
     }
   };
 
-  if (view === 'library') {
-    return (
-      <div className="space-y-12 pb-32 nv-page-transition px-4 sm:px-8 max-w-7xl mx-auto">
-        <header className="relative flex flex-col md:flex-row items-end justify-between gap-10 border-b-[6px] border-white/10 pb-12 mb-16 mt-8">
-          <div className="absolute top-0 right-10 w-96 h-96 bg-nuvio-blue/20 blur-[120px] pointer-events-none rounded-full" />
-          <div className="space-y-4 relative z-10">
-            <div className="inline-flex items-center gap-4 bg-black border-[3px] border-nuvio-blue shadow-[6px_6px_0_#3B82F6] px-6 py-2 transform -skew-x-6">
-              <Database className="w-6 h-6 text-nuvio-blue" />
-              <span className="text-sm font-black text-white uppercase tracking-widest">Study Storage</span>
-            </div>
-            <h1 className="text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-white/90 to-nuvio-blue uppercase tracking-tighter leading-none filter drop-shadow-lg">
-              Mnemonic <br /> Vault
-            </h1>
+  const deleteDeck = async (id, e) => {
+    e?.stopPropagation();
+    try {
+      await dataService.delete('decks', id);
+      setDecks(decks.filter(d => d.id !== id));
+      notificationService.send("Deck Removed", "Study deck excised from storage.", "info");
+    } catch (err) {
+      console.warn("Delete deck error:", err);
+    }
+  };
+
+  const startStudy = (deck) => {
+    setSelectedDeck(deck);
+    setCurrentCardIdx(0);
+    setScore({ remembered: 0, review: 0 });
+    setIsFlipped(false);
+    setView('study');
+  };
+
+  const handleCardFeedback = (remembered) => {
+    if (remembered) {
+      setScore(prev => ({ ...prev, remembered: prev.remembered + 1 }));
+    } else {
+      setScore(prev => ({ ...prev, review: prev.review + 1 }));
+    }
+
+    if (selectedDeck?.cards && currentCardIdx < selectedDeck.cards.length - 1) {
+      setIsFlipped(false);
+      setCurrentCardIdx(prev => prev + 1);
+    } else {
+      // Completed all cards in deck
+      notificationService.send(
+        "Deck Concluded",
+        `Reviewed ${selectedDeck.cards.length} cards in ${selectedDeck.title}.`,
+        "success"
+      );
+    }
+  };
+
+  const handleAddCardInput = () => {
+    setNewDeck(prev => ({
+      ...prev,
+      cards: [...prev.cards, { front: '', back: '' }]
+    }));
+  };
+
+  const handleCardInputChange = (index, field, value) => {
+    const updatedCards = [...newDeck.cards];
+    updatedCards[index][field] = value;
+    setNewDeck(prev => ({ ...prev, cards: updatedCards }));
+  };
+
+  const handleSaveDeck = async (e) => {
+    e.preventDefault();
+    if (!newDeck.title.trim() || newDeck.cards.some(c => !c.front.trim() || !c.back.trim())) {
+      notificationService.send("Validation Error", "All cards require both a prompt and an explanation.", "error");
+      return;
+    }
+
+    try {
+      const created = await dataService.create('decks', newDeck);
+      setDecks(prev => [created, ...prev]);
+      setView('library');
+      setNewDeck({ title: '', subject: 'Science', cards: [{ front: '', back: '' }] });
+      notificationService.send("Deck Created", `Deck "${created.title}" ready for spaced review.`, "success");
+    } catch (err) {
+      notificationService.send("Creation Error", "Could not commit new deck.", "error");
+    }
+  };
+
+  const isStudyComplete = selectedDeck?.cards && currentCardIdx >= selectedDeck.cards.length - 1 && (score.remembered + score.review) >= selectedDeck.cards.length;
+
+  return (
+    <div className="max-w-5xl mx-auto space-y-10 pb-32 px-4 sm:px-6 font-sans">
+      
+      {/* HEADER */}
+      <header className="border-b border-white/10 pb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="w-2 h-2 rounded-full bg-[#ff4625]" />
+            <span className="font-mono text-[10px] tracking-[0.25em] uppercase text-zinc-400">
+              Active Recall / Spaced Repetition Console
+            </span>
           </div>
-          <button 
+          <h1 className="text-3xl sm:text-4xl font-bold uppercase tracking-tight text-white font-clash">
+            Flashcard Decks
+          </h1>
+          <p className="text-zinc-400 text-sm mt-1 max-w-xl">
+            Self-testing mnemonic cards designed for rapid NCERT definitions, theorems, and formula retrieval.
+          </p>
+        </div>
+
+        {view === 'library' ? (
+          <button
             onClick={() => setView('create')}
-            className="relative overflow-hidden group bg-nuvio-blue px-10 py-5 rounded-2xl flex items-center gap-4 border border-white/20 shadow-xl shadow-nuvio-blue/30 hover:scale-105 transition-all active:scale-95 z-10"
+            className="px-5 py-3 bg-[#ff4625] hover:bg-[#ff5738] text-white font-mono uppercase tracking-widest text-xs font-semibold rounded-lg transition-all flex items-center gap-2 shadow-sm self-start sm:self-end"
           >
-            <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-            <Plus className="w-6 h-6 text-black relative z-10" />
-            <span className="text-xs font-black text-black uppercase tracking-[0.2em] relative z-10">Construct Deck</span>
+            <Plus className="w-4 h-4" />
+            <span>Create New Deck</span>
           </button>
-        </header>
-
-        {decks.length === 0 ? (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-40 border-4 border-dashed border-white/5 text-center rounded-[40px] bg-black/20 flex flex-col items-center justify-center">
-            <BookMarked className="w-24 h-24 text-white/5 mb-8" />
-            <h3 className="text-4xl font-black text-white/20 uppercase tracking-tighter mb-4">Vault Empty</h3>
-            <p className="text-sm font-bold text-white/20 uppercase tracking-widest mb-8">No cognitive modules detected.</p>
-            <button onClick={() => setView('create')} className="px-8 py-4 bg-white/5 text-nuvio-blue font-black uppercase tracking-widest text-xs rounded-xl hover:bg-nuvio-blue hover:text-black transition-all">
-              Initialize First Deck
-            </button>
-          </motion.div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <AnimatePresence>
-              {decks.filter(d => d).map((deck) => (
-                <motion.div 
-                  key={deck.id} layout initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
-                  className="group flex flex-col justify-between p-8 bg-[#0d0d12] border-2 border-white/5 hover:border-nuvio-blue/40 rounded-[32px] transition-all hover:shadow-[0_0_40px_rgba(59,130,246,0.15)] relative overflow-hidden"
-                >
-                  <div className="absolute -right-10 -top-10 w-40 h-40 bg-nuvio-blue/10 blur-3xl rounded-full group-hover:bg-nuvio-blue/20 transition-all" />
-                  
-                  <div className="relative z-10 space-y-8">
-                    <div className="flex justify-between items-start">
-                      <div className="w-16 h-16 rounded-[20px] bg-black border-2 border-white/10 flex items-center justify-center text-nuvio-blue font-black text-3xl group-hover:bg-nuvio-blue group-hover:text-black group-hover:border-nuvio-blue transition-all shadow-lg">
-                        {deck.subject?.charAt(0) || 'D'}
-                      </div>
-                      <button 
-                        onClick={() => deleteDeck(deck.id)}
-                        className="p-3 bg-black border-2 border-white/5 hover:border-nuvio-red text-white/20 hover:text-nuvio-red hover:bg-nuvio-red/10 rounded-xl transition-all"
-                      >
-                        <Trash2 className="w-5 h-5" />
-                      </button>
-                    </div>
-                    <div>
-                      <h3 className="text-3xl font-black text-white uppercase tracking-tight leading-none mb-4">{deck.title}</h3>
-                      <div className="flex flex-wrap items-center gap-3">
-                         <span className="px-3 py-1.5 bg-nuvio-blue/10 border border-nuvio-blue/20 text-[10px] font-black text-nuvio-blue uppercase tracking-widest rounded-lg">{deck.subject}</span>
-                         <span className="text-[10px] font-black text-white/40 uppercase tracking-widest flex items-center gap-2"><Layers className="w-3 h-3" /> {deck.cards?.length || 0} Cards</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="mt-10 pt-6 border-t border-white/5 relative z-10">
-                     <button 
-                       onClick={() => startStudy(deck)}
-                       className="w-full py-5 bg-white/5 hover:bg-nuvio-blue text-white hover:text-black rounded-xl text-xs font-black uppercase tracking-[0.2em] flex items-center justify-center gap-4 transition-all"
-                     >
-                       <Play className="w-4 h-4" /> Commence
-                     </button>
-                  </div>
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </div>
+          <button
+            onClick={() => { setView('library'); setSelectedDeck(null); }}
+            className="px-4 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg font-mono text-xs uppercase tracking-wider text-zinc-300 transition-colors flex items-center gap-2 self-start sm:self-end"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            <span>Return to Decks</span>
+          </button>
         )}
-      </div>
-    );
-  }
+      </header>
 
-  if (view === 'study' && selectedDeck) {
-    const currentCard = selectedDeck.cards[currentCardIdx];
-    return (
-      <div className="max-w-4xl mx-auto space-y-12 pb-32 px-4 sm:px-8 mt-12">
-        <header className="flex items-center justify-between bg-black p-6 rounded-3xl border-2 border-white/5 shadow-2xl">
-          <button 
-            onClick={() => setView('library')}
-            className="p-4 bg-white/5 border-2 border-transparent hover:border-white/10 rounded-xl text-white hover:bg-white/10 transition-all group"
-          >
-            <ChevronLeft className="w-6 h-6 group-hover:-translate-x-1 transition-transform" />
-          </button>
-          <div className="text-center flex-1 px-8">
-            <span className="text-[10px] font-black text-nuvio-cyan uppercase tracking-[0.4em] block mb-3">Syncing: {selectedDeck.title}</span>
-            <div className="flex items-center gap-6">
-               <div className="text-xs font-black text-white px-4 py-2 bg-white/5 rounded-lg border border-white/10">
-                 {currentCardIdx + 1} <span className="text-white/30 mx-2">/</span> {selectedDeck.cards.length}
-               </div>
-               <div className="flex-1 h-2 bg-white/5 rounded-full overflow-hidden border border-white/5">
-                 <motion.div 
-                   className="h-full bg-gradient-to-r from-nuvio-blue to-nuvio-cyan"
-                   initial={{ width: 0 }}
-                   animate={{ width: `${((currentCardIdx + 1) / selectedDeck.cards.length) * 100}%` }}
-                 />
-               </div>
+      {/* VIEW: STUDY MODE */}
+      {view === 'study' && selectedDeck && (
+        <div className="max-w-2xl mx-auto space-y-8">
+          
+          {/* Deck Status Bar */}
+          <div className="flex items-center justify-between text-xs font-mono text-zinc-400 border-b border-white/10 pb-4">
+            <div>
+              <span className="text-white font-bold">{selectedDeck.title}</span>
+              <span className="text-[#ff4625] ml-2">({selectedDeck.subject})</span>
+            </div>
+            <div>
+              Card {Math.min(currentCardIdx + 1, selectedDeck.cards.length)} of {selectedDeck.cards.length}
             </div>
           </div>
-          <div className="w-16" />
-        </header>
 
-        <div className="perspective-2000 h-[500px]">
-          <AnimatePresence mode="wait">
-            <motion.div 
-              key={currentCardIdx}
-              initial={{ opacity: 0, scale: 0.9, rotateY: -20 }}
-              animate={{ opacity: 1, scale: 1, rotateY: 0 }}
-              exit={{ opacity: 0, scale: 0.9, rotateY: 20 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="relative w-full h-full cursor-pointer group"
-              onClick={() => setIsFlipped(!isFlipped)}
-              style={{ transformStyle: 'preserve-3d' }}
-            >
-              <motion.div
-                animate={{ rotateY: isFlipped ? 180 : 0 }}
-                transition={{ type: 'spring', stiffness: 250, damping: 25 }}
-                className="w-full h-full relative"
-                style={{ transformStyle: 'preserve-3d' }}
-              >
-                {/* Front */}
-                <div className="absolute inset-0 bg-[#0a0a0f] border-4 border-white/5 rounded-[40px] p-16 flex flex-col items-center justify-center text-center shadow-2xl overflow-hidden group-hover:border-nuvio-blue/30 transition-colors [backface-visibility:hidden]">
-                  <div className="absolute inset-0 bg-gradient-to-br from-nuvio-blue/5 to-transparent pointer-events-none" />
-                  <div className="absolute top-8 left-1/2 -translate-x-1/2 px-6 py-2 bg-white/5 border border-white/10 text-[10px] font-black text-white/50 uppercase tracking-[0.3em] rounded-xl flex items-center gap-3">
-                    <Orbit className="w-4 h-4 animate-spin-slow" /> Front
-                  </div>
-                  <h2 className="text-4xl md:text-5xl font-black text-white uppercase tracking-tight leading-tight max-w-2xl relative z-10">
-                    {currentCard?.front || ''}
-                  </h2>
-                  <div className="absolute bottom-10 flex flex-col items-center gap-3 opacity-30 group-hover:opacity-100 transition-opacity">
-                    <Sparkles className="w-6 h-6 text-nuvio-blue animate-pulse" />
-                    <span className="text-[9px] font-black text-nuvio-blue uppercase tracking-[0.3em]">Tap to flip</span>
-                  </div>
-                </div>
-
-                {/* Back */}
-                <div 
-                  className="absolute inset-0 bg-[#0d1218] border-4 border-nuvio-green/30 rounded-[40px] p-16 flex flex-col items-center justify-center text-center shadow-[0_0_80px_rgba(74,222,128,0.15)] overflow-hidden [backface-visibility:hidden] [transform:rotateY(180deg)]"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-tr from-nuvio-green/10 to-transparent pointer-events-none" />
-                  <div className="absolute top-8 left-1/2 -translate-x-1/2 px-6 py-2 bg-nuvio-green/10 border border-nuvio-green/20 text-[10px] font-black text-nuvio-green uppercase tracking-[0.3em] rounded-xl flex items-center gap-3">
-                    <Brain className="w-4 h-4" /> Solution
-                  </div>
-                  <p className="text-3xl md:text-4xl font-bold text-white leading-tight max-w-2xl relative z-10">
-                    {currentCard?.back || ''}
-                  </p>
-                </div>
-              </motion.div>
-            </motion.div>
-          </AnimatePresence>
-        </div>
-
-        <div className="grid grid-cols-2 gap-6 h-24">
-          <button 
-            onClick={() => handleNext(false)} 
-            className="flex items-center justify-center gap-4 bg-black border-4 border-nuvio-red/20 hover:border-nuvio-red hover:bg-nuvio-red/10 text-nuvio-red text-sm font-black uppercase tracking-[0.2em] rounded-[24px] transition-all active:scale-95"
-          >
-            <XCircle className="w-8 h-8" /> Retry
-          </button>
-          <button 
-            onClick={() => handleNext(true)} 
-            className="flex items-center justify-center gap-4 bg-nuvio-green border-4 border-nuvio-green hover:bg-transparent text-black hover:text-nuvio-green text-sm font-black uppercase tracking-[0.2em] rounded-[24px] transition-all shadow-[0_0_40px_rgba(74,222,128,0.3)] hover:shadow-none active:scale-95"
-          >
-            <CheckCircle2 className="w-8 h-8" /> Mastered
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  if (view === 'create') {
-    return (
-      <div className="max-w-4xl mx-auto space-y-12 pb-32 px-4 sm:px-8 mt-12">
-        <header className="flex items-center gap-8 bg-black p-6 rounded-3xl border-2 border-white/5 shadow-2xl">
-          <button onClick={() => setView('library')} className="p-4 bg-white/5 hover:bg-white/10 rounded-xl text-white transition-all border border-transparent hover:border-white/10">
-             <ChevronLeft className="w-6 h-6" />
-          </button>
-          <div>
-            <h1 className="text-4xl font-black text-white uppercase tracking-tighter">Deck Constructor</h1>
-            <p className="text-[10px] text-text-muted font-black uppercase tracking-[0.3em] mt-2">Initialize new memory block</p>
-          </div>
-        </header>
-
-        <div className="space-y-8">
-          <div className="bg-[#0a0a0f] border-2 border-white/5 rounded-[32px] p-10 space-y-12 shadow-2xl">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="space-y-4">
-                <label className="text-[10px] font-black text-white/50 uppercase tracking-[0.2em]">Deck Designation</label>
-                <input 
-                  className="w-full bg-black border-2 border-white/10 rounded-xl px-6 py-5 text-xl font-black text-white outline-none focus:border-nuvio-blue transition-colors placeholder:text-white/10 uppercase" 
-                  placeholder="E.G. PHYSICS 101"
-                  value={newDeck.title}
-                  onChange={(e) => setNewDeck({...newDeck, title: e.target.value})}
-                />
+          {isStudyComplete ? (
+            /* Study Completion Card */
+            <div className="p-10 border border-white/10 bg-[#0d0f14] rounded-2xl text-center space-y-6">
+              <div className="w-14 h-14 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto">
+                <CheckCircle2 className="w-7 h-7" />
               </div>
-              <div className="space-y-4">
-                <label className="text-[10px] font-black text-white/50 uppercase tracking-[0.2em]">Sector Label</label>
-                <input 
-                  className="w-full bg-black border-2 border-white/10 rounded-xl px-6 py-5 text-xl font-black text-nuvio-blue outline-none focus:border-nuvio-blue transition-colors placeholder:text-nuvio-blue/20 uppercase" 
-                  placeholder="E.G. SCIENCE"
-                  value={newDeck.subject}
-                  onChange={(e) => setNewDeck({...newDeck, subject: e.target.value})}
-                />
-              </div>
-            </div>
-
-            <div className="space-y-6 pt-10 border-t-2 border-white/5">
-              <div className="flex items-center justify-between mb-8">
-                <h3 className="text-lg font-black text-white uppercase tracking-widest flex items-center gap-4">
-                  <Layers className="w-6 h-6 text-nuvio-cyan" /> 
-                  Card Units <span className="bg-white/10 px-3 py-1 rounded-md text-xs">{newDeck.cards.length}</span>
+              <div>
+                <span className="font-mono text-[9px] uppercase tracking-widest text-zinc-500">Session Concluded</span>
+                <h3 className="text-2xl font-bold uppercase text-white font-clash mt-1">
+                  Active Retrieval Complete
                 </h3>
               </div>
-              
-              <div className="space-y-8">
-                <AnimatePresence>
-                  {newDeck.cards.map((card, idx) => (
-                    <motion.div 
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, scale: 0.9 }}
-                      key={idx} 
-                      className="group relative p-8 bg-black border-2 border-white/5 hover:border-nuvio-blue/30 rounded-[24px] transition-all space-y-6"
-                    >
-                      <div className="absolute -left-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-nuvio-blue text-xs font-black flex items-center justify-center text-black border-4 border-[#0a0a0f] shadow-lg">
-                         {idx + 1}
-                      </div>
-                      {newDeck.cards.length > 1 && (
-                        <button 
-                          onClick={() => {
-                            const updated = newDeck.cards.filter((_, i) => i !== idx);
-                            setNewDeck({...newDeck, cards: updated});
-                          }}
-                          className="absolute -right-4 -top-4 w-10 h-10 rounded-full bg-[#0a0a0f] border-2 border-white/10 hover:border-nuvio-red text-white/30 hover:text-nuvio-red hover:bg-nuvio-red/10 flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 shadow-xl"
-                        >
-                          <X className="w-5 h-5" />
-                        </button>
-                      )}
-                      <div className="space-y-6 pl-4">
-                        <input 
-                          className="w-full bg-transparent border-b-2 border-white/5 hover:border-white/20 py-4 outline-none focus:border-nuvio-blue text-2xl font-black text-white placeholder:text-white/10 transition-colors" 
-                          placeholder="FRONT (QUESTION)"
-                          value={card.front}
-                          onChange={(e) => {
-                            const updated = [...newDeck.cards];
-                            updated[idx].front = e.target.value;
-                            setNewDeck({...newDeck, cards: updated});
-                          }}
-                        />
-                        <textarea 
-                          className="w-full bg-transparent border-b-2 border-white/5 hover:border-white/20 py-4 outline-none focus:border-nuvio-green text-xl font-bold text-nuvio-green placeholder:text-nuvio-green/20 resize-none min-h-[80px] transition-colors" 
-                          placeholder="BACK (SOLUTION)"
-                          value={card.back}
-                          onChange={(e) => {
-                            const updated = [...newDeck.cards];
-                            updated[idx].back = e.target.value;
-                            setNewDeck({...newDeck, cards: updated});
-                          }}
-                        />
-                      </div>
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
+              <div className="p-4 bg-[#08090b] border border-white/5 rounded-xl max-w-sm mx-auto grid grid-cols-2 gap-4 text-center">
+                <div>
+                  <span className="text-[9px] font-mono uppercase text-zinc-500">Retained</span>
+                  <div className="text-2xl font-bold text-emerald-400 font-clash">{score.remembered}</div>
+                </div>
+                <div>
+                  <span className="text-[9px] font-mono uppercase text-zinc-500">Needs Review</span>
+                  <div className="text-2xl font-bold text-rose-400 font-clash">{score.review}</div>
+                </div>
               </div>
-
-              <button 
-                onClick={() => setNewDeck({...newDeck, cards: [...newDeck.cards, { front: '', back: '' }]})}
-                className="w-full py-8 text-xs font-black text-white/40 hover:text-white uppercase tracking-[0.3em] border-4 border-dashed border-white/5 hover:border-white/20 rounded-[24px] hover:bg-white/5 transition-all flex items-center justify-center gap-4 mt-8"
+              <button
+                onClick={() => startStudy(selectedDeck)}
+                className="px-6 py-3 bg-[#ff4625] hover:bg-[#ff5738] text-white font-mono uppercase tracking-widest text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-2 mx-auto"
               >
-                <Plus className="w-6 h-6" /> Add Card
+                <RotateCcw className="w-4 h-4" />
+                <span>Repeat Deck</span>
               </button>
             </div>
-          </div>
+          ) : (
+            /* Active Interactive Flip Card */
+            <div className="space-y-6">
+              <div
+                onClick={() => setIsFlipped(!isFlipped)}
+                className="min-h-[280px] p-8 border border-white/10 bg-[#0d0f14] hover:border-white/20 rounded-2xl cursor-pointer transition-all flex flex-col justify-between select-none relative"
+              >
+                <div className="flex justify-between items-center text-[10px] font-mono uppercase text-zinc-500">
+                  <span>{isFlipped ? 'Answer / Reference' : 'Prompt / Question'}</span>
+                  <span>Click anywhere to flip</span>
+                </div>
 
-          <button 
-            onClick={saveNewDeck}
-            className="w-full h-24 bg-nuvio-blue text-black hover:bg-white text-lg font-black uppercase tracking-[0.3em] rounded-[32px] shadow-[0_20px_40px_rgba(59,130,246,0.3)] hover:shadow-[0_20px_60px_rgba(255,255,255,0.4)] transition-all flex items-center justify-center gap-4 group active:scale-95"
-          >
-            Deploy to Vault <ArrowRight className="w-8 h-8 group-hover:translate-x-4 transition-transform" />
-          </button>
+                <div className="py-8 text-center">
+                  <h3 className="text-xl sm:text-2xl font-bold text-white font-sans leading-relaxed">
+                    {isFlipped 
+                      ? selectedDeck.cards[currentCardIdx]?.back 
+                      : selectedDeck.cards[currentCardIdx]?.front}
+                  </h3>
+                </div>
+
+                <div className="text-center font-mono text-[10px] text-zinc-500 uppercase tracking-widest">
+                  {isFlipped ? 'Tap to view prompt' : 'Tap to unveil answer'}
+                </div>
+              </div>
+
+              {/* Evaluation Buttons (Enabled when flipped) */}
+              {isFlipped && (
+                <div className="grid grid-cols-2 gap-4 animate-fadeIn">
+                  <button
+                    onClick={() => handleCardFeedback(false)}
+                    className="p-4 border border-rose-500/20 bg-rose-500/5 hover:bg-rose-500/10 text-rose-400 rounded-xl font-mono text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all"
+                  >
+                    <X className="w-4 h-4" />
+                    <span>Needs More Review</span>
+                  </button>
+
+                  <button
+                    onClick={() => handleCardFeedback(true)}
+                    className="p-4 border border-emerald-500/20 bg-emerald-500/5 hover:bg-emerald-500/10 text-emerald-400 rounded-xl font-mono text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all"
+                  >
+                    <Check className="w-4 h-4" />
+                    <span>Retrieved Accurately</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
         </div>
-      </div>
-    );
-  }
+      )}
 
-  return null;
+      {/* VIEW: CREATE DECK */}
+      {view === 'create' && (
+        <form onSubmit={handleSaveDeck} className="max-w-2xl mx-auto space-y-8">
+          <div className="p-8 border border-white/10 bg-[#0d0f14] rounded-2xl space-y-6">
+            <h2 className="font-clash text-xl font-bold uppercase text-white">Construct Mnemonic Deck</h2>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="sm:col-span-2 space-y-2">
+                <label className="block font-mono text-[10px] uppercase tracking-wider text-zinc-400">Deck Title</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. NCERT Science Chapter 9 Formulas"
+                  value={newDeck.title}
+                  onChange={(e) => setNewDeck({ ...newDeck, title: e.target.value })}
+                  className="w-full px-4 py-3 bg-[#08090b] border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-[#ff4625]"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="block font-mono text-[10px] uppercase tracking-wider text-zinc-400">Subject</label>
+                <select
+                  value={newDeck.subject}
+                  onChange={(e) => setNewDeck({ ...newDeck, subject: e.target.value })}
+                  className="w-full px-4 py-3 bg-[#08090b] border border-white/10 rounded-lg text-xs font-mono uppercase text-zinc-300 focus:outline-none focus:border-[#ff4625]"
+                >
+                  <option value="Mathematics">Mathematics</option>
+                  <option value="Science">Science</option>
+                  <option value="English">English</option>
+                  <option value="Social Science">Social Science</option>
+                  <option value="General">General</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Dynamic Card Fields */}
+            <div className="space-y-4 pt-4 border-t border-white/5">
+              <div className="flex justify-between items-center">
+                <span className="font-mono text-xs uppercase tracking-widest text-zinc-400 font-bold">
+                  Card Pairs ({newDeck.cards.length})
+                </span>
+                <button
+                  type="button"
+                  onClick={handleAddCardInput}
+                  className="text-xs font-mono uppercase text-[#ff4625] hover:text-[#ff5738] flex items-center gap-1 font-bold"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Add Another Card</span>
+                </button>
+              </div>
+
+              {newDeck.cards.map((card, idx) => (
+                <div key={idx} className="p-4 border border-white/5 bg-[#08090b] rounded-xl space-y-3">
+                  <div className="text-[10px] font-mono text-zinc-500 uppercase">Card #{idx + 1}</div>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Front: Concept or question prompt"
+                    value={card.front}
+                    onChange={(e) => handleCardInputChange(idx, 'front', e.target.value)}
+                    className="w-full px-3 py-2 bg-transparent border border-white/10 rounded-md text-xs text-white focus:outline-none focus:border-[#ff4625]"
+                  />
+                  <textarea
+                    required
+                    rows={2}
+                    placeholder="Back: Accurate definition or explanation"
+                    value={card.back}
+                    onChange={(e) => handleCardInputChange(idx, 'back', e.target.value)}
+                    className="w-full px-3 py-2 bg-transparent border border-white/10 rounded-md text-xs text-white focus:outline-none focus:border-[#ff4625]"
+                  />
+                </div>
+              ))}
+            </div>
+
+            <button
+              type="submit"
+              className="w-full py-3.5 bg-[#ff4625] hover:bg-[#ff5738] text-white font-mono uppercase tracking-widest text-xs font-semibold rounded-lg transition-all"
+            >
+              Commit Deck to Storage
+            </button>
+          </div>
+        </form>
+      )}
+
+      {/* VIEW: LIBRARY */}
+      {view === 'library' && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {decks.map((deck) => (
+            <div
+              key={deck.id}
+              onClick={() => startStudy(deck)}
+              className="p-6 border border-white/10 bg-[#0d0f14] hover:border-[#ff4625]/40 hover:bg-[#12151c] rounded-2xl cursor-pointer transition-all flex flex-col justify-between h-56 group relative"
+            >
+              <div className="flex justify-between items-start">
+                <span className="font-mono text-[9px] uppercase tracking-wider text-[#ff4625] font-bold bg-[#ff4625]/10 px-2 py-0.5 rounded">
+                  {deck.subject || 'Curriculum'}
+                </span>
+                <button
+                  onClick={(e) => deleteDeck(deck.id, e)}
+                  className="p-1.5 text-zinc-600 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                  title="Delete Deck"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
+              </div>
+
+              <div>
+                <h3 className="font-clash text-lg font-bold text-white uppercase group-hover:text-[#ff4625] transition-colors line-clamp-2">
+                  {deck.title}
+                </h3>
+                <span className="font-mono text-[10px] text-zinc-500 mt-2 block">
+                  {deck.cards?.length || 0} retrieval cards
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between pt-3 border-t border-white/5 text-xs text-zinc-400 font-mono">
+                <span>Start Review</span>
+                <ArrowRight className="w-4 h-4 text-zinc-600 group-hover:text-[#ff4625] transition-colors" />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+    </div>
+  );
 };
 
 export default Flashcards;

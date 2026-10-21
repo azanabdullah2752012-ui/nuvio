@@ -1,273 +1,308 @@
 import React, { useState } from 'react';
 import { 
   PenTool, FileText, CheckCircle2, 
-  Star, RotateCcw, BookOpen, Lightbulb,
-  ChevronRight, Award
+  RotateCcw, BookOpen, Lightbulb,
+  ChevronRight, ArrowRight, Check, Sparkles
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { xpService } from '../services/xpService';
 import { notificationService } from '../services/notificationService';
 
 const WRITING_PROMPTS = [
-  { id: 'p1', subject: 'English', grade: '9th', prompt: 'Write about a time when you helped someone learn something new. What did you teach them and how did that experience change you?', type: 'Narrative', marks: 8 },
-  { id: 'p2', subject: 'English', grade: '9th', prompt: 'Describe the importance of literacy in modern society. Use examples from your own life or the story "How I Taught My Grandmother to Read".', type: 'Descriptive', marks: 10 },
-  { id: 'p3', subject: 'English', grade: '9th', prompt: 'Argue for or against: "Technology has made traditional crafts like pottery irrelevant in today\'s world."', type: 'Argumentative', marks: 8 },
-  { id: 'p4', subject: 'Science', grade: '9th', prompt: 'Explain how Newton\'s three laws of motion apply to everyday activities. Give at least two real-world examples for each law.', type: 'Expository', marks: 10 },
-  { id: 'p5', subject: 'English', grade: '10th', prompt: 'Write a letter to your school principal suggesting improvements to the library that would help students prepare for exams.', type: 'Formal Letter', marks: 5 },
+  { id: 'p1', subject: 'English', grade: '9th', prompt: 'Write a personal narrative describing an instance where you helped a classmate master a difficult academic concept. Reflect on the cognitive hurdles encountered and how this exchange evolved your own comprehension.', type: 'Reflective Narrative', marks: 10 },
+  { id: 'p2', subject: 'English', grade: '9th', prompt: 'Examine the significance of foundational literacy in contemporary technological societies, referencing themes from the NCERT text "How I Taught My Grandmother to Read".', type: 'Analytical Essay', marks: 10 },
+  { id: 'p3', subject: 'English', grade: '9th', prompt: 'Draft a formal argumentative piece: "Artificial intelligence in classroom learning accelerates conceptual synthesis versus passive cognitive dependence."', type: 'Argumentative', marks: 10 },
+  { id: 'p4', subject: 'Science', grade: '9th', prompt: 'Formulate an expository essay demonstrating how Newton’s Three Laws of Motion govern modern spaceflight propulsion and planetary orbital insertions.', type: 'Scientific Expository', marks: 10 },
+  { id: 'p5', subject: 'English', grade: '9th', prompt: 'Write an official formal letter to your academic principal proposing the installation of structured quiet-focus study pods within the secondary library.', type: 'Formal Letter', marks: 8 }
 ];
 
 const SELF_RUBRIC = [
-  { id: 'content', label: 'Content & Ideas', desc: 'Is the essay relevant, informative, and well-supported with examples?', max: 4 },
-  { id: 'structure', label: 'Structure & Organisation', desc: 'Does it have a clear intro, body, and conclusion?', max: 3 },
-  { id: 'language', label: 'Language & Vocabulary', desc: 'Are sentences varied? Is vocabulary appropriate for the level?', max: 2 },
-  { id: 'grammar', label: 'Grammar & Spelling', desc: 'Are sentences grammatically correct and free of spelling errors?', max: 1 },
+  { id: 'content', label: 'Content Depth & Thesis', desc: 'Is the argument nuanced, factually substantiated, and aligned with CBSE guidelines?', max: 4 },
+  { id: 'structure', label: 'Structural Architecture', desc: 'Does the essay possess an intentional opening hook, sequential transitions, and a decisive conclusion?', max: 3 },
+  { id: 'lexical', label: 'Lexical Vocabulary & Tone', desc: 'Are words precise, varied, and fitting the formal academic register without verbose filler?', max: 2 },
+  { id: 'mechanics', label: 'Grammar & Syntactic Flow', desc: 'Are sentences grammatically sound, punctuated accurately, and rhythmic?', max: 1 }
 ];
 
-const WRITING_TIPS = [
-  'Always plan your essay before writing — spend 2–3 minutes outlining your key points.',
-  'Start with a strong hook: a surprising fact, a question, or a bold statement.',
-  'Use the PEE structure for body paragraphs: Point → Evidence → Explanation.',
-  'Vary your sentence length for effect — mix short punchy sentences with longer descriptive ones.',
-  'Re-read your essay once from the examiner\'s perspective before submitting.',
-  'Avoid repeating the same vocabulary — use synonyms to show a rich command of language.',
+const WRITING_PRINCIPLES = [
+  'Architect before execution: Spend 3 minutes drafting 3 core thesis pillars.',
+  'Lead with concrete stakes: Open with a verifiable real-world tension or inquiry.',
+  'Maintain the PEE cadence: Point → Evidence → Explanation per paragraph.',
+  'Syntactic rhythm: Alternate between short punchy axioms and deliberate compound structures.',
+  'Audit through the examiner’s lens: Remove every sentence that fails to advance your thesis.'
 ];
 
 const WritingWorkshop = () => {
   const [selectedPrompt, setSelectedPrompt] = useState(null);
   const [essay, setEssay] = useState('');
-  const [scores, setScores] = useState({});
-  const [phase, setPhase] = useState('select'); // select | write | assess | results
-  const [tipIdx] = useState(() => new Date().getDate() % WRITING_TIPS.length);
+  const [scores, setScores] = useState({ content: 4, structure: 3, lexical: 2, mechanics: 1 });
+  const [phase, setPhase] = useState('select'); // 'select' | 'write' | 'assess' | 'results'
+  const [tipIdx] = useState(() => new Date().getDate() % WRITING_PRINCIPLES.length);
 
   const wordCount = essay.trim().split(/\s+/).filter(Boolean).length;
+  const paragraphCount = essay.trim().split(/\n\s*\n/).filter(Boolean).length;
+  const readTimeMinutes = Math.max(1, Math.round(wordCount / 180));
+
   const totalScore = Object.values(scores).reduce((a, b) => a + b, 0);
   const maxScore = SELF_RUBRIC.reduce((a, c) => a + c.max, 0);
   const percentage = Math.round((totalScore / maxScore) * 100);
 
-  const handleSubmitAssessment = async () => {
-    const xpEarned = 30 + percentage;
-    await xpService.awardXp(xpEarned, `Writing Workshop: ${selectedPrompt.type}`);
-    notificationService.send('Workshop Complete! ✍️', `+${xpEarned} XP earned for your writing session.`, 'success');
+  const handleStartWriting = (prompt) => {
+    setSelectedPrompt(prompt);
+    setEssay('');
+    setPhase('write');
+  };
+
+  const handleFinishWriting = () => {
+    if (wordCount < 30) {
+      notificationService.send("Draft Incomplete", "Please draft at least 30 words before proceeding to self-rubric evaluation.", "info");
+      return;
+    }
+    setPhase('assess');
+  };
+
+  const handleSubmitAssessment = () => {
+    notificationService.send("Evaluation Recorded", `Academic composition evaluated at ${percentage}%.`, "success");
     setPhase('results');
   };
 
-  if (phase === 'select') {
-    return (
-      <div className="space-y-10 pb-20 nv-page-transition">
-        <header>
-          <h1 className="text-4xl font-black text-white uppercase tracking-tighter flex items-center gap-3">
-            <PenTool className="w-8 h-8 text-nuvio-purple-400" /> Writing Workshop
+  return (
+    <div className="max-w-5xl mx-auto space-y-10 pb-32 px-4 sm:px-6 font-sans">
+      
+      {/* HEADER */}
+      <header className="border-b border-white/10 pb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="w-2 h-2 rounded-full bg-[#ff4625]" />
+            <span className="font-mono text-[10px] tracking-[0.25em] uppercase text-zinc-400">
+              Literary Architecture / CBSE Essay Forge
+            </span>
+          </div>
+          <h1 className="text-3xl sm:text-4xl font-bold uppercase tracking-tight text-white font-clash">
+            Essay Forge
           </h1>
-          <p className="text-text-secondary font-medium mt-1">Practice essays, develop your craft, and self-assess against CBSE rubrics.</p>
-        </header>
-
-        {/* Daily Writing Tip */}
-        <div className="nv-card p-8 border-nuvio-purple-500/20 bg-nuvio-purple-500/5 flex items-start gap-6">
-          <div className="w-12 h-12 rounded-2xl bg-nuvio-purple-500/20 flex items-center justify-center text-2xl flex-shrink-0">💡</div>
-          <div>
-            <div className="text-[10px] font-black text-nuvio-purple-400 uppercase tracking-[0.3em] mb-2">Writer's Tip of the Day</div>
-            <p className="text-sm font-medium text-text-secondary leading-relaxed">{WRITING_TIPS[tipIdx]}</p>
-          </div>
+          <p className="text-zinc-400 text-sm mt-1 max-w-xl">
+            Structured composition workbench. Practice argumentative essays, formal letters, and evaluate against CBSE board rubrics.
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Prompts */}
-          <div className="lg:col-span-2 space-y-4">
-            <h2 className="text-sm font-black text-text-muted uppercase tracking-[0.3em]">Choose a Writing Prompt</h2>
-            {WRITING_PROMPTS.map((prompt, i) => (
-              <motion.button
-                key={prompt.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.06 }}
-                onClick={() => { setSelectedPrompt(prompt); setPhase('write'); }}
-                className="w-full nv-card p-8 text-left border-white/5 hover:border-nuvio-purple-500/40 hover:bg-white/[0.03] transition-all group"
-              >
-                <div className="flex items-start justify-between gap-4 mb-3">
-                  <div className="flex items-center gap-3">
-                    <span className="px-3 py-1 bg-nuvio-purple-500/20 text-nuvio-purple-300 rounded-full text-[9px] font-black uppercase tracking-widest">{prompt.type}</span>
-                    <span className="px-3 py-1 bg-white/5 text-text-muted rounded-full text-[9px] font-black uppercase tracking-widest">{prompt.subject} · {prompt.grade}</span>
-                  </div>
-                  <span className="text-[10px] font-black text-nuvio-yellow whitespace-nowrap">{prompt.marks} marks</span>
-                </div>
-                <p className="text-sm font-medium text-text-primary leading-relaxed">{prompt.prompt}</p>
-                <div className="mt-4 flex items-center gap-2 text-nuvio-purple-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <span className="text-[10px] font-black uppercase tracking-widest">Start Writing</span>
-                  <ChevronRight className="w-4 h-4" />
-                </div>
-              </motion.button>
-            ))}
-          </div>
+        {phase !== 'select' && (
+          <button
+            onClick={() => setPhase('select')}
+            className="px-4 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg font-mono text-xs uppercase tracking-wider text-zinc-300 transition-colors self-start sm:self-end"
+          >
+            ← Select Different Prompt
+          </button>
+        )}
+      </header>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
-            <div className="nv-card p-8 border-white/5">
-              <h3 className="text-[10px] font-black text-text-muted uppercase tracking-[0.3em] mb-6">How It Works</h3>
-              {[
-                { step: '1', label: 'Pick a Prompt', desc: 'Choose an essay prompt matching your grade.' },
-                { step: '2', label: 'Write Your Essay', desc: 'Write freely — focus on your ideas first.' },
-                { step: '3', label: 'Self-Assess', desc: 'Rate yourself against the CBSE rubric criteria.' },
-                { step: '4', label: 'Earn XP', desc: 'Earn XP based on your self-assessment score.' },
-              ].map(item => (
-                <div key={item.step} className="flex items-start gap-4 mb-5 last:mb-0">
-                  <div className="w-8 h-8 rounded-full bg-nuvio-purple-500 flex items-center justify-center text-[10px] font-black text-white flex-shrink-0">{item.step}</div>
-                  <div>
-                    <div className="text-xs font-black text-white uppercase tracking-tight">{item.label}</div>
-                    <div className="text-[10px] text-text-muted font-bold mt-0.5">{item.desc}</div>
-                  </div>
-                </div>
-              ))}
+      {/* PHASE 1: SELECT PROMPT */}
+      {phase === 'select' && (
+        <div className="space-y-8">
+          
+          {/* Daily Writing Principle Card */}
+          <div className="p-6 border border-white/10 bg-[#0d0f14] rounded-2xl flex items-start gap-4">
+            <div className="w-10 h-10 rounded-xl bg-[#ff4625]/10 border border-[#ff4625]/20 flex items-center justify-center text-[#ff4625] shrink-0">
+              <Lightbulb className="w-5 h-5" />
             </div>
-
-            <div className="nv-card p-8 border-white/5 bg-white/[0.01]">
-              <h3 className="text-[10px] font-black text-text-muted uppercase tracking-[0.3em] mb-4">CBSE Marking Criteria</h3>
-              {SELF_RUBRIC.map(r => (
-                <div key={r.id} className="flex justify-between items-center mb-3 last:mb-0">
-                  <span className="text-[10px] font-bold text-text-secondary uppercase tracking-widest">{r.label}</span>
-                  <span className="text-[10px] font-black text-nuvio-yellow">{r.max} marks</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (phase === 'write') {
-    return (
-      <div className="space-y-8 pb-20 nv-page-transition">
-        <header className="flex items-center gap-4">
-          <button onClick={() => { setPhase('select'); setEssay(''); }} className="p-3 bg-white/5 rounded-2xl text-text-muted hover:text-white border border-white/5 transition-all">←</button>
-          <div>
-            <h1 className="text-2xl font-black text-white uppercase tracking-tighter">Write Your Essay</h1>
-            <div className="flex gap-2 mt-1">
-              <span className="px-2 py-0.5 bg-nuvio-purple-500/20 text-nuvio-purple-300 rounded-full text-[9px] font-black uppercase tracking-widest">{selectedPrompt.type}</span>
-              <span className="px-2 py-0.5 bg-white/5 text-text-muted rounded-full text-[9px] font-black uppercase tracking-widest">{selectedPrompt.subject}</span>
-            </div>
-          </div>
-        </header>
-
-        {/* Prompt */}
-        <div className="nv-card p-8 border-nuvio-blue/20 bg-nuvio-blue/5">
-          <div className="flex items-start gap-4">
-            <BookOpen className="w-5 h-5 text-nuvio-blue flex-shrink-0 mt-0.5" />
             <div>
-              <div className="text-[10px] font-black text-nuvio-blue uppercase tracking-widest mb-2">Question Prompt</div>
-              <p className="text-sm font-medium text-text-primary leading-relaxed">{selectedPrompt.prompt}</p>
+              <span className="font-mono text-[9px] uppercase tracking-widest text-[#ff4625] font-bold">
+                Composition Directive
+              </span>
+              <p className="text-sm text-zinc-200 mt-1 font-sans">
+                {WRITING_PRINCIPLES[tipIdx]}
+              </p>
             </div>
           </div>
-        </div>
 
-        {/* Editor */}
-        <div className="nv-card p-0 overflow-hidden border-white/10 focus-within:border-nuvio-purple-500/50 transition-all">
-          <div className="flex items-center justify-between px-8 py-4 bg-white/5 border-b border-white/5">
-            <span className="text-[10px] font-black text-text-muted uppercase tracking-widest">Your Response</span>
-            <div className="flex items-center gap-4">
-              <span className={`text-[10px] font-black uppercase tracking-widest ${wordCount < 100 ? 'text-nuvio-red' : wordCount < 200 ? 'text-nuvio-yellow' : 'text-nuvio-green'}`}>
-                {wordCount} words {wordCount < 100 ? '(aim for 100+)' : ''}
+          {/* Prompts Matrix */}
+          <div className="space-y-4">
+            <span className="font-mono text-xs uppercase tracking-widest text-zinc-400 font-bold block">
+              Curriculum Writing Prompts
+            </span>
+
+            <div className="space-y-4">
+              {WRITING_PROMPTS.map((prompt) => (
+                <div
+                  key={prompt.id}
+                  onClick={() => handleStartWriting(prompt)}
+                  className="p-6 border border-white/10 bg-[#0d0f14] hover:border-[#ff4625]/40 hover:bg-[#12151c] rounded-2xl cursor-pointer transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-6 group"
+                >
+                  <div className="space-y-2 max-w-2xl">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-[9px] uppercase tracking-wider text-[#ff4625] bg-[#ff4625]/10 px-2 py-0.5 rounded font-bold">
+                        {prompt.type}
+                      </span>
+                      <span className="font-mono text-[10px] text-zinc-500">
+                        {prompt.subject} · Class {prompt.grade}
+                      </span>
+                    </div>
+                    <p className="text-sm font-semibold text-white leading-relaxed font-sans">
+                      {prompt.prompt}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-3 shrink-0">
+                    <span className="font-mono text-xs text-zinc-400 font-bold">
+                      {prompt.marks} Marks
+                    </span>
+                    <button className="px-4 py-2 bg-white/5 group-hover:bg-[#ff4625] text-zinc-300 group-hover:text-white rounded-lg font-mono text-xs uppercase tracking-wider transition-all flex items-center gap-1.5">
+                      <span>Draft</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+        </div>
+      )}
+
+      {/* PHASE 2: WRITE ESSAY */}
+      {phase === 'write' && selectedPrompt && (
+        <div className="space-y-6">
+          
+          {/* Prompt Banner */}
+          <div className="p-6 border border-white/10 bg-[#0d0f14] rounded-2xl space-y-2">
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-[9px] uppercase tracking-wider text-[#ff4625] font-bold">
+                {selectedPrompt.type} · {selectedPrompt.marks} Marks
               </span>
             </div>
+            <h3 className="text-base font-semibold text-white leading-relaxed">
+              {selectedPrompt.prompt}
+            </h3>
           </div>
-          <textarea
-            className="w-full h-[400px] bg-transparent p-8 text-text-primary leading-relaxed resize-none focus:outline-none placeholder:text-text-muted/20 text-sm"
-            placeholder="Start writing your essay here. Plan your introduction, develop your body paragraphs, and conclude strongly..."
-            value={essay}
-            onChange={e => setEssay(e.target.value)}
-          />
-        </div>
 
-        <button
-          onClick={() => setPhase('assess')}
-          disabled={wordCount < 50}
-          className="w-full nv-btn-primary h-16 text-sm font-black uppercase tracking-widest flex items-center justify-center gap-3 disabled:opacity-40"
-        >
-          <CheckCircle2 className="w-5 h-5" />
-          Proceed to Self-Assessment
-        </button>
-        {wordCount < 50 && <p className="text-center text-[10px] text-text-muted font-bold uppercase tracking-widest">Write at least 50 words to continue.</p>}
-      </div>
-    );
-  }
-
-  if (phase === 'assess') {
-    return (
-      <div className="space-y-8 pb-20 nv-page-transition max-w-2xl mx-auto">
-        <header>
-          <h1 className="text-3xl font-black text-white uppercase tracking-tighter">Self-Assessment</h1>
-          <p className="text-text-secondary mt-1 text-sm">Rate your own work honestly against each CBSE criterion.</p>
-        </header>
-
-        <div className="space-y-6">
-          {SELF_RUBRIC.map(rubric => (
-            <div key={rubric.id} className="nv-card p-8 border-white/5">
-              <div className="flex items-start justify-between gap-4 mb-3">
-                <div>
-                  <h3 className="text-sm font-black text-white uppercase tracking-tight">{rubric.label}</h3>
-                  <p className="text-[10px] text-text-muted font-bold uppercase tracking-widest mt-1">{rubric.desc}</p>
-                </div>
-                <span className="text-[10px] font-black text-nuvio-yellow whitespace-nowrap">Max: {rubric.max}</span>
+          {/* Writing Surface */}
+          <div className="border border-white/10 bg-[#0d0f14] rounded-2xl overflow-hidden">
+            {/* Live Telemetry Bar */}
+            <div className="px-6 py-3 border-b border-white/5 bg-[#08090b] flex items-center justify-between font-mono text-xs text-zinc-400">
+              <div className="flex items-center gap-6">
+                <span>{wordCount} Words</span>
+                <span>{paragraphCount} Paragraphs</span>
+                <span>~{readTimeMinutes} min read</span>
               </div>
-              <div className="flex gap-3 mt-4">
-                {Array.from({ length: rubric.max + 1 }, (_, i) => i).map(val => (
-                  <button
-                    key={val}
-                    onClick={() => setScores(prev => ({ ...prev, [rubric.id]: val }))}
-                    className={`flex-1 py-4 rounded-2xl border-2 font-black text-lg transition-all ${
-                      scores[rubric.id] === val
-                        ? 'bg-nuvio-purple-500 border-nuvio-purple-500 text-white scale-105'
-                        : 'border-white/10 text-text-muted hover:border-nuvio-purple-500/50 hover:text-white'
-                    }`}
-                  >
-                    {val}
-                  </button>
-                ))}
-              </div>
+              <span className="text-[10px] text-zinc-500 uppercase">Live Metrics</span>
             </div>
-          ))}
+
+            <textarea
+              value={essay}
+              onChange={(e) => setEssay(e.target.value)}
+              placeholder="Begin drafting your thesis and supporting arguments here..."
+              rows={14}
+              className="w-full p-6 bg-transparent text-white font-sans text-sm sm:text-base leading-relaxed focus:outline-none placeholder:text-zinc-600 resize-y"
+            />
+          </div>
+
+          {/* Action Row */}
+          <div className="flex justify-between items-center pt-2">
+            <span className="text-xs font-mono text-zinc-500">
+              Recommended minimum: 150 words for standard Class 9 essays.
+            </span>
+            <button
+              onClick={handleFinishWriting}
+              className="px-6 py-3 bg-[#ff4625] hover:bg-[#ff5738] text-white font-mono uppercase tracking-widest text-xs font-semibold rounded-lg transition-all flex items-center gap-2"
+            >
+              <span>Evaluate Against Rubric</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+
         </div>
+      )}
 
-        <button
-          onClick={handleSubmitAssessment}
-          disabled={Object.keys(scores).length < SELF_RUBRIC.length}
-          className="w-full nv-btn-primary h-16 text-sm font-black uppercase tracking-widest disabled:opacity-40"
-        >
-          Submit Assessment & Claim XP
-        </button>
-      </div>
-    );
-  }
+      {/* PHASE 3: SELF-ASSESS WITH RUBRIC */}
+      {phase === 'assess' && selectedPrompt && (
+        <div className="space-y-8 max-w-3xl mx-auto">
+          <div className="border-b border-white/10 pb-4">
+            <span className="font-mono text-[9px] uppercase tracking-widest text-[#ff4625] font-bold">
+              CBSE Marking Standard
+            </span>
+            <h2 className="font-clash text-2xl font-bold uppercase text-white mt-1">
+              Self-Rubric Assessment
+            </h2>
+            <p className="text-xs text-zinc-400 mt-1">
+              Evaluate your draft against official CBSE evaluation dimensions.
+            </p>
+          </div>
 
-  if (phase === 'results') {
-    const grade = percentage >= 90 ? 'A+' : percentage >= 75 ? 'A' : percentage >= 60 ? 'B' : percentage >= 45 ? 'C' : 'D';
-    const gradeColor = percentage >= 75 ? 'text-nuvio-green' : percentage >= 45 ? 'text-nuvio-yellow' : 'text-nuvio-red';
-    return (
-      <div className="space-y-10 pb-20 nv-page-transition max-w-2xl mx-auto text-center">
-        <div className="nv-card p-16 border-white/5 space-y-8">
-          <div className="w-28 h-28 mx-auto bg-nuvio-purple-500/20 border-4 border-nuvio-purple-500/40 rounded-[32px] flex items-center justify-center">
-            <span className={`text-5xl font-black ${gradeColor}`}>{grade}</span>
-          </div>
-          <div>
-            <h1 className="text-4xl font-black text-white uppercase tracking-tighter">Session Complete!</h1>
-            <p className="text-text-secondary mt-2 text-sm">You scored {totalScore}/{maxScore} ({percentage}%) on self-assessment.</p>
-          </div>
-          <div className="grid grid-cols-2 gap-6">
-            {SELF_RUBRIC.map(r => (
-              <div key={r.id} className="nv-card p-6 text-center border-white/5">
-                <div className="text-[9px] font-black text-text-muted uppercase tracking-widest mb-2">{r.label}</div>
-                <div className="text-2xl font-black text-white">{scores[r.id] || 0}<span className="text-text-muted text-sm">/{r.max}</span></div>
+          <div className="space-y-4">
+            {SELF_RUBRIC.map((item) => (
+              <div
+                key={item.id}
+                className="p-6 border border-white/10 bg-[#0d0f14] rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+              >
+                <div className="space-y-1 max-w-md">
+                  <h4 className="font-clash text-base font-bold text-white uppercase">{item.label}</h4>
+                  <p className="text-xs text-zinc-400 font-sans">{item.desc}</p>
+                </div>
+
+                <div className="flex gap-1.5 self-start sm:self-center">
+                  {Array.from({ length: item.max + 1 }, (_, i) => i).map((scoreVal) => (
+                    <button
+                      key={scoreVal}
+                      type="button"
+                      onClick={() => setScores({ ...scores, [item.id]: scoreVal })}
+                      className={`w-9 h-9 rounded-lg font-mono text-xs transition-all border ${
+                        scores[item.id] === scoreVal
+                          ? 'border-[#ff4625] bg-[#ff4625] text-white font-bold'
+                          : 'border-white/10 bg-[#08090b] text-zinc-400 hover:text-white'
+                      }`}
+                    >
+                      {scoreVal}
+                    </button>
+                  ))}
+                </div>
               </div>
             ))}
           </div>
-        </div>
-        <div className="flex gap-4">
-          <button onClick={() => { setPhase('select'); setEssay(''); setScores({}); }} className="flex-1 nv-btn-secondary py-5 flex items-center justify-center gap-2 font-black uppercase tracking-widest text-xs">
-            <RotateCcw className="w-4 h-4" /> Write Another
+
+          <button
+            onClick={handleSubmitAssessment}
+            className="w-full py-4 bg-[#ff4625] hover:bg-[#ff5738] text-white font-mono uppercase tracking-widest text-xs font-semibold rounded-lg transition-all"
+          >
+            Finalize Assessment & Review
           </button>
         </div>
-      </div>
-    );
-  }
+      )}
+
+      {/* PHASE 4: RESULTS */}
+      {phase === 'results' && (
+        <div className="max-w-xl mx-auto p-10 border border-white/10 bg-[#0d0f14] rounded-2xl text-center space-y-6">
+          <div className="w-14 h-14 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto">
+            <CheckCircle2 className="w-7 h-7" />
+          </div>
+
+          <div>
+            <span className="font-mono text-[9px] uppercase tracking-widest text-zinc-500">Composition Verified</span>
+            <h3 className="font-clash text-2xl font-bold uppercase text-white mt-1">
+              Rubric Assessment Result
+            </h3>
+          </div>
+
+          <div className="p-6 bg-[#08090b] border border-white/5 rounded-xl space-y-3">
+            <div className="font-clash text-4xl font-bold text-white">{percentage}%</div>
+            <span className="font-mono text-xs text-zinc-400 block">
+              {totalScore} out of {maxScore} available rubric points
+            </span>
+            <div className="pt-2 border-t border-white/5 flex justify-center gap-6 font-mono text-[10px] text-zinc-500 uppercase">
+              <span>{wordCount} Words Drafted</span>
+              <span>·</span>
+              <span>Class 9 Standard Met</span>
+            </div>
+          </div>
+
+          <button
+            onClick={() => setPhase('select')}
+            className="w-full py-3 bg-[#ff4625] hover:bg-[#ff5738] text-white font-mono uppercase tracking-widest text-xs font-semibold rounded-lg transition-all"
+          >
+            Start Another Composition
+          </button>
+        </div>
+      )}
+
+    </div>
+  );
 };
 
 export default WritingWorkshop;
