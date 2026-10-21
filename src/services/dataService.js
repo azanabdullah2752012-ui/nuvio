@@ -1,7 +1,4 @@
-import { authService } from './authService';
-
-const DB_KEY = 'nuvio_life_os_db';
-const LEGACY_KEY = 'acadevance_local_db';
+const DB_KEY = 'nuvio_minimal_db';
 
 const generateUUID = () => {
   try {
@@ -12,218 +9,217 @@ const generateUUID = () => {
   return 'id-' + Math.random().toString(36).substring(2, 10);
 };
 
+const getTodayDateStr = () => {
+  return new Date().toISOString().split('T')[0];
+};
+
 const getInitialDB = () => ({
   tasks: [
-    { 
-      id: 't-1', 
-      title: 'Architect core deep work roadmap & system specs', 
-      pillar: 'Craft', 
-      energy: 'Deep 90m', 
-      due: 'Today', 
-      priority: 'High', 
-      isHighlight: true, 
-      completed: false 
+    {
+      id: 't-1',
+      title: 'Finalize the project architecture and ship to production',
+      isHighlight: true,
+      completed: false,
+      tag: 'Deep Work',
+      date: 'today',
+      created_at: new Date().toISOString()
     },
-    { 
-      id: 't-2', 
-      title: 'Morning sunlight walk & 45-min compound workout', 
-      pillar: 'Vitality', 
-      energy: 'Body', 
-      due: 'Today', 
-      priority: 'High', 
-      isHighlight: false, 
-      completed: true 
+    {
+      id: 't-2',
+      title: 'Review weekly goals and clear urgent messages',
+      isHighlight: false,
+      completed: false,
+      tag: 'Quick',
+      date: 'today',
+      created_at: new Date().toISOString()
     },
-    { 
-      id: 't-3', 
-      title: '30-min offline non-fiction reading & zero-screen walk', 
-      pillar: 'Mind', 
-      energy: 'Rest', 
-      due: 'Today', 
-      priority: 'Medium', 
-      isHighlight: false, 
-      completed: false 
+    {
+      id: 't-3',
+      title: 'Evening 45-minute gym compound workout',
+      isHighlight: false,
+      completed: true,
+      tag: 'Health',
+      date: 'today',
+      created_at: new Date().toISOString()
     },
-    { 
-      id: 't-4', 
-      title: 'Undistracted evening dinner & phone-free family time', 
-      pillar: 'Tribe', 
-      energy: 'Rest', 
-      due: 'Today', 
-      priority: 'Medium', 
-      isHighlight: false, 
-      completed: false 
-    },
-    { 
-      id: 't-5', 
-      title: 'Clear pending emails and asynchronous logistics', 
-      pillar: 'Craft', 
-      energy: 'Admin 15m', 
-      due: 'Tomorrow', 
-      priority: 'Low', 
-      isHighlight: false, 
-      completed: false 
+    {
+      id: 't-4',
+      title: 'Plan weekend trip & call family',
+      isHighlight: false,
+      completed: false,
+      tag: 'Personal',
+      date: 'upcoming',
+      created_at: new Date().toISOString()
     }
   ],
-  calendar_events: [
-    {
-      id: 'e-1',
-      title: 'Deep Work Bout 1: High-Leverage Architecture',
-      event_date: new Date().toISOString().split('T')[0],
-      event_time: '09:00',
-      event_type: 'Deep Block'
-    },
-    {
-      id: 'e-2',
-      title: 'Gym Compound Resistance & Mobility',
-      event_date: new Date().toISOString().split('T')[0],
-      event_time: '12:30',
-      event_type: 'Physical'
-    },
-    {
-      id: 'e-3',
-      title: 'Cal Newport 60s Evening Shutdown Ritual',
-      event_date: new Date().toISOString().split('T')[0],
-      event_time: '18:00',
-      event_type: 'Personal'
-    }
+  habits: [
+    { id: 'h-1', name: 'Morning Sunlight & Walk', emoji: '☀️', streak: 4, lastCompleted: getTodayDateStr() },
+    { id: 'h-2', name: 'Drink 2L Water', emoji: '💧', streak: 6, lastCompleted: getTodayDateStr() },
+    { id: 'h-3', name: '30m Reading', emoji: '📖', streak: 3, lastCompleted: '' },
+    { id: 'h-4', name: 'Workout / Move', emoji: '🏃', streak: 5, lastCompleted: getTodayDateStr() },
+    { id: 'h-5', name: 'Sleep by 11:00 PM', emoji: '🌙', streak: 2, lastCompleted: '' }
   ],
-  focus_sessions: [
-    {
-      id: 'fs-1',
-      duration_minutes: 90,
-      pillar: 'Craft',
-      completed_at: new Date(Date.now() - 3600000 * 3).toISOString()
-    }
+  scratchpad: "Raw thoughts & scratchpad:\n\n• High-leverage execution > 8 hours of busywork\n• Remember to check server logs tomorrow morning\n• Book recommendation: Four Thousand Weeks",
+  focusSessions: [
+    { id: 'fs-1', minutes: 50, date: getTodayDateStr() },
+    { id: 'fs-2', minutes: 25, date: getTodayDateStr() }
   ],
-  shutdowns: [],
-  preferences: {
-    archetype: 'Creator / Builder',
-    dailyUltradianTarget: 2,
-    bedtime: '22:30',
-    wakeTime: '06:30'
+  review: {
+    lastCloseDate: '',
+    tomorrowHighlight: ''
   }
 });
 
 const getLocalDB = () => {
   try {
-    const data = localStorage.getItem(DB_KEY);
-    if (data) return JSON.parse(data);
-
-    // If modern DB not found, check legacy DB and migrate
-    const legacy = localStorage.getItem(LEGACY_KEY);
-    if (legacy) {
-      const parsed = JSON.parse(legacy);
-      const migrated = getInitialDB();
-      if (Array.isArray(parsed.tasks) && parsed.tasks.length > 0) {
-        migrated.tasks = parsed.tasks.map(t => ({
-          ...t,
-          pillar: t.pillar || (t.subject === 'Math' || t.subject === 'Physics' ? 'Craft' : 'Mind'),
-          energy: t.energy || 'Deep 90m',
-          isHighlight: !!t.isHighlight
-        }));
-      }
-      localStorage.setItem(DB_KEY, JSON.stringify(migrated));
-      return migrated;
-    }
+    const raw = localStorage.getItem(DB_KEY);
+    if (raw) return JSON.parse(raw);
   } catch (e) {
-    console.warn("Malformed local DB in localStorage, resetting to clean state:", e);
+    console.warn("Local DB reset:", e);
   }
-
-  const initial = getInitialDB();
+  const init = getInitialDB();
   try {
-    localStorage.setItem(DB_KEY, JSON.stringify(initial));
+    localStorage.setItem(DB_KEY, JSON.stringify(init));
   } catch (e) {}
-  return initial;
+  return init;
 };
 
 const saveLocalDB = (db) => {
   try {
     localStorage.setItem(DB_KEY, JSON.stringify(db));
   } catch (e) {}
-  window.dispatchEvent(new CustomEvent('nuvio_data_update'));
+  window.dispatchEvent(new CustomEvent('nuvio_update'));
 };
 
-export const PILLARS = [
-  { id: 'Craft', label: 'Craft & Work', icon: '💼', color: '#1b3b2b', desc: 'High-leverage output, coding, writing & building' },
-  { id: 'Vitality', label: 'Vitality & Body', icon: '⚡', color: '#8a4b16', desc: 'Sleep, sunlight, workouts, hydration & health' },
-  { id: 'Mind', label: 'Mind & Clarity', icon: '🧠', color: '#244e6b', desc: 'Reading, NSDR, stillness & cognitive recovery' },
-  { id: 'Tribe', label: 'Tribe & Connection', icon: '🤝', color: '#68325a', desc: 'Family, friends, community & presence' }
-];
-
-export const ENERGY_LEVELS = [
-  { id: 'Deep 90m', label: 'Deep Focus (90m)', badge: '⚡ Deep' },
-  { id: 'Admin 15m', label: 'Quick Admin (15m)', badge: '🌿 Admin' },
-  { id: 'Body', label: 'Physical / Movement', badge: '🏃 Movement' },
-  { id: 'Rest', label: 'Restoration / Offline', badge: '🌙 Rest' }
-];
-
 export const dataService = {
-  list: async (table) => {
-    const db = getLocalDB();
-    return db[table] || [];
+  // Tasks
+  getTasks: () => {
+    return getLocalDB().tasks || [];
   },
 
-  create: async (table, item) => {
-    const user = authService.me();
-    const newItem = {
-      ...item,
-      id: item.id || generateUUID(),
-      created_at: new Date().toISOString(),
-      user_id: user?.id || 'nuvio-user-01'
-    };
-
+  addTask: (title, tag = 'Deep Work', isHighlight = false, date = 'today') => {
     const db = getLocalDB();
-    if (!db[table]) db[table] = [];
-    db[table].unshift(newItem);
-    saveLocalDB(db);
-
-    return newItem;
-  },
-
-  update: async (table, id, updates) => {
-    const db = getLocalDB();
-    if (db[table]) {
-      db[table] = db[table].map(item => item.id === id ? { ...item, ...updates } : item);
-      saveLocalDB(db);
-    }
-    return { id, ...updates };
-  },
-
-  delete: async (table, id) => {
-    const db = getLocalDB();
-    if (db[table]) {
-      db[table] = db[table].filter(item => item.id !== id);
-      saveLocalDB(db);
-    }
-    return true;
-  },
-
-  // Daily Highlight Helper (Jake Knapp / Ali Abdaal / Hormozi)
-  setHighlight: async (taskId) => {
-    const db = getLocalDB();
-    if (db.tasks) {
-      db.tasks = db.tasks.map(t => ({
-        ...t,
-        isHighlight: t.id === taskId
-      }));
-      saveLocalDB(db);
-    }
-    return true;
-  },
-
-  // Record Evening Shutdown Ritual (Cal Newport)
-  recordShutdown: async (shutdownData) => {
-    const db = getLocalDB();
-    if (!db.shutdowns) db.shutdowns = [];
-    const record = {
+    const newTask = {
       id: generateUUID(),
-      date: new Date().toISOString().split('T')[0],
-      timestamp: new Date().toISOString(),
-      ...shutdownData
+      title: title.trim(),
+      isHighlight: Boolean(isHighlight),
+      completed: false,
+      tag,
+      date,
+      created_at: new Date().toISOString()
     };
-    db.shutdowns.unshift(record);
+    if (isHighlight) {
+      db.tasks.forEach(t => { t.isHighlight = false; });
+    }
+    db.tasks.unshift(newTask);
     saveLocalDB(db);
-    return record;
+    return newTask;
+  },
+
+  toggleTask: (id) => {
+    const db = getLocalDB();
+    const task = db.tasks.find(t => t.id === id);
+    if (task) {
+      task.completed = !task.completed;
+      saveLocalDB(db);
+    }
+    return task;
+  },
+
+  setHighlight: (id) => {
+    const db = getLocalDB();
+    db.tasks.forEach(t => {
+      t.isHighlight = t.id === id;
+    });
+    saveLocalDB(db);
+    return true;
+  },
+
+  deleteTask: (id) => {
+    const db = getLocalDB();
+    db.tasks = db.tasks.filter(t => t.id !== id);
+    saveLocalDB(db);
+    return true;
+  },
+
+  // Habits (Daily Anchors)
+  getHabits: () => {
+    const db = getLocalDB();
+    const today = getTodayDateStr();
+    return (db.habits || []).map(h => ({
+      ...h,
+      completedToday: h.lastCompleted === today
+    }));
+  },
+
+  toggleHabit: (id) => {
+    const db = getLocalDB();
+    const today = getTodayDateStr();
+    const habit = db.habits.find(h => h.id === id);
+    if (habit) {
+      if (habit.lastCompleted === today) {
+        habit.lastCompleted = '';
+        habit.streak = Math.max(0, (habit.streak || 1) - 1);
+      } else {
+        habit.lastCompleted = today;
+        habit.streak = (habit.streak || 0) + 1;
+      }
+      saveLocalDB(db);
+    }
+    return habit;
+  },
+
+  // Scratchpad
+  getScratchpad: () => {
+    return getLocalDB().scratchpad || '';
+  },
+
+  saveScratchpad: (text) => {
+    const db = getLocalDB();
+    db.scratchpad = text;
+    saveLocalDB(db);
+  },
+
+  // Focus
+  getFocusSessions: () => {
+    return getLocalDB().focusSessions || [];
+  },
+
+  logFocusSession: (minutes) => {
+    const db = getLocalDB();
+    if (!db.focusSessions) db.focusSessions = [];
+    const newSession = {
+      id: generateUUID(),
+      minutes: Number(minutes) || 25,
+      date: getTodayDateStr(),
+      timestamp: new Date().toISOString()
+    };
+    db.focusSessions.unshift(newSession);
+    saveLocalDB(db);
+    return newSession;
+  },
+
+  // Evening Close
+  recordEveningClose: (tomorrowHighlight) => {
+    const db = getLocalDB();
+    const today = getTodayDateStr();
+    db.review = {
+      lastCloseDate: today,
+      tomorrowHighlight: tomorrowHighlight || ''
+    };
+    if (tomorrowHighlight && tomorrowHighlight.trim()) {
+      db.tasks.forEach(t => { t.isHighlight = false; });
+      db.tasks.unshift({
+        id: generateUUID(),
+        title: tomorrowHighlight.trim(),
+        isHighlight: true,
+        completed: false,
+        tag: 'Deep Work',
+        date: 'today',
+        created_at: new Date().toISOString()
+      });
+    }
+    saveLocalDB(db);
+    return true;
   }
 };
