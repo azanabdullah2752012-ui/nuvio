@@ -130,58 +130,52 @@ const SideDrawer = ({ isOpen, onClose, user }) => {
             exit="exit"
             className="fixed top-0 left-0 z-[70] h-full w-[280px] overflow-y-auto"
             style={{
-              background: 'rgba(8, 9, 16, 0.95)',
-              backdropFilter: 'blur(32px)',
-              WebkitBackdropFilter: 'blur(32px)',
-              borderRight: '1px solid rgba(255,255,255,0.07)',
-              boxShadow: '8px 0 40px rgba(0,0,0,0.6), 2px 0 0 rgba(168,85,247,0.08)',
+              background: '#0d0f14',
+              borderRight: '1px solid rgba(255,255,255,0.08)',
+              boxShadow: '12px 0 40px rgba(0,0,0,0.8)',
             }}
           >
             {/* User Card */}
             <motion.div
-              initial={{ opacity: 0, y: -12 }}
+              initial={{ opacity: 1, y: 0 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className="p-4 border-b"
-              style={{ borderColor: 'rgba(255,255,255,0.06)' }}
+              className="p-4 border-b border-white/[0.08]"
             >
               <div
                 onClick={() => window.dispatchEvent(new CustomEvent('acadevance_open_profile', { detail: { user } }))}
-                className="flex items-center gap-4 mb-4 cursor-pointer group"
+                className="flex items-center gap-3.5 mb-4 cursor-pointer group"
               >
-                <motion.div
-                  whileHover={{ scale: 1.1, rotate: 8 }}
-                  className="w-12 h-12 rounded-full bg-nuvio-purple-500/80 flex items-center justify-center text-2xl border-2 border-white/10 group-hover:border-nuvio-cyan transition-all"
-                  style={{ boxShadow: '0 0 16px rgba(168,85,247,0.4)' }}
+                <div
+                  className="w-10 h-10 rounded bg-[#171a22] flex items-center justify-center text-xl border border-white/15 group-hover:border-brand-vermilion transition-colors"
                 >
                   {user?.avatar_emoji || '⚡'}
-                </motion.div>
+                </div>
                 <div>
-                  <div className="font-bold text-text-primary leading-tight group-hover:text-nuvio-cyan transition-colors">{user?.full_name || 'Student'}</div>
-                  <div className="text-[10px] text-text-muted font-bold flex flex-col gap-0.5 mt-0.5">
-                    <span className="text-nuvio-purple-400 font-black uppercase">Level {user?.level || 1}</span>
-                    <span className="text-nuvio-cyan font-black uppercase tracking-wider text-[8px]">{gamificationService.getRank(user?.level || 1).title}</span>
+                  <div className="font-bold text-text-primary text-sm leading-tight group-hover:text-white transition-colors">{user?.full_name || 'Scholar'}</div>
+                  <div className="font-mono text-[10px] text-text-muted font-bold flex items-center gap-2 mt-0.5">
+                    <span className="text-brand-vermilion uppercase">LVL {user?.level || 1}</span>
+                    <span>·</span>
+                    <span className="text-text-secondary uppercase">{gamificationService.getRank(user?.level || 1).title}</span>
                   </div>
                 </div>
               </div>
 
               {/* XP Bar */}
               <div
-                className="nv-interactive space-y-2 cursor-pointer"
+                className="space-y-1.5 cursor-pointer font-mono"
                 onClick={() => setShowBreakdown(!showBreakdown)}
               >
-                <div className="h-1.5 w-full rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.05)' }}>
+                <div className="h-1.5 w-full rounded bg-white/[0.06] overflow-hidden">
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${Math.min(100, ((user?.xp || 0) % 1000) / 10)}%` }}
-                    transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                    className="h-full rounded-full nv-xp-bar"
-                    style={{ background: 'linear-gradient(90deg, #a855f7, #06b6d4)' }}
+                    transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                    className="h-full bg-brand-vermilion"
                   />
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-[10px] text-text-muted font-black uppercase tracking-widest">{(user?.xp || 0)} XP Total</span>
-                  <span className="text-[10px] text-nuvio-purple-400 font-bold uppercase tracking-widest">🔥 {user?.streak || 1} day streak</span>
+                <div className="flex justify-between items-center text-[10px] text-text-muted font-bold">
+                  <span>{(user?.xp || 0)} XP</span>
+                  <span className="text-text-secondary">DAY {user?.streak || 1} STREAK</span>
                 </div>
               </div>
 
@@ -243,26 +237,21 @@ const SideDrawer = ({ isOpen, onClose, user }) => {
                         to={item.path}
                         onClick={onClose}
                         className={({ isActive }) => `
-                          flex items-center gap-3 px-3 py-2.5 rounded-[12px] font-semibold transition-all group
+                          flex items-center gap-3 px-3 py-2 rounded font-medium transition-all group
                           ${isActive
-                            ? 'bg-nuvio-purple-500/15 text-nuvio-purple-400 border border-nuvio-purple-500/20'
+                            ? 'bg-brand-vermilion/15 text-brand-vermilion border border-brand-vermilion/30'
                             : 'text-text-secondary hover:bg-white/5 hover:text-text-primary border border-transparent'}
                         `}
                       >
                         {({ isActive }) => (
                           <>
-                            <motion.div
-                              whileHover={{ scale: 1.15, rotate: isActive ? 0 : 5 }}
-                              className={isActive ? 'nv-glow-icon' : ''}
-                            >
-                              <item.icon className="w-5 h-5" />
-                            </motion.div>
-                            <span className="text-[14px]">{item.name}</span>
+                            <div>
+                              <item.icon className="w-4 h-4" />
+                            </div>
+                            <span className="text-[13px]">{item.name}</span>
                             {isActive && (
-                              <motion.div
-                                layoutId="active-pill"
-                                className="ml-auto w-1.5 h-1.5 rounded-full bg-nuvio-purple-400"
-                                transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                              <div
+                                className="ml-auto w-1.5 h-1.5 rounded-full bg-brand-vermilion"
                               />
                             )}
                           </>

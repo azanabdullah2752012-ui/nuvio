@@ -81,137 +81,94 @@ const UniversalHeader = ({ onMenuClick, user }) => {
     <>
       {/* Header — slides down from top on mount */}
       <motion.header
-        initial={{ y: -80, opacity: 0 }}
+        initial={{ y: -80, opacity: 1 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
-        className="sticky top-0 z-50 h-[60px] w-full border-b border-border px-4 flex items-center justify-between"
+        transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+        className="sticky top-0 z-50 h-[56px] w-full border-b border-white/[0.08] px-5 flex items-center justify-between"
         style={{
-          background: scrolled
-            ? 'rgba(2, 3, 8, 0.92)'
-            : 'rgba(2, 3, 8, 0.72)',
-          backdropFilter: scrolled ? 'blur(28px) saturate(1.8)' : 'blur(16px)',
-          WebkitBackdropFilter: scrolled ? 'blur(28px) saturate(1.8)' : 'blur(16px)',
-          borderBottomColor: scrolled ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.04)',
-          transition: 'background 0.4s ease, border-color 0.4s ease, backdrop-filter 0.4s ease',
-          boxShadow: scrolled ? '0 4px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(168,85,247,0.05) inset' : 'none',
+          background: 'rgba(9, 10, 13, 0.94)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
         }}
       >
         <div className="flex items-center gap-4">
           {/* Hamburger menu button */}
-          <motion.button
-            whileHover={{ scale: 1.08, rotate: 5 }}
-            whileTap={{ scale: 0.92 }}
+          <button
             onClick={onMenuClick}
-            className="p-2 hover:bg-white/5 rounded-full transition-colors"
+            className="p-1.5 hover:bg-white/5 rounded transition-colors text-text-secondary hover:text-white"
           >
-            <Menu className="w-6 h-6 text-text-primary" />
-          </motion.button>
+            <Menu className="w-5 h-5" />
+          </button>
 
           {/* Logo */}
-          <motion.div
-            className="flex items-center gap-1 cursor-pointer select-none"
+          <div
+            className="flex items-center gap-2.5 cursor-pointer select-none"
             onClick={handleLogoClick}
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
           >
-            <motion.span
-              className="text-xl font-black tracking-tighter"
-              style={{
-                background: 'linear-gradient(120deg, #ffffff 0%, #d8b4fe 40%, #67e8f9 70%, #ffffff 100%)',
-                backgroundSize: '200% auto',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-                animation: 'text-shimmer 4s linear infinite',
-              }}
-            >
-              ⚡ ACADEVANCE
-            </motion.span>
-          </motion.div>
+            <span className="w-2.5 h-2.5 bg-brand-vermilion rounded-none" />
+            <span className="font-display font-bold text-base tracking-wider text-white">
+              ACADEVANCE
+            </span>
+            <span className="hidden sm:inline font-mono text-[10px] text-text-muted px-1.5 py-0.5 border border-white/10 rounded">
+              09 // WORKSTATION
+            </span>
+          </div>
         </div>
 
         <div className="flex items-center gap-2 md:gap-3">
           {/* XP Boost Badge */}
           <AnimatePresence>
             {user?.xp_multiplier > 1 && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.6 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.6 }}
-                transition={{ type: 'spring', stiffness: 350, damping: 22 }}
-                className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-nuvio-yellow/10 border border-nuvio-yellow/20 rounded-full"
+              <div
+                className="hidden sm:flex items-center gap-2 px-2.5 py-1 bg-amber-500/10 border border-amber-500/30 rounded text-[11px] font-mono text-amber-400 font-bold"
               >
-                <Zap className="w-4 h-4 text-nuvio-yellow fill-nuvio-yellow" />
-                <span className="text-xs font-bold text-nuvio-yellow">{user.xp_multiplier}X XP Active</span>
-              </motion.div>
+                <Zap className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+                <span>{user.xp_multiplier}X XP ACTIVE</span>
+              </div>
             )}
           </AnimatePresence>
 
           {/* Messages button */}
-          <motion.button
-            whileHover={{ scale: 1.1, y: -1 }}
-            whileTap={{ scale: 0.9 }}
+          <button
             onClick={() => navigate('/messages')}
-            className="relative p-2 hover:bg-white/5 rounded-full transition-colors"
+            className="relative p-2 hover:bg-white/5 rounded transition-colors"
           >
-            <MessageSquare className="w-5 h-5 text-text-secondary" />
+            <MessageSquare className="w-4 h-4 text-text-secondary hover:text-white" />
             <AnimatePresence>
               {unreadMessages > 0 && (
-                <motion.span
+                <span
                   key="msg-badge"
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  exit={{ scale: 0, opacity: 0 }}
-                  transition={{ type: 'spring', stiffness: 500, damping: 25 }}
-                  className="absolute top-1 right-1 w-4 h-4 bg-nuvio-red text-[10px] font-bold text-white flex items-center justify-center rounded-full border-2 border-background-base"
+                  className="absolute top-1 right-1 w-3.5 h-3.5 bg-brand-vermilion text-[9px] font-mono font-bold text-white flex items-center justify-center rounded-full"
                 >
                   {unreadMessages}
-                </motion.span>
+                </span>
               )}
             </AnimatePresence>
-          </motion.button>
+          </button>
 
           {/* Bell button */}
-          <motion.button
-            whileHover={{ scale: 1.1, y: -1 }}
-            whileTap={{ scale: 0.9 }}
+          <button
             onClick={() => setIsNotifyOpen(true)}
-            className="relative p-2 hover:bg-white/5 rounded-full transition-colors"
+            className="relative p-2 hover:bg-white/5 rounded transition-colors"
           >
-            <motion.div
-              animate={unreadCount > 0 ? { rotate: [0, -15, 15, -10, 10, 0] } : {}}
-              transition={{ repeat: Infinity, repeatDelay: 4, duration: 0.5 }}
-            >
-              <Bell className="w-5 h-5 text-text-secondary" />
-            </motion.div>
+            <Bell className="w-4 h-4 text-text-secondary hover:text-white" />
             <AnimatePresence>
               {unreadCount > 0 && (
-                <motion.span
+                <span
                   key="notif-badge"
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  exit={{ scale: 0, opacity: 0 }}
-                  transition={{ type: 'spring', stiffness: 500, damping: 25 }}
-                  className="absolute top-1.5 right-1.5 w-2 h-2 bg-nuvio-purple-500 rounded-full border-2 border-background-base"
-                >
-                  <span className="absolute inset-0 rounded-full bg-nuvio-purple-500 animate-ping opacity-75" />
-                </motion.span>
+                  className="absolute top-1.5 right-1.5 w-2 h-2 bg-brand-vermilion rounded-full"
+                />
               )}
             </AnimatePresence>
-          </motion.button>
+          </button>
 
           {/* Avatar */}
-          <motion.div
+          <div
             onClick={() => navigate('/profile')}
-            whileHover={{ scale: 1.12, rotate: 5 }}
-            whileTap={{ scale: 0.9 }}
-            className="w-8 h-8 rounded-full bg-nuvio-purple-500/80 flex items-center justify-center text-lg border-2 border-white/10 overflow-hidden cursor-pointer"
-            style={{
-              boxShadow: '0 0 12px rgba(168,85,247,0.4)',
-            }}
+            className="w-7 h-7 rounded bg-[#171a22] flex items-center justify-center text-sm border border-white/15 overflow-hidden cursor-pointer hover:border-brand-vermilion transition-colors"
           >
-            {user?.avatar_emoji || '👤'}
-          </motion.div>
+            {user?.avatar_emoji || '⚡'}
+          </div>
         </div>
       </motion.header>
 

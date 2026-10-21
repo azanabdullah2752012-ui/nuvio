@@ -449,37 +449,30 @@ const Dashboard = () => {
       </motion.div>
 
       {/* 🛡️ DAILY ADAPTIVE RECALL MISSION CARD */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.18, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-        className="bg-gradient-to-br from-indigo-950/40 via-purple-950/30 to-slate-900 border-2 border-purple-500/20 rounded-[32px] p-8 relative overflow-hidden group shadow-lg"
+      <div
+        className="bg-[#111318] border border-white/10 rounded-xl p-7 relative overflow-hidden font-mono"
       >
-        {/* Neon purple blur effects */}
-        <div className="absolute top-0 right-0 w-80 h-80 bg-purple-500/10 rounded-full blur-[80px] pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-48 h-48 bg-indigo-500/5 rounded-full blur-[60px] pointer-events-none" />
-        
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="text-left space-y-3">
-            <span className="px-3 py-1 bg-purple-500/10 border border-purple-500/20 text-purple-400 text-[9px] font-black uppercase tracking-widest rounded-full">
-              Academy Special Mission
+          <div className="text-left space-y-2">
+            <span className="px-2.5 py-1 bg-brand-vermilion/10 border border-brand-vermilion/30 text-brand-vermilion text-[10px] font-bold uppercase tracking-widest rounded">
+              CURRICULUM RECALL // MISSION
             </span>
-            <h2 className="text-2xl font-black text-white uppercase tracking-tight">
-              Daily Adaptive Recall Quest
+            <h2 className="text-2xl font-bold font-display text-white uppercase tracking-tight">
+              Daily Adaptive Recall Protocol
             </h2>
-            <p className="text-slate-400 text-xs font-semibold max-w-xl leading-relaxed">
-              Combine today's topics, yesterday's revision, and last week's spacing checks in one rapid-fire 6-question recall mission. Build combos and earn double tokens!
+            <p className="text-text-secondary text-xs font-sans max-w-xl leading-relaxed">
+              Synthesize today's modules with spaced retention checks in a rapid-fire 6-question recall session.
             </p>
           </div>
           
           <button
             onClick={startDailyMission}
-            className="px-8 py-4 bg-purple-500 hover:bg-purple-400 text-black rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 shadow shrink-0 animate-pulse"
+            className="nv-btn-primary shrink-0"
           >
-            {missionCompletedToday ? 'Quest Completed ✓' : 'Embark on Mission ➔'}
+            {missionCompletedToday ? 'PROTOCOL COMPLETE ✓' : 'COMMENCE MISSION →'}
           </button>
         </div>
-      </motion.div>
+      </div>
 
       {/* 🔮 PERSONALIZED STUDY PATHWAY & REVISION QUEUE */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -677,25 +670,24 @@ const Dashboard = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
-          <div className="nv-card p-10 border-white/5 bg-white/[0.02] relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-nuvio-purple-500/5 blur-[100px] pointer-events-none" />
+          <div className="nv-card p-6 border-white/10 bg-[#111318] relative overflow-hidden font-mono">
             <div className="flex flex-col md:flex-row justify-between items-end gap-6 relative z-10">
-              <div className="space-y-6 flex-1 w-full">
+              <div className="space-y-4 flex-1 w-full">
                 <div className="flex items-center gap-3">
-                   <div className="w-12 h-12 bg-nuvio-purple-500 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-lg ring-4 ring-nuvio-purple-500/20">
+                   <div className="w-10 h-10 bg-brand-vermilion rounded text-white font-mono font-bold text-lg flex items-center justify-center">
                      {user?.level}
                    </div>
                    <div>
-                      <h3 className="text-2xl font-black text-white uppercase tracking-tight">Academic Rank: Sentinel</h3>
+                      <h3 className="text-xl font-display font-bold text-white uppercase tracking-tight">Academic Rank: Sentinel</h3>
                       <p className="text-[10px] text-text-muted font-bold uppercase tracking-widest">{nextMilestone.remaining.toLocaleString()} XP to {nextMilestone.label}</p>
                    </div>
                 </div>
-                  <div className="h-4 w-full bg-white/5 rounded-full overflow-hidden border border-white/5">
+                  <div className="h-2 w-full bg-white/5 rounded overflow-hidden border border-white/5">
                     <motion.div 
                       initial={{ width: 0 }}
                       animate={{ width: `${Math.min(100, ((user?.xp || 0) / xpService.getNextLevelXp(user?.level || 1)) * 100)}%` }}
-                      transition={{ duration: 1.5, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                      className="h-full bg-gradient-to-r from-nuvio-purple-500 to-nuvio-blue nv-xp-bar"
+                      transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
+                      className="h-full bg-brand-vermilion"
                     />
                   </div>
                 </div>
