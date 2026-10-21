@@ -1,5 +1,5 @@
 import React from 'react';
-import { Menu, Timer, BookOpen } from 'lucide-react';
+import { Menu, Timer, CheckSquare, Calendar } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const UniversalHeader = ({ onMenuClick, user }) => {
@@ -18,8 +18,8 @@ const UniversalHeader = ({ onMenuClick, user }) => {
         {/* Menu Toggle */}
         <button
           onClick={onMenuClick}
-          className="p-1.5 hover:bg-[#f2efe6] rounded-md transition-colors text-zinc-700 hover:text-black"
-          title="Open Academic Navigation"
+          className="p-1.5 hover:bg-[#f2efe6] rounded-md transition-colors text-[#52504a] hover:text-[#1a1917]"
+          title="Open Navigation"
         >
           <Menu className="w-5 h-5" />
         </button>
@@ -30,34 +30,44 @@ const UniversalHeader = ({ onMenuClick, user }) => {
           onClick={() => navigate('/dashboard')}
         >
           <span className="w-2.5 h-2.5 bg-[#1b3b2b] rounded-sm" />
-          <span className="font-display font-bold text-base tracking-tight text-[#1a1917]">
+          <span className="font-serif font-bold text-base tracking-tight text-[#1a1917]">
             ACADEVANCE
           </span>
-          <span className="hidden sm:inline font-mono text-[10px] text-zinc-500 px-1.5 py-0.5 border border-[#e5e1d5] bg-[#f5f3ec] rounded">
-            CLASS 9
+          <span className="hidden sm:inline font-mono text-[10px] text-[#827f76] px-1.5 py-0.5 border border-[#e5e1d5] bg-[#f5f3ec] rounded font-bold uppercase">
+            STUDY SUITE
           </span>
         </div>
       </div>
 
       <div className="flex items-center gap-3 font-mono text-xs">
+        {/* Fast Jump: Tasks */}
+        <button
+          onClick={() => navigate('/homework')}
+          className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 border border-[#e5e1d5] bg-white hover:bg-[#f7f5ee] rounded-md text-[#52504a] hover:text-[#1a1917] transition-colors shadow-sm"
+          title="Tasks & Homework"
+        >
+          <CheckSquare className="w-3.5 h-3.5 text-[#1b3b2b]" />
+          <span className="text-[11px] font-semibold tracking-wider">TASKS</span>
+        </button>
+
+        {/* Fast Jump: Calendar */}
+        <button
+          onClick={() => navigate('/calendar')}
+          className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 border border-[#e5e1d5] bg-white hover:bg-[#f7f5ee] rounded-md text-[#52504a] hover:text-[#1a1917] transition-colors shadow-sm"
+          title="Academic Calendar"
+        >
+          <Calendar className="w-3.5 h-3.5 text-[#1b3b2b]" />
+          <span className="text-[11px] font-semibold tracking-wider">CALENDAR</span>
+        </button>
+
         {/* Fast Jump: Focus Timer */}
         <button
           onClick={() => navigate('/focus-timer')}
-          className="hidden sm:flex items-center gap-2 px-3 py-1.5 border border-[#e5e1d5] bg-white hover:bg-[#f7f5ee] rounded-md text-zinc-700 hover:text-black transition-colors shadow-sm"
+          className="flex items-center gap-1.5 px-3 py-1.5 border border-[#e5e1d5] bg-white hover:bg-[#f7f5ee] rounded-md text-[#52504a] hover:text-[#1a1917] transition-colors shadow-sm"
           title="Launch Focus Session"
         >
           <Timer className="w-3.5 h-3.5 text-[#1b3b2b]" />
           <span className="text-[11px] font-semibold tracking-wider">FOCUS TIMER</span>
-        </button>
-
-        {/* Fast Jump: Curriculum */}
-        <button
-          onClick={() => navigate('/curriculum')}
-          className="hidden sm:flex items-center gap-2 px-3 py-1.5 border border-[#e5e1d5] bg-white hover:bg-[#f7f5ee] rounded-md text-zinc-700 hover:text-black transition-colors shadow-sm"
-          title="Browse Curriculum"
-        >
-          <BookOpen className="w-3.5 h-3.5 text-[#162744]" />
-          <span className="text-[11px] font-semibold tracking-wider">SYLLABUS</span>
         </button>
 
         {/* Scholar Avatar (links to settings) */}
@@ -66,7 +76,7 @@ const UniversalHeader = ({ onMenuClick, user }) => {
           className="w-8 h-8 rounded-full bg-[#f4f1ea] flex items-center justify-center text-sm border border-[#e0dcce] overflow-hidden cursor-pointer hover:border-[#1b3b2b] transition-colors shadow-sm"
           title="Scholar Settings"
         >
-          {user?.avatar_emoji || '📖'}
+          {user?.avatar_emoji || '🎓'}
         </div>
       </div>
     </header>

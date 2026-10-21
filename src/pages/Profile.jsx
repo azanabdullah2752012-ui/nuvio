@@ -73,7 +73,7 @@ const Profile = () => {
             Scholar Settings
           </h1>
           <p className="text-zinc-600 text-sm mt-1 max-w-xl">
-            Control your academic curriculum tier, daily study focus targets, and workspace audio ergonomics.
+            Control your student profile, daily focus targets, and workspace preferences.
           </p>
         </div>
 
@@ -125,10 +125,10 @@ const Profile = () => {
             <span className="font-mono text-[9px] uppercase tracking-widest text-zinc-500 font-bold block">Quick Actions</span>
             
             <button
-              onClick={() => navigate('/curriculum')}
+              onClick={() => navigate('/homework')}
               className="w-full p-3 bg-[#fbfbfa] hover:bg-[#f5f3ec] border border-[#e5e1d5] rounded-lg text-left flex items-center justify-between text-xs text-[#1a1917] transition-colors"
             >
-              <span>Explore Curriculum Hub</span>
+              <span>Manage Tasks & Homework</span>
               <ArrowUpRight className="w-3.5 h-3.5 text-zinc-500" />
             </button>
 
@@ -141,10 +141,10 @@ const Profile = () => {
             </button>
 
             <button
-              onClick={() => navigate('/flashcards')}
+              onClick={() => navigate('/calendar')}
               className="w-full p-3 bg-[#fbfbfa] hover:bg-[#f5f3ec] border border-[#e5e1d5] rounded-lg text-left flex items-center justify-between text-xs text-[#1a1917] transition-colors"
             >
-              <span>Review Flashcards</span>
+              <span>Open Academic Calendar</span>
               <ArrowUpRight className="w-3.5 h-3.5 text-zinc-500" />
             </button>
           </div>

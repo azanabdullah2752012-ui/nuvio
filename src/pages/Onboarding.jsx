@@ -76,7 +76,7 @@ const Onboarding = () => {
                     Scholar Setup
                   </h1>
                   <p className="text-[#52504a] text-xs mt-1 leading-relaxed">
-                    Set up your workstation identity and target CBSE curriculum level.
+                    Set up your student profile and daily study focus target.
                   </p>
                 </div>
               </div>

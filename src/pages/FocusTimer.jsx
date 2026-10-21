@@ -161,7 +161,7 @@ const FocusTimer = () => {
             Study Chronometer
           </h1>
           <p className="text-[#52504a] text-sm mt-1 max-w-xl">
-            Structured interval reading for CBSE curriculum mastery. Dedicated distraction-free sessions calibrated for retention.
+            Structured interval pacing for deep work sessions. Dedicated distraction-free sessions calibrated for cognitive stamina.
           </p>
         </div>
 

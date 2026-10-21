@@ -1,38 +1,17 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { 
-  LayoutDashboard, BookOpen, Calendar, Timer, PenTool,
-  ListChecks, BookMarked, Settings, Globe, Library, X
+  LayoutDashboard, Calendar, Timer,
+  ListChecks, Settings, X
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const navSections = [
-  {
-    label: "Main",
-    items: [
-      { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
-      { name: "CBSE Curriculum", path: "/curriculum", icon: BookOpen },
-      { name: "Subject Library", path: "/subject-library", icon: Library },
-    ]
-  },
-  {
-    label: "Study Arsenal",
-    items: [
-      { name: "Active Flashcards", path: "/flashcards", icon: BookMarked },
-      { name: "Tasks & Homework", path: "/homework", icon: ListChecks },
-      { name: "Academic Calendar", path: "/calendar", icon: Calendar },
-      { name: "Focus Timer", path: "/focus-timer", icon: Timer },
-    ]
-  },
-  {
-    label: "Academic Workshop",
-    items: [
-      { name: "Study Hub Notes", path: "/study-hub", icon: BookOpen },
-      { name: "Essay Forge", path: "/essay-forge", icon: PenTool },
-      { name: "Study Bookmarks", path: "/study-sites", icon: Globe },
-      { name: "Scholar Settings", path: "/profile", icon: Settings },
-    ]
-  }
+const navItems = [
+  { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
+  { name: "Tasks & Homework", path: "/homework", icon: ListChecks },
+  { name: "Focus Timer", path: "/focus-timer", icon: Timer },
+  { name: "Academic Calendar", path: "/calendar", icon: Calendar },
+  { name: "Scholar Settings", path: "/profile", icon: Settings },
 ];
 
 const SideDrawer = ({ isOpen, onClose, user }) => {
@@ -76,72 +55,66 @@ const SideDrawer = ({ isOpen, onClose, user }) => {
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="fixed top-0 left-0 z-[70] h-full w-[280px] overflow-y-auto bg-[#f8f6f0] border-r border-[#e5e1d5] shadow-xl font-sans text-xs flex flex-col"
+            className="fixed top-0 left-0 z-[70] h-full w-[280px] overflow-y-auto bg-[#f8f6f0] border-r border-[#e5e1d5] shadow-xl font-sans text-xs flex flex-col justify-between"
           >
-            {/* Header Identity */}
-            <div className="p-5 border-b border-[#e5e1d5] flex items-center justify-between bg-[#f4f1ea]">
-              <div className="flex items-center gap-3">
-                <span className="w-2.5 h-2.5 bg-[#1b3b2b] rounded-sm" />
-                <span className="font-display font-bold text-sm tracking-tight text-[#1a1917]">
-                  ACADEVANCE
-                </span>
-              </div>
-              <button
-                onClick={onClose}
-                className="p-1 text-zinc-500 hover:text-black rounded"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            {/* Scholar Identity Strip */}
-            <div className="px-5 py-4 border-b border-[#e5e1d5] bg-white">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-full bg-[#f4f1ea] flex items-center justify-center text-sm border border-[#e0dcce]">
-                  {user?.avatar_emoji || '📖'}
+            <div>
+              {/* Header Identity */}
+              <div className="p-5 border-b border-[#e5e1d5] flex items-center justify-between bg-[#f4f1ea]">
+                <div className="flex items-center gap-3">
+                  <span className="w-2.5 h-2.5 bg-[#1b3b2b] rounded-sm" />
+                  <span className="font-serif font-bold text-base tracking-tight text-[#1a1917]">
+                    ACADEVANCE
+                  </span>
                 </div>
-                <div className="truncate">
-                  <div className="font-bold text-[#1a1917] truncate font-sans text-xs">{user?.full_name || 'Scholar'}</div>
-                  <div className="text-[10px] text-zinc-500 font-mono">Class {user?.grade_level || '9th'} CBSE</div>
-                </div>
+                <button
+                  onClick={onClose}
+                  className="p-1 text-[#827f76] hover:text-[#1a1917] rounded"
+                >
+                  <X className="w-4 h-4" />
+                </button>
               </div>
-            </div>
 
-            {/* Navigation Sections */}
-            <nav className="p-4 space-y-6 flex-1">
-              {navSections.map((section, sIdx) => (
-                <div key={sIdx} className="space-y-1">
-                  <div className="text-[10px] font-mono font-bold uppercase tracking-[0.15em] text-zinc-500 px-3 py-1">
-                    {section.label}
+              {/* Scholar Identity Strip */}
+              <div className="px-5 py-4 border-b border-[#e5e1d5] bg-white">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-full bg-[#f4f1ea] flex items-center justify-center text-sm border border-[#e0dcce]">
+                    {user?.avatar_emoji || '🎓'}
                   </div>
-                  {section.items.map((item) => (
-                    <NavLink
-                      key={item.path}
-                      to={item.path}
-                      onClick={onClose}
-                      className={({ isActive }) => `
-                        flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors
-                        ${isActive
-                          ? 'bg-white text-[#1b3b2b] font-semibold border border-[#d8d2c0] shadow-sm'
-                          : 'text-[#4e4c46] hover:bg-[#ede9de] hover:text-[#1a1917] border border-transparent'}
-                      `}
-                    >
-                      {({ isActive }) => (
-                        <>
-                          <item.icon className={`w-4 h-4 ${isActive ? 'text-[#1b3b2b]' : 'text-zinc-500'}`} />
-                          <span className="text-xs">{item.name}</span>
-                        </>
-                      )}
-                    </NavLink>
-                  ))}
+                  <div className="truncate">
+                    <div className="font-bold text-[#1a1917] truncate font-serif text-sm">{user?.full_name || 'Scholar'}</div>
+                    <div className="text-[10px] text-[#827f76] font-mono">Productivity Workstation</div>
+                  </div>
                 </div>
-              ))}
-            </nav>
+              </div>
 
-            {/* Footer Tag */}
-            <div className="p-4 border-t border-[#e5e1d5] text-[10px] font-mono text-zinc-500 flex justify-between items-center bg-[#f4f1ea]">
-              <span>CURRICULUM ARCHIVE</span>
-              <span className="text-[#1b3b2b] font-bold">● ACTIVE</span>
+              {/* Navigation Sections */}
+              <nav className="p-4 space-y-1.5">
+                <div className="text-[10px] font-mono font-bold uppercase tracking-[0.15em] text-[#827f76] px-3 py-1">
+                  Productivity Arsenal
+                </div>
+                {navItems.map((item) => (
+                  <NavLink
+                    key={item.path}
+                    to={item.path}
+                    onClick={onClose}
+                    className={({ isActive }) => `
+                      flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-mono uppercase tracking-wider transition-all
+                      ${isActive 
+                        ? 'bg-[#1b3b2b] text-white font-bold shadow-sm' 
+                        : 'text-[#52504a] hover:bg-[#ede9de] hover:text-[#1a1917]'
+                      }
+                    `}
+                  >
+                    <item.icon className="w-4 h-4 shrink-0" />
+                    <span>{item.name}</span>
+                  </NavLink>
+                ))}
+              </nav>
+            </div>
+
+            {/* Bottom Footer Note */}
+            <div className="p-4 border-t border-[#e5e1d5] bg-[#f4f1ea] text-[10px] font-mono text-[#827f76] text-center">
+              Student Productivity Suite
             </div>
           </motion.aside>
         </>
