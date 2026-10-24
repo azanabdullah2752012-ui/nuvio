@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
 import { 
-  Calendar, CheckSquare, Flame, Clock, Sliders, 
-  Sun, Moon, Download, RefreshCw, X, ChevronRight, Shield
+  Calendar, Clock, Flame, Sliders, 
+  Sun, Moon, Shield, RefreshCw, X 
 } from 'lucide-react';
 import { journalStorage, getTodayKey } from '../../services/journalStorage';
 
@@ -9,7 +10,7 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
   const [theme, setTheme] = useState(journalStorage.getTheme());
   const [accentColor, setAccentColor] = useState(journalStorage.getAccentColor());
   const [routineType, setRoutineType] = useState(journalStorage.getRoutineType());
-  const [activeTab, setActiveTab] = useState('today');
+  const location = useLocation();
 
   useEffect(() => {
     journalStorage.applyTheme(theme);
@@ -42,21 +43,12 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
     setRoutineType(next);
   };
 
-  const navItems = [
-    { id: 'today', label: 'Today', icon: Calendar, href: '#today' },
-    { id: 'priorities', label: 'Priorities', icon: CheckSquare, href: '#priorities' },
-    { id: 'routine', label: 'Routine Timeline', icon: Clock, href: '#routine' },
-    { id: 'habits', label: 'Habit Tracker', icon: Flame, href: '#habits' }
+  const navLinks = [
+    { to: '/', label: 'Today', icon: Calendar },
+    { to: '/routine', label: 'Routine Schedule', icon: Clock },
+    { to: '/habits', label: 'Habit Tracker', icon: Flame },
+    { to: '/settings', label: 'Settings & Backup', icon: Sliders }
   ];
-
-  const handleNavClick = (id, href) => {
-    setActiveTab(id);
-    const element = document.querySelector(href);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-    if (onClose) onClose();
-  };
 
   return (
     <>
@@ -74,7 +66,7 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
           isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full lg:translate-x-0'
         }`}
       >
-        {/* Top: Identity & Mobile Close */}
+        {/* Top: Identity & Navigation */}
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -119,19 +111,20 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
             </button>
           </div>
 
-          {/* Navigation Links */}
+          {/* Navigation Links to Dedicated Pages */}
           <nav className="space-y-1">
-            {navItems.map((item) => {
+            {navLinks.map((item) => {
               const Icon = item.icon;
-              const isActive = activeTab === item.id;
+              const isActive = location.pathname === item.to || (item.to !== '/' && location.pathname.startsWith(item.to));
 
               return (
-                <button
-                  key={item.id}
-                  onClick={() => handleNavClick(item.id, item.href)}
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  onClick={onClose}
                   className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors ${
                     isActive
-                      ? 'bg-[var(--bg-surface-elevated)] text-[var(--text-primary)] font-semibold'
+                      ? 'bg-[var(--bg-surface-elevated)] text-[var(--text-primary)] font-semibold shadow-sm'
                       : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface-hover)]'
                   }`}
                 >
@@ -148,13 +141,13 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
                       style={{ backgroundColor: accentColor }}
                     />
                   )}
-                </button>
+                </NavLink>
               );
             })}
           </nav>
         </div>
 
-        {/* Bottom: Settings, Theme Toggle & Privacy Tag */}
+        {/* Bottom: Theme Toggle & Privacy Tag */}
         <div className="pt-4 border-t border-[var(--border-subtle)] space-y-2">
           {/* Theme Toggle Button */}
           <button
@@ -170,18 +163,6 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
               <span className="capitalize">{theme === 'dark' ? 'Dark Theme' : 'Light Theme'}</span>
             </div>
             <span className="text-[11px] text-[var(--text-muted)] font-mono">Toggle</span>
-          </button>
-
-          {/* Settings / Backup Button */}
-          <button
-            onClick={onOpenSettings}
-            className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface-hover)] transition-colors"
-          >
-            <div className="flex items-center gap-3">
-              <Sliders className="w-4 h-4 text-[var(--text-secondary)]" />
-              <span>Settings & Backup</span>
-            </div>
-            <ChevronRight className="w-3.5 h-3.5 text-[var(--text-muted)]" />
           </button>
 
           {/* Private Local Storage Badge */}

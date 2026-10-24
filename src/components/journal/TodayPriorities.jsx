@@ -1,6 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Target, Check, Sparkles } from 'lucide-react';
+import { Target, Check, Sparkles, CheckSquare } from 'lucide-react';
 import { journalStorage, getTodayKey } from '../../services/journalStorage';
+
+const PLACEHOLDERS = [
+  'Priority 1: e.g. Turn 10 word problems into algebraic equations (Math)',
+  'Priority 2: e.g. NextTopper science revision notes & test prep',
+  'Priority 3: e.g. Build next feature on active product / 20m workout'
+];
+
+const LABELS = [
+  'Must-Ship Core Target',
+  'Academic Problem Set',
+  'Personal Discipline'
+];
 
 const TodayPriorities = ({ dateKey = getTodayKey(), accentColor }) => {
   const [priorities, setPriorities] = useState(journalStorage.getPriorities(dateKey));
@@ -31,28 +43,31 @@ const TodayPriorities = ({ dateKey = getTodayKey(), accentColor }) => {
   const completedCount = priorities.filter(p => p.completed && p.text.trim().length > 0).length;
 
   return (
-    <div className="journal-card p-5 sm:p-6 space-y-4">
+    <div className="journal-card p-6 sm:p-7 space-y-5">
       {/* Header */}
-      <div className="flex items-center justify-between pb-3 border-b border-white/[0.08]">
+      <div className="flex items-center justify-between pb-4 border-b border-[var(--border-subtle)]">
         <div>
-          <div className="flex items-center gap-2">
-            <Target className="w-4 h-4 text-zinc-400" />
-            <h2 className="text-base font-semibold text-white tracking-tight">Today's 3 Priorities</h2>
+          <div className="flex items-center gap-2.5">
+            <Target className="w-5 h-5 text-emerald-400" />
+            <h2 className="text-lg font-semibold text-[var(--text-primary)] tracking-tight">
+              Today's 3 Priorities
+            </h2>
           </div>
-          <p className="text-xs text-zinc-400 mt-1">
-            Focus on what matters most. Keep it limited to 3 items.
+          <p className="text-xs text-[var(--text-muted)] mt-1">
+            Focus purely on these 3 items • Check off as you finish
           </p>
         </div>
 
         <div className="text-right">
-          <span className="text-xs font-mono font-medium text-zinc-300">
-            {completedCount} / 3 Completed
+          <span className="text-sm font-semibold text-[var(--text-primary)]">
+            {completedCount} / 3
           </span>
+          <span className="text-xs text-[var(--text-muted)] ml-1">Completed</span>
         </div>
       </div>
 
-      {/* 3 Priorities Slots */}
-      <div className="space-y-3">
+      {/* 3 Roomy, Comfortable Input Rows */}
+      <div className="space-y-3.5">
         {priorities.map((item, index) => {
           const isDone = item.completed;
           const hasText = item.text.trim().length > 0;
@@ -60,51 +75,52 @@ const TodayPriorities = ({ dateKey = getTodayKey(), accentColor }) => {
           return (
             <div 
               key={item.id || index}
-              className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${
+              className={`flex items-start sm:items-center gap-4 p-4 rounded-xl border transition-all duration-200 ${
                 isDone 
-                  ? 'bg-white/[0.02] border-white/[0.05] opacity-75' 
-                  : 'bg-[#14171d]/60 border-white/[0.08] focus-within:border-white/[0.2] focus-within:bg-[#14171d]'
+                  ? 'bg-[var(--bg-surface-elevated)]/40 border-[var(--border-subtle)] opacity-70' 
+                  : 'bg-[var(--bg-surface-elevated)] border-[var(--border-subtle)] focus-within:border-[var(--border-focus)] focus-within:bg-[var(--bg-surface-hover)]'
               }`}
             >
-              {/* Checkbox */}
+              {/* Checkbox Button */}
               <button
                 type="button"
                 onClick={() => handleToggle(index)}
                 disabled={!hasText}
                 aria-label={`Toggle priority ${index + 1}`}
-                className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all shrink-0 ${
+                className={`w-6 h-6 mt-0.5 sm:mt-0 rounded-lg border-2 flex items-center justify-center transition-all duration-200 shrink-0 ${
                   isDone 
-                    ? 'border-transparent text-white' 
+                    ? 'border-transparent text-white shadow-sm' 
                     : hasText 
-                      ? 'border-white/[0.25] hover:border-white/[0.5] cursor-pointer' 
-                      : 'border-white/[0.08] cursor-not-allowed opacity-30'
+                      ? 'border-[var(--border-medium)] hover:border-emerald-400 bg-transparent cursor-pointer' 
+                      : 'border-[var(--border-subtle)] cursor-not-allowed opacity-30'
                 }`}
                 style={isDone ? { backgroundColor: accentColor } : {}}
               >
-                {isDone && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                {isDone && <Check className="w-4 h-4 stroke-[3]" />}
               </button>
 
-              {/* Number Badge */}
-              <span className="text-[11px] font-mono text-zinc-500 shrink-0 w-4">
-                #{index + 1}
-              </span>
+              {/* Number and Label Indicator */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+                    Priority #{index + 1}
+                  </span>
+                  <span className="text-[var(--text-muted)]">•</span>
+                  <span className="text-[11px] text-[var(--text-secondary)]">
+                    {LABELS[index]}
+                  </span>
+                </div>
 
-              {/* Priority Input */}
-              <input
-                type="text"
-                value={item.text}
-                onChange={(e) => handleTextChange(index, e.target.value)}
-                placeholder={
-                  index === 0 
-                    ? 'e.g. Turn 10 word problems into equations (Math)' 
-                    : index === 1 
-                      ? 'e.g. NextTopper class notes & test revision' 
-                      : 'e.g. Ship next feature on current product / 20m workout'
-                }
-                className={`flex-1 bg-transparent border-none text-xs sm:text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none ${
-                  isDone ? 'line-through text-zinc-400' : ''
-                }`}
-              />
+                <input
+                  type="text"
+                  value={item.text}
+                  onChange={(e) => handleTextChange(index, e.target.value)}
+                  placeholder={PLACEHOLDERS[index]}
+                  className={`w-full bg-transparent border-none text-sm sm:text-base text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none transition-all ${
+                    isDone ? 'line-through text-[var(--text-muted)]' : ''
+                  }`}
+                />
+              </div>
             </div>
           );
         })}

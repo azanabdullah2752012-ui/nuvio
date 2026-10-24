@@ -1,18 +1,21 @@
 import React, { Suspense, lazy } from 'react';
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 
-// Layout & Core
+// Layout
 import Layout from './components/layout/Layout';
 
-// Primary Workspace (Kaiser Command Deck)
+// Separate Dedicated Pages
 const Dashboard = lazy(() => import('./pages/Dashboard'));
+const RoutinePage = lazy(() => import('./pages/RoutinePage'));
+const HabitsPage = lazy(() => import('./pages/HabitsPage'));
+const SettingsPage = lazy(() => import('./pages/SettingsPage'));
 
-// Minimalist Loading Spinner
+// Clean Loading State
 const AppLoader = () => (
-  <div className="min-h-screen bg-[#fbfbfa] flex flex-col items-center justify-center gap-3">
-    <div className="w-6 h-6 border-2 border-[#e8e6df] border-t-emerald-800 rounded-full animate-spin" />
-    <div className="font-mono text-xs text-[#8e8d8a] uppercase tracking-widest">
-      Initializing Kaiser Command Deck...
+  <div className="min-h-screen bg-[var(--bg-app)] flex flex-col items-center justify-center gap-3">
+    <div className="w-6 h-6 border-2 border-[var(--border-subtle)] border-t-[var(--accent-primary)] rounded-full animate-spin" />
+    <div className="text-xs text-[var(--text-muted)] font-medium tracking-wide">
+      Loading Journal...
     </div>
   </div>
 );
@@ -22,10 +25,19 @@ function App() {
     <HashRouter>
       <Suspense fallback={<AppLoader />}>
         <Routes>
-          {/* Main Workstation */}
           <Route element={<Layout />}>
+            {/* Today Command Deck */}
             <Route path="/" element={<Dashboard />} />
-            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/today" element={<Dashboard />} />
+
+            {/* Dedicated Routine Timeline Page */}
+            <Route path="/routine" element={<RoutinePage />} />
+
+            {/* Dedicated Habit Tracker Page */}
+            <Route path="/habits" element={<HabitsPage />} />
+
+            {/* Dedicated Settings & Backup Page */}
+            <Route path="/settings" element={<SettingsPage />} />
           </Route>
 
           {/* Catch-all */}
