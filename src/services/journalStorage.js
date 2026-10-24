@@ -29,7 +29,9 @@ const STORAGE_KEYS = {
   FAVORS: 'journal_pickle_corp_favors',
   SPELLING: 'journal_spelling_precision',
   PRAYER_LOGS: 'journal_prayer_logs',
-  SYLLABUS: 'journal_syllabus_progress'
+  SYLLABUS: 'journal_syllabus_progress',
+  DISCIPLINE_CHECKS: 'journal_discipline_checks',
+  DISCIPLINE_PLEDGES: 'journal_discipline_pledges'
 };
 
 // Default Accent Color chosen by Kaiser
@@ -859,6 +861,106 @@ export const journalStorage = {
     localStorage.setItem(STORAGE_KEYS.PRAYER_LOGS, JSON.stringify(all));
     window.dispatchEvent(new Event('journal_data_update'));
     return all[dateKey][prayerKey];
+  },
+
+  // ── DISCIPLINE BOARD & IRON PROTOCOLS ────────────────────────────
+  getIronRules() {
+    return [
+      { id: 'r1', rule: 'Anchor to Fajr (5:00 AM)', detail: 'Never hit snooze. Win the first 30 minutes, win the entire 24-hour cycle.' },
+      { id: 'r2', rule: 'The 5-Minute Barrier Rule', detail: 'When resistance hits, just sit down for 5 minutes. 90% of the battle is starting.' },
+      { id: 'r3', rule: 'Convert Word Problems to Equations First', detail: 'In math, never guess or calculate in your head. Write unknowns (x, y) & relationships first.' },
+      { id: 'r4', rule: 'One Build at a Time (Anti-Shiny Object)', detail: 'Never start project #2 until project #1 has shipped and people can touch it.' },
+      { id: 'r5', rule: 'Rest is Not Wasted Time', detail: 'Sleep, family dinner, and weekend decompression are essential fuel. Burnout is amateur.' }
+    ];
+  },
+
+  getRealityCheckLines() {
+    return [
+      "Right now, another Grade 9 student targeting IIT Madras is solving 20 physics problems.",
+      "Scrolling social media or short videos won't build your space company.",
+      "Pickle Corp doesn't ship demos; it ships products people actually use.",
+      "Math marks are won or lost on careless errors and equation conversion. Slow down and check your steps.",
+      "Nobody remembers the ideas you talked about; they remember what you delivered."
+    ];
+  },
+
+  getDisciplineChecks(dateKey = getTodayKey()) {
+    const defaultChecks = [
+      { id: 'dc_fajr', label: 'Awake at 5:00 AM for Fajr (Zero Snooze)' },
+      { id: 'dc_phone', label: 'Zero mindless phone scrolling before morning study' },
+      { id: 'dc_equations', label: 'Turned at least 5 math word problems into equations' },
+      { id: 'dc_active_build', label: 'Advanced single active project (committed real progress)' },
+      { id: 'dc_clean_shutdown', label: 'Mistakes reviewed & school bag packed for tomorrow' }
+    ];
+    const all = safeJsonParse(STORAGE_KEYS.DISCIPLINE_CHECKS, {});
+    const dayData = all[dateKey] || {};
+    return defaultChecks.map(c => ({
+      ...c,
+      completed: !!dayData[c.id]
+    }));
+  },
+
+  toggleDisciplineCheck(dateKey, checkId) {
+    const all = safeJsonParse(STORAGE_KEYS.DISCIPLINE_CHECKS, {});
+    if (!all[dateKey]) all[dateKey] = {};
+    all[dateKey][checkId] = !all[dateKey][checkId];
+    localStorage.setItem(STORAGE_KEYS.DISCIPLINE_CHECKS, JSON.stringify(all));
+    window.dispatchEvent(new Event('journal_data_update'));
+    return all[dateKey][checkId];
+  },
+
+  getDisciplinePledges() {
+    const defaultPledges = [
+      {
+        id: 'p1',
+        title: '7-Day Zero Careless Math Errors Drill',
+        targetDays: 7,
+        daysCompleted: [true, true, true, false, false, false, false],
+        active: true,
+        reward: 'Order electronics parts or special weekend treat'
+      },
+      {
+        id: 'p2',
+        title: '7-Day 5:00 AM Fajr Lock-In',
+        targetDays: 7,
+        daysCompleted: [true, true, true, true, false, false, false],
+        active: true,
+        reward: 'Full Sunday morning coding session guilt-free'
+      }
+    ];
+    return safeJsonParse(STORAGE_KEYS.DISCIPLINE_PLEDGES, defaultPledges);
+  },
+
+  togglePledgeDay(pledgeId, dayIndex) {
+    const list = this.getDisciplinePledges();
+    const pledge = list.find(p => p.id === pledgeId);
+    if (pledge && pledge.daysCompleted) {
+      pledge.daysCompleted[dayIndex] = !pledge.daysCompleted[dayIndex];
+      localStorage.setItem(STORAGE_KEYS.DISCIPLINE_PLEDGES, JSON.stringify(list));
+      window.dispatchEvent(new Event('journal_data_update'));
+    }
+  },
+
+  addPledge(pledge) {
+    const list = this.getDisciplinePledges();
+    const id = 'pledge_' + Date.now().toString(36);
+    const newPledge = {
+      ...pledge,
+      id,
+      daysCompleted: [false, false, false, false, false, false, false],
+      active: true
+    };
+    list.unshift(newPledge);
+    localStorage.setItem(STORAGE_KEYS.DISCIPLINE_PLEDGES, JSON.stringify(list));
+    window.dispatchEvent(new Event('journal_data_update'));
+    return newPledge;
+  },
+
+  deletePledge(id) {
+    let list = this.getDisciplinePledges();
+    list = list.filter(p => p.id !== id);
+    localStorage.setItem(STORAGE_KEYS.DISCIPLINE_PLEDGES, JSON.stringify(list));
+    window.dispatchEvent(new Event('journal_data_update'));
   },
 
   // ── BACKUP & DATA PORTABILITY (EXPORT / IMPORT JSON) ──────────────

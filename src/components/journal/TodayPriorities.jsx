@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Target, Check, Sparkles, CheckSquare } from 'lucide-react';
+import confetti from 'canvas-confetti';
 import { journalStorage, getTodayKey } from '../../services/journalStorage';
+import { soundEngine } from '../../services/soundEngine';
 
 const PLACEHOLDERS = [
   'Priority 1: e.g. Turn 10 word problems into algebraic equations (Math)',
@@ -37,7 +39,20 @@ const TodayPriorities = ({ dateKey = getTodayKey(), accentColor }) => {
   };
 
   const handleToggle = (index) => {
+    soundEngine.playPop();
     journalStorage.togglePriority(dateKey, index);
+    const updated = journalStorage.getPriorities(dateKey);
+    const count = updated.filter(p => p.completed && p.text.trim().length > 0).length;
+    if (count === 3) {
+      soundEngine.playBell(587);
+      try {
+        confetti({
+          particleCount: 90,
+          spread: 80,
+          origin: { y: 0.6 }
+        });
+      } catch (e) {}
+    }
   };
 
   const completedCount = priorities.filter(p => p.completed && p.text.trim().length > 0).length;

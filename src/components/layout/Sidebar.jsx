@@ -46,6 +46,7 @@ const Sidebar = ({ isOpen, onClose }) => {
 
   const dailyLinks = [
     { to: '/', label: 'Today Command Hub', icon: Calendar },
+    { to: '/discipline', label: 'Discipline Board', icon: Shield },
     { to: '/routine', label: 'Routine Timeline', icon: Clock },
     { to: '/habits', label: 'Habit Tracker', icon: Flame },
     { to: '/prayer', label: 'Prayer & Sunnah', icon: Compass }

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ChevronLeft, ChevronRight, Calendar, Shield, Zap } from 'lucide-react';
 import { journalStorage, getTodayKey } from '../services/journalStorage';
 import TodayHero from '../components/journal/TodayHero';
 import TodayPriorities from '../components/journal/TodayPriorities';
@@ -76,9 +77,19 @@ const Dashboard = () => {
           )}
         </div>
 
-        <div className="text-xs font-mono text-[var(--text-muted)] flex items-center gap-1.5">
-          <Calendar className="w-3.5 h-3.5" />
-          <span>{dateKey}</span>
+        <div className="flex items-center gap-3">
+          <Link
+            to="/discipline"
+            className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-lg border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 text-xs font-semibold text-amber-400 transition-colors"
+          >
+            <Shield className="w-3.5 h-3.5" />
+            <span>Discipline Board</span>
+          </Link>
+
+          <div className="text-xs font-mono text-[var(--text-muted)] flex items-center gap-1.5">
+            <Calendar className="w-3.5 h-3.5" />
+            <span>{dateKey}</span>
+          </div>
         </div>
       </div>
 

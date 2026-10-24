@@ -6,6 +6,7 @@ import Layout from './components/layout/Layout';
 
 // Dedicated Pages
 const Dashboard = lazy(() => import('./pages/Dashboard'));
+const DisciplinePage = lazy(() => import('./pages/DisciplinePage'));
 const RoutinePage = lazy(() => import('./pages/RoutinePage'));
 const HabitsPage = lazy(() => import('./pages/HabitsPage'));
 const GoalsPage = lazy(() => import('./pages/GoalsPage'));
@@ -37,6 +38,9 @@ function App() {
             {/* 1. Today Overview */}
             <Route path="/" element={<Dashboard />} />
             <Route path="/today" element={<Dashboard />} />
+
+            {/* Discipline Board */}
+            <Route path="/discipline" element={<DisciplinePage />} />
 
             {/* 2. Routine Schedule */}
             <Route path="/routine" element={<RoutinePage />} />
