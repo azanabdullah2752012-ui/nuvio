@@ -33,7 +33,10 @@ const STORAGE_KEYS = {
   DISCIPLINE_PLEDGES: 'journal_discipline_pledges',
   IRON_RULES: 'journal_iron_rules',
   REALITY_CHECKS: 'journal_reality_checks',
-  TASBIH: 'journal_tasbih_counts'
+  TASBIH: 'journal_tasbih_counts',
+  HOMEWORK: 'journal_homework_tasks',
+  WATER_LOGS: 'journal_water_logs',
+  BAG_PACK_CHECK: 'journal_bag_pack_check'
 };
 
 // Default Accent Color: Kaiser Sapphire
@@ -1133,6 +1136,89 @@ export const journalStorage = {
     }
     localStorage.setItem(STORAGE_KEYS.TASBIH, JSON.stringify(counts));
     window.dispatchEvent(new Event('journal_data_update'));
+  },
+
+  // ── HOMEWORK & ASSIGNMENT DUE DATES ────────────────────────────────
+  getHomeworkList() {
+    const defaultHomework = [
+      { id: 'hw1', subject: 'Mathematics', title: 'NCERT Ex 4.3 (Q 1 to 6)', source: 'School', dueDate: 'Tomorrow', completed: false },
+      { id: 'hw2', subject: 'Physics', title: 'Second Law of Motion numericals worksheet', source: 'NextTopper', dueDate: 'In 2 days', completed: false },
+      { id: 'hw3', subject: 'Chemistry', title: 'Read Atoms & Molecules Chapter 3 notes', source: 'School', dueDate: 'This week', completed: true }
+    ];
+    return safeJsonParse(STORAGE_KEYS.HOMEWORK, defaultHomework);
+  },
+
+  addHomework(item) {
+    const list = this.getHomeworkList();
+    const id = 'hw_' + Date.now().toString(36);
+    const newItem = { ...item, id, completed: false, createdAt: getTodayKey() };
+    list.unshift(newItem);
+    localStorage.setItem(STORAGE_KEYS.HOMEWORK, JSON.stringify(list));
+    window.dispatchEvent(new Event('journal_data_update'));
+    return newItem;
+  },
+
+  toggleHomework(id) {
+    const list = this.getHomeworkList();
+    const item = list.find(h => h.id === id);
+    if (item) {
+      item.completed = !item.completed;
+      localStorage.setItem(STORAGE_KEYS.HOMEWORK, JSON.stringify(list));
+      window.dispatchEvent(new Event('journal_data_update'));
+    }
+  },
+
+  deleteHomework(id) {
+    let list = this.getHomeworkList();
+    list = list.filter(h => h.id !== id);
+    localStorage.setItem(STORAGE_KEYS.HOMEWORK, JSON.stringify(list));
+    window.dispatchEvent(new Event('journal_data_update'));
+  },
+
+  // ── HYDRATION TRACKER (8 GLASSES / 2.5L) ──────────────────────────
+  getWaterCount(dateKey = getTodayKey()) {
+    const logs = safeJsonParse(STORAGE_KEYS.WATER_LOGS, {});
+    return logs[dateKey] || 0;
+  },
+
+  setWaterCount(dateKey, count) {
+    const logs = safeJsonParse(STORAGE_KEYS.WATER_LOGS, {});
+    logs[dateKey] = Math.max(0, Math.min(12, count));
+    localStorage.setItem(STORAGE_KEYS.WATER_LOGS, JSON.stringify(logs));
+    window.dispatchEvent(new Event('journal_data_update'));
+    return logs[dateKey];
+  },
+
+  incrementWater(dateKey = getTodayKey()) {
+    const current = this.getWaterCount(dateKey);
+    return this.setWaterCount(dateKey, current + 1);
+  },
+
+  // ── NIGHTLY SCHOOL BAG READINESS CHECKLIST ────────────────────────
+  getBagPackChecks(dateKey = getTodayKey()) {
+    const defaultItems = [
+      { id: 'bp_books', label: 'Tomorrow timetable notebooks & textbooks packed', category: 'Books' },
+      { id: 'bp_hw', label: 'Completed homework & revision sheets placed in folder', category: 'Academics' },
+      { id: 'bp_geometry', label: 'Geometry compass, scale, and stationery checked', category: 'Tools' },
+      { id: 'bp_id', label: 'School ID card & bus pass in pocket/bag', category: 'Essentials' },
+      { id: 'bp_water', label: 'Water bottle cleaned and filled', category: 'Health' },
+      { id: 'bp_alarm', label: '5:00 AM Fajr alarm set & phone placed away from bed', category: 'Discipline' }
+    ];
+    const logs = safeJsonParse(STORAGE_KEYS.BAG_PACK_CHECK, {});
+    const dayData = logs[dateKey] || {};
+    return defaultItems.map(item => ({
+      ...item,
+      completed: !!dayData[item.id]
+    }));
+  },
+
+  toggleBagPackCheck(dateKey, checkId) {
+    const logs = safeJsonParse(STORAGE_KEYS.BAG_PACK_CHECK, {});
+    if (!logs[dateKey]) logs[dateKey] = {};
+    logs[dateKey][checkId] = !logs[dateKey][checkId];
+    localStorage.setItem(STORAGE_KEYS.BAG_PACK_CHECK, JSON.stringify(logs));
+    window.dispatchEvent(new Event('journal_data_update'));
+    return logs[dateKey][checkId];
   },
 
   getDisciplinePledges() {

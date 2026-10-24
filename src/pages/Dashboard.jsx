@@ -6,6 +6,8 @@ import TodayHero from '../components/journal/TodayHero';
 import TodayPriorities from '../components/journal/TodayPriorities';
 import HabitPunchStrip from '../components/journal/HabitPunchStrip';
 import LockInTimer from '../components/journal/LockInTimer';
+import DailyHomeworkCard from '../components/journal/DailyHomeworkCard';
+import DailyReadinessCard from '../components/journal/DailyReadinessCard';
 import DisciplineSummaryCard from '../components/journal/DisciplineSummaryCard';
 import ActiveForgeCard from '../components/journal/ActiveForgeCard';
 import IdeaVaultCard from '../components/journal/IdeaVaultCard';
@@ -104,19 +106,22 @@ const Dashboard = () => {
       {/* ── SECTION 4: LOCK-IN FOCUS CHAMBER (TIMER + AUDIO) ───────── */}
       <LockInTimer accentColor={accentColor} />
 
-      {/* ── SECTION 5: 2-COLUMN BOTTOM GRID ───────────────────────── */}
+      {/* ── SECTION 5: DAILY HOMEWORK & ASSIGNMENTS DUE ────────────── */}
+      <DailyHomeworkCard accentColor={accentColor} />
+
+      {/* ── SECTION 6: 2-COLUMN DAILY READINESS & BOTTOM GRID ────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
-        {/* Left Column (6 cols): Discipline Anchor & Daily Reflection */}
+        {/* Left Column (6 cols): Hydration, Night Bag Pack & Discipline */}
         <div className="lg:col-span-6 space-y-6">
+          <DailyReadinessCard dateKey={dateKey} accentColor={accentColor} />
           <DisciplineSummaryCard dateKey={dateKey} accentColor={accentColor} />
-          <DailyReflection dateKey={dateKey} accentColor={accentColor} />
         </div>
 
-        {/* Right Column (6 cols): Active Shipping Forge + Idea Vault */}
+        {/* Right Column (6 cols): Active Shipping Forge & Reflection */}
         <div className="lg:col-span-6 space-y-6">
           <ActiveForgeCard accentColor={accentColor} />
-          <IdeaVaultCard accentColor={accentColor} />
+          <DailyReflection dateKey={dateKey} accentColor={accentColor} />
         </div>
 
       </div>
