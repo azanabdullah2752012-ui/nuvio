@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { 
-  Calendar, Clock, Flame, Target, Sparkles, 
-  Award, BookOpen, Sliders, Moon, Sun, Shield, 
-  RefreshCw, X, Compass, DollarSign, Type, Heart
+  Calendar, Clock, BookOpen, Rocket, Shield, 
+  Sliders, Moon, Sun, RefreshCw, X 
 } from 'lucide-react';
 import { journalStorage, getTodayKey } from '../../services/journalStorage';
+import { soundEngine } from '../../services/soundEngine';
 
 const Sidebar = ({ isOpen, onClose }) => {
   const [theme, setTheme] = useState(journalStorage.getTheme());
@@ -33,36 +33,52 @@ const Sidebar = ({ isOpen, onClose }) => {
   }, []);
 
   const toggleTheme = () => {
+    soundEngine.playPop();
     const next = theme === 'dark' ? 'light' : 'dark';
     journalStorage.setTheme(next);
     setTheme(next);
   };
 
   const handleRoutineToggle = () => {
+    soundEngine.playPop();
     const next = routineType === 'weekday' ? 'weekend' : 'weekday';
     journalStorage.setRoutineTypeOverride(getTodayKey(), next);
     setRoutineType(next);
   };
 
-  const dailyLinks = [
-    { to: '/', label: 'Today Command Hub', icon: Calendar },
-    { to: '/discipline', label: 'Discipline Board', icon: Shield },
-    { to: '/routine', label: 'Routine Timeline', icon: Clock },
-    { to: '/habits', label: 'Habit Tracker', icon: Flame },
-    { to: '/prayer', label: 'Prayer & Sunnah', icon: Compass }
-  ];
-
-  const academicLinks = [
-    { to: '/formulas', label: 'JEE Formula Vault', icon: BookOpen },
-    { to: '/goals', label: 'Goals & Marks', icon: Target },
-    { to: '/mistakes', label: 'Mistake Notebook', icon: BookOpen },
-    { to: '/spelling', label: 'Spelling Precision', icon: Type }
-  ];
-
-  const studioLinks = [
-    { to: '/pickle-corp', label: 'Pickle Corp Ledger', icon: DollarSign },
-    { to: '/wins', label: 'Small Wins Vault', icon: Award },
-    { to: '/review', label: 'Weekly Review', icon: Sparkles }
+  // The 5 Master Pillars
+  const masterHubs = [
+    { 
+      to: '/', 
+      exact: true,
+      label: 'Today Command Hub', 
+      subtitle: 'Daily Cockpit', 
+      icon: Calendar 
+    },
+    { 
+      to: '/schedule', 
+      label: 'Schedule & Prayers', 
+      subtitle: 'Timeline + Chennai Radar', 
+      icon: Clock 
+    },
+    { 
+      to: '/academics', 
+      label: 'Academic Forge', 
+      subtitle: 'Marks, JEE & Equations', 
+      icon: BookOpen 
+    },
+    { 
+      to: '/studio', 
+      label: 'Pickle Corp Studio', 
+      subtitle: 'Builds, Invoices & Favors', 
+      icon: Rocket 
+    },
+    { 
+      to: '/discipline', 
+      label: 'Discipline & Creed', 
+      subtitle: 'Iron Rules, Score & Heatmap', 
+      icon: Shield 
+    }
   ];
 
   return (
@@ -81,7 +97,7 @@ const Sidebar = ({ isOpen, onClose }) => {
           isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full lg:translate-x-0'
         }`}
       >
-        {/* Top: Identity & Navigation */}
+        {/* Top: Brand Header */}
         <div className="space-y-5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
@@ -92,8 +108,8 @@ const Sidebar = ({ isOpen, onClose }) => {
                 J
               </div>
               <div>
-                <h1 className="text-base font-semibold text-[var(--text-primary)] tracking-tight">Journal</h1>
-                <p className="text-xs text-[var(--text-muted)]">Kaiser • Grade 9</p>
+                <h1 className="text-base font-semibold text-[var(--text-primary)] tracking-tight">Journal OS</h1>
+                <p className="text-xs text-[var(--text-muted)]">Kaiser • Class IX-C</p>
               </div>
             </div>
 
@@ -106,7 +122,7 @@ const Sidebar = ({ isOpen, onClose }) => {
             </button>
           </div>
 
-          {/* Routine Mode Switcher */}
+          {/* Quick Schedule Switcher */}
           <div className="p-3 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] flex items-center justify-between">
             <div>
               <span className="text-[10px] uppercase tracking-wider text-[var(--text-muted)] font-medium block">
@@ -125,126 +141,70 @@ const Sidebar = ({ isOpen, onClose }) => {
             </button>
           </div>
 
-          {/* Group 1: Daily Cockpit */}
-          <div className="space-y-1">
+          {/* 5 Master Hub Navigation Links */}
+          <nav className="space-y-1.5">
             <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)] px-3 block mb-1">
-              Daily Cockpit
+              Command Hubs
             </span>
-            {dailyLinks.map((item) => {
+            {masterHubs.map((item) => {
               const Icon = item.icon;
-              const isActive = location.pathname === item.to || (item.to !== '/' && location.pathname.startsWith(item.to));
+              const isActive = item.exact 
+                ? (location.pathname === '/' || location.pathname === '/today')
+                : location.pathname.startsWith(item.to);
 
               return (
                 <NavLink
                   key={item.to}
                   to={item.to}
-                  onClick={onClose}
-                  className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-colors ${
+                  onClick={() => {
+                    soundEngine.playPop();
+                    if (onClose) onClose();
+                  }}
+                  className={`w-full flex items-center justify-between p-2.5 rounded-xl text-left transition-all ${
                     isActive
-                      ? 'bg-[var(--bg-surface-elevated)] text-[var(--text-primary)] font-semibold shadow-sm'
+                      ? 'bg-[var(--bg-surface-elevated)] border border-[var(--border-medium)] text-[var(--text-primary)] font-bold shadow-sm'
                       : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface-hover)]'
                   }`}
                 >
-                  <div className="flex items-center gap-2.5">
-                    <Icon 
-                      className="w-4 h-4 shrink-0" 
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div 
+                      className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
+                        isActive ? 'bg-[var(--accent-subtle)]' : 'bg-transparent'
+                      }`}
                       style={isActive ? { color: accentColor } : {}}
-                    />
-                    <span>{item.label}</span>
+                    >
+                      <Icon className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-xs sm:text-sm font-semibold truncate leading-tight">
+                        {item.label}
+                      </div>
+                      <div className="text-[10px] text-[var(--text-muted)] truncate">
+                        {item.subtitle}
+                      </div>
+                    </div>
                   </div>
+
                   {isActive && (
                     <div 
-                      className="w-1.5 h-1.5 rounded-full shrink-0" 
+                      className="w-1.5 h-1.5 rounded-full shrink-0 ml-2" 
                       style={{ backgroundColor: accentColor }}
                     />
                   )}
                 </NavLink>
               );
             })}
-          </div>
-
-          {/* Group 2: Academic & JEE Mastery */}
-          <div className="space-y-1">
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)] px-3 block mb-1">
-              Academic & JEE Mastery
-            </span>
-            {academicLinks.map((item) => {
-              const Icon = item.icon;
-              const isActive = location.pathname.startsWith(item.to);
-
-              return (
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                  onClick={onClose}
-                  className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-colors ${
-                    isActive
-                      ? 'bg-[var(--bg-surface-elevated)] text-[var(--text-primary)] font-semibold shadow-sm'
-                      : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface-hover)]'
-                  }`}
-                >
-                  <div className="flex items-center gap-2.5">
-                    <Icon 
-                      className="w-4 h-4 shrink-0" 
-                      style={isActive ? { color: accentColor } : {}}
-                    />
-                    <span>{item.label}</span>
-                  </div>
-                  {isActive && (
-                    <div 
-                      className="w-1.5 h-1.5 rounded-full shrink-0" 
-                      style={{ backgroundColor: accentColor }}
-                    />
-                  )}
-                </NavLink>
-              );
-            })}
-          </div>
-
-          {/* Group 3: Studio & Reviews */}
-          <div className="space-y-1">
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)] px-3 block mb-1">
-              Studio & Reflection
-            </span>
-            {studioLinks.map((item) => {
-              const Icon = item.icon;
-              const isActive = location.pathname.startsWith(item.to);
-
-              return (
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                  onClick={onClose}
-                  className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-colors ${
-                    isActive
-                      ? 'bg-[var(--bg-surface-elevated)] text-[var(--text-primary)] font-semibold shadow-sm'
-                      : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface-hover)]'
-                  }`}
-                >
-                  <div className="flex items-center gap-2.5">
-                    <Icon 
-                      className="w-4 h-4 shrink-0" 
-                      style={isActive ? { color: accentColor } : {}}
-                    />
-                    <span>{item.label}</span>
-                  </div>
-                  {isActive && (
-                    <div 
-                      className="w-1.5 h-1.5 rounded-full shrink-0" 
-                      style={{ backgroundColor: accentColor }}
-                    />
-                  )}
-                </NavLink>
-              );
-            })}
-          </div>
+          </nav>
         </div>
 
-        {/* Bottom: Settings & Theme Toggle */}
+        {/* Bottom: Settings, Theme & Privacy Badge */}
         <div className="pt-4 border-t border-[var(--border-subtle)] space-y-1.5 shrink-0 mt-4">
           <NavLink
             to="/settings"
-            onClick={onClose}
+            onClick={() => {
+              soundEngine.playPop();
+              if (onClose) onClose();
+            }}
             className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-colors ${
               location.pathname === '/settings'
                 ? 'bg-[var(--bg-surface-elevated)] text-[var(--text-primary)] font-semibold'
@@ -267,14 +227,14 @@ const Sidebar = ({ isOpen, onClose }) => {
               ) : (
                 <Sun className="w-4 h-4 text-amber-500 shrink-0" />
               )}
-              <span className="capitalize">{theme === 'dark' ? 'Dark Theme' : 'Light Theme'}</span>
+              <span className="capitalize">{theme === 'dark' ? 'Dark Mode' : 'Light Mode'}</span>
             </div>
             <span className="text-[10px] text-[var(--text-muted)] font-mono">Toggle</span>
           </button>
 
           <div className="px-3 py-1.5 text-[10px] text-[var(--text-muted)] flex items-center gap-2">
             <Shield className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-            <span>100% Local & Private</span>
+            <span>100% Private Local Storage</span>
           </div>
         </div>
       </aside>

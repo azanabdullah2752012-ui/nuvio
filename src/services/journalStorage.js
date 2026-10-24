@@ -963,6 +963,90 @@ export const journalStorage = {
     window.dispatchEvent(new Event('journal_data_update'));
   },
 
+  // ── CLASS 9 & JEE SYLLABUS TRACKER ────────────────────────────────
+  getSyllabus() {
+    const defaultSyllabus = [
+      { id: 'm_ch1', subject: 'Mathematics', chapter: 'Number Systems', status: 'Mastered' },
+      { id: 'm_ch2', subject: 'Mathematics', chapter: 'Polynomials', status: 'Mastered' },
+      { id: 'm_ch3', subject: 'Mathematics', chapter: 'Coordinate Geometry', status: 'Mastered' },
+      { id: 'm_ch4', subject: 'Mathematics', chapter: 'Linear Equations in Two Variables', status: 'In Progress' },
+      { id: 'm_ch5', subject: 'Mathematics', chapter: 'Lines and Angles', status: 'Mastered' },
+      { id: 'm_ch6', subject: 'Mathematics', chapter: 'Triangles', status: 'In Progress' },
+      { id: 'm_ch7', subject: 'Mathematics', chapter: 'Quadrilaterals', status: 'Needs Practice' },
+      { id: 'm_ch8', subject: 'Mathematics', chapter: 'Circles', status: 'In Progress' },
+      { id: 'm_ch9', subject: 'Mathematics', chapter: "Heron's Formula", status: 'Mastered' },
+      { id: 'm_ch10', subject: 'Mathematics', chapter: 'Surface Areas and Volumes', status: 'Needs Practice' },
+      { id: 'm_ch11', subject: 'Mathematics', chapter: 'Statistics', status: 'Mastered' },
+
+      { id: 's_p1', subject: 'Physics', chapter: 'Motion & Equations', status: 'Mastered' },
+      { id: 's_p2', subject: 'Physics', chapter: 'Force & Laws of Motion', status: 'Mastered' },
+      { id: 's_p3', subject: 'Physics', chapter: 'Gravitation', status: 'In Progress' },
+      { id: 's_p4', subject: 'Physics', chapter: 'Work and Energy', status: 'In Progress' },
+      { id: 's_p5', subject: 'Physics', chapter: 'Sound', status: 'Needs Practice' },
+
+      { id: 's_c1', subject: 'Chemistry', chapter: 'Matter in Our Surroundings', status: 'Mastered' },
+      { id: 's_c2', subject: 'Chemistry', chapter: 'Is Matter Around Us Pure', status: 'Mastered' },
+      { id: 's_c3', subject: 'Chemistry', chapter: 'Atoms and Molecules (Mole Concept)', status: 'In Progress' },
+      { id: 's_c4', subject: 'Chemistry', chapter: 'Structure of the Atom', status: 'In Progress' },
+
+      { id: 's_b1', subject: 'Biology', chapter: 'The Fundamental Unit of Life (Cell)', status: 'Mastered' },
+      { id: 's_b2', subject: 'Biology', chapter: 'Tissues', status: 'In Progress' },
+      { id: 's_b3', subject: 'Biology', chapter: 'Improvement in Food Resources', status: 'Needs Practice' }
+    ];
+    return safeJsonParse(STORAGE_KEYS.SYLLABUS, defaultSyllabus);
+  },
+
+  toggleSyllabusStatus(id) {
+    const list = this.getSyllabus();
+    const item = list.find(s => s.id === id);
+    if (item) {
+      if (item.status === 'Needs Practice') item.status = 'In Progress';
+      else if (item.status === 'In Progress') item.status = 'Mastered';
+      else item.status = 'Needs Practice';
+      localStorage.setItem(STORAGE_KEYS.SYLLABUS, JSON.stringify(list));
+      window.dispatchEvent(new Event('journal_data_update'));
+    }
+  },
+
+  // ── 30-DAY CONSISTENCY & HABIT HEATMAP ────────────────────────────
+  getPast30DaysActivity() {
+    const list = [];
+    const today = new Date();
+    const habitLogs = safeJsonParse(STORAGE_KEYS.HABIT_LOGS, {});
+    const routineLogs = safeJsonParse(STORAGE_KEYS.ROUTINE_LOGS, {});
+    const focusSessions = safeJsonParse(STORAGE_KEYS.FOCUS_SESSIONS, []);
+
+    for (let i = 29; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const key = getTodayKey(d);
+
+      const hLog = habitLogs[key];
+      const habitsDone = hLog?.isRestDay ? 5 : Object.values(hLog?.completed || {}).filter(Boolean).length;
+      const rLog = routineLogs[key] || {};
+      const routineDone = Object.values(rLog).filter(Boolean).length;
+      const focusMins = focusSessions.filter(s => s.date === key).reduce((acc, s) => acc + (s.minutes || 0), 0);
+
+      const score = (habitsDone * 2) + routineDone + (focusMins > 30 ? 3 : 0);
+      let level = 0;
+      if (score > 12) level = 4;
+      else if (score > 8) level = 3;
+      else if (score > 4) level = 2;
+      else if (score > 0) level = 1;
+
+      list.push({
+        dateKey: key,
+        dayName: d.toLocaleDateString([], { weekday: 'narrow' }),
+        dayNum: d.getDate(),
+        level,
+        score,
+        habitsDone,
+        focusMins
+      });
+    }
+    return list;
+  },
+
   // ── BACKUP & DATA PORTABILITY (EXPORT / IMPORT JSON) ──────────────
   exportAllData() {
     const exportData = {
