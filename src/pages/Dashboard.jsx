@@ -3,22 +3,24 @@ import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
 import { journalStorage, getTodayKey } from '../services/journalStorage';
 import TodayHero from '../components/journal/TodayHero';
 import TodayPriorities from '../components/journal/TodayPriorities';
-import TodayRoutine from '../components/journal/TodayRoutine';
-import HabitTracker from '../components/journal/HabitTracker';
+import HabitPunchStrip from '../components/journal/HabitPunchStrip';
+import LockInTimer from '../components/journal/LockInTimer';
+import EquationForge from '../components/journal/EquationForge';
+import ActiveForgeCard from '../components/journal/ActiveForgeCard';
+import IdeaVaultCard from '../components/journal/IdeaVaultCard';
+import ScratchpadCard from '../components/journal/ScratchpadCard';
 import DailyReflection from '../components/journal/DailyReflection';
 
 const Dashboard = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [dateKey, setDateKey] = useState(getTodayKey(new Date()));
   const [accentColor, setAccentColor] = useState(journalStorage.getAccentColor());
-  const [refreshKey, setRefreshKey] = useState(0);
 
   const todayKey = getTodayKey(new Date());
   const isToday = dateKey === todayKey;
 
   useEffect(() => {
     const handleUpdate = () => {
-      setRefreshKey(prev => prev + 1);
       setAccentColor(journalStorage.getAccentColor());
     };
     window.addEventListener('journal_data_update', handleUpdate);
@@ -43,7 +45,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="space-y-8 text-left pb-16">
+    <div className="space-y-7 text-left pb-16 max-w-7xl mx-auto">
       
       {/* ── TOP NAV / DATE CONTROLS ─────────────────────────────────── */}
       <div id="today" className="flex items-center justify-between pb-2 border-b border-[var(--border-subtle)]">
@@ -80,27 +82,31 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* ── STAGE (B): TODAY HERO & STAT CARDS ─────────────────────── */}
+      {/* ── SECTION 1: TODAY HERO (GREETING, PROGRESS RING, NEXT UP, STATS) ── */}
       <TodayHero dateKey={dateKey} accentColor={accentColor} />
 
-      {/* ── 2-COLUMN BALANCED WORKSPACE ────────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-7 items-start">
+      {/* ── SECTION 2: TODAY'S 3 PRIORITIES ─────────────────────────── */}
+      <TodayPriorities dateKey={dateKey} accentColor={accentColor} />
+
+      {/* ── SECTION 3: 5-HABIT QUICK PUNCH-STRIP ─────────────────────── */}
+      <HabitPunchStrip dateKey={dateKey} accentColor={accentColor} />
+
+      {/* ── SECTION 4: LOCK-IN FOCUS CHAMBER (TIMER + AUDIO) ───────── */}
+      <LockInTimer accentColor={accentColor} />
+
+      {/* ── SECTION 5: 2-COLUMN BUILDER & MATH FORGE GRID ───────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
-        {/* Left Column (7 cols): Priorities & Routine */}
-        <div className="lg:col-span-7 space-y-7">
-          <div id="priorities">
-            <TodayPriorities dateKey={dateKey} accentColor={accentColor} />
-          </div>
-          <div id="routine">
-            <TodayRoutine dateKey={dateKey} accentColor={accentColor} />
-          </div>
+        {/* Left Column (6 cols): Math Equation Forge + Scratchpad */}
+        <div className="lg:col-span-6 space-y-6">
+          <EquationForge accentColor={accentColor} />
+          <ScratchpadCard />
         </div>
 
-        {/* Right Column (5 cols): Habits & Reflection */}
-        <div className="lg:col-span-5 space-y-7">
-          <div id="habits">
-            <HabitTracker dateKey={dateKey} accentColor={accentColor} />
-          </div>
+        {/* Right Column (6 cols): Active Shipping Forge + Idea Vault */}
+        <div className="lg:col-span-6 space-y-6">
+          <ActiveForgeCard accentColor={accentColor} />
+          <IdeaVaultCard accentColor={accentColor} />
           <DailyReflection dateKey={dateKey} accentColor={accentColor} />
         </div>
 

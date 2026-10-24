@@ -18,7 +18,13 @@ const STORAGE_KEYS = {
   GOALS: 'journal_academic_goals',
   WEEKLY_REVIEWS: 'journal_weekly_reviews',
   WINS: 'journal_small_wins',
-  MISTAKES: 'journal_mistakes_notebook'
+  MISTAKES: 'journal_mistakes_notebook',
+  ACTIVE_PROJECT: 'journal_active_project',
+  IDEA_VAULT: 'journal_idea_vault',
+  EQUATION_FORGE: 'journal_equation_forge',
+  EXAM_COUNTDOWNS: 'journal_exam_countdowns',
+  SCRATCHPAD: 'journal_scratchpad',
+  FOCUS_SESSIONS: 'journal_focus_sessions'
 };
 
 // Default Accent Color chosen by Kaiser
@@ -542,11 +548,166 @@ export const journalStorage = {
     window.dispatchEvent(new Event('journal_data_update'));
   },
 
+  // ── ACTIVE PROJECT FORGE (ANTI-SHINY-OBJECT SHIELD) ────────────────
+  getActiveProject() {
+    const defaultProject = {
+      name: 'Journal OS',
+      pitch: 'Personal self-improvement command center for Grade 9, faith & JEE prep',
+      nextStep: 'Complete high-density builder dashboard and math equation drills',
+      repoUrl: 'https://github.com/azanabdullah2752012-ui/nuvio',
+      liveUrl: 'http://localhost:5173',
+      milestones: [
+        { id: 'm1', text: 'Vite + React 19 architecture', completed: true },
+        { id: 'm2', text: '100% private browser localStorage engine', completed: true },
+        { id: 'm3', text: 'Lock-In focus chamber & ambient sound synthesis', completed: true },
+        { id: 'm4', text: 'Math word-problem equation breakdown forge', completed: true }
+      ]
+    };
+    return safeJsonParse(STORAGE_KEYS.ACTIVE_PROJECT, defaultProject);
+  },
+
+  saveActiveProject(proj) {
+    localStorage.setItem(STORAGE_KEYS.ACTIVE_PROJECT, JSON.stringify(proj));
+    window.dispatchEvent(new Event('journal_data_update'));
+  },
+
+  toggleProjectMilestone(index) {
+    const proj = this.getActiveProject();
+    if (proj.milestones && proj.milestones[index]) {
+      proj.milestones[index].completed = !proj.milestones[index].completed;
+      this.saveActiveProject(proj);
+    }
+  },
+
+  // ── IDEA VAULT (DISTRACTION PARKING LOT) ──────────────────────────
+  getIdeaVault() {
+    const defaultIdeas = [
+      { id: 'i1', title: 'Pickle Corp Favors Ledger', category: 'Studio', note: 'Independent freelance studio ledger paid strictly in real-life favors' },
+      { id: 'i2', title: 'ESP32 Autonomous Rover', category: 'Robotics', note: 'Ultrasonic obstacle avoidance and motor driver PID controller' },
+      { id: 'i3', title: 'Space Flight Orbit Simulator', category: 'Physics / Space', note: 'Keplerian orbital mechanics visualizer using HTML5 canvas' }
+    ];
+    return safeJsonParse(STORAGE_KEYS.IDEA_VAULT, defaultIdeas);
+  },
+
+  addIdea(idea) {
+    const list = this.getIdeaVault();
+    const id = 'idea_' + Date.now().toString(36);
+    const newIdea = { ...idea, id, date: getTodayKey() };
+    list.unshift(newIdea);
+    localStorage.setItem(STORAGE_KEYS.IDEA_VAULT, JSON.stringify(list));
+    window.dispatchEvent(new Event('journal_data_update'));
+    return newIdea;
+  },
+
+  deleteIdea(id) {
+    let list = this.getIdeaVault();
+    list = list.filter(i => i.id !== id);
+    localStorage.setItem(STORAGE_KEYS.IDEA_VAULT, JSON.stringify(list));
+    window.dispatchEvent(new Event('journal_data_update'));
+  },
+
+  // ── WORD PROBLEM TO EQUATION FORGE (MATH BOTTLENECK SOLVER) ───────
+  getEquationDrills() {
+    const defaultDrills = [
+      {
+        id: 'eq1',
+        title: 'Speed & Distance Opposite Direction Drill',
+        problem: 'Two trains start at the same time from stations 300km apart and travel toward each other. Train A is 10km/h faster than Train B. They cross each other in 2.5 hours.',
+        variables: 'Let speed of Train B = x km/h. Speed of Train A = (x + 10) km/h.',
+        condition: 'Total distance = Distance A + Distance B = 300 km.',
+        equation: '2.5(x + 10) + 2.5x = 300  ==>  5x + 25 = 300  ==>  5x = 275  ==>  x = 55 km/h',
+        date: '2026-10-24'
+      }
+    ];
+    return safeJsonParse(STORAGE_KEYS.EQUATION_FORGE, defaultDrills);
+  },
+
+  addEquationDrill(drill) {
+    const list = this.getEquationDrills();
+    const id = 'eq_' + Date.now().toString(36);
+    const newDrill = { ...drill, id, date: getTodayKey() };
+    list.unshift(newDrill);
+    localStorage.setItem(STORAGE_KEYS.EQUATION_FORGE, JSON.stringify(list));
+    window.dispatchEvent(new Event('journal_data_update'));
+    return newDrill;
+  },
+
+  deleteEquationDrill(id) {
+    let list = this.getEquationDrills();
+    list = list.filter(d => d.id !== id);
+    localStorage.setItem(STORAGE_KEYS.EQUATION_FORGE, JSON.stringify(list));
+    window.dispatchEvent(new Event('journal_data_update'));
+  },
+
+  // ── EXAM COUNTDOWNS ───────────────────────────────────────────────
+  getExamCountdowns() {
+    const defaultCountdowns = [
+      { id: 'c1', name: 'Class 9 Final Examinations', targetDate: '2027-02-15', subject: 'All Subjects (Target: 90%+)' },
+      { id: 'c2', name: 'Mathematics 80-Mark Comprehensive Test', targetDate: '2026-11-20', subject: 'Algebra, Geometry & Mensuration' }
+    ];
+    return safeJsonParse(STORAGE_KEYS.EXAM_COUNTDOWNS, defaultCountdowns);
+  },
+
+  addExamCountdown(item) {
+    const list = this.getExamCountdowns();
+    const id = 'cd_' + Date.now().toString(36);
+    const newItem = { ...item, id };
+    list.push(newItem);
+    localStorage.setItem(STORAGE_KEYS.EXAM_COUNTDOWNS, JSON.stringify(list));
+    window.dispatchEvent(new Event('journal_data_update'));
+    return newItem;
+  },
+
+  deleteExamCountdown(id) {
+    let list = this.getExamCountdowns();
+    list = list.filter(c => c.id !== id);
+    localStorage.setItem(STORAGE_KEYS.EXAM_COUNTDOWNS, JSON.stringify(list));
+    window.dispatchEvent(new Event('journal_data_update'));
+  },
+
+  // ── LIVE DEVELOPER / STUDY SCRATCHPAD ─────────────────────────────
+  getScratchpad() {
+    return localStorage.getItem(STORAGE_KEYS.SCRATCHPAD) || '// Kaiser OS Quick Scratchpad\n// Turn word problems into equations first:\n// 1. Identify unknowns (x, y)\n// 2. Write relations\n// 3. Solve & check units';
+  },
+
+  saveScratchpad(text) {
+    localStorage.setItem(STORAGE_KEYS.SCRATCHPAD, text);
+    window.dispatchEvent(new Event('journal_data_update'));
+  },
+
+  // ── FOCUS SESSIONS (LOCK-IN TIME LOGGER) ──────────────────────────
+  getFocusSessions() {
+    return safeJsonParse(STORAGE_KEYS.FOCUS_SESSIONS, []);
+  },
+
+  logFocusSession(minutes, target = 'Deep Focus') {
+    const list = this.getFocusSessions();
+    const id = 'fs_' + Date.now().toString(36);
+    const newSession = {
+      id,
+      minutes,
+      target,
+      date: getTodayKey(),
+      timestamp: new Date().toISOString()
+    };
+    list.unshift(newSession);
+    localStorage.setItem(STORAGE_KEYS.FOCUS_SESSIONS, JSON.stringify(list));
+    window.dispatchEvent(new Event('journal_data_update'));
+    return newSession;
+  },
+
+  getTodayFocusMinutes(dateKey = getTodayKey()) {
+    const list = this.getFocusSessions();
+    return list
+      .filter(s => s.date === dateKey)
+      .reduce((acc, s) => acc + (s.minutes || 0), 0);
+  },
+
   // ── BACKUP & DATA PORTABILITY (EXPORT / IMPORT JSON) ──────────────
   exportAllData() {
     const exportData = {
       app: 'Journal',
-      version: '1.2.0',
+      version: '2.0.0',
       exportedAt: new Date().toISOString(),
       accentColor: this.getAccentColor(),
       theme: this.getTheme(),
@@ -560,7 +721,13 @@ export const journalStorage = {
       goals: this.getGoals(),
       weeklyReviews: this.getWeeklyReviews(),
       wins: this.getWins(),
-      mistakes: this.getMistakes()
+      mistakes: this.getMistakes(),
+      activeProject: this.getActiveProject(),
+      ideaVault: this.getIdeaVault(),
+      equationDrills: this.getEquationDrills(),
+      examCountdowns: this.getExamCountdowns(),
+      scratchpad: this.getScratchpad(),
+      focusSessions: this.getFocusSessions()
     };
 
     const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
@@ -594,6 +761,12 @@ export const journalStorage = {
       if (data.weeklyReviews) localStorage.setItem(STORAGE_KEYS.WEEKLY_REVIEWS, JSON.stringify(data.weeklyReviews));
       if (data.wins) localStorage.setItem(STORAGE_KEYS.WINS, JSON.stringify(data.wins));
       if (data.mistakes) localStorage.setItem(STORAGE_KEYS.MISTAKES, JSON.stringify(data.mistakes));
+      if (data.activeProject) localStorage.setItem(STORAGE_KEYS.ACTIVE_PROJECT, JSON.stringify(data.activeProject));
+      if (data.ideaVault) localStorage.setItem(STORAGE_KEYS.IDEA_VAULT, JSON.stringify(data.ideaVault));
+      if (data.equationDrills) localStorage.setItem(STORAGE_KEYS.EQUATION_FORGE, JSON.stringify(data.equationDrills));
+      if (data.examCountdowns) localStorage.setItem(STORAGE_KEYS.EXAM_COUNTDOWNS, JSON.stringify(data.examCountdowns));
+      if (data.scratchpad) localStorage.setItem(STORAGE_KEYS.SCRATCHPAD, data.scratchpad);
+      if (data.focusSessions) localStorage.setItem(STORAGE_KEYS.FOCUS_SESSIONS, JSON.stringify(data.focusSessions));
 
       if (data.accentColor) this.applyAccentColor(data.accentColor);
       if (data.theme) this.applyTheme(data.theme);
