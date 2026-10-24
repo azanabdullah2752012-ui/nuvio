@@ -52,31 +52,31 @@ const Sidebar = ({ isOpen, onClose }) => {
       to: '/', 
       exact: true,
       label: 'Today Command Hub', 
-      subtitle: 'Daily Cockpit', 
+      subtitle: 'Cockpit & Focus Chamber', 
       icon: Calendar 
     },
     { 
       to: '/schedule', 
       label: 'Schedule & Prayers', 
-      subtitle: 'Timeline + Chennai Radar', 
+      subtitle: 'Routine & Chennai Radar', 
       icon: Clock 
     },
     { 
       to: '/academics', 
-      label: 'Academic Forge', 
-      subtitle: 'Marks, JEE & Equations', 
+      label: 'Academic & JEE Forge', 
+      subtitle: 'Goals, Study Log & Formulas', 
       icon: BookOpen 
     },
     { 
-      to: '/studio', 
-      label: 'Pickle Corp Studio', 
-      subtitle: 'Builds, Invoices & Favors', 
+      to: '/projects', 
+      label: 'Projects & Builds', 
+      subtitle: 'Active Ship & Dev Log', 
       icon: Rocket 
     },
     { 
       to: '/discipline', 
-      label: 'Discipline & Creed', 
-      subtitle: 'Iron Rules, Score & Heatmap', 
+      label: 'Discipline Board', 
+      subtitle: '5 Standards, Rules & Reset', 
       icon: Shield 
     }
   ];

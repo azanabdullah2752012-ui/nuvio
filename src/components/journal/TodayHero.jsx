@@ -68,11 +68,11 @@ const TodayHero = ({ dateKey = getTodayKey(), accentColor }) => {
                 </span>
                 <span className="text-[var(--text-muted)]">•</span>
                 <span className="text-xs font-medium text-[var(--text-secondary)]">
-                  Class IX-C GCIS
+                  Grade 9 • Chennai
                 </span>
               </div>
               <h1 className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)] tracking-tight">
-                {getGreeting()}, Kaiser
+                {getGreeting()}
               </h1>
               <p className="text-sm text-[var(--text-secondary)] mt-1">
                 {formattedDate}

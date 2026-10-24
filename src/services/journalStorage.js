@@ -1,7 +1,6 @@
 // ============================================================================
 // JOURNAL STORAGE SERVICE — 100% Client-Side LocalStorage
 // Zero AI, Zero Cloud, Zero Server, Zero Data Sent Anywhere.
-// Built specifically for Kaiser (Grade 9, Chennai).
 // ============================================================================
 
 const STORAGE_KEYS = {
@@ -18,23 +17,25 @@ const STORAGE_KEYS = {
   GOALS: 'journal_academic_goals',
   WEEKLY_REVIEWS: 'journal_weekly_reviews',
   WINS: 'journal_small_wins',
-  MISTAKES: 'journal_mistakes_notebook',
   ACTIVE_PROJECT: 'journal_active_project',
+  PROJECTS_LIST: 'journal_projects_list',
   IDEA_VAULT: 'journal_idea_vault',
   EQUATION_FORGE: 'journal_equation_forge',
   EXAM_COUNTDOWNS: 'journal_exam_countdowns',
   SCRATCHPAD: 'journal_scratchpad',
   FOCUS_SESSIONS: 'journal_focus_sessions',
+  STUDY_SESSIONS: 'journal_study_sessions',
   FORMULAS: 'journal_jee_formulas',
-  FAVORS: 'journal_pickle_corp_favors',
   SPELLING: 'journal_spelling_precision',
   PRAYER_LOGS: 'journal_prayer_logs',
   SYLLABUS: 'journal_syllabus_progress',
   DISCIPLINE_CHECKS: 'journal_discipline_checks',
-  DISCIPLINE_PLEDGES: 'journal_discipline_pledges'
+  DISCIPLINE_PLEDGES: 'journal_discipline_pledges',
+  IRON_RULES: 'journal_iron_rules',
+  REALITY_CHECKS: 'journal_reality_checks'
 };
 
-// Default Accent Color chosen by Kaiser
+// Default Accent Color: Kaiser Sapphire
 export const DEFAULT_ACCENT_COLOR = '#024899';
 
 // Built-in accent color options for quick toggling
@@ -50,38 +51,39 @@ export const ACCENT_PRESETS = [
 // Weekday Template (School day schedule)
 export const DEFAULT_WEEKDAY_ROUTINE = [
   { id: 'fajr', time: '05:00', label: 'Fajr & Wake Up', tag: 'Faith' },
-  { id: 'study_am', time: '05:20 - 06:20', label: 'Morning Study Block (Math / Science)', tag: 'Academics' },
+  { id: 'study_am', time: '05:20 - 06:20', label: 'Morning Deep Study (1h Actual Study)', tag: 'Academics' },
   { id: 'exercise', time: '06:20 - 06:40', label: 'Exercise & Movement (20m)', tag: 'Health' },
-  { id: 'prep_breakfast', time: '07:10 - 07:30', label: 'Breakfast & Pack Bags', tag: 'Routine' },
-  { id: 'bus', time: '07:50 - 08:00', label: 'Bus to School', tag: 'Travel' },
-  { id: 'school', time: '08:00 - 16:00', label: 'Greenfield Chennai International School', tag: 'School' },
-  { id: 'decomp', time: '16:30 - 17:00', label: 'Meal & Decompress (Rest is not wasted time)', tag: 'Rest' },
+  { id: 'prep_breakfast', time: '07:10 - 07:30', label: 'Breakfast & Get Ready', tag: 'Routine' },
+  { id: 'bus', time: '07:50 - 08:00', label: 'Bus / Commute', tag: 'Travel' },
+  { id: 'school', time: '08:00 - 16:00', label: 'School', tag: 'School' },
+  { id: 'decomp', time: '16:30 - 17:00', label: 'Decompress & Meal (Rest is fuel)', tag: 'Rest' },
   { id: 'nexttopper', time: '17:00 - 18:30', label: 'NextTopper Class', tag: 'Academics' },
   { id: 'homework', time: '18:30 - 19:00', label: 'Homework & School Revision', tag: 'Academics' },
-  { id: 'arabic_study', time: '19:00 - 19:45', label: 'Arabic (Mon-Wed) / Focused Study (Thu-Fri)', tag: 'Study' },
-  { id: 'family_sleep', time: '20:30', label: 'Family Time, Dinner & Early Sleep', tag: 'Family' }
+  { id: 'arabic_study', time: '19:00 - 19:45', label: 'Arabic / 1h JEE Problem Sets', tag: 'Academics' },
+  { id: 'self_improve_block', time: '19:45 - 20:30', label: '1h Self Improvement (Coding & Builds)', tag: 'Growth' },
+  { id: 'family_sleep', time: '20:30', label: 'Family Time, Dinner & Sleep', tag: 'Family' }
 ];
 
 // Weekend Template (Deep build & JEE prep schedule)
 export const DEFAULT_WEEKEND_ROUTINE = [
   { id: 'fajr_we', time: '05:00', label: 'Fajr & Morning Gratitude', tag: 'Faith' },
-  { id: 'jee_math_am', time: '06:00 - 07:30', label: 'Deep JEE & Math Problem Sets (Equations Practice)', tag: 'Academics' },
-  { id: 'exercise_we', time: '07:30 - 08:15', label: 'Exercise & Breakfast', tag: 'Health' },
-  { id: 'product_build', time: '09:00 - 12:30', label: 'Deep Product Build / Algorithms & Code', tag: 'Building' },
+  { id: 'jee_math_am', time: '06:00 - 07:30', label: '1h JEE & Math Problem Sets', tag: 'Academics' },
+  { id: 'exercise_we', time: '07:30 - 08:15', label: 'Exercise & Movement', tag: 'Health' },
+  { id: 'product_build', time: '09:00 - 12:30', label: '1h Self Improvement: Deep Coding & Builds', tag: 'Building' },
   { id: 'dhuhr_family', time: '13:00 - 14:30', label: 'Dhuhr Prayer & Family Lunch', tag: 'Family' },
-  { id: 'reading_skill', time: '15:00 - 16:30', label: 'Self-Improvement Reading / CS Concepts', tag: 'Growth' },
-  { id: 'sports_outdoor', time: '17:00 - 18:30', label: 'Outdoor Movement / Play / Refresh', tag: 'Rest' },
-  { id: 'revision_plan', time: '19:00 - 20:00', label: 'Weekly Revision & Plan for Upcoming Week', tag: 'Academics' },
+  { id: 'reading_skill', time: '15:00 - 16:30', label: '1h Actual Study / Conceptual Reading', tag: 'Growth' },
+  { id: 'sports_outdoor', time: '17:00 - 18:30', label: 'Outdoor Movement / Sports', tag: 'Rest' },
+  { id: 'revision_plan', time: '19:00 - 20:00', label: 'Weekly Review & Week Ahead Plan', tag: 'Academics' },
   { id: 'wind_down_we', time: '21:00', label: 'Rest & Early Sleep', tag: 'Rest' }
 ];
 
-// Initial Core Habits chosen by Kaiser
+// Initial Core Habits: The 5 Non-Negotiables
 export const INITIAL_HABITS = [
-  { id: 'prayers', name: '5 Prayers', category: 'Faith', description: 'Fajr, Dhuhr, Asr, Maghrib, Isha' },
+  { id: 'prayers', name: '5 Prayers', category: 'Faith', description: 'Fajr, Dhuhr, Asr, Maghrib, Isha on time' },
   { id: 'exercise', name: 'Exercise', category: 'Health', description: '20 minutes of daily physical training' },
   { id: 'actual_studying', name: '1h Actual Studying (excluding h.w)', category: 'Academics', description: 'Deep conceptual study, not routine school homework' },
-  { id: 'jee_prep', name: '1h JEE', category: 'Academics', description: 'Turning word problems into equations & foundation drills' },
-  { id: 'self_improvement', name: '1 Hour Self Improvement', category: 'Growth', description: 'Coding, algorithms, building real products, or reading' }
+  { id: 'jee_prep', name: '1h JEE', category: 'Academics', description: 'Problem sets & foundation drills' },
+  { id: 'self_improvement', name: '1 Hour Self Improvement', category: 'Growth', description: 'Coding, algorithms, building real projects, or reading' }
 ];
 
 // Format Date as YYYY-MM-DD in local timezone
@@ -751,41 +753,49 @@ export const journalStorage = {
     window.dispatchEvent(new Event('journal_data_update'));
   },
 
-  // ── PICKLE CORP FAVOR LEDGER ($0.00 INVOICES) ─────────────────────
-  getFavors() {
-    const defaultFavors = [
-      { id: 'fav1', client: 'Thanvi (Co-founder / CEO)', project: 'Cofounder studio tooling & design review', favorBanked: '15 mins product direction & feedback', status: 'Banked', date: '2026-10-10' },
-      { id: 'fav2', client: 'Polaris House Team', project: 'House points calculation tracker', favorBanked: 'Support for upcoming inter-house robotics competition', status: 'Banked', date: '2026-10-18' }
+  // ── SOFTWARE & BUILD PROJECTS LIST ───────────────────────────────
+  getProjectsList() {
+    const defaultProjects = [
+      { id: 'proj1', name: 'Journal Web App', category: 'Web App', tech: 'React, Vite, Tailwind', status: 'In Progress', description: 'Personal high-performance self-improvement OS', link: 'https://github.com/azanabdullah2752012-ui/nuvio' },
+      { id: 'proj2', name: 'ESP32 Robotics Platform', category: 'Hardware/Robotics', tech: 'C++, ESP32, FreeRTOS', status: 'Planned', description: 'Robotics controller & sensor telemetrics', link: '' }
     ];
-    return safeJsonParse(STORAGE_KEYS.FAVORS, defaultFavors);
+    return safeJsonParse(STORAGE_KEYS.PROJECTS_LIST, defaultProjects);
   },
 
-  addFavor(item) {
-    const list = this.getFavors();
-    const id = 'fav_' + Date.now().toString(36);
-    const newItem = { ...item, id, status: 'Banked', date: item.date || getTodayKey() };
+  addProject(item) {
+    const list = this.getProjectsList();
+    const id = 'proj_' + Date.now().toString(36);
+    const newItem = { ...item, id, date: item.date || getTodayKey() };
     list.unshift(newItem);
-    localStorage.setItem(STORAGE_KEYS.FAVORS, JSON.stringify(list));
+    localStorage.setItem(STORAGE_KEYS.PROJECTS_LIST, JSON.stringify(list));
     window.dispatchEvent(new Event('journal_data_update'));
     return newItem;
   },
 
-  toggleFavorStatus(id) {
-    const list = this.getFavors();
-    const item = list.find(f => f.id === id);
+  toggleProjectStatus(id) {
+    const list = this.getProjectsList();
+    const item = list.find(p => p.id === id);
     if (item) {
-      item.status = item.status === 'Banked' ? 'Redeemed' : 'Banked';
-      localStorage.setItem(STORAGE_KEYS.FAVORS, JSON.stringify(list));
+      item.status = item.status === 'Completed' ? 'In Progress' : 'Completed';
+      localStorage.setItem(STORAGE_KEYS.PROJECTS_LIST, JSON.stringify(list));
       window.dispatchEvent(new Event('journal_data_update'));
     }
   },
 
-  deleteFavor(id) {
-    let list = this.getFavors();
-    list = list.filter(f => f.id !== id);
-    localStorage.setItem(STORAGE_KEYS.FAVORS, JSON.stringify(list));
+  deleteProject(id) {
+    let list = this.getProjectsList();
+    list = list.filter(p => p.id !== id);
+    localStorage.setItem(STORAGE_KEYS.PROJECTS_LIST, JSON.stringify(list));
     window.dispatchEvent(new Event('journal_data_update'));
   },
+
+  // Backwards compatibility stub for favors
+  getFavors() {
+    return [];
+  },
+  addFavor() {},
+  toggleFavorStatus() {},
+  deleteFavor() {},
 
   // ── SPELLING & TERMINOLOGY PRECISION VAULT ────────────────────────
   getSpellingList() {
@@ -865,32 +875,67 @@ export const journalStorage = {
 
   // ── DISCIPLINE BOARD & IRON PROTOCOLS ────────────────────────────
   getIronRules() {
-    return [
-      { id: 'r1', rule: 'Anchor to Fajr (5:00 AM)', detail: 'Never hit snooze. Win the first 30 minutes, win the entire 24-hour cycle.' },
-      { id: 'r2', rule: 'The 5-Minute Barrier Rule', detail: 'When resistance hits, just sit down for 5 minutes. 90% of the battle is starting.' },
-      { id: 'r3', rule: 'Convert Word Problems to Equations First', detail: 'In math, never guess or calculate in your head. Write unknowns (x, y) & relationships first.' },
-      { id: 'r4', rule: 'One Build at a Time (Anti-Shiny Object)', detail: 'Never start project #2 until project #1 has shipped and people can touch it.' },
-      { id: 'r5', rule: 'Rest is Not Wasted Time', detail: 'Sleep, family dinner, and weekend decompression are essential fuel. Burnout is amateur.' }
+    const defaultRules = [
+      { id: 'r1', rule: 'Anchor to Fajr (05:00 AM)', detail: 'Never hit snooze. Win the morning, control the day.' },
+      { id: 'r2', rule: '1h Actual Study: Phone Out of Sight', detail: 'Zero multitasking. Deep problem solving only, excluding homework.' },
+      { id: 'r3', rule: '1h JEE Daily Volume', detail: 'Solve hard problems daily. Consistency crushes last-minute panic.' },
+      { id: 'r4', rule: 'Ship Before Starting Next Build', detail: 'Focus on one project until it is delivered. Kill shiny-object syndrome.' },
+      { id: 'r5', rule: 'Rest is Fuel, Not Slacking', detail: 'Sleep and family dinner are essential recovery. Burnout is for amateurs.' }
     ];
+    return safeJsonParse(STORAGE_KEYS.IRON_RULES, defaultRules);
+  },
+
+  addIronRule(rule, detail = '') {
+    const list = this.getIronRules();
+    const id = 'r_' + Date.now().toString(36);
+    const newRule = { id, rule, detail };
+    list.push(newRule);
+    localStorage.setItem(STORAGE_KEYS.IRON_RULES, JSON.stringify(list));
+    window.dispatchEvent(new Event('journal_data_update'));
+    return newRule;
+  },
+
+  deleteIronRule(id) {
+    let list = this.getIronRules();
+    list = list.filter(r => r.id !== id);
+    localStorage.setItem(STORAGE_KEYS.IRON_RULES, JSON.stringify(list));
+    window.dispatchEvent(new Event('journal_data_update'));
   },
 
   getRealityCheckLines() {
-    return [
-      "Right now, another Grade 9 student targeting IIT Madras is solving 20 physics problems.",
-      "Scrolling social media or short videos won't build your space company.",
-      "Pickle Corp doesn't ship demos; it ships products people actually use.",
-      "Math marks are won or lost on careless errors and equation conversion. Slow down and check your steps.",
-      "Nobody remembers the ideas you talked about; they remember what you delivered."
+    const defaultLines = [
+      "Right now, someone aiming for top rank in JEE is solving Physics problems while you are thinking about slacking off.",
+      "You said you wanted 90%+ and JEE foundation. Excuses don't build rank—daily volume does.",
+      "Fajr was at 5:00 AM. Show up like someone who has real ambition.",
+      "The 5-minute rule: Put the phone face-down in another room. Open the book for just 5 minutes.",
+      "A 10-second impulse to scroll isn't worth throwing away your day's momentum.",
+      "Nobody cares about your excuses. Only results count."
     ];
+    return safeJsonParse(STORAGE_KEYS.REALITY_CHECKS, defaultLines);
   },
 
+  addRealityCheckLine(line) {
+    const list = this.getRealityCheckLines();
+    list.push(line);
+    localStorage.setItem(STORAGE_KEYS.REALITY_CHECKS, JSON.stringify(list));
+    window.dispatchEvent(new Event('journal_data_update'));
+  },
+
+  deleteRealityCheckLine(index) {
+    let list = this.getRealityCheckLines();
+    list = list.filter((_, i) => i !== index);
+    localStorage.setItem(STORAGE_KEYS.REALITY_CHECKS, JSON.stringify(list));
+    window.dispatchEvent(new Event('journal_data_update'));
+  },
+
+  // The 5 Non-Negotiables Daily Discipline Standard
   getDisciplineChecks(dateKey = getTodayKey()) {
     const defaultChecks = [
-      { id: 'dc_fajr', label: 'Awake at 5:00 AM for Fajr (Zero Snooze)' },
-      { id: 'dc_phone', label: 'Zero mindless phone scrolling before morning study' },
-      { id: 'dc_equations', label: 'Turned at least 5 math word problems into equations' },
-      { id: 'dc_active_build', label: 'Advanced single active project (committed real progress)' },
-      { id: 'dc_clean_shutdown', label: 'Mistakes reviewed & school bag packed for tomorrow' }
+      { id: 'dc_prayers', label: '5 Daily Prayers on Time (Fajr, Dhuhr, Asr, Maghrib, Isha)' },
+      { id: 'dc_exercise', label: 'Daily Exercise Completed (20m movement / training)' },
+      { id: 'dc_study', label: '1h Actual Deep Study (Excluding school homework)' },
+      { id: 'dc_jee', label: '1h JEE Preparation (Problems solved & concepts drilled)' },
+      { id: 'dc_growth', label: '1 Hour Self Improvement (Coding, building, or reading)' }
     ];
     const all = safeJsonParse(STORAGE_KEYS.DISCIPLINE_CHECKS, {});
     const dayData = all[dateKey] || {};
@@ -905,8 +950,50 @@ export const journalStorage = {
     if (!all[dateKey]) all[dateKey] = {};
     all[dateKey][checkId] = !all[dateKey][checkId];
     localStorage.setItem(STORAGE_KEYS.DISCIPLINE_CHECKS, JSON.stringify(all));
+
+    // Also sync with habit logs if matching
+    const habitMap = {
+      'dc_prayers': 'prayers',
+      'dc_exercise': 'exercise',
+      'dc_study': 'actual_studying',
+      'dc_jee': 'jee_prep',
+      'dc_growth': 'self_improvement'
+    };
+    if (habitMap[checkId]) {
+      const hLogs = safeJsonParse(STORAGE_KEYS.HABIT_LOGS, {});
+      if (!hLogs[dateKey]) hLogs[dateKey] = { completed: {}, isRestDay: false };
+      hLogs[dateKey].completed[habitMap[checkId]] = all[dateKey][checkId];
+      localStorage.setItem(STORAGE_KEYS.HABIT_LOGS, JSON.stringify(hLogs));
+    }
+
     window.dispatchEvent(new Event('journal_data_update'));
     return all[dateKey][checkId];
+  },
+
+  // ── STUDY SESSIONS LOG (1H STUDY & 1H JEE) ────────────────────────
+  getStudySessions() {
+    const defaultSessions = [
+      { id: 'ss1', date: getTodayKey(), type: 'Actual Study', subject: 'Mathematics', topic: 'Quadrilaterals & Lines', durationMins: 60 },
+      { id: 'ss2', date: getTodayKey(), type: 'JEE Prep', subject: 'Physics', topic: 'Equations of Motion (v = u + at)', durationMins: 60 }
+    ];
+    return safeJsonParse(STORAGE_KEYS.STUDY_SESSIONS, defaultSessions);
+  },
+
+  addStudySession(session) {
+    const list = this.getStudySessions();
+    const id = 'ss_' + Date.now().toString(36);
+    const newSession = { ...session, id, date: session.date || getTodayKey() };
+    list.unshift(newSession);
+    localStorage.setItem(STORAGE_KEYS.STUDY_SESSIONS, JSON.stringify(list));
+    window.dispatchEvent(new Event('journal_data_update'));
+    return newSession;
+  },
+
+  deleteStudySession(id) {
+    let list = this.getStudySessions();
+    list = list.filter(s => s.id !== id);
+    localStorage.setItem(STORAGE_KEYS.STUDY_SESSIONS, JSON.stringify(list));
+    window.dispatchEvent(new Event('journal_data_update'));
   },
 
   getDisciplinePledges() {
@@ -1065,13 +1152,18 @@ export const journalStorage = {
       goals: this.getGoals(),
       weeklyReviews: this.getWeeklyReviews(),
       wins: this.getWins(),
-      mistakes: this.getMistakes(),
       activeProject: this.getActiveProject(),
+      projectsList: this.getProjectsList(),
       ideaVault: this.getIdeaVault(),
       equationDrills: this.getEquationDrills(),
       examCountdowns: this.getExamCountdowns(),
       scratchpad: this.getScratchpad(),
-      focusSessions: this.getFocusSessions()
+      focusSessions: this.getFocusSessions(),
+      studySessions: this.getStudySessions(),
+      ironRules: this.getIronRules(),
+      realityChecks: this.getRealityCheckLines(),
+      disciplineChecks: safeJsonParse(STORAGE_KEYS.DISCIPLINE_CHECKS, {}),
+      disciplinePledges: this.getDisciplinePledges()
     };
 
     const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
@@ -1104,13 +1196,18 @@ export const journalStorage = {
       if (data.goals) localStorage.setItem(STORAGE_KEYS.GOALS, JSON.stringify(data.goals));
       if (data.weeklyReviews) localStorage.setItem(STORAGE_KEYS.WEEKLY_REVIEWS, JSON.stringify(data.weeklyReviews));
       if (data.wins) localStorage.setItem(STORAGE_KEYS.WINS, JSON.stringify(data.wins));
-      if (data.mistakes) localStorage.setItem(STORAGE_KEYS.MISTAKES, JSON.stringify(data.mistakes));
       if (data.activeProject) localStorage.setItem(STORAGE_KEYS.ACTIVE_PROJECT, JSON.stringify(data.activeProject));
+      if (data.projectsList) localStorage.setItem(STORAGE_KEYS.PROJECTS_LIST, JSON.stringify(data.projectsList));
       if (data.ideaVault) localStorage.setItem(STORAGE_KEYS.IDEA_VAULT, JSON.stringify(data.ideaVault));
       if (data.equationDrills) localStorage.setItem(STORAGE_KEYS.EQUATION_FORGE, JSON.stringify(data.equationDrills));
       if (data.examCountdowns) localStorage.setItem(STORAGE_KEYS.EXAM_COUNTDOWNS, JSON.stringify(data.examCountdowns));
       if (data.scratchpad) localStorage.setItem(STORAGE_KEYS.SCRATCHPAD, data.scratchpad);
       if (data.focusSessions) localStorage.setItem(STORAGE_KEYS.FOCUS_SESSIONS, JSON.stringify(data.focusSessions));
+      if (data.studySessions) localStorage.setItem(STORAGE_KEYS.STUDY_SESSIONS, JSON.stringify(data.studySessions));
+      if (data.ironRules) localStorage.setItem(STORAGE_KEYS.IRON_RULES, JSON.stringify(data.ironRules));
+      if (data.realityChecks) localStorage.setItem(STORAGE_KEYS.REALITY_CHECKS, JSON.stringify(data.realityChecks));
+      if (data.disciplineChecks) localStorage.setItem(STORAGE_KEYS.DISCIPLINE_CHECKS, JSON.stringify(data.disciplineChecks));
+      if (data.disciplinePledges) localStorage.setItem(STORAGE_KEYS.DISCIPLINE_PLEDGES, JSON.stringify(data.disciplinePledges));
 
       if (data.accentColor) this.applyAccentColor(data.accentColor);
       if (data.theme) this.applyTheme(data.theme);

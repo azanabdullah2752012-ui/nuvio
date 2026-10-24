@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Shield, AlertTriangle, Flame, Check, Plus, Trash2, 
-  Sparkles, Zap, Target, Heart, ArrowRight, Award 
+  Sparkles, Zap, Target, Heart, ArrowRight, Award, Clock, Edit2
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { journalStorage, getTodayKey } from '../services/journalStorage';
@@ -11,27 +11,64 @@ const DisciplinePage = () => {
   const [dateKey, setDateKey] = useState(getTodayKey());
   const [checks, setChecks] = useState(journalStorage.getDisciplineChecks(dateKey));
   const [pledges, setPledges] = useState(journalStorage.getDisciplinePledges());
+  const [ironRules, setIronRules] = useState(journalStorage.getIronRules());
+  const [realityLines, setRealityLines] = useState(journalStorage.getRealityCheckLines());
+  const [countdowns, setCountdowns] = useState(journalStorage.getExamCountdowns());
   const [accentColor, setAccentColor] = useState(journalStorage.getAccentColor());
+  
+  // Emergency Reality Mode
   const [showRealityCheck, setShowRealityCheck] = useState(false);
   const [realityIndex, setRealityIndex] = useState(0);
+  const [resetTimer, setResetTimer] = useState(30);
+  const [timerActive, setTimerActive] = useState(false);
+
+  // New Rule Modal
+  const [showRuleModal, setShowRuleModal] = useState(false);
+  const [ruleTitle, setRuleTitle] = useState('');
+  const [ruleDetail, setRuleDetail] = useState('');
 
   // New Pledge Modal
   const [showPledgeModal, setShowPledgeModal] = useState(false);
   const [pledgeTitle, setPledgeTitle] = useState('');
   const [pledgeReward, setPledgeReward] = useState('');
 
-  const ironRules = journalStorage.getIronRules();
-  const realityLines = journalStorage.getRealityCheckLines();
+  // Add Truth Modal
+  const [showAddTruth, setShowAddTruth] = useState(false);
+  const [newTruth, setNewTruth] = useState('');
 
   useEffect(() => {
     const handleUpdate = () => {
       setChecks(journalStorage.getDisciplineChecks(dateKey));
       setPledges(journalStorage.getDisciplinePledges());
+      setIronRules(journalStorage.getIronRules());
+      setRealityLines(journalStorage.getRealityCheckLines());
+      setCountdowns(journalStorage.getExamCountdowns());
       setAccentColor(journalStorage.getAccentColor());
     };
     window.addEventListener('journal_data_update', handleUpdate);
     return () => window.removeEventListener('journal_data_update', handleUpdate);
   }, [dateKey]);
+
+  // 30s Reset Countdown
+  useEffect(() => {
+    let interval = null;
+    if (timerActive && resetTimer > 0) {
+      interval = setInterval(() => {
+        setResetTimer((prev) => prev - 1);
+      }, 1000);
+    } else if (resetTimer === 0 && timerActive) {
+      soundEngine.playBell(587);
+      setTimerActive(false);
+    }
+    return () => clearInterval(interval);
+  }, [timerActive, resetTimer]);
+
+  const startEmergencyReset = () => {
+    soundEngine.playPop();
+    setShowRealityCheck(true);
+    setResetTimer(30);
+    setTimerActive(true);
+  };
 
   const handleToggleCheck = (id) => {
     soundEngine.playPop();
@@ -41,7 +78,7 @@ const DisciplinePage = () => {
 
     const completed = updated.filter(c => c.completed).length;
     if (completed === updated.length) {
-      soundEngine.playBell(587); // D5 high bell
+      soundEngine.playBell(587); // High bell
       try {
         confetti({
           particleCount: 80,
@@ -77,9 +114,44 @@ const DisciplinePage = () => {
     setShowPledgeModal(false);
   };
 
+  const handleAddRule = (e) => {
+    e.preventDefault();
+    if (!ruleTitle.trim()) return;
+    soundEngine.playPop();
+    journalStorage.addIronRule(ruleTitle.trim(), ruleDetail.trim());
+    setRuleTitle('');
+    setRuleDetail('');
+    setShowRuleModal(false);
+  };
+
+  const handleDeleteRule = (id) => {
+    soundEngine.playPop();
+    if (confirm('Delete this rule?')) {
+      journalStorage.deleteIronRule(id);
+    }
+  };
+
+  const handleAddCustomTruth = (e) => {
+    e.preventDefault();
+    if (!newTruth.trim()) return;
+    soundEngine.playPop();
+    journalStorage.addRealityCheckLine(newTruth.trim());
+    setNewTruth('');
+    setShowAddTruth(false);
+  };
+
   const triggerNextRealityLine = () => {
     soundEngine.playPop();
     setRealityIndex((prev) => (prev + 1) % realityLines.length);
+  };
+
+  // Helper: calculate days remaining
+  const calculateDaysLeft = (targetDateStr) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const target = new Date(targetDateStr);
+    const diffTime = target - today;
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   };
 
   const completedChecksCount = checks.filter(c => c.completed).length;
@@ -88,71 +160,129 @@ const DisciplinePage = () => {
   return (
     <div className="space-y-8 text-left max-w-5xl mx-auto pb-16">
       
-      {/* Header */}
+      {/* ── TOP HEADER & EMERGENCY WAKE-UP BUTTON ──────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[var(--border-subtle)]">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="text-xs uppercase font-bold text-amber-400 tracking-wider flex items-center gap-1.5">
               <Zap className="w-3.5 h-3.5" />
-              Mindset & Operating Creed
+              Mindset & Operating Standard
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)] tracking-tight">
             Discipline Board
           </h1>
           <p className="text-sm text-[var(--text-secondary)] mt-1">
-            Motivation is temporary. Discipline is the bridge between a Grade 9 student and an IIT-JEE topper.
+            Motivation is temporary. Discipline is doing what needs to be done even when you don't feel like it.
           </p>
         </div>
 
-        {/* Emergency Reality Check Button */}
+        {/* Emergency Panic / Wake-Up Button */}
         <button
-          onClick={() => {
-            soundEngine.playPop();
-            setShowRealityCheck(!showRealityCheck);
-          }}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold border border-rose-500/40 bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 transition-all self-start sm:self-auto shadow-sm"
+          onClick={startEmergencyReset}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold border border-rose-500/40 bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 transition-all self-start sm:self-auto shadow-sm"
         >
-          <AlertTriangle className="w-4 h-4" />
-          <span>{showRealityCheck ? 'Close Reality Check' : 'Read When Lazy / Procrastinating'}</span>
+          <AlertTriangle className="w-4 h-4 animate-pulse" />
+          <span>Read When Lazy / Procrastinating</span>
         </button>
       </div>
 
-      {/* Emergency Reality Check Banner */}
+      {/* ── EMERGENCY REALITY CHECK MODAL / BANNER ─────────────────── */}
       {showRealityCheck && (
-        <div className="p-6 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 space-y-3">
+        <div className="p-6 rounded-2xl bg-rose-500/10 border-2 border-rose-500/40 text-rose-300 space-y-4 shadow-xl">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-mono uppercase font-bold tracking-wider text-rose-400">
-              Hard Truth #{realityIndex + 1}
-            </span>
-            <button
-              onClick={triggerNextRealityLine}
-              className="text-xs underline text-rose-300 hover:text-white"
-            >
-              Next Truth →
-            </button>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-mono uppercase font-bold tracking-wider text-rose-400 bg-rose-500/20 px-2.5 py-1 rounded-md">
+                Hard Truth #{realityIndex + 1}
+              </span>
+              {timerActive && (
+                <span className="text-xs font-mono text-white bg-black/40 px-2.5 py-1 rounded-md flex items-center gap-1.5">
+                  <Clock className="w-3.5 h-3.5 text-rose-400" />
+                  <span>Reset in: {resetTimer}s</span>
+                </span>
+              )}
+            </div>
+            
+            <div className="flex items-center gap-3">
+              <button
+                onClick={triggerNextRealityLine}
+                className="text-xs font-semibold underline text-rose-300 hover:text-white"
+              >
+                Next Truth →
+              </button>
+              <button
+                onClick={() => setShowRealityCheck(false)}
+                className="text-xs text-rose-300/80 hover:text-white px-2 py-1 rounded border border-rose-500/30"
+              >
+                Dismiss
+              </button>
+            </div>
           </div>
-          <p className="text-base sm:text-lg font-bold text-white leading-relaxed">
+
+          <p className="text-lg sm:text-xl font-bold text-white leading-relaxed">
             "{realityLines[realityIndex]}"
           </p>
-          <p className="text-xs text-rose-300/80">
-            Get off the bed, splash cold water on your face, and lock in for ONE 25-minute sprint right now.
-          </p>
+
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-rose-500/20 text-xs">
+            <p className="text-rose-200/90 font-medium">
+              👉 Put your phone in another room. Splash cold water on your face. Start 5 minutes of study right now.
+            </p>
+            <button
+              onClick={() => setShowAddTruth(true)}
+              className="text-xs text-rose-300 hover:text-white underline self-start sm:self-auto"
+            >
+              + Add Custom Truth
+            </button>
+          </div>
         </div>
       )}
 
-      {/* ── SECTION 1: TODAY'S SELF-MASTERY SCORECARD ──────────────── */}
+      {/* ── COUNTDOWNS TO MAJOR GOALS ──────────────────────────────── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+        {countdowns.map((cd) => {
+          const daysLeft = calculateDaysLeft(cd.targetDate);
+          const isUrgent = daysLeft <= 30;
+
+          return (
+            <div 
+              key={cd.id}
+              className={`journal-card p-4 space-y-2 border transition-all ${
+                isUrgent ? 'border-amber-500/40 bg-amber-500/5' : ''
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-semibold text-[var(--text-muted)] truncate max-w-[180px]">
+                  {cd.subject || 'Target Milestone'}
+                </span>
+                <span className={`text-xs font-mono font-bold px-2 py-0.5 rounded ${
+                  daysLeft > 0 ? 'bg-[var(--bg-surface-elevated)] text-[var(--text-primary)]' : 'bg-emerald-500/20 text-emerald-400'
+                }`}>
+                  {daysLeft > 0 ? `${daysLeft} Days` : 'Completed'}
+                </span>
+              </div>
+              <h3 className="text-sm font-bold text-[var(--text-primary)] line-clamp-1">
+                {cd.name}
+              </h3>
+              <div className="text-[11px] text-[var(--text-secondary)] font-mono">
+                Target: {cd.targetDate}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* ── SECTION 1: THE 5 DAILY NON-NEGOTIABLES ─────────────────── */}
       <div className="journal-card p-6 sm:p-7 space-y-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[var(--border-subtle)]">
           <div>
             <div className="flex items-center gap-2">
               <Shield className="w-5 h-5 text-emerald-400" />
               <h2 className="text-lg font-semibold text-[var(--text-primary)]">
-                Today's Self-Mastery Scorecard
+                Today's 5 Non-Negotiable Standards
               </h2>
             </div>
             <p className="text-xs text-[var(--text-muted)] mt-0.5">
-              5 daily friction filters to eliminate slacking and careless errors
+              Hit all 5 daily. Zero excuses. 100% adherence = pure momentum.
             </p>
           </div>
 
@@ -163,7 +293,7 @@ const DisciplinePage = () => {
               </span>
               <span className="text-xs text-[var(--text-muted)] ml-1">({scorePercent}%)</span>
             </div>
-            <div className="w-20 h-2 bg-[var(--bg-surface-elevated)] rounded-full overflow-hidden">
+            <div className="w-24 h-2 bg-[var(--bg-surface-elevated)] rounded-full overflow-hidden">
               <div 
                 className="h-full rounded-full transition-all duration-300"
                 style={{ width: `${scorePercent}%`, backgroundColor: accentColor }}
@@ -172,19 +302,19 @@ const DisciplinePage = () => {
           </div>
         </div>
 
-        {/* 5 Friction Checkboxes */}
+        {/* 5 Daily Standard Rows */}
         <div className="space-y-2.5">
           {checks.map((item) => (
             <div
               key={item.id}
               onClick={() => handleToggleCheck(item.id)}
-              className={`p-3.5 rounded-xl border flex items-center justify-between gap-3 cursor-pointer select-none transition-all duration-200 ${
+              className={`p-4 rounded-xl border flex items-center justify-between gap-3 cursor-pointer select-none transition-all duration-200 ${
                 item.completed
                   ? 'bg-[var(--accent-subtle)] border-[var(--accent-border)] text-[var(--text-primary)]'
                   : 'bg-[var(--bg-surface-elevated)] border-[var(--border-subtle)] hover:border-[var(--border-medium)]'
               }`}
             >
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3.5">
                 <button
                   type="button"
                   aria-label={`Toggle check ${item.label}`}
@@ -195,14 +325,18 @@ const DisciplinePage = () => {
                 >
                   {item.completed && <Check className="w-3.5 h-3.5 stroke-[3]" />}
                 </button>
-                <span className={`text-xs sm:text-sm font-medium ${item.completed ? 'text-[var(--text-primary)] font-semibold' : 'text-[var(--text-secondary)]'}`}>
+                <span className={`text-xs sm:text-sm font-medium ${item.completed ? 'text-[var(--text-primary)] font-bold line-through opacity-80' : 'text-[var(--text-primary)]'}`}>
                   {item.label}
                 </span>
               </div>
 
-              {item.completed && (
-                <span className="text-[10px] font-mono text-emerald-400 font-bold uppercase">
-                  Mastered
+              {item.completed ? (
+                <span className="text-[11px] font-mono text-emerald-400 font-bold uppercase tracking-wider">
+                  Locked In
+                </span>
+              ) : (
+                <span className="text-[11px] font-mono text-[var(--text-muted)]">
+                  Pending
                 </span>
               )}
             </div>
@@ -210,16 +344,16 @@ const DisciplinePage = () => {
         </div>
       </div>
 
-      {/* ── SECTION 2: 7-DAY DISCIPLINE PLEDGES ─────────────────────── */}
+      {/* ── SECTION 2: 7-DAY DISCIPLINE CONTRACTS ──────────────────── */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-base font-semibold text-[var(--text-primary)] flex items-center gap-2">
               <Award className="w-4 h-4 text-amber-400" />
-              Active 7-Day Discipline Pledges
+              Active 7-Day Discipline Contracts
             </h2>
             <p className="text-xs text-[var(--text-muted)] mt-0.5">
-              High-intensity week-long streaks with a concrete reward at the finish line
+              7-day commitments to break bad habits or lock in key standards
             </p>
           </div>
 
@@ -228,7 +362,7 @@ const DisciplinePage = () => {
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface-elevated)] hover:bg-[var(--bg-surface-hover)] text-xs font-semibold text-[var(--text-primary)]"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>New Pledge</span>
+            <span>New Contract</span>
           </button>
         </div>
 
@@ -292,36 +426,65 @@ const DisciplinePage = () => {
         </div>
       </div>
 
-      {/* ── SECTION 3: THE 5 NON-NEGOTIABLE IRON RULES ───────────────── */}
+      {/* ── SECTION 3: MY IRON RULES (USER CUSTOMIZABLE) ───────────── */}
       <div className="space-y-4">
-        <h2 className="text-base font-semibold text-[var(--text-primary)] flex items-center gap-2">
-          <Target className="w-4 h-4 text-sky-400" />
-          The 5 Iron Rules (Kaiser's Creed)
-        </h2>
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-base font-semibold text-[var(--text-primary)] flex items-center gap-2">
+              <Target className="w-4 h-4 text-sky-400" />
+              My Iron Rules
+            </h2>
+            <p className="text-xs text-[var(--text-muted)] mt-0.5">
+              Personal non-negotiable principles you live by
+            </p>
+          </div>
+
+          <button
+            onClick={() => setShowRuleModal(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface-elevated)] hover:bg-[var(--bg-surface-hover)] text-xs font-semibold text-[var(--text-primary)]"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Add Rule</span>
+          </button>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
           {ironRules.map((r, i) => (
             <div 
               key={r.id}
-              className="journal-card p-4 space-y-1.5 bg-[var(--bg-surface-elevated)]"
+              className="journal-card p-4 space-y-1.5 bg-[var(--bg-surface-elevated)] relative group"
             >
-              <div className="flex items-center gap-2">
-                <span className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white shrink-0" style={{ backgroundColor: accentColor }}>
-                  {i + 1}
-                </span>
-                <h3 className="text-xs font-bold text-[var(--text-primary)] leading-tight">
-                  {r.rule}
-                </h3>
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <span 
+                    className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white shrink-0" 
+                    style={{ backgroundColor: accentColor }}
+                  >
+                    {i + 1}
+                  </span>
+                  <h3 className="text-xs font-bold text-[var(--text-primary)] leading-tight">
+                    {r.rule}
+                  </h3>
+                </div>
+                <button
+                  onClick={() => handleDeleteRule(r.id)}
+                  className="opacity-0 group-hover:opacity-100 text-[var(--text-muted)] hover:text-rose-400 p-0.5 transition-opacity"
+                  title="Delete Rule"
+                >
+                  <Trash2 className="w-3 h-3" />
+                </button>
               </div>
-              <p className="text-xs text-[var(--text-secondary)] leading-relaxed pl-7">
-                {r.detail}
-              </p>
+              {r.detail && (
+                <p className="text-xs text-[var(--text-secondary)] leading-relaxed pl-7">
+                  {r.detail}
+                </p>
+              )}
             </div>
           ))}
         </div>
       </div>
 
-      {/* Add Pledge Modal */}
+      {/* ── MODAL: ADD PLEDGE ──────────────────────────────────────── */}
       {showPledgeModal && (
         <div 
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
@@ -332,7 +495,7 @@ const DisciplinePage = () => {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
-              <h3 className="text-base font-semibold text-[var(--text-primary)]">New 7-Day Discipline Pledge</h3>
+              <h3 className="text-base font-semibold text-[var(--text-primary)]">New 7-Day Discipline Contract</h3>
               <button onClick={() => setShowPledgeModal(false)} className="text-[var(--text-muted)] p-1 rounded-lg">
                 ✕
               </button>
@@ -341,14 +504,14 @@ const DisciplinePage = () => {
             <form onSubmit={handleAddPledge} className="space-y-4">
               <div>
                 <label className="text-xs font-semibold text-[var(--text-secondary)] block mb-1">
-                  Pledge Title / Protocol
+                  Contract Title / Standard
                 </label>
                 <input
                   type="text"
                   required
                   value={pledgeTitle}
                   onChange={(e) => setPledgeTitle(e.target.value)}
-                  placeholder="e.g. 7 Days 5:00 AM Fajr without Snooze"
+                  placeholder="e.g. 7 Days 5:00 AM Fajr with Zero Snooze"
                   className="w-full px-3.5 py-2.5 bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] rounded-xl text-sm text-[var(--text-primary)] focus:outline-none"
                 />
               </div>
@@ -361,7 +524,7 @@ const DisciplinePage = () => {
                   type="text"
                   value={pledgeReward}
                   onChange={(e) => setPledgeReward(e.target.value)}
-                  placeholder="e.g. Weekend electronics coding session / treat"
+                  placeholder="e.g. Guilt-free weekend coding / special meal"
                   className="w-full px-3.5 py-2.5 bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] rounded-xl text-sm text-[var(--text-primary)] focus:outline-none"
                 />
               </div>
@@ -379,7 +542,126 @@ const DisciplinePage = () => {
                   className="px-4 py-2 rounded-xl text-xs font-semibold text-white"
                   style={{ backgroundColor: accentColor }}
                 >
-                  Start Pledge
+                  Sign Contract
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ── MODAL: ADD RULE ────────────────────────────────────────── */}
+      {showRuleModal && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+          onClick={() => setShowRuleModal(false)}
+        >
+          <div 
+            className="bg-[var(--bg-surface)] border border-[var(--border-medium)] rounded-2xl w-full max-w-md p-6 space-y-4 shadow-2xl text-left"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
+              <h3 className="text-base font-semibold text-[var(--text-primary)]">Add Iron Rule</h3>
+              <button onClick={() => setShowRuleModal(false)} className="text-[var(--text-muted)] p-1 rounded-lg">
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleAddRule} className="space-y-4">
+              <div>
+                <label className="text-xs font-semibold text-[var(--text-secondary)] block mb-1">
+                  Rule Principle
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={ruleTitle}
+                  onChange={(e) => setRuleTitle(e.target.value)}
+                  placeholder="e.g. Never touch phone before morning study"
+                  className="w-full px-3.5 py-2.5 bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] rounded-xl text-sm text-[var(--text-primary)] focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-[var(--text-secondary)] block mb-1">
+                  Why / Detail (Optional)
+                </label>
+                <input
+                  type="text"
+                  value={ruleDetail}
+                  onChange={(e) => setRuleDetail(e.target.value)}
+                  placeholder="e.g. Protect morning dopamine and mental focus"
+                  className="w-full px-3.5 py-2.5 bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] rounded-xl text-sm text-[var(--text-primary)] focus:outline-none"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowRuleModal(false)}
+                  className="px-4 py-2 rounded-xl text-xs font-medium text-[var(--text-secondary)]"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-white"
+                  style={{ backgroundColor: accentColor }}
+                >
+                  Save Rule
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ── MODAL: ADD REALITY TRUTH ───────────────────────────────── */}
+      {showAddTruth && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+          onClick={() => setShowAddTruth(false)}
+        >
+          <div 
+            className="bg-[var(--bg-surface)] border border-[var(--border-medium)] rounded-2xl w-full max-w-md p-6 space-y-4 shadow-2xl text-left"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
+              <h3 className="text-base font-semibold text-[var(--text-primary)]">Add Reality Truth</h3>
+              <button onClick={() => setShowAddTruth(false)} className="text-[var(--text-muted)] p-1 rounded-lg">
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleAddCustomTruth} className="space-y-4">
+              <div>
+                <label className="text-xs font-semibold text-[var(--text-secondary)] block mb-1">
+                  Reality Check Line
+                </label>
+                <textarea
+                  required
+                  rows={3}
+                  value={newTruth}
+                  onChange={(e) => setNewTruth(e.target.value)}
+                  placeholder="e.g. If you don't build discipline now, your future self pays the penalty."
+                  className="w-full px-3.5 py-2.5 bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] rounded-xl text-sm text-[var(--text-primary)] focus:outline-none resize-none"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowAddTruth(false)}
+                  className="px-4 py-2 rounded-xl text-xs font-medium text-[var(--text-secondary)]"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-white"
+                  style={{ backgroundColor: accentColor }}
+                >
+                  Add Truth
                 </button>
               </div>
             </form>

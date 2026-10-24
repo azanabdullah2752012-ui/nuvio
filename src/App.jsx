@@ -8,7 +8,7 @@ import Layout from './components/layout/Layout';
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const ScheduleHub = lazy(() => import('./pages/ScheduleHub'));
 const AcademicHub = lazy(() => import('./pages/AcademicHub'));
-const StudioHub = lazy(() => import('./pages/StudioHub'));
+const ProjectsHub = lazy(() => import('./pages/ProjectsHub'));
 const DisciplineHub = lazy(() => import('./pages/DisciplineHub'));
 const SettingsPage = lazy(() => import('./pages/SettingsPage'));
 
@@ -18,10 +18,8 @@ const HabitsPage = lazy(() => import('./pages/HabitsPage'));
 const GoalsPage = lazy(() => import('./pages/GoalsPage'));
 const WeeklyReviewPage = lazy(() => import('./pages/WeeklyReviewPage'));
 const WinsPage = lazy(() => import('./pages/WinsPage'));
-const MistakesPage = lazy(() => import('./pages/MistakesPage'));
 const FormulasPage = lazy(() => import('./pages/FormulasPage'));
 const PrayerPage = lazy(() => import('./pages/PrayerPage'));
-const PickleCorpPage = lazy(() => import('./pages/PickleCorpPage'));
 const SpellingPage = lazy(() => import('./pages/SpellingPage'));
 
 // Clean Loading State
@@ -51,8 +49,9 @@ function App() {
             {/* 3. Academic & JEE Mastery Forge */}
             <Route path="/academics" element={<AcademicHub />} />
 
-            {/* 4. Pickle Corp Studio & Builds Hub */}
-            <Route path="/studio" element={<StudioHub />} />
+            {/* 4. Projects & Builds Hub */}
+            <Route path="/projects" element={<ProjectsHub />} />
+            <Route path="/studio" element={<Navigate to="/projects" replace />} />
 
             {/* 5. Discipline, Mindset & Reviews Hub */}
             <Route path="/discipline" element={<DisciplineHub />} />
@@ -66,11 +65,11 @@ function App() {
             <Route path="/goals" element={<GoalsPage />} />
             <Route path="/review" element={<WeeklyReviewPage />} />
             <Route path="/wins" element={<WinsPage />} />
-            <Route path="/mistakes" element={<MistakesPage />} />
             <Route path="/formulas" element={<FormulasPage />} />
             <Route path="/prayer" element={<PrayerPage />} />
-            <Route path="/pickle-corp" element={<PickleCorpPage />} />
             <Route path="/spelling" element={<SpellingPage />} />
+            <Route path="/mistakes" element={<Navigate to="/academics" replace />} />
+            <Route path="/pickle-corp" element={<Navigate to="/projects" replace />} />
           </Route>
 
           {/* Catch-all */}
