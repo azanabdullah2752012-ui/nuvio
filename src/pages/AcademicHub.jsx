@@ -9,6 +9,7 @@ import GoalsPage from './GoalsPage';
 import FormulasPage from './FormulasPage';
 import SpellingPage from './SpellingPage';
 import EquationForge from '../components/journal/EquationForge';
+import WeeklyStudyChart from '../components/journal/WeeklyStudyChart';
 
 const TABS = [
   { id: 'marks', label: 'Marks & Targets', icon: Target },
@@ -134,6 +135,8 @@ const AcademicHub = () => {
         {/* TAB 2: STUDY HOURS LOG */}
         {activeTab === 'study_log' && (
           <div className="space-y-6">
+            <WeeklyStudyChart accentColor={accentColor} />
+
             {/* Summary Stat Card */}
             <div className="journal-card p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>

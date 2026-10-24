@@ -32,7 +32,8 @@ const STORAGE_KEYS = {
   DISCIPLINE_CHECKS: 'journal_discipline_checks',
   DISCIPLINE_PLEDGES: 'journal_discipline_pledges',
   IRON_RULES: 'journal_iron_rules',
-  REALITY_CHECKS: 'journal_reality_checks'
+  REALITY_CHECKS: 'journal_reality_checks',
+  TASBIH: 'journal_tasbih_counts'
 };
 
 // Default Accent Color: Kaiser Sapphire
@@ -993,6 +994,144 @@ export const journalStorage = {
     let list = this.getStudySessions();
     list = list.filter(s => s.id !== id);
     localStorage.setItem(STORAGE_KEYS.STUDY_SESSIONS, JSON.stringify(list));
+    window.dispatchEvent(new Event('journal_data_update'));
+  },
+
+  // ── WEEKLY STUDY HOURS & ANALYTICS AGGREGATOR ─────────────────────
+  getWeeklyStudyStats() {
+    const days = [];
+    const today = new Date();
+    const sessions = this.getStudySessions();
+
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const key = getTodayKey(d);
+      const daySessions = sessions.filter(s => s.date === key);
+
+      const actualMins = daySessions.filter(s => s.type === 'Actual Study').reduce((acc, s) => acc + (s.durationMins || 0), 0);
+      const jeeMins = daySessions.filter(s => s.type === 'JEE Prep').reduce((acc, s) => acc + (s.durationMins || 0), 0);
+      const totalMins = actualMins + jeeMins;
+
+      days.push({
+        dateKey: key,
+        dayLabel: d.toLocaleDateString([], { weekday: 'short' }),
+        actualMins,
+        jeeMins,
+        totalHours: Number((totalMins / 60).toFixed(1)),
+        isToday: key === getTodayKey()
+      });
+    }
+    return days;
+  },
+
+  // ── DISCIPLINE TIER & RANK PROGRESSION ─────────────────────────────
+  getDisciplineRank() {
+    const activity = this.getPast30DaysActivity();
+    const recent7 = activity.slice(-7);
+    const avgScore = recent7.reduce((acc, d) => acc + (d.habitsDone || 0), 0) / (7 * 5); // 0 to 1
+    const percent = Math.round(avgScore * 100);
+
+    let rank = 'Novice';
+    let nextRank = 'Iron Standard';
+    let color = '#94a3b8';
+    let minPct = 0;
+    let nextPct = 25;
+
+    if (percent >= 90) {
+      rank = 'Apex Topper';
+      nextRank = 'Legendary';
+      color = '#38bdf8';
+      minPct = 90;
+      nextPct = 100;
+    } else if (percent >= 75) {
+      rank = 'Gold Discipline';
+      nextRank = 'Apex Topper';
+      color = '#f59e0b';
+      minPct = 75;
+      nextPct = 90;
+    } else if (percent >= 60) {
+      rank = 'Silver Focused';
+      nextRank = 'Gold Discipline';
+      color = '#a855f7';
+      minPct = 60;
+      nextPct = 75;
+    } else if (percent >= 40) {
+      rank = 'Bronze Grind';
+      nextRank = 'Silver Focused';
+      color = '#10b981';
+      minPct = 40;
+      nextPct = 60;
+    } else if (percent >= 20) {
+      rank = 'Iron Standard';
+      nextRank = 'Bronze Grind';
+      color = '#64748b';
+      minPct = 20;
+      nextPct = 40;
+    }
+
+    return {
+      rank,
+      nextRank,
+      percent,
+      color,
+      progressInTier: Math.min(100, Math.max(0, Math.round(((percent - minPct) / (nextPct - minPct || 1)) * 100)))
+    };
+  },
+
+  // ── TODAY VS YESTERDAY DISCIPLINE DUEL ─────────────────────────────
+  getYesterdayVsToday() {
+    const today = new Date();
+    const todayKey = getTodayKey(today);
+
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayKey = getTodayKey(yesterday);
+
+    const todayChecks = this.getDisciplineChecks(todayKey).filter(c => c.completed).length;
+    const yesterdayChecks = this.getDisciplineChecks(yesterdayKey).filter(c => c.completed).length;
+
+    const allSessions = this.getStudySessions();
+    const todayStudyMins = allSessions.filter(s => s.date === todayKey).reduce((acc, s) => acc + (s.durationMins || 0), 0);
+    const yesterdayStudyMins = allSessions.filter(s => s.date === yesterdayKey).reduce((acc, s) => acc + (s.durationMins || 0), 0);
+
+    return {
+      todayChecks,
+      yesterdayChecks,
+      checksDiff: todayChecks - yesterdayChecks,
+      todayStudyHours: (todayStudyMins / 60).toFixed(1),
+      yesterdayStudyHours: (yesterdayStudyMins / 60).toFixed(1)
+    };
+  },
+
+  // ── DIGITAL TASBIH & DHIKR TACTILE COUNTER ────────────────────────
+  getTasbihCounts() {
+    const defaultCounts = {
+      subhanallah: 0,
+      alhamdulillah: 0,
+      allahuakbar: 0,
+      astaghfirullah: 0,
+      lailahaillallah: 0
+    };
+    return safeJsonParse(STORAGE_KEYS.TASBIH, defaultCounts);
+  },
+
+  incrementTasbih(key) {
+    const counts = this.getTasbihCounts();
+    counts[key] = (counts[key] || 0) + 1;
+    localStorage.setItem(STORAGE_KEYS.TASBIH, JSON.stringify(counts));
+    window.dispatchEvent(new Event('journal_data_update'));
+    return counts[key];
+  },
+
+  resetTasbih(key) {
+    const counts = this.getTasbihCounts();
+    if (key) {
+      counts[key] = 0;
+    } else {
+      Object.keys(counts).forEach(k => counts[k] = 0);
+    }
+    localStorage.setItem(STORAGE_KEYS.TASBIH, JSON.stringify(counts));
     window.dispatchEvent(new Event('journal_data_update'));
   },
 

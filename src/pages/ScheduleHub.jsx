@@ -5,10 +5,11 @@ import { soundEngine } from '../services/soundEngine';
 import RoutinePage from './RoutinePage';
 import PrayerPage from './PrayerPage';
 import HabitsPage from './HabitsPage';
+import DigitalTasbihCard from '../components/journal/DigitalTasbihCard';
 
 const TABS = [
   { id: 'timeline', label: 'Routine Timeline', icon: Clock },
-  { id: 'prayer', label: 'Prayer & Sunnah Radar', icon: Compass },
+  { id: 'prayer', label: 'Prayer & Dhikr Radar', icon: Compass },
   { id: 'habits', label: 'Habit Tracker Deep View', icon: Flame }
 ];
 
@@ -74,7 +75,12 @@ const ScheduleHub = () => {
       {/* Tab Content Display */}
       <div>
         {activeTab === 'timeline' && <RoutinePage />}
-        {activeTab === 'prayer' && <PrayerPage />}
+        {activeTab === 'prayer' && (
+          <div className="space-y-6">
+            <PrayerPage />
+            <DigitalTasbihCard accentColor={accentColor} />
+          </div>
+        )}
         {activeTab === 'habits' && <HabitsPage />}
       </div>
 

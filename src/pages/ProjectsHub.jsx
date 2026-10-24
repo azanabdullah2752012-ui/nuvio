@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Rocket, FolderGit2, Lightbulb, Terminal, Plus, Trash2, ExternalLink, CheckCircle2, Clock } from 'lucide-react';
+import { Rocket, FolderGit2, Lightbulb, Terminal, Plus, Trash2, ExternalLink, CheckCircle2, Clock, Cpu } from 'lucide-react';
 import { journalStorage } from '../services/journalStorage';
 import { soundEngine } from '../services/soundEngine';
 import ActiveForgeCard from '../components/journal/ActiveForgeCard';
 import IdeaVaultCard from '../components/journal/IdeaVaultCard';
 import ScratchpadCard from '../components/journal/ScratchpadCard';
+import RoboticsToolboxCard from '../components/journal/RoboticsToolboxCard';
 import WinsPage from './WinsPage';
 
 const TABS = [
   { id: 'active', label: 'Active Shipping Forge', icon: Rocket },
   { id: 'projects', label: 'Projects & Builds', icon: FolderGit2 },
+  { id: 'hardware', label: 'Robotics & Hardware', icon: Cpu },
   { id: 'ideas', label: 'Idea Vault', icon: Lightbulb },
   { id: 'scratchpad', label: 'Dev Scratchpad', icon: Terminal },
   { id: 'wins', label: 'Shipped Wins', icon: CheckCircle2 }
@@ -224,6 +226,8 @@ const ProjectsHub = () => {
             </div>
           </div>
         )}
+
+        {activeTab === 'hardware' && <RoboticsToolboxCard accentColor={accentColor} />}
 
         {activeTab === 'ideas' && <IdeaVaultCard accentColor={accentColor} />}
 

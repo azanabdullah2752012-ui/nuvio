@@ -122,6 +122,23 @@ const Sidebar = ({ isOpen, onClose }) => {
             </button>
           </div>
 
+          {/* Quick Command Palette Button */}
+          <button
+            onClick={() => {
+              soundEngine.playPop();
+              window.dispatchEvent(new CustomEvent('journal_open_palette'));
+            }}
+            className="w-full px-3 py-2 rounded-xl bg-[var(--bg-surface-elevated)] hover:bg-[var(--bg-surface-hover)] border border-[var(--border-subtle)] flex items-center justify-between text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors group"
+          >
+            <span className="flex items-center gap-2">
+              <span className="text-sm">⌘</span>
+              <span>Quick Actions</span>
+            </span>
+            <kbd className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-[var(--text-muted)] group-hover:text-[var(--text-primary)]">
+              ⌘K
+            </kbd>
+          </button>
+
           {/* Quick Schedule Switcher */}
           <div className="p-3 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] flex items-center justify-between">
             <div>

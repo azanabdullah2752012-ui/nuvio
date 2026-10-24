@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
-import { Menu, Sun, Moon, Sliders } from 'lucide-react';
+import { Menu, Sun, Moon, Sliders, Search } from 'lucide-react';
 import Sidebar from './Sidebar';
 import SettingsModal from './SettingsModal';
+import CommandPalette from '../CommandPalette';
 import { journalStorage } from '../../services/journalStorage';
 
 const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [paletteOpen, setPaletteOpen] = useState(false);
   const [theme, setTheme] = useState(journalStorage.getTheme());
   const [accentColor, setAccentColor] = useState(journalStorage.getAccentColor());
 
@@ -21,11 +23,18 @@ const Layout = () => {
       setTheme(journalStorage.getTheme());
       setAccentColor(journalStorage.getAccentColor());
     };
+    const handleOpenPalette = () => {
+      setPaletteOpen(true);
+    };
+
     window.addEventListener('journal_theme_change', handleUpdate);
     window.addEventListener('journal_data_update', handleUpdate);
+    window.addEventListener('journal_open_palette', handleOpenPalette);
+
     return () => {
       window.removeEventListener('journal_theme_change', handleUpdate);
       window.removeEventListener('journal_data_update', handleUpdate);
+      window.removeEventListener('journal_open_palette', handleOpenPalette);
     };
   }, []);
 
@@ -76,6 +85,13 @@ const Layout = () => {
 
           <div className="flex items-center gap-1.5">
             <button
+              onClick={() => setPaletteOpen(true)}
+              className="p-2 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface-hover)]"
+              title="Quick Search & Actions (⌘K)"
+            >
+              <Search className="w-4 h-4" />
+            </button>
+            <button
               onClick={toggleTheme}
               className="p-2 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface-hover)]"
               title="Toggle theme"
@@ -97,6 +113,12 @@ const Layout = () => {
           <Outlet />
         </main>
       </div>
+
+      {/* Global Command Palette (⌘K) */}
+      <CommandPalette 
+        isOpen={paletteOpen}
+        onClose={() => setPaletteOpen(false)}
+      />
 
       {/* Global Settings & Backup Modal */}
       <SettingsModal 
