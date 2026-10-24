@@ -1,0 +1,385 @@
+// ============================================================================
+// JOURNAL STORAGE SERVICE — 100% Client-Side LocalStorage
+// Zero AI, Zero Cloud, Zero Server, Zero Data Sent Anywhere.
+// Built specifically for Kaiser (Grade 9, Chennai).
+// ============================================================================
+
+const STORAGE_KEYS = {
+  ACCENT_COLOR: 'journal_accent_color',
+  ROUTINE_CUSTOM: 'journal_routine_custom',
+  ROUTINE_LOGS: 'journal_routine_logs',
+  PRIORITIES: 'journal_daily_priorities',
+  HABITS: 'journal_habits_list',
+  HABIT_LOGS: 'journal_habit_logs',
+  REFLECTIONS: 'journal_reflections',
+  ROUTINE_TYPE_OVERRIDE: 'journal_routine_type_override'
+};
+
+// Default Accent Color chosen by Kaiser
+export const DEFAULT_ACCENT_COLOR = '#024899';
+
+// Built-in accent color options for quick toggling
+export const ACCENT_PRESETS = [
+  { name: 'Kaiser Sapphire', hex: '#024899' },
+  { name: 'Electric Cyan', hex: '#06b6d4' },
+  { name: 'Polaris Emerald', hex: '#10b981' },
+  { name: 'Warm Amber', hex: '#f59e0b' },
+  { name: 'Royal Purple', hex: '#8b5cf6' },
+  { name: 'Crimson Rose', hex: '#f43f5e' }
+];
+
+// Weekday Template (School day schedule)
+export const DEFAULT_WEEKDAY_ROUTINE = [
+  { id: 'fajr', time: '05:00', label: 'Fajr & Wake Up', tag: 'Faith' },
+  { id: 'study_am', time: '05:20 - 06:20', label: 'Morning Study Block (Math / Science)', tag: 'Academics' },
+  { id: 'exercise', time: '06:20 - 06:40', label: 'Exercise & Movement (20m)', tag: 'Health' },
+  { id: 'prep_breakfast', time: '07:10 - 07:30', label: 'Breakfast & Pack Bags', tag: 'Routine' },
+  { id: 'bus', time: '07:50 - 08:00', label: 'Bus to School', tag: 'Travel' },
+  { id: 'school', time: '08:00 - 16:00', label: 'Greenfield Chennai International School', tag: 'School' },
+  { id: 'decomp', time: '16:30 - 17:00', label: 'Meal & Decompress (Rest is not wasted time)', tag: 'Rest' },
+  { id: 'nexttopper', time: '17:00 - 18:30', label: 'NextTopper Class', tag: 'Academics' },
+  { id: 'homework', time: '18:30 - 19:00', label: 'Homework & School Revision', tag: 'Academics' },
+  { id: 'arabic_study', time: '19:00 - 19:45', label: 'Arabic (Mon-Wed) / Focused Study (Thu-Fri)', tag: 'Study' },
+  { id: 'family_sleep', time: '20:30', label: 'Family Time, Dinner & Early Sleep', tag: 'Family' }
+];
+
+// Weekend Template (Deep build & JEE prep schedule)
+export const DEFAULT_WEEKEND_ROUTINE = [
+  { id: 'fajr_we', time: '05:00', label: 'Fajr & Morning Gratitude', tag: 'Faith' },
+  { id: 'jee_math_am', time: '06:00 - 07:30', label: 'Deep JEE & Math Problem Sets (Equations Practice)', tag: 'Academics' },
+  { id: 'exercise_we', time: '07:30 - 08:15', label: 'Exercise & Breakfast', tag: 'Health' },
+  { id: 'product_build', time: '09:00 - 12:30', label: 'Deep Product Build / Algorithms & Code', tag: 'Building' },
+  { id: 'dhuhr_family', time: '13:00 - 14:30', label: 'Dhuhr Prayer & Family Lunch', tag: 'Family' },
+  { id: 'reading_skill', time: '15:00 - 16:30', label: 'Self-Improvement Reading / CS Concepts', tag: 'Growth' },
+  { id: 'sports_outdoor', time: '17:00 - 18:30', label: 'Outdoor Movement / Play / Refresh', tag: 'Rest' },
+  { id: 'revision_plan', time: '19:00 - 20:00', label: 'Weekly Revision & Plan for Upcoming Week', tag: 'Academics' },
+  { id: 'wind_down_we', time: '21:00', label: 'Rest & Early Sleep', tag: 'Rest' }
+];
+
+// Initial Core Habits chosen by Kaiser
+export const INITIAL_HABITS = [
+  { id: 'prayers', name: '5 Prayers', category: 'Faith', description: 'Fajr, Dhuhr, Asr, Maghrib, Isha' },
+  { id: 'exercise', name: 'Exercise', category: 'Health', description: '20 minutes of daily physical training' },
+  { id: 'actual_studying', name: '1h Actual Studying (excluding h.w)', category: 'Academics', description: 'Deep conceptual study, not routine school homework' },
+  { id: 'jee_prep', name: '1h JEE', category: 'Academics', description: 'Turning word problems into equations & foundation drills' },
+  { id: 'self_improvement', name: '1 Hour Self Improvement', category: 'Growth', description: 'Coding, algorithms, building real products, or reading' }
+];
+
+// Format Date as YYYY-MM-DD in local timezone
+export const getTodayKey = (d = new Date()) => {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+// Safe JSON parser helper
+const safeJsonParse = (key, fallback) => {
+  try {
+    const item = localStorage.getItem(key);
+    return item ? JSON.parse(item) : fallback;
+  } catch (e) {
+    console.error(`Error reading ${key} from localStorage:`, e);
+    return fallback;
+  }
+};
+
+export const journalStorage = {
+  // ── THEME & ACCENT COLOR ──────────────────────────────────────────
+  getAccentColor() {
+    return localStorage.getItem(STORAGE_KEYS.ACCENT_COLOR) || DEFAULT_ACCENT_COLOR;
+  },
+
+  setAccentColor(hex) {
+    localStorage.setItem(STORAGE_KEYS.ACCENT_COLOR, hex);
+    this.applyAccentColor(hex);
+    window.dispatchEvent(new CustomEvent('journal_theme_change', { detail: hex }));
+  },
+
+  applyAccentColor(hex) {
+    const root = document.documentElement;
+    root.style.setProperty('--accent-primary', hex);
+    // Generate lighter border and faint glow shades
+    root.style.setProperty('--accent-glow', `${hex}33`); // ~20% opacity
+    root.style.setProperty('--accent-subtle', `${hex}1a`); // ~10% opacity
+    root.style.setProperty('--accent-border', `${hex}66`); // ~40% opacity
+  },
+
+  // ── ROUTINE TYPE & TEMPLATES ──────────────────────────────────────
+  getRoutineType(dateKey = getTodayKey()) {
+    const overrides = safeJsonParse(STORAGE_KEYS.ROUTINE_TYPE_OVERRIDE, {});
+    if (overrides[dateKey]) {
+      return overrides[dateKey];
+    }
+    // Auto-detect based on day of week: Sunday (0) and Saturday (6) are weekends
+    const [year, month, day] = dateKey.split('-').map(Number);
+    const dateObj = new Date(year, month - 1, day);
+    const dayOfWeek = dateObj.getDay();
+    return (dayOfWeek === 0 || dayOfWeek === 6) ? 'weekend' : 'weekday';
+  },
+
+  setRoutineTypeOverride(dateKey, type) {
+    const overrides = safeJsonParse(STORAGE_KEYS.ROUTINE_TYPE_OVERRIDE, {});
+    overrides[dateKey] = type;
+    localStorage.setItem(STORAGE_KEYS.ROUTINE_TYPE_OVERRIDE, JSON.stringify(overrides));
+    window.dispatchEvent(new Event('journal_data_update'));
+  },
+
+  getRoutineTemplate(type) {
+    return type === 'weekend' ? DEFAULT_WEEKEND_ROUTINE : DEFAULT_WEEKDAY_ROUTINE;
+  },
+
+  getRoutineLog(dateKey = getTodayKey()) {
+    const logs = safeJsonParse(STORAGE_KEYS.ROUTINE_LOGS, {});
+    return logs[dateKey] || {};
+  },
+
+  toggleRoutineItem(dateKey, itemId) {
+    const logs = safeJsonParse(STORAGE_KEYS.ROUTINE_LOGS, {});
+    if (!logs[dateKey]) logs[dateKey] = {};
+    logs[dateKey][itemId] = !logs[dateKey][itemId];
+    localStorage.setItem(STORAGE_KEYS.ROUTINE_LOGS, JSON.stringify(logs));
+    window.dispatchEvent(new Event('journal_data_update'));
+    return logs[dateKey][itemId];
+  },
+
+  // ── 3 PRIORITIES OF THE DAY ───────────────────────────────────────
+  getPriorities(dateKey = getTodayKey()) {
+    const allPriorities = safeJsonParse(STORAGE_KEYS.PRIORITIES, {});
+    if (allPriorities[dateKey] && Array.isArray(allPriorities[dateKey])) {
+      return allPriorities[dateKey];
+    }
+    // Default 3 clean empty slots
+    return [
+      { id: 1, text: '', completed: false, label: 'Priority 1 (Must-Ship / Core)' },
+      { id: 2, text: '', completed: false, label: 'Priority 2 (Academic / Problem Set)' },
+      { id: 3, text: '', completed: false, label: 'Priority 3 (Personal / Growth)' }
+    ];
+  },
+
+  updatePriority(dateKey, index, text) {
+    const all = safeJsonParse(STORAGE_KEYS.PRIORITIES, {});
+    const list = this.getPriorities(dateKey);
+    if (list[index]) {
+      list[index].text = text;
+    }
+    all[dateKey] = list;
+    localStorage.setItem(STORAGE_KEYS.PRIORITIES, JSON.stringify(all));
+    window.dispatchEvent(new Event('journal_data_update'));
+  },
+
+  togglePriority(dateKey, index) {
+    const all = safeJsonParse(STORAGE_KEYS.PRIORITIES, {});
+    const list = this.getPriorities(dateKey);
+    if (list[index]) {
+      list[index].completed = !list[index].completed;
+    }
+    all[dateKey] = list;
+    localStorage.setItem(STORAGE_KEYS.PRIORITIES, JSON.stringify(all));
+    window.dispatchEvent(new Event('journal_data_update'));
+    return list[index]?.completed;
+  },
+
+  // ── HABIT TRACKER (STREAKS & REST DAYS) ───────────────────────────
+  getHabits() {
+    return safeJsonParse(STORAGE_KEYS.HABITS, INITIAL_HABITS);
+  },
+
+  addHabit(name, category = 'General', description = '') {
+    const habits = this.getHabits();
+    const id = 'h_' + Date.now().toString(36);
+    const newHabit = { id, name, category, description };
+    habits.push(newHabit);
+    localStorage.setItem(STORAGE_KEYS.HABITS, JSON.stringify(habits));
+    window.dispatchEvent(new Event('journal_data_update'));
+    return newHabit;
+  },
+
+  deleteHabit(id) {
+    let habits = this.getHabits();
+    habits = habits.filter(h => h.id !== id);
+    localStorage.setItem(STORAGE_KEYS.HABITS, JSON.stringify(habits));
+    window.dispatchEvent(new Event('journal_data_update'));
+  },
+
+  getHabitLog(dateKey = getTodayKey()) {
+    const logs = safeJsonParse(STORAGE_KEYS.HABIT_LOGS, {});
+    return logs[dateKey] || { completed: {}, isRestDay: false };
+  },
+
+  toggleHabit(dateKey, habitId) {
+    const logs = safeJsonParse(STORAGE_KEYS.HABIT_LOGS, {});
+    if (!logs[dateKey]) {
+      logs[dateKey] = { completed: {}, isRestDay: false };
+    }
+    if (!logs[dateKey].completed) {
+      logs[dateKey].completed = {};
+    }
+    logs[dateKey].completed[habitId] = !logs[dateKey].completed[habitId];
+    localStorage.setItem(STORAGE_KEYS.HABIT_LOGS, JSON.stringify(logs));
+    window.dispatchEvent(new Event('journal_data_update'));
+    return logs[dateKey].completed[habitId];
+  },
+
+  toggleRestDay(dateKey = getTodayKey()) {
+    const logs = safeJsonParse(STORAGE_KEYS.HABIT_LOGS, {});
+    if (!logs[dateKey]) {
+      logs[dateKey] = { completed: {}, isRestDay: false };
+    }
+    logs[dateKey].isRestDay = !logs[dateKey].isRestDay;
+    localStorage.setItem(STORAGE_KEYS.HABIT_LOGS, JSON.stringify(logs));
+    window.dispatchEvent(new Event('journal_data_update'));
+    return logs[dateKey].isRestDay;
+  },
+
+  // Calculate streak for a specific habit
+  getHabitStreak(habitId) {
+    const logs = safeJsonParse(STORAGE_KEYS.HABIT_LOGS, {});
+    const today = new Date();
+    let currentStreak = 0;
+    let longestStreak = 0;
+    let tempStreak = 0;
+
+    // Check today's status
+    const todayKey = getTodayKey(today);
+    const todayLog = logs[todayKey];
+    const isTodayDone = todayLog?.completed?.[habitId] || todayLog?.isRestDay;
+
+    // Check yesterday's status to detect if Kaiser missed
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayKey = getTodayKey(yesterday);
+    const yesterdayLog = logs[yesterdayKey];
+    const isYesterdayDone = yesterdayLog?.completed?.[habitId] || yesterdayLog?.isRestDay;
+
+    // If yesterday was missed and today is not done yet, prompt: "Get back on track"
+    const needsCatchUp = !isTodayDone && !isYesterdayDone;
+
+    // Count backwards from today or yesterday
+    let checkDate = new Date(today);
+    if (!isTodayDone) {
+      // If today isn't done yet, check if streak from yesterday is alive
+      checkDate.setDate(checkDate.getDate() - 1);
+    }
+
+    while (true) {
+      const key = getTodayKey(checkDate);
+      const dayLog = logs[key];
+      const done = dayLog?.completed?.[habitId] || dayLog?.isRestDay;
+
+      if (done) {
+        currentStreak++;
+        checkDate.setDate(checkDate.getDate() - 1);
+      } else {
+        break;
+      }
+    }
+
+    // Historical longest streak across past 60 days
+    const pastCheck = new Date(today);
+    pastCheck.setDate(pastCheck.getDate() - 60);
+    const endCheck = new Date(today);
+
+    while (pastCheck <= endCheck) {
+      const key = getTodayKey(pastCheck);
+      const dayLog = logs[key];
+      const done = dayLog?.completed?.[habitId] || dayLog?.isRestDay;
+
+      if (done) {
+        tempStreak++;
+        if (tempStreak > longestStreak) longestStreak = tempStreak;
+      } else {
+        tempStreak = 0;
+      }
+      pastCheck.setDate(pastCheck.getDate() + 1);
+    }
+
+    return {
+      currentStreak,
+      longestStreak: Math.max(longestStreak, currentStreak),
+      isTodayDone: !!isTodayDone,
+      needsCatchUp
+    };
+  },
+
+  // Get past 7 days summary for habit tracking row
+  getRecentDays(daysCount = 7) {
+    const list = [];
+    const today = new Date();
+    for (let i = daysCount - 1; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const key = getTodayKey(d);
+      const dayName = d.toLocaleDateString([], { weekday: 'narrow' });
+      const dayNum = d.getDate();
+      list.push({ dateKey: key, dayName, dayNum, isToday: i === 0 });
+    }
+    return list;
+  },
+
+  // ── DAILY REFLECTION NOTE ─────────────────────────────────────────
+  getDailyReflection(dateKey = getTodayKey()) {
+    const all = safeJsonParse(STORAGE_KEYS.REFLECTIONS, {});
+    return all[dateKey] || '';
+  },
+
+  saveDailyReflection(dateKey, text) {
+    const all = safeJsonParse(STORAGE_KEYS.REFLECTIONS, {});
+    all[dateKey] = text;
+    localStorage.setItem(STORAGE_KEYS.REFLECTIONS, JSON.stringify(all));
+    window.dispatchEvent(new Event('journal_data_update'));
+  },
+
+  // ── BACKUP & DATA PORTABILITY (EXPORT / IMPORT JSON) ──────────────
+  exportAllData() {
+    const exportData = {
+      app: 'Journal',
+      version: '1.0.0',
+      exportedAt: new Date().toISOString(),
+      accentColor: this.getAccentColor(),
+      habits: this.getHabits(),
+      habitLogs: safeJsonParse(STORAGE_KEYS.HABIT_LOGS, {}),
+      routineLogs: safeJsonParse(STORAGE_KEYS.ROUTINE_LOGS, {}),
+      routineTypeOverrides: safeJsonParse(STORAGE_KEYS.ROUTINE_TYPE_OVERRIDE, {}),
+      priorities: safeJsonParse(STORAGE_KEYS.PRIORITIES, {}),
+      reflections: safeJsonParse(STORAGE_KEYS.REFLECTIONS, {})
+    };
+
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `journal-backup-${getTodayKey()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  },
+
+  importAllData(jsonString) {
+    try {
+      const data = JSON.parse(jsonString);
+      if (!data || data.app !== 'Journal') {
+        throw new Error('Invalid Journal backup file');
+      }
+
+      if (data.accentColor) localStorage.setItem(STORAGE_KEYS.ACCENT_COLOR, data.accentColor);
+      if (data.habits) localStorage.setItem(STORAGE_KEYS.HABITS, JSON.stringify(data.habits));
+      if (data.habitLogs) localStorage.setItem(STORAGE_KEYS.HABIT_LOGS, JSON.stringify(data.habitLogs));
+      if (data.routineLogs) localStorage.setItem(STORAGE_KEYS.ROUTINE_LOGS, JSON.stringify(data.routineLogs));
+      if (data.routineTypeOverrides) localStorage.setItem(STORAGE_KEYS.ROUTINE_TYPE_OVERRIDE, JSON.stringify(data.routineTypeOverrides));
+      if (data.priorities) localStorage.setItem(STORAGE_KEYS.PRIORITIES, JSON.stringify(data.priorities));
+      if (data.reflections) localStorage.setItem(STORAGE_KEYS.REFLECTIONS, JSON.stringify(data.reflections));
+
+      if (data.accentColor) {
+        this.applyAccentColor(data.accentColor);
+      }
+
+      window.dispatchEvent(new Event('journal_data_update'));
+      return { success: true };
+    } catch (err) {
+      console.error('Import failed:', err);
+      return { success: false, error: err.message };
+    }
+  }
+};

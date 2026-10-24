@@ -4,12 +4,22 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>KAISER OS // Builder Command Deck</title>
-    <meta name="description" content="Personal builder command deck for Kaiser. Fast, minimal, tool-grade precision." />
+    <title>Journal — Kaiser</title>
+    <meta name="description" content="Personal daily journal, routine checklist, and habit tracker for Kaiser." />
     <meta name="theme-color" content="#08090a" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+      // Initialize saved accent color immediately to prevent flash
+      try {
+        const savedColor = localStorage.getItem('journal_accent_color') || '#024899';
+        document.documentElement.style.setProperty('--accent-primary', savedColor);
+        document.documentElement.style.setProperty('--accent-glow', savedColor + '33');
+        document.documentElement.style.setProperty('--accent-subtle', savedColor + '1a');
+        document.documentElement.style.setProperty('--accent-border', savedColor + '66');
+      } catch (e) {}
+    </script>
   </head>
   <body class="bg-[#08090a] text-[#f7f8f8] antialiased selection:bg-emerald-500/30 selection:text-emerald-300">
     <div id="root"></div>

@@ -6,20 +6,21 @@
   /* Linear / Raycast Precision Tokens */
   --bg-abyss: #08090a;
   --bg-surface-1: #0e1013;
-  --bg-surface-2: #15181d;
-  --bg-surface-3: #1c2027;
+  --bg-surface-2: #14171d;
+  --bg-surface-3: #1a1e26;
 
   --border-hairline: rgba(255, 255, 255, 0.08);
   --border-hover: rgba(255, 255, 255, 0.16);
-  --border-focus: rgba(16, 185, 129, 0.5);
 
   --text-primary: #f7f8f8;
   --text-secondary: #9da7b3;
   --text-muted: #5e6673;
 
-  --accent-emerald: #10b981;
-  --accent-cyan: #06b6d4;
-  --accent-amber: #f59e0b;
+  /* Kaiser's Selected Accent: Deep Sapphire Blue #024899 */
+  --accent-primary: #024899;
+  --accent-glow: rgba(2, 72, 153, 0.25);
+  --accent-subtle: rgba(2, 72, 153, 0.12);
+  --accent-border: rgba(2, 72, 153, 0.4);
 }
 
 @layer base {
@@ -51,52 +52,49 @@
 }
 
 /* Tool-Grade Surface Utility Classes */
-.linear-panel {
+.journal-card {
   background: var(--bg-surface-1);
   border: 1px solid var(--border-hairline);
   border-radius: 14px;
   transition: border-color 0.15s ease, background-color 0.15s ease;
 }
 
-.linear-panel:hover {
+.journal-card:hover {
   border-color: var(--border-hover);
 }
 
-.linear-panel-raised {
+.journal-card-raised {
   background: var(--bg-surface-2);
   border: 1px solid var(--border-hairline);
   border-radius: 12px;
 }
 
-.linear-input {
+.journal-input {
   background: var(--bg-surface-2);
   border: 1px solid var(--border-hairline);
   color: var(--text-primary);
   border-radius: 10px;
+  font-family: 'Inter', sans-serif;
+}
+
+.journal-input:focus {
   outline: none;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  border-color: var(--accent-border);
+  box-shadow: 0 0 12px var(--accent-glow);
 }
 
-.linear-input:focus {
-  border-color: var(--border-focus);
-  box-shadow: 0 0 0 1px var(--border-focus);
-}
-
-/* Custom Scrollbar */
+/* Custom Scrollbar for Sleek Look */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
-
 ::-webkit-scrollbar-track {
   background: var(--bg-abyss);
 }
-
 ::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.12);
-  border-radius: 9999px;
+  border-radius: 3px;
 }
-
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.22);
 }
