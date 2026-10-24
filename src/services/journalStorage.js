@@ -24,7 +24,12 @@ const STORAGE_KEYS = {
   EQUATION_FORGE: 'journal_equation_forge',
   EXAM_COUNTDOWNS: 'journal_exam_countdowns',
   SCRATCHPAD: 'journal_scratchpad',
-  FOCUS_SESSIONS: 'journal_focus_sessions'
+  FOCUS_SESSIONS: 'journal_focus_sessions',
+  FORMULAS: 'journal_jee_formulas',
+  FAVORS: 'journal_pickle_corp_favors',
+  SPELLING: 'journal_spelling_precision',
+  PRAYER_LOGS: 'journal_prayer_logs',
+  SYLLABUS: 'journal_syllabus_progress'
 };
 
 // Default Accent Color chosen by Kaiser
@@ -701,6 +706,159 @@ export const journalStorage = {
     return list
       .filter(s => s.date === dateKey)
       .reduce((acc, s) => acc + (s.minutes || 0), 0);
+  },
+
+  // ── JEE FORMULA & THEOREM VAULT ──────────────────────────────────
+  getFormulas() {
+    const defaultFormulas = [
+      { id: 'f_p1', subject: 'Physics', topic: 'Kinematics', name: 'Equations of Uniform Acceleration', formula: 'v = u + at \ns = ut + 0.5at² \nv² = u² + 2as', mastery: 'Mastered' },
+      { id: 'f_p2', subject: 'Physics', topic: 'Gravitation', name: 'Universal Law of Gravitation', formula: 'F = G * (m₁ * m₂) / r²', mastery: 'Mastered' },
+      { id: 'f_p3', subject: 'Physics', topic: 'Work & Energy', name: 'Kinetic & Potential Energy', formula: 'KE = 0.5 * m * v² \nPE = m * g * h \nW = F * s * cos(θ)', mastery: 'Learning' },
+      { id: 'f_m1', subject: 'Mathematics', topic: 'Quadratic Equations', name: 'Quadratic Formula & Discriminant', formula: 'x = (-b ± √(b² - 4ac)) / (2a) \nD = b² - 4ac (D > 0 real, D = 0 equal, D < 0 imaginary)', mastery: 'Mastered' },
+      { id: 'f_m2', subject: 'Mathematics', topic: 'Geometry / Mensuration', name: "Heron's Formula for Triangle Area", formula: 'A = √(s(s - a)(s - b)(s - c)) \nwhere s = (a + b + c) / 2', mastery: 'Mastered' },
+      { id: 'f_m3', subject: 'Mathematics', topic: 'Algebra', name: 'Cubic Identities', formula: '(a + b)³ = a³ + b³ + 3ab(a + b) \n(a - b)³ = a³ - b³ - 3ab(a - b) \na³ + b³ = (a + b)(a² - ab + b²)', mastery: 'Learning' },
+      { id: 'f_c1', subject: 'Chemistry', topic: 'Mole Concept', name: 'Avogadro & Molar Mass', formula: 'n = m / M = N / N_A \n(N_A = 6.022 × 10²³ particles/mol)', mastery: 'Mastered' }
+    ];
+    return safeJsonParse(STORAGE_KEYS.FORMULAS, defaultFormulas);
+  },
+
+  addFormula(item) {
+    const list = this.getFormulas();
+    const id = 'f_' + Date.now().toString(36);
+    const newItem = { ...item, id, mastery: item.mastery || 'Learning' };
+    list.unshift(newItem);
+    localStorage.setItem(STORAGE_KEYS.FORMULAS, JSON.stringify(list));
+    window.dispatchEvent(new Event('journal_data_update'));
+    return newItem;
+  },
+
+  toggleFormulaMastery(id) {
+    const list = this.getFormulas();
+    const item = list.find(f => f.id === id);
+    if (item) {
+      item.mastery = item.mastery === 'Mastered' ? 'Learning' : 'Mastered';
+      localStorage.setItem(STORAGE_KEYS.FORMULAS, JSON.stringify(list));
+      window.dispatchEvent(new Event('journal_data_update'));
+    }
+  },
+
+  deleteFormula(id) {
+    let list = this.getFormulas();
+    list = list.filter(f => f.id !== id);
+    localStorage.setItem(STORAGE_KEYS.FORMULAS, JSON.stringify(list));
+    window.dispatchEvent(new Event('journal_data_update'));
+  },
+
+  // ── PICKLE CORP FAVOR LEDGER ($0.00 INVOICES) ─────────────────────
+  getFavors() {
+    const defaultFavors = [
+      { id: 'fav1', client: 'Thanvi (Co-founder / CEO)', project: 'Cofounder studio tooling & design review', favorBanked: '15 mins product direction & feedback', status: 'Banked', date: '2026-10-10' },
+      { id: 'fav2', client: 'Polaris House Team', project: 'House points calculation tracker', favorBanked: 'Support for upcoming inter-house robotics competition', status: 'Banked', date: '2026-10-18' }
+    ];
+    return safeJsonParse(STORAGE_KEYS.FAVORS, defaultFavors);
+  },
+
+  addFavor(item) {
+    const list = this.getFavors();
+    const id = 'fav_' + Date.now().toString(36);
+    const newItem = { ...item, id, status: 'Banked', date: item.date || getTodayKey() };
+    list.unshift(newItem);
+    localStorage.setItem(STORAGE_KEYS.FAVORS, JSON.stringify(list));
+    window.dispatchEvent(new Event('journal_data_update'));
+    return newItem;
+  },
+
+  toggleFavorStatus(id) {
+    const list = this.getFavors();
+    const item = list.find(f => f.id === id);
+    if (item) {
+      item.status = item.status === 'Banked' ? 'Redeemed' : 'Banked';
+      localStorage.setItem(STORAGE_KEYS.FAVORS, JSON.stringify(list));
+      window.dispatchEvent(new Event('journal_data_update'));
+    }
+  },
+
+  deleteFavor(id) {
+    let list = this.getFavors();
+    list = list.filter(f => f.id !== id);
+    localStorage.setItem(STORAGE_KEYS.FAVORS, JSON.stringify(list));
+    window.dispatchEvent(new Event('journal_data_update'));
+  },
+
+  // ── SPELLING & TERMINOLOGY PRECISION VAULT ────────────────────────
+  getSpellingList() {
+    const defaultSpelling = [
+      { id: 'sp1', word: 'Simultaneous', context: 'Simultaneous linear equations in two variables', mastered: true },
+      { id: 'sp2', word: 'Photosynthesis', context: 'Biology chlorophyll energy conversion', mastered: true },
+      { id: 'sp3', word: 'Acceleration', context: 'Rate of change of velocity (a = dv/dt)', mastered: false },
+      { id: 'sp4', word: 'Endoplasmic Reticulum', context: 'Cell biology smooth & rough organelles', mastered: false },
+      { id: 'sp5', word: 'Discriminant', context: 'b² - 4ac in quadratic formula', mastered: true }
+    ];
+    return safeJsonParse(STORAGE_KEYS.SPELLING, defaultSpelling);
+  },
+
+  addSpellingWord(item) {
+    const list = this.getSpellingList();
+    const id = 'sp_' + Date.now().toString(36);
+    const newItem = { ...item, id, mastered: false };
+    list.unshift(newItem);
+    localStorage.setItem(STORAGE_KEYS.SPELLING, JSON.stringify(list));
+    window.dispatchEvent(new Event('journal_data_update'));
+    return newItem;
+  },
+
+  toggleSpellingMastered(id) {
+    const list = this.getSpellingList();
+    const item = list.find(s => s.id === id);
+    if (item) {
+      item.mastered = !item.mastered;
+      localStorage.setItem(STORAGE_KEYS.SPELLING, JSON.stringify(list));
+      window.dispatchEvent(new Event('journal_data_update'));
+    }
+  },
+
+  deleteSpellingWord(id) {
+    let list = this.getSpellingList();
+    list = list.filter(s => s.id !== id);
+    localStorage.setItem(STORAGE_KEYS.SPELLING, JSON.stringify(list));
+    window.dispatchEvent(new Event('journal_data_update'));
+  },
+
+  // ── CHENNAI PRAYER TIMES & SUNNAH RADAR ───────────────────────────
+  getPrayerTimes() {
+    // Chennai approximate schedule
+    return [
+      { id: 'fajr', name: 'Fajr', time: '05:00', icon: 'Sun' },
+      { id: 'dhuhr', name: 'Dhuhr', time: '12:05', icon: 'Sun' },
+      { id: 'asr', name: 'Asr', time: '15:20', icon: 'Sun' },
+      { id: 'maghrib', name: 'Maghrib', time: '17:50', icon: 'Moon' },
+      { id: 'isha', name: 'Isha', time: '19:05', icon: 'Moon' }
+    ];
+  },
+
+  getPrayerLog(dateKey = getTodayKey()) {
+    const all = safeJsonParse(STORAGE_KEYS.PRAYER_LOGS, {});
+    return all[dateKey] || {
+      fajr: false,
+      dhuhr: false,
+      asr: false,
+      maghrib: false,
+      isha: false,
+      tahajjud: false,
+      duha: false,
+      witr: false
+    };
+  },
+
+  togglePrayer(dateKey, prayerKey) {
+    const all = safeJsonParse(STORAGE_KEYS.PRAYER_LOGS, {});
+    if (!all[dateKey]) {
+      all[dateKey] = { fajr: false, dhuhr: false, asr: false, maghrib: false, isha: false, tahajjud: false, duha: false, witr: false };
+    }
+    all[dateKey][prayerKey] = !all[dateKey][prayerKey];
+    localStorage.setItem(STORAGE_KEYS.PRAYER_LOGS, JSON.stringify(all));
+    window.dispatchEvent(new Event('journal_data_update'));
+    return all[dateKey][prayerKey];
   },
 
   // ── BACKUP & DATA PORTABILITY (EXPORT / IMPORT JSON) ──────────────

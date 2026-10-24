@@ -12,6 +12,10 @@ const GoalsPage = lazy(() => import('./pages/GoalsPage'));
 const WeeklyReviewPage = lazy(() => import('./pages/WeeklyReviewPage'));
 const WinsPage = lazy(() => import('./pages/WinsPage'));
 const MistakesPage = lazy(() => import('./pages/MistakesPage'));
+const FormulasPage = lazy(() => import('./pages/FormulasPage'));
+const PrayerPage = lazy(() => import('./pages/PrayerPage'));
+const PickleCorpPage = lazy(() => import('./pages/PickleCorpPage'));
+const SpellingPage = lazy(() => import('./pages/SpellingPage'));
 const SettingsPage = lazy(() => import('./pages/SettingsPage'));
 
 // Clean Loading State
@@ -40,19 +44,31 @@ function App() {
             {/* 3. Habit Tracker */}
             <Route path="/habits" element={<HabitsPage />} />
 
-            {/* 4. Goals & Exam Marks */}
+            {/* 4. Prayer & Sunnah Radar */}
+            <Route path="/prayer" element={<PrayerPage />} />
+
+            {/* 5. JEE Formulas & Theorems */}
+            <Route path="/formulas" element={<FormulasPage />} />
+
+            {/* 6. Goals & Exam Marks */}
             <Route path="/goals" element={<GoalsPage />} />
 
-            {/* 5. Weekly Review (5-Min Protocol) */}
+            {/* 7. Weekly Review (5-Min Protocol) */}
             <Route path="/review" element={<WeeklyReviewPage />} />
 
-            {/* 6. Small Wins & Shipped Vault */}
+            {/* 8. Small Wins & Shipped Vault */}
             <Route path="/wins" element={<WinsPage />} />
 
-            {/* 7. Mistake Notebook */}
+            {/* 9. Mistake Notebook */}
             <Route path="/mistakes" element={<MistakesPage />} />
 
-            {/* 8. Settings & Privacy */}
+            {/* 10. Pickle Corp Studio Favor Bank */}
+            <Route path="/pickle-corp" element={<PickleCorpPage />} />
+
+            {/* 11. Spelling & Vocabulary Precision */}
+            <Route path="/spelling" element={<SpellingPage />} />
+
+            {/* 12. Settings & Privacy */}
             <Route path="/settings" element={<SettingsPage />} />
           </Route>
 
