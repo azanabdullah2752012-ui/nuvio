@@ -1,223 +1,102 @@
-@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  /* ==========================================================================
-     ART BIBLE: WARM EDITORIAL ACADEMIC
-     Atmosphere: Oxford Library / Harvard Study Carrel / Warm Parchment Paper
-     Base Ground: Parchment Cream (#fbfbfa)
-     Surfaces: Crisp Paper White (#ffffff) & Warm Vellum (#f5f3ec)
-     Ink: Deep Espresso / Book Ink (#1a1917) & Slate Charcoal (#52504a)
-     Primary Anchor: Deep Forest Green (#1b3b2b)
-     Secondary Anchor: Academic Navy (#162744)
-     Accent: Antiquarian Warm Brass/Amber (#a46a29)
-     ========================================================================== */
-  --bg-base: #fbfbfa;
-  --bg-card: #ffffff;
-  --bg-surface: #f5f3ec;
-  --bg-elevated: #ece8dc;
-  
-  --text-primary: #1a1917;
-  --text-secondary: #52504a;
-  --text-muted: #827f76;
-  
-  --brand-forest: #1b3b2b;
-  --brand-forest-hover: #254e3a;
-  --brand-navy: #162744;
-  --brand-amber: #a46a29;
-  
-  --nuvio-purple-400: #1b3b2b;
-  --nuvio-purple-500: #1b3b2b;
-  --nuvio-purple-600: #12281d;
-  --nuvio-green: #205739;
-  --nuvio-orange: #a46a29;
-  --nuvio-blue: #162744;
-  --nuvio-red: #8c2825;
-  --nuvio-yellow: #b57a26;
-  --nuvio-cyan: #1f485b;
-  --nuvio-pink: #1b3b2b;
-  
-  --border-subtle: #e5e1d5;
-  --border-strong: #d2ccc0;
-  --border-accent: rgba(27, 59, 43, 0.25);
-  
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
+  /* Linear / Raycast Precision Tokens */
+  --bg-abyss: #08090a;
+  --bg-surface-1: #0e1013;
+  --bg-surface-2: #15181d;
+  --bg-surface-3: #1c2027;
+
+  --border-hairline: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(255, 255, 255, 0.16);
+  --border-focus: rgba(16, 185, 129, 0.5);
+
+  --text-primary: #f7f8f8;
+  --text-secondary: #9da7b3;
+  --text-muted: #5e6673;
+
+  --accent-emerald: #10b981;
+  --accent-cyan: #06b6d4;
+  --accent-amber: #f59e0b;
 }
 
 @layer base {
   * {
-    border-color: var(--border-subtle);
+    border-color: var(--border-hairline);
   }
 
   body {
-    background-color: var(--bg-base);
+    background-color: var(--bg-abyss);
     color: var(--text-primary);
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-    font-size: 15px;
-    line-height: 1.6;
-    letter-spacing: -0.01em;
-    @apply antialiased overflow-x-hidden selection:bg-[#1b3b2b] selection:text-white;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    letter-spacing: -0.011em;
+    overflow-x: hidden;
   }
 
-  /* Elegant Editorial Serif Typography */
-  h1, h2, h3, h4, .font-clash, .font-display {
-    font-family: 'Lora', 'Newsreader', Georgia, serif;
-    color: var(--text-primary);
+  h1, h2, h3, h4 {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
     font-weight: 600;
-    letter-spacing: -0.02em;
-  }
-
-  h1 {
-    font-size: clamp(2.25rem, 4.5vw, 3.75rem);
-    line-height: 1.1;
-  }
-
-  h2 {
-    font-size: clamp(1.6rem, 3vw, 2.4rem);
-    line-height: 1.15;
+    letter-spacing: -0.025em;
+    color: var(--text-primary);
   }
 
   code, pre, .font-mono {
     font-family: 'JetBrains Mono', monospace;
+    letter-spacing: -0.02em;
   }
 }
 
-/* ==========================================================================
-   WARM EDITORIAL COMPONENTS
-   ========================================================================== */
-
-@layer components {
-  /* Paper Card: Crisp white surface with tactile warm depth */
-  .nv-card, .card-atelier {
-    background: #ffffff;
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-md);
-    box-shadow: 0 2px 8px -1px rgba(26, 25, 23, 0.04), 0 1px 3px rgba(26, 25, 23, 0.02);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  }
-
-  .nv-card:hover, .card-atelier:hover {
-    border-color: var(--border-strong);
-    box-shadow: 0 6px 20px -2px rgba(26, 25, 23, 0.07);
-  }
-
-  /* Deep Forest Primary Button */
-  .nv-btn-primary {
-    background: #1b3b2b;
-    color: #ffffff;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-    border-radius: var(--radius-sm);
-    padding: 10px 20px;
-    border: 1px solid transparent;
-    box-shadow: 0 1px 3px rgba(27, 59, 43, 0.2);
-    transition: background-color 0.15s ease, transform 0.1s ease;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-  }
-
-  .nv-btn-primary:hover {
-    background: #254e3a;
-  }
-
-  .nv-btn-primary:active {
-    transform: translateY(1px);
-  }
-
-  /* Secondary Button */
-  .nv-btn-secondary {
-    background: #ffffff;
-    color: var(--text-primary);
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    border-radius: var(--radius-sm);
-    padding: 10px 20px;
-    border: 1px solid var(--border-subtle);
-    box-shadow: 0 1px 2px rgba(26, 25, 23, 0.04);
-    transition: background-color 0.15s ease, border-color 0.15s ease;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-  }
-
-  .nv-btn-secondary:hover {
-    background: #f7f5ee;
-    border-color: var(--border-strong);
-  }
-
-  /* Refined Academic Input */
-  .nv-input {
-    background: #ffffff;
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-sm);
-    color: var(--text-primary);
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 14px;
-    padding: 10px 14px;
-    outline: none;
-    box-shadow: inset 0 1px 2px rgba(26, 25, 23, 0.03);
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
-  }
-
-  .nv-input:focus {
-    border-color: var(--brand-forest);
-    box-shadow: 0 0 0 3px rgba(27, 59, 43, 0.08);
-  }
-
-  .nv-label {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--text-secondary);
-    margin-bottom: 4px;
-    display: block;
-  }
-
-  /* Academic Badge */
-  .nv-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 10px;
-    border-radius: var(--radius-sm);
-    font-size: 11px;
-    font-family: 'JetBrains Mono', monospace;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-    background: #f4f1ea;
-    color: var(--text-primary);
-    border: 1px solid var(--border-subtle);
-  }
+/* Tool-Grade Surface Utility Classes */
+.linear-panel {
+  background: var(--bg-surface-1);
+  border: 1px solid var(--border-hairline);
+  border-radius: 14px;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
 }
 
-/* Custom Scrollbar for warm paper theme */
+.linear-panel:hover {
+  border-color: var(--border-hover);
+}
+
+.linear-panel-raised {
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border-hairline);
+  border-radius: 12px;
+}
+
+.linear-input {
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border-hairline);
+  color: var(--text-primary);
+  border-radius: 10px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.linear-input:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 1px var(--border-focus);
+}
+
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f5f3ec;
+  background: var(--bg-abyss);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #d4cfbf;
-  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #b8b19e;
+  background: rgba(255, 255, 255, 0.2);
 }

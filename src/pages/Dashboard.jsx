@@ -1,54 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Rocket, BookOpen, Dumbbell, Star, 
-  Plus, Check, Play, Clock, 
+  Plus, Check, Play, Pause, RotateCcw,
   Trash2, Edit3, Flame, ExternalLink, 
-  Lightbulb, Shield, Sparkles, ChevronDown, ChevronUp, Cpu
+  Lightbulb, Shield, Sparkles, Activity, Clock, Terminal, ChevronRight
 } from 'lucide-react';
-import { format } from 'date-fns';
 import { dataService } from '../services/dataService';
 import { soundEngine } from '../services/soundEngine';
-import LockInModal from '../components/LockInModal';
 
 const Dashboard = () => {
-  const [profile, setProfile] = useState(dataService.getProfile());
   const [activeBuild, setActiveBuild] = useState(dataService.getActiveBuild());
   const [missions, setMissions] = useState(dataService.getMissions());
-  const [routine, setRoutine] = useState(dataService.getRoutine());
   const [ideas, setIdeas] = useState(dataService.getIdeaVault());
   const [scratchpad, setScratchpad] = useState(dataService.getScratchpad());
   const [sessions, setSessions] = useState(dataService.getSessions());
 
-  // Input states
-  const [newMissionTitle, setNewMissionTitle] = useState('');
-  const [newMissionCategory, setNewMissionCategory] = useState('Build');
-  const [newMissionTag, setNewMissionTag] = useState('Code');
-  
-  // Idea vault input
-  const [showAddIdea, setShowAddIdea] = useState(false);
-  const [ideaTitle, setIdeaTitle] = useState('');
-  const [ideaType, setIdeaType] = useState('Product Idea');
-  const [ideaNotes, setIdeaNotes] = useState('');
+  // Quick Command Bar Input
+  const [commandInput, setCommandInput] = useState('');
+  const [commandCategory, setCommandCategory] = useState('Build');
 
-  // Lock-In Mode
-  const [isLockInOpen, setIsLockInOpen] = useState(false);
-  const [lockInTarget, setLockInTarget] = useState('');
+  // Mini Timer State
+  const [timerMins, setTimerMins] = useState(45);
+  const [timerSecondsLeft, setTimerSecondsLeft] = useState(45 * 60);
+  const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const [timerTarget, setTimerTarget] = useState('Active Build Sprint');
 
-  // Edit Active Build
+  // Edit Active Build Modal/Inline
   const [isEditingBuild, setIsEditingBuild] = useState(false);
   const [buildName, setBuildName] = useState(activeBuild?.name || '');
   const [buildGoal, setBuildGoal] = useState(activeBuild?.goal || '');
   const [buildNextStep, setBuildNextStep] = useState(activeBuild?.nextStep || '');
 
-  // Routine toggle
-  const [showRoutine, setShowRoutine] = useState(false);
+  // Add Idea inline
+  const [showAddIdea, setShowAddIdea] = useState(false);
+  const [ideaTitle, setIdeaTitle] = useState('');
+  const [ideaType, setIdeaType] = useState('Product Idea');
+  const [ideaNotes, setIdeaNotes] = useState('');
 
   useEffect(() => {
     const handleUpdate = () => {
-      setProfile(dataService.getProfile());
       setActiveBuild(dataService.getActiveBuild());
       setMissions(dataService.getMissions());
-      setRoutine(dataService.getRoutine());
       setIdeas(dataService.getIdeaVault());
       setScratchpad(dataService.getScratchpad());
       setSessions(dataService.getSessions());
@@ -57,33 +49,50 @@ const Dashboard = () => {
     return () => window.removeEventListener('kaiser_os_update', handleUpdate);
   }, []);
 
-  const handleToggleMission = (id) => {
+  // Timer interval
+  useEffect(() => {
+    let interval = null;
+    if (isTimerRunning) {
+      interval = setInterval(() => {
+        setTimerSecondsLeft((prev) => {
+          if (prev <= 1) {
+            clearInterval(interval);
+            setIsTimerRunning(false);
+            soundEngine.playBell(528);
+            dataService.logSession(timerMins, timerTarget);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    } else {
+      clearInterval(interval);
+    }
+    return () => clearInterval(interval);
+  }, [isTimerRunning, timerMins, timerTarget]);
+
+  const toggleMission = (id) => {
     soundEngine.playPop();
     dataService.toggleMission(id);
   };
 
-  const handleAddMission = (e) => {
+  const handleCommandSubmit = (e) => {
     e.preventDefault();
-    if (!newMissionTitle.trim()) return;
+    if (!commandInput.trim()) return;
     soundEngine.playPop();
-    dataService.addMission(newMissionTitle, newMissionCategory, newMissionTag);
-    setNewMissionTitle('');
-  };
-
-  const handleDeleteMission = (id, e) => {
-    e.stopPropagation();
-    dataService.deleteMission(id);
+    dataService.addMission(commandInput.trim(), commandCategory, 'Active');
+    setCommandInput('');
   };
 
   const handleSaveBuild = (e) => {
     e.preventDefault();
+    soundEngine.playPop();
     dataService.updateActiveBuild({
       name: buildName,
       goal: buildGoal,
       nextStep: buildNextStep
     });
     setIsEditingBuild(false);
-    soundEngine.playPop();
   };
 
   const handleAddIdea = (e) => {
@@ -96,431 +105,426 @@ const Dashboard = () => {
     setShowAddIdea(false);
   };
 
-  const handleDeleteIdea = (id) => {
-    dataService.deleteIdea(id);
-  };
-
   const handleScratchpadChange = (e) => {
     const val = e.target.value;
     setScratchpad(val);
     dataService.saveScratchpad(val);
   };
 
-  const startLockIn = (label) => {
-    setLockInTarget(label);
-    setIsLockInOpen(true);
+  const startTimerFor = (label, mins = 45) => {
+    setTimerTarget(label);
+    setTimerMins(mins);
+    setTimerSecondsLeft(mins * 60);
+    setIsTimerRunning(true);
+    soundEngine.playPop();
   };
 
-  // Stats
   const todayMinutes = sessions
     .filter(s => s.date === new Date().toISOString().split('T')[0])
     .reduce((acc, s) => acc + (s.minutes || 0), 0);
 
   const completedMissions = missions.filter(m => m.completed).length;
 
+  const displayMins = Math.floor(timerSecondsLeft / 60);
+  const displaySecs = timerSecondsLeft % 60;
+
   return (
-    <div className="max-w-4xl mx-auto space-y-10 pb-36 pt-4 px-4 sm:px-6 font-sans text-left selection:bg-emerald-800 selection:text-white">
+    <div className="space-y-6 text-left font-sans">
       
-      {/* ── HEADER & IDENTITY ─────────────────────────────────────── */}
-      <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-[#eceae3] pb-6">
-        <div>
-          <div className="flex items-center gap-2 text-xs font-mono tracking-wider uppercase text-[#8e8d8a] mb-1">
-            <span className="w-2 h-2 rounded-full bg-emerald-700 animate-pulse" />
-            <span>GCIS CLASS IX-C • POLARIS HOUSE</span>
-            <span>•</span>
-            <span>{format(new Date(), 'EEEE, MMMM d')}</span>
-          </div>
-          <h1 className="text-3xl sm:text-4xl font-serif font-bold text-[#1d1d1f] tracking-tight">
-            Kaiser Command Deck
-          </h1>
-          <p className="text-xs text-[#545350] mt-1 font-mono">
-            Ship products people actually use • Crack Pearson Class 9 Maths • Stay disciplined.
-          </p>
+      {/* ── RAYCAST-STYLE COMMAND BAR ──────────────────────────────── */}
+      <form onSubmit={handleCommandSubmit} className="relative group">
+        <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-zinc-500">
+          <Terminal className="w-4 h-4 text-emerald-400" />
         </div>
-
-        <div className="flex items-center gap-2.5 shrink-0">
-          <button
-            onClick={() => startLockIn('Deep Focus Sprint')}
-            className="px-4 py-2.5 bg-[#1b3b2b] hover:bg-[#28553e] text-white text-xs font-semibold rounded-2xl shadow-sm transition-all flex items-center gap-2 active:scale-95"
+        <input
+          type="text"
+          value={commandInput}
+          onChange={(e) => setCommandInput(e.target.value)}
+          placeholder="⌘ Quick Command // Log today's mission, problem set, or build target (Press Enter)..."
+          className="w-full h-12 pl-11 pr-28 bg-[#0e1013] border border-white/[0.08] hover:border-white/[0.16] focus:border-emerald-500/50 rounded-2xl text-xs sm:text-sm text-zinc-200 placeholder:text-zinc-600 focus:outline-none transition-all shadow-[0_4px_20px_rgba(0,0,0,0.5)] font-mono"
+        />
+        <div className="absolute inset-y-0 right-3 flex items-center gap-1.5">
+          <select
+            value={commandCategory}
+            onChange={(e) => setCommandCategory(e.target.value)}
+            className="bg-[#15181d] border border-white/[0.08] text-zinc-400 text-[10px] font-mono rounded-lg px-2 py-1 focus:outline-none"
           >
-            <Clock className="w-4 h-4 text-emerald-300" />
-            <span>Enter Lock-In</span>
-          </button>
+            <option value="Build">Build</option>
+            <option value="Academic">Academic</option>
+            <option value="Personal">Personal</option>
+          </select>
         </div>
-      </header>
+      </form>
 
-      {/* ── SECTION 1: THE ACTIVE BUILD (Anti-Shiny-Object Forge) ─── */}
-      <div className="p-6 sm:p-7 rounded-3xl bg-white border border-[#e5e3db] shadow-[0_4px_20px_rgba(0,0,0,0.03)] space-y-4 relative overflow-hidden">
+      {/* ── BENTO GRID ─────────────────────────────────────────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         
-        {/* Card Top Strip */}
-        <div className="flex items-center justify-between border-b border-[#f4f3ef] pb-3 text-[10px] font-mono uppercase tracking-widest text-[#8e8d8a]">
-          <span className="flex items-center gap-1.5 text-emerald-800 font-bold">
-            <Rocket className="w-3.5 h-3.5 text-emerald-700" />
-            CURRENT SHIPPING FORGE // ONE PROJECT AT A TIME
-          </span>
-          <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold">
-              {activeBuild.status}
-            </span>
-            <button
-              onClick={() => {
-                setBuildName(activeBuild.name);
-                setBuildGoal(activeBuild.goal);
-                setBuildNextStep(activeBuild.nextStep);
-                setIsEditingBuild(!isEditingBuild);
-              }}
-              className="hover:text-black transition-colors"
-              title="Edit active project"
-            >
-              <Edit3 className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        </div>
+        {/* ── LEFT COLUMN (7 COLS): ACTIVE FORGE & TODAY'S MISSIONS ─── */}
+        <div className="lg:col-span-7 space-y-5">
+          
+          {/* Card A: The Active Shipping Forge */}
+          <div className="linear-panel p-6 space-y-4 relative overflow-hidden">
+            {/* Top Accent Line */}
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-emerald-500 via-cyan-500 to-transparent opacity-80" />
 
-        {!isEditingBuild ? (
-          <div className="space-y-3">
-            <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2">
-              <h2 className="text-xl sm:text-2xl font-serif font-bold text-[#1d1d1f]">
-                {activeBuild.name}
-              </h2>
-              <span className="text-xs font-mono text-[#8e8d8a]">
-                Type: {activeBuild.type}
+            <div className="flex items-center justify-between text-xs font-mono">
+              <div className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                <span className="text-zinc-400 tracking-wider uppercase font-semibold text-[11px]">
+                  ACTIVE SHIPPING FORGE
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-[10px]">
+                  {activeBuild.status}
+                </span>
+                <button
+                  onClick={() => {
+                    setBuildName(activeBuild.name);
+                    setBuildGoal(activeBuild.goal);
+                    setBuildNextStep(activeBuild.nextStep);
+                    setIsEditingBuild(!isEditingBuild);
+                  }}
+                  className="p-1 text-zinc-500 hover:text-zinc-200 transition-colors"
+                  title="Configure project"
+                >
+                  <Edit3 className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+
+            {!isEditingBuild ? (
+              <div className="space-y-3">
+                <div>
+                  <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
+                    {activeBuild.name}
+                  </h2>
+                  <div className="flex items-center gap-2 text-xs font-mono text-zinc-500 mt-1">
+                    <span>Repo: {activeBuild.repo}</span>
+                    <span>•</span>
+                    <span>{activeBuild.type}</span>
+                  </div>
+                </div>
+
+                <p className="text-xs text-zinc-400 leading-relaxed">
+                  <span className="text-zinc-300 font-semibold">Anti-Shiny-Object Target: </span>
+                  {activeBuild.goal}
+                </p>
+
+                {/* Immediate Next Action Card */}
+                <div className="p-3.5 rounded-xl bg-[#15181d] border border-white/[0.06] flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <span className="text-[10px] font-mono text-emerald-400 uppercase tracking-wider block font-semibold">
+                      Next Step to Ship:
+                    </span>
+                    <span className="text-xs text-zinc-200 truncate block mt-0.5">
+                      {activeBuild.nextStep}
+                    </span>
+                  </div>
+
+                  <button
+                    onClick={() => startTimerFor(`Ship: ${activeBuild.nextStep}`, 50)}
+                    className="px-3.5 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-semibold rounded-lg shrink-0 flex items-center gap-1.5 transition-all shadow-[0_0_12px_rgba(16,185,129,0.2)]"
+                  >
+                    <Play className="w-3 h-3 fill-current" />
+                    <span>Build Now</span>
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={handleSaveBuild} className="space-y-3 pt-2 text-xs">
+                <div>
+                  <label className="text-[10px] font-mono text-zinc-400 uppercase">Project Name</label>
+                  <input
+                    type="text"
+                    value={buildName}
+                    onChange={(e) => setBuildName(e.target.value)}
+                    className="w-full h-8 px-2.5 bg-[#15181d] border border-white/[0.08] rounded-lg text-xs text-white mt-1 focus:outline-none focus:border-emerald-500"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] font-mono text-zinc-400 uppercase">Goal (Real users / validation)</label>
+                  <input
+                    type="text"
+                    value={buildGoal}
+                    onChange={(e) => setBuildGoal(e.target.value)}
+                    className="w-full h-8 px-2.5 bg-[#15181d] border border-white/[0.08] rounded-lg text-xs text-white mt-1 focus:outline-none focus:border-emerald-500"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] font-mono text-zinc-400 uppercase">Next Immediate Step</label>
+                  <input
+                    type="text"
+                    value={buildNextStep}
+                    onChange={(e) => setBuildNextStep(e.target.value)}
+                    className="w-full h-8 px-2.5 bg-[#15181d] border border-white/[0.08] rounded-lg text-xs text-white mt-1 focus:outline-none focus:border-emerald-500"
+                    required
+                  />
+                </div>
+                <div className="flex justify-end gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => setIsEditingBuild(false)}
+                    className="px-3 py-1 text-zinc-500 hover:text-zinc-300"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-3.5 py-1 bg-emerald-500 text-black font-semibold rounded-lg"
+                  >
+                    Save Target
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+
+          {/* Card B: Today's Missions Matrix */}
+          <div className="linear-panel p-6 space-y-4">
+            <div className="flex items-center justify-between text-xs font-mono">
+              <div className="flex items-center gap-2">
+                <Activity className="w-3.5 h-3.5 text-cyan-400" />
+                <span className="text-zinc-400 uppercase tracking-wider font-semibold text-[11px]">
+                  TODAY'S BATTLE MISSIONS
+                </span>
+              </div>
+              <span className="text-zinc-500 text-[11px]">
+                {completedMissions} of {missions.length} complete
               </span>
             </div>
 
-            <p className="text-xs sm:text-sm text-[#545350] leading-relaxed">
-              <span className="font-bold text-[#1d1d1f]">Core Goal: </span>
-              {activeBuild.goal}
-            </p>
-
-            {/* Next Immediate Action Callout */}
-            <div className="p-3.5 rounded-2xl bg-[#faf9f6] border border-[#e8e6df] flex items-center justify-between gap-3">
-              <div className="min-w-0">
-                <span className="text-[10px] font-mono uppercase text-emerald-800 font-bold block">
-                  Next Step to Ship:
-                </span>
-                <span className="text-xs font-serif font-medium text-[#1d1d1f] truncate block">
-                  {activeBuild.nextStep}
-                </span>
-              </div>
-
-              <button
-                onClick={() => startLockIn(`Ship: ${activeBuild.nextStep}`)}
-                className="px-3.5 py-1.5 bg-[#1b3b2b] text-white rounded-xl text-xs font-semibold shrink-0 flex items-center gap-1.5 hover:bg-[#28553e]"
-              >
-                <Play className="w-3 h-3 fill-current" />
-                <span>Build Now</span>
-              </button>
-            </div>
-          </div>
-        ) : (
-          <form onSubmit={handleSaveBuild} className="space-y-3 pt-2">
-            <div>
-              <label className="text-[10px] font-mono uppercase text-[#8e8d8a]">Project Name</label>
-              <input
-                type="text"
-                value={buildName}
-                onChange={(e) => setBuildName(e.target.value)}
-                className="w-full px-3 py-2 border rounded-xl text-xs font-sans mt-0.5"
-                required
-              />
-            </div>
-            <div>
-              <label className="text-[10px] font-mono uppercase text-[#8e8d8a]">Goal (Must have real users/validation)</label>
-              <input
-                type="text"
-                value={buildGoal}
-                onChange={(e) => setBuildGoal(e.target.value)}
-                className="w-full px-3 py-2 border rounded-xl text-xs font-sans mt-0.5"
-                required
-              />
-            </div>
-            <div>
-              <label className="text-[10px] font-mono uppercase text-[#8e8d8a]">Next Step to Ship</label>
-              <input
-                type="text"
-                value={buildNextStep}
-                onChange={(e) => setBuildNextStep(e.target.value)}
-                className="w-full px-3 py-2 border rounded-xl text-xs font-sans mt-0.5"
-                required
-              />
-            </div>
-            <div className="flex justify-end gap-2 pt-1">
-              <button
-                type="button"
-                onClick={() => setIsEditingBuild(false)}
-                className="px-3 py-1.5 text-xs text-[#8e8d8a]"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-1.5 bg-[#1b3b2b] text-white text-xs font-semibold rounded-xl"
-              >
-                Update Build Target
-              </button>
-            </div>
-          </form>
-        )}
-
-      </div>
-
-      {/* ── SECTION 2: TODAY'S 3 BATTLE MISSIONS ───────────────────── */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between px-1">
-          <div className="flex items-center gap-2">
-            <span className="text-sm">🎯</span>
-            <span className="text-[11px] font-mono uppercase tracking-widest text-[#8e8d8a] font-bold">
-              Today's Key Missions ({completedMissions}/{missions.length})
-            </span>
-          </div>
-          <span className="text-xs font-mono text-[#8e8d8a]">
-            {todayMinutes}m locked in today
-          </span>
-        </div>
-
-        {/* Mission List */}
-        <div className="divide-y divide-[#f0eee6] bg-white border border-[#e8e6df] rounded-3xl shadow-xs overflow-hidden">
-          {missions.map((m) => (
-            <div
-              key={m.id}
-              className="group p-4 sm:p-5 flex items-center justify-between gap-3 hover:bg-[#faf9f6] transition-colors"
-            >
-              <div className="flex items-center gap-3.5 min-w-0">
-                <button
-                  onClick={() => handleToggleMission(m.id)}
-                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all shrink-0 ${
+            <div className="space-y-2">
+              {missions.map((m) => (
+                <div
+                  key={m.id}
+                  onClick={() => toggleMission(m.id)}
+                  className={`p-3.5 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-3 group ${
                     m.completed
-                      ? 'bg-[#1b3b2b] border-[#1b3b2b] text-white'
-                      : 'border-[#c7c5bc] group-hover:border-[#1b3b2b]'
+                      ? 'bg-white/[0.01] border-white/[0.04] text-zinc-500'
+                      : 'bg-[#15181d] border-white/[0.08] hover:border-white/[0.16] text-zinc-200'
                   }`}
                 >
-                  {m.completed && <Check className="w-3 h-3 stroke-[3]" />}
-                </button>
-
-                <div className="min-w-0">
-                  <div className={`text-sm sm:text-base font-serif font-medium text-[#1d1d1f] truncate ${
-                    m.completed ? 'line-through text-[#8e8d8a]' : ''
-                  }`}>
-                    {m.title}
-                  </div>
-                  <div className="flex items-center gap-2 text-[10px] font-mono text-[#8e8d8a] mt-0.5">
-                    <span className={`px-1.5 py-0.5 rounded ${
-                      m.category === 'Academic' ? 'bg-blue-50 text-blue-700' :
-                      m.category === 'Build' ? 'bg-emerald-50 text-emerald-800' :
-                      'bg-amber-50 text-amber-800'
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className={`w-4 h-4 rounded-full border flex items-center justify-center transition-all shrink-0 ${
+                      m.completed 
+                        ? 'bg-emerald-500 border-emerald-500 text-black' 
+                        : 'border-zinc-600 group-hover:border-zinc-400'
                     }`}>
-                      {m.category}
-                    </span>
-                    <span>•</span>
-                    <span>{m.tag}</span>
+                      {m.completed && <Check className="w-2.5 h-2.5 stroke-[3]" />}
+                    </div>
+
+                    <div className="min-w-0">
+                      <div className={`text-xs sm:text-sm font-medium truncate ${m.completed ? 'line-through text-zinc-500' : 'text-zinc-100'}`}>
+                        {m.title}
+                      </div>
+                      <div className="flex items-center gap-2 text-[10px] font-mono text-zinc-500 mt-0.5">
+                        <span className={`px-1.5 py-0.2 rounded text-[9px] ${
+                          m.category === 'Academic' ? 'bg-blue-500/10 text-blue-400' :
+                          m.category === 'Build' ? 'bg-emerald-500/10 text-emerald-400' :
+                          'bg-amber-500/10 text-amber-400'
+                        }`}>
+                          {m.category}
+                        </span>
+                        <span>•</span>
+                        <span>{m.tag}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 shrink-0">
+                    {!m.completed && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          startTimerFor(m.title, 45);
+                        }}
+                        className="p-1.5 text-zinc-500 hover:text-emerald-400 transition-colors"
+                        title="Lock in on this mission"
+                      >
+                        <Play className="w-3.5 h-3.5 fill-current" />
+                      </button>
+                    )}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        dataService.deleteMission(m.id);
+                      }}
+                      className="p-1.5 text-zinc-600 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
                   </div>
                 </div>
+              ))}
+            </div>
+          </div>
+
+        </div>
+
+        {/* ── RIGHT COLUMN (5 COLS): LOCK-IN TIMER & VAULT ─────────── */}
+        <div className="lg:col-span-5 space-y-5">
+          
+          {/* Card C: The Lock-In HUD (Mini Timer) */}
+          <div className="linear-panel p-6 space-y-4">
+            <div className="flex items-center justify-between text-xs font-mono">
+              <div className="flex items-center gap-2">
+                <Clock className="w-3.5 h-3.5 text-emerald-400" />
+                <span className="text-zinc-400 uppercase tracking-wider font-semibold text-[11px]">
+                  LOCK-IN HUD // FLOW SESSION
+                </span>
+              </div>
+              <span className="text-emerald-400 font-mono text-[11px]">
+                {todayMinutes}m logged
+              </span>
+            </div>
+
+            <div className="p-4 rounded-xl bg-[#15181d] border border-white/[0.06] text-center space-y-2">
+              <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider truncate">
+                {timerTarget}
+              </div>
+              
+              <div className="text-5xl font-mono font-light tracking-tight text-white tabular-nums">
+                {String(displayMins).padStart(2, '0')}:{String(displaySecs).padStart(2, '0')}
               </div>
 
-              <div className="flex items-center gap-2 shrink-0">
-                {!m.completed && (
+              {/* Presets */}
+              <div className="flex items-center justify-center gap-1.5 pt-1">
+                {[25, 45, 60].map((m) => (
                   <button
-                    onClick={() => startLockIn(m.title)}
-                    className="p-1.5 text-[#8e8d8a] hover:text-[#1b3b2b] transition-colors rounded-lg hover:bg-[#f4f3ef]"
-                    title="Lock in on this mission"
+                    key={m}
+                    onClick={() => {
+                      setIsTimerRunning(false);
+                      setTimerMins(m);
+                      setTimerSecondsLeft(m * 60);
+                    }}
+                    className={`px-2.5 py-1 rounded-md text-[10px] font-mono transition-all ${
+                      timerMins === m 
+                        ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' 
+                        : 'bg-white/[0.04] text-zinc-400 hover:text-white'
+                    }`}
                   >
-                    <Play className="w-3.5 h-3.5 fill-current" />
+                    {m}m
                   </button>
-                )}
+                ))}
+              </div>
+
+              {/* Controls */}
+              <div className="flex items-center justify-center gap-2 pt-2">
+                <button
+                  onClick={() => {
+                    setIsTimerRunning(false);
+                    setTimerSecondsLeft(timerMins * 60);
+                  }}
+                  className="p-2 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-zinc-400 hover:text-white"
+                  title="Reset"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                </button>
 
                 <button
-                  onClick={(e) => handleDeleteMission(m.id, e)}
-                  className="p-1.5 text-[#c7c5bc] hover:text-red-600 transition-colors opacity-0 group-hover:opacity-100"
-                  title="Delete mission"
+                  onClick={() => setIsTimerRunning(!isTimerRunning)}
+                  className="px-5 py-2 bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-bold rounded-lg transition-all flex items-center gap-1.5"
                 >
-                  <Trash2 className="w-3.5 h-3.5" />
+                  {isTimerRunning ? <Pause className="w-3.5 h-3.5 fill-current" /> : <Play className="w-3.5 h-3.5 fill-current" />}
+                  <span>{isTimerRunning ? 'Pause' : 'Start Lock-In'}</span>
                 </button>
               </div>
             </div>
-          ))}
-        </div>
-
-        {/* Quick Add Mission Form */}
-        <form onSubmit={handleAddMission} className="p-3 bg-white border border-[#e8e6df] rounded-2xl flex items-center gap-2 text-xs">
-          <input
-            type="text"
-            value={newMissionTitle}
-            onChange={(e) => setNewMissionTitle(e.target.value)}
-            placeholder="Add today's mission (e.g. Pearson Physics sound chapter, ESP32 test)..."
-            className="flex-1 bg-transparent px-2 py-1 focus:outline-none text-[#1d1d1f]"
-          />
-          <select
-            value={newMissionCategory}
-            onChange={(e) => setNewMissionCategory(e.target.value)}
-            className="bg-[#fbfbfa] border border-[#e8e6df] rounded-lg px-2 py-1 text-[11px] font-mono"
-          >
-            <option value="Academic">Academic</option>
-            <option value="Build">Build</option>
-            <option value="Personal">Personal</option>
-          </select>
-          <button
-            type="submit"
-            className="px-3 py-1.5 bg-[#1b3b2b] text-white rounded-lg font-semibold hover:bg-[#28553e]"
-          >
-            Add
-          </button>
-        </form>
-      </div>
-
-      {/* ── SECTION 3: ESTABLISHED DAILY ROUTINE (REAL GCIS SYNC) ─── */}
-      <div className="p-5 rounded-3xl bg-white border border-[#e5e3db] space-y-3">
-        <button
-          onClick={() => setShowRoutine(!showRoutine)}
-          className="w-full flex items-center justify-between text-left"
-        >
-          <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-[#1d1d1f]">
-            <span>🕒 Established Daily Cadence</span>
-            <span className="text-[#8e8d8a] font-normal">(Fajr • GCIS • NextTopper • The Forge)</span>
           </div>
-          {showRoutine ? <ChevronUp className="w-4 h-4 text-[#8e8d8a]" /> : <ChevronDown className="w-4 h-4 text-[#8e8d8a]" />}
-        </button>
 
-        {showRoutine && (
-          <div className="pt-2 divide-y divide-[#f4f3ef] text-xs font-mono animate-fadeIn">
-            {routine.map((block, idx) => (
-              <div key={idx} className="py-2 flex items-center justify-between gap-4">
-                <span className="font-bold text-[#1b3b2b] shrink-0 w-28">{block.time}</span>
-                <span className="font-serif text-[#1d1d1f] font-medium flex-1 truncate">{block.label}</span>
-                <span className="text-[#8e8d8a] text-[11px] hidden sm:inline">{block.desc}</span>
+          {/* Card D: Idea Vault & Flame Lore */}
+          <div className="linear-panel p-6 space-y-4">
+            <div className="flex items-center justify-between text-xs font-mono">
+              <div className="flex items-center gap-2">
+                <Flame className="w-3.5 h-3.5 text-cyan-400" />
+                <span className="text-zinc-400 uppercase tracking-wider font-semibold text-[11px]">
+                  IDEA VAULT & FLAME LORE ({ideas.length})
+                </span>
               </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* ── SECTION 4: IDEA VAULT & FLAME LORE (Brain Dump) ────────── */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between px-1">
-          <div className="flex items-center gap-2">
-            <Flame className="w-4 h-4 text-emerald-700" />
-            <span className="text-[11px] font-mono uppercase tracking-widest text-[#8e8d8a] font-bold">
-              Idea Vault & Flame Lore ({ideas.length})
-            </span>
-          </div>
-
-          <button
-            onClick={() => setShowAddIdea(!showAddIdea)}
-            className="text-xs font-mono text-emerald-800 hover:underline flex items-center gap-1 font-semibold"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>Store New Idea</span>
-          </button>
-        </div>
-
-        {showAddIdea && (
-          <form onSubmit={handleAddIdea} className="p-5 bg-white border border-[#e8e6df] rounded-3xl space-y-3 animate-fadeIn text-xs">
-            <div className="font-mono text-xs uppercase font-bold text-[#1b3b2b]">
-              Capture Fleeting Idea (Don't let it derail your active build!)
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-              <input
-                type="text"
-                placeholder="Idea title / concept..."
-                value={ideaTitle}
-                onChange={(e) => setIdeaTitle(e.target.value)}
-                className="sm:col-span-2 px-3 py-2 border rounded-xl"
-                required
-              />
-              <select
-                value={ideaType}
-                onChange={(e) => setIdeaType(e.target.value)}
-                className="px-3 py-2 border rounded-xl font-mono text-[11px]"
+              <button
+                onClick={() => setShowAddIdea(!showAddIdea)}
+                className="text-[10px] text-emerald-400 hover:underline font-mono"
               >
-                <option value="Product Idea">Product Idea</option>
-                <option value="Robotics">Robotics / Hardware</option>
-                <option value="Creative">Flame Dragon Lore</option>
-                <option value="Study Trick">Study Trick / Formula</option>
-              </select>
+                + New Idea
+              </button>
+            </div>
+
+            {showAddIdea && (
+              <form onSubmit={handleAddIdea} className="p-3 bg-[#15181d] border border-white/[0.08] rounded-xl space-y-2 text-xs animate-fadeIn">
+                <input
+                  type="text"
+                  placeholder="Idea or story title..."
+                  value={ideaTitle}
+                  onChange={(e) => setIdeaTitle(e.target.value)}
+                  className="w-full h-7 px-2 bg-black/40 border border-white/[0.08] rounded text-white text-xs"
+                  required
+                />
+                <textarea
+                  rows={2}
+                  placeholder="Notes, pinouts, or lore..."
+                  value={ideaNotes}
+                  onChange={(e) => setIdeaNotes(e.target.value)}
+                  className="w-full p-2 bg-black/40 border border-white/[0.08] rounded text-white text-xs font-mono"
+                />
+                <div className="flex justify-end gap-2">
+                  <button type="button" onClick={() => setShowAddIdea(false)} className="text-zinc-500 text-[10px]">Cancel</button>
+                  <button type="submit" className="px-2.5 py-1 bg-emerald-500 text-black rounded text-[10px] font-bold">Save</button>
+                </div>
+              </form>
+            )}
+
+            <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+              {ideas.map((idea) => (
+                <div
+                  key={idea.id}
+                  className="p-3 rounded-xl bg-[#15181d] border border-white/[0.06] space-y-1 relative group"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-[9px] font-mono uppercase px-1.5 py-0.2 rounded bg-white/[0.06] text-zinc-400">
+                      {idea.type}
+                    </span>
+                    <button
+                      onClick={() => dataService.deleteIdea(idea.id)}
+                      className="text-zinc-600 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </button>
+                  </div>
+                  <div className="font-semibold text-xs text-zinc-200">
+                    {idea.title}
+                  </div>
+                  <p className="text-[11px] text-zinc-400 line-clamp-2 leading-relaxed">
+                    {idea.notes}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Card E: Live Scratchpad */}
+          <div className="linear-panel p-6 space-y-2">
+            <div className="flex items-center justify-between text-xs font-mono text-zinc-400">
+              <span className="font-semibold text-[11px] uppercase flex items-center gap-1.5">
+                <Edit3 className="w-3 h-3 text-emerald-400" />
+                KAISER SCRATCHPAD
+              </span>
+              <span className="text-[10px] text-zinc-600">Auto-saves live</span>
             </div>
             <textarea
-              rows={3}
-              placeholder="Notes, pinouts, mechanics, or character scenarios..."
-              value={ideaNotes}
-              onChange={(e) => setIdeaNotes(e.target.value)}
-              className="w-full px-3 py-2 border rounded-xl font-mono text-xs"
+              rows={4}
+              value={scratchpad}
+              onChange={handleScratchpadChange}
+              placeholder="Fast scratchpad for math equations, ESP32 pinouts, or quick thoughts..."
+              className="w-full text-xs font-mono text-zinc-300 bg-[#15181d] border border-white/[0.06] rounded-xl p-3 focus:outline-none focus:border-emerald-500/50 resize-none leading-relaxed placeholder:text-zinc-600"
             />
-            <div className="flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setShowAddIdea(false)}
-                className="px-3 py-1 text-[#8e8d8a]"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-1.5 bg-[#1b3b2b] text-white rounded-xl font-semibold"
-              >
-                Save to Vault
-              </button>
-            </div>
-          </form>
-        )}
+          </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {ideas.map((idea) => (
-            <div
-              key={idea.id}
-              className="p-4 bg-white border border-[#e8e6df] rounded-2xl shadow-xs space-y-2 flex flex-col justify-between"
-            >
-              <div className="space-y-1">
-                <div className="flex items-center justify-between">
-                  <span className="text-[9px] font-mono uppercase px-1.5 py-0.5 rounded bg-[#f4f3ef] text-[#8e8d8a] font-bold">
-                    {idea.type}
-                  </span>
-                  <button
-                    onClick={() => handleDeleteIdea(idea.id)}
-                    className="text-[#c7c5bc] hover:text-red-600 transition-colors"
-                  >
-                    <Trash2 className="w-3 h-3" />
-                  </button>
-                </div>
-                <h3 className="font-serif font-bold text-sm text-[#1d1d1f]">
-                  {idea.title}
-                </h3>
-                <p className="text-xs text-[#545350] line-clamp-3 leading-relaxed font-sans">
-                  {idea.notes}
-                </p>
-              </div>
-            </div>
-          ))}
         </div>
-      </div>
 
-      {/* ── SECTION 5: LIVE SCRATCHPAD (Brain Dump) ────────────────── */}
-      <div className="p-5 bg-white border border-[#e8e6df] rounded-3xl shadow-xs space-y-2">
-        <div className="flex items-center justify-between text-xs font-mono uppercase text-[#8e8d8a]">
-          <span className="font-bold text-[#1d1d1f] flex items-center gap-1.5">
-            <Edit3 className="w-3.5 h-3.5 text-[#1b3b2b]" />
-            Kaiser Scratchpad (Auto-saves live)
-          </span>
-          <span>Notes & Working Memory</span>
-        </div>
-        <textarea
-          rows={5}
-          value={scratchpad}
-          onChange={handleScratchpadChange}
-          placeholder="Jot down quick word problem equations, ESP32 notes, or thoughts..."
-          className="w-full text-xs font-mono text-[#1d1d1f] bg-transparent focus:outline-none resize-none leading-relaxed placeholder:text-[#a09e97]"
-        />
       </div>
-
-      {/* ── LOCK-IN CHAMBER MODAL ──────────────────────────────────── */}
-      <LockInModal
-        isOpen={isLockInOpen}
-        onClose={() => setIsLockInOpen(false)}
-        defaultMission={lockInTarget}
-        onComplete={() => {
-          setIsLockInOpen(false);
-          setSessions(dataService.getSessions());
-        }}
-      />
 
     </div>
   );
