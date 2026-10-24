@@ -1,24 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Rocket, FolderGit2, Lightbulb, Terminal, Plus, Trash2, ExternalLink, CheckCircle2, Clock, Cpu } from 'lucide-react';
+import { FolderGit2, Terminal, Plus, Trash2, ExternalLink, CheckCircle2 } from 'lucide-react';
 import { journalStorage } from '../services/journalStorage';
 import { soundEngine } from '../services/soundEngine';
-import ActiveForgeCard from '../components/journal/ActiveForgeCard';
-import IdeaVaultCard from '../components/journal/IdeaVaultCard';
 import ScratchpadCard from '../components/journal/ScratchpadCard';
-import RoboticsToolboxCard from '../components/journal/RoboticsToolboxCard';
 import WinsPage from './WinsPage';
 
 const TABS = [
-  { id: 'active', label: 'Active Shipping Forge', icon: Rocket },
   { id: 'projects', label: 'Projects & Builds', icon: FolderGit2 },
-  { id: 'hardware', label: 'Robotics & Hardware', icon: Cpu },
-  { id: 'ideas', label: 'Idea Vault', icon: Lightbulb },
   { id: 'scratchpad', label: 'Dev Scratchpad', icon: Terminal },
   { id: 'wins', label: 'Shipped Wins', icon: CheckCircle2 }
 ];
 
 const ProjectsHub = () => {
-  const [activeTab, setActiveTab] = useState('active');
+  const [activeTab, setActiveTab] = useState('projects');
   const [accentColor, setAccentColor] = useState(journalStorage.getAccentColor());
   const [projects, setProjects] = useState(journalStorage.getProjectsList());
 
@@ -84,7 +78,7 @@ const ProjectsHub = () => {
           Projects & Builds
         </h1>
         <p className="text-sm text-[var(--text-secondary)] mt-1">
-          Lock in on ONE product until it ships, track web/robotics builds, and park shiny new distractions.
+          Track personal web apps, coding tools, and algorithms from inception to shipping.
         </p>
       </div>
 
@@ -119,16 +113,6 @@ const ProjectsHub = () => {
 
       {/* Tab Content Display */}
       <div>
-        {activeTab === 'active' && (
-          <div className="space-y-6">
-            <ActiveForgeCard accentColor={accentColor} />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <IdeaVaultCard accentColor={accentColor} />
-              <ScratchpadCard />
-            </div>
-          </div>
-        )}
-
         {activeTab === 'projects' && (
           <div className="space-y-6">
             {/* Top Toolbar */}
@@ -226,10 +210,6 @@ const ProjectsHub = () => {
             </div>
           </div>
         )}
-
-        {activeTab === 'hardware' && <RoboticsToolboxCard accentColor={accentColor} />}
-
-        {activeTab === 'ideas' && <IdeaVaultCard accentColor={accentColor} />}
 
         {activeTab === 'scratchpad' && <ScratchpadCard />}
 

@@ -9,8 +9,6 @@ import LockInTimer from '../components/journal/LockInTimer';
 import DailyHomeworkCard from '../components/journal/DailyHomeworkCard';
 import DailyReadinessCard from '../components/journal/DailyReadinessCard';
 import DisciplineSummaryCard from '../components/journal/DisciplineSummaryCard';
-import ActiveForgeCard from '../components/journal/ActiveForgeCard';
-import IdeaVaultCard from '../components/journal/IdeaVaultCard';
 import DailyReflection from '../components/journal/DailyReflection';
 
 const Dashboard = () => {
@@ -112,15 +110,14 @@ const Dashboard = () => {
       {/* ── SECTION 6: 2-COLUMN DAILY READINESS & BOTTOM GRID ────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
-        {/* Left Column (6 cols): Hydration, Night Bag Pack & Discipline */}
+        {/* Left Column (6 cols): Hydration & Nightly Bag Readiness */}
         <div className="lg:col-span-6 space-y-6">
           <DailyReadinessCard dateKey={dateKey} accentColor={accentColor} />
-          <DisciplineSummaryCard dateKey={dateKey} accentColor={accentColor} />
         </div>
 
-        {/* Right Column (6 cols): Active Shipping Forge & Reflection */}
+        {/* Right Column (6 cols): Discipline Standard & Evening Reflection */}
         <div className="lg:col-span-6 space-y-6">
-          <ActiveForgeCard accentColor={accentColor} />
+          <DisciplineSummaryCard dateKey={dateKey} accentColor={accentColor} />
           <DailyReflection dateKey={dateKey} accentColor={accentColor} />
         </div>
 

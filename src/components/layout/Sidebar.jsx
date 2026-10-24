@@ -70,7 +70,7 @@ const Sidebar = ({ isOpen, onClose }) => {
     { 
       to: '/projects', 
       label: 'Projects & Builds', 
-      subtitle: 'Active Ship & Dev Log', 
+      subtitle: 'Code, Builds & Wins', 
       icon: Rocket 
     },
     { 

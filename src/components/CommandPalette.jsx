@@ -125,7 +125,7 @@ const CommandPalette = ({ isOpen, onClose }) => {
     {
       id: 'nav_projects',
       title: 'Jump to Projects & Builds',
-      subtitle: 'Active shipping forge, idea vault, and scratchpad',
+      subtitle: 'Web apps, code builds, and scratchpad',
       icon: Rocket,
       color: 'text-indigo-400',
       action: () => {

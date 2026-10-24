@@ -15,7 +15,6 @@ const DisciplinePage = () => {
   const [realityLines, setRealityLines] = useState(journalStorage.getRealityCheckLines());
   const [countdowns, setCountdowns] = useState(journalStorage.getExamCountdowns());
   const [rankInfo, setRankInfo] = useState(journalStorage.getDisciplineRank());
-  const [duel, setDuel] = useState(journalStorage.getYesterdayVsToday());
   const [accentColor, setAccentColor] = useState(journalStorage.getAccentColor());
   
   // Emergency Reality Mode
@@ -46,7 +45,6 @@ const DisciplinePage = () => {
       setRealityLines(journalStorage.getRealityCheckLines());
       setCountdowns(journalStorage.getExamCountdowns());
       setRankInfo(journalStorage.getDisciplineRank());
-      setDuel(journalStorage.getYesterdayVsToday());
       setAccentColor(journalStorage.getAccentColor());
     };
     window.addEventListener('journal_data_update', handleUpdate);
@@ -275,86 +273,42 @@ const DisciplinePage = () => {
         })}
       </div>
 
-      {/* ── DISCIPLINE TIER & TODAY VS YESTERDAY DUEL ──────────────── */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Tier Card */}
-        <div className="journal-card p-5 space-y-3 bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)]">
-          <div className="flex items-center justify-between pb-2 border-b border-[var(--border-subtle)]">
-            <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-1.5">
-              <Award className="w-4 h-4 text-amber-400" />
-              Discipline Tier
-            </span>
-            <span className="text-xs font-mono font-bold px-2 py-0.5 rounded border border-[var(--border-subtle)]" style={{ color: rankInfo.color }}>
-              {rankInfo.rank}
-            </span>
-          </div>
+      {/* ── DISCIPLINE TIER & CONSISTENCY PROGRESSION ───────────── */}
+      <div className="journal-card p-5 space-y-3 bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)]">
+        <div className="flex items-center justify-between pb-2 border-b border-[var(--border-subtle)]">
+          <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-1.5">
+            <Award className="w-4 h-4 text-amber-400" />
+            Discipline Tier Progression
+          </span>
+          <span className="text-xs font-mono font-bold px-2 py-0.5 rounded border border-[var(--border-subtle)]" style={{ color: rankInfo.color }}>
+            {rankInfo.rank}
+          </span>
+        </div>
 
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="text-xl sm:text-2xl font-bold font-mono text-[var(--text-primary)]">
-                {rankInfo.percent}%
-              </div>
-              <span className="text-xs text-[var(--text-muted)]">7-Day Standard Adherence</span>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <div className="text-xl sm:text-2xl font-bold font-mono text-[var(--text-primary)]">
+              {rankInfo.percent}%
             </div>
-            <div className="text-right">
-              <span className="text-xs text-[var(--text-muted)] block">Next Tier:</span>
-              <span className="text-xs font-bold text-[var(--text-secondary)]">{rankInfo.nextRank}</span>
-            </div>
+            <span className="text-xs text-[var(--text-muted)]">7-Day Consistency (Past 35 Daily Standards)</span>
           </div>
-
-          <div className="space-y-1">
-            <div className="w-full h-2 bg-[var(--bg-surface)] rounded-full overflow-hidden border border-[var(--border-subtle)]">
-              <div 
-                className="h-full rounded-full transition-all duration-300"
-                style={{ width: `${rankInfo.progressInTier}%`, backgroundColor: rankInfo.color }}
-              />
-            </div>
-            <div className="flex justify-between text-[10px] text-[var(--text-muted)] font-mono">
-              <span>Tier Progress</span>
-              <span>{rankInfo.progressInTier}%</span>
-            </div>
+          <div className="text-left sm:text-right">
+            <span className="text-xs text-[var(--text-muted)] block">Next Tier Target:</span>
+            <span className="text-xs font-bold text-[var(--text-primary)]">{rankInfo.nextRank}</span>
           </div>
         </div>
 
-        {/* Today vs Yesterday Duel Card */}
-        <div className="journal-card p-5 space-y-3 bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)]">
-          <div className="flex items-center justify-between pb-2 border-b border-[var(--border-subtle)]">
-            <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-1.5">
-              <Flame className="w-4 h-4 text-rose-400" />
-              Duel with Yesterday
-            </span>
-            <span className={`text-[11px] font-mono font-bold px-2 py-0.5 rounded ${
-              duel.checksDiff >= 0 ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'
-            }`}>
-              {duel.checksDiff >= 0 ? `+${duel.checksDiff} Standards` : `${duel.checksDiff} Standards`}
-            </span>
+        <div className="space-y-1 pt-1">
+          <div className="w-full h-2.5 bg-[var(--bg-surface)] rounded-full overflow-hidden border border-[var(--border-subtle)]">
+            <div 
+              className="h-full rounded-full transition-all duration-300"
+              style={{ width: `${rankInfo.progressInTier}%`, backgroundColor: rankInfo.color }}
+            />
           </div>
-
-          <div className="grid grid-cols-2 gap-3 text-center">
-            <div className="p-2.5 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)]">
-              <span className="text-[10px] font-mono text-[var(--text-muted)] uppercase block">Today</span>
-              <div className="text-lg font-bold font-mono text-[var(--text-primary)] mt-0.5">
-                {duel.todayChecks}/5
-              </div>
-              <span className="text-[11px] text-sky-400 font-mono">{duel.todayStudyHours}h study</span>
-            </div>
-
-            <div className="p-2.5 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)]">
-              <span className="text-[10px] font-mono text-[var(--text-muted)] uppercase block">Yesterday</span>
-              <div className="text-lg font-bold font-mono text-[var(--text-secondary)] mt-0.5">
-                {duel.yesterdayChecks}/5
-              </div>
-              <span className="text-[11px] text-[var(--text-muted)] font-mono">{duel.yesterdayStudyHours}h study</span>
-            </div>
+          <div className="flex justify-between text-[10px] text-[var(--text-muted)] font-mono">
+            <span>Tier Progress</span>
+            <span>{rankInfo.progressInTier}%</span>
           </div>
-
-          <p className="text-[11px] text-[var(--text-secondary)] italic text-center">
-            {duel.checksDiff > 0 
-              ? "🔥 You're beating yesterday's volume. Keep your foot on the gas."
-              : duel.checksDiff === 0 
-                ? "⚡ Tied with yesterday. Finish your next study block to win."
-                : "⚠️ Yesterday outworked you today. Lock in and close the gap."}
-          </p>
         </div>
       </div>
 
