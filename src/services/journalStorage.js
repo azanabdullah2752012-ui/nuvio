@@ -13,7 +13,12 @@ const STORAGE_KEYS = {
   HABITS: 'journal_habits_list',
   HABIT_LOGS: 'journal_habit_logs',
   REFLECTIONS: 'journal_reflections',
-  ROUTINE_TYPE_OVERRIDE: 'journal_routine_type_override'
+  ROUTINE_TYPE_OVERRIDE: 'journal_routine_type_override',
+  MARKS: 'journal_marks_records',
+  GOALS: 'journal_academic_goals',
+  WEEKLY_REVIEWS: 'journal_weekly_reviews',
+  WINS: 'journal_small_wins',
+  MISTAKES: 'journal_mistakes_notebook'
 };
 
 // Default Accent Color chosen by Kaiser
@@ -406,19 +411,156 @@ export const journalStorage = {
     window.dispatchEvent(new Event('journal_data_update'));
   },
 
+  // ── MARKS & EXAM RECORDS ──────────────────────────────────────────
+  getMarks() {
+    return safeJsonParse(STORAGE_KEYS.MARKS, []);
+  },
+
+  addMark(record) {
+    const list = this.getMarks();
+    const id = 'm_' + Date.now().toString(36);
+    const percentage = Math.round((Number(record.marksObtained) / Number(record.totalMarks)) * 100);
+    const newRecord = { ...record, id, percentage, createdAt: new Date().toISOString() };
+    list.unshift(newRecord);
+    localStorage.setItem(STORAGE_KEYS.MARKS, JSON.stringify(list));
+    window.dispatchEvent(new Event('journal_data_update'));
+    return newRecord;
+  },
+
+  deleteMark(id) {
+    let list = this.getMarks();
+    list = list.filter(m => m.id !== id);
+    localStorage.setItem(STORAGE_KEYS.MARKS, JSON.stringify(list));
+    window.dispatchEvent(new Event('journal_data_update'));
+  },
+
+  // ── GOALS & TARGETS (EXPLICITLY LABELED AS GOALS, NOT PREDICTIONS) ──
+  getGoals() {
+    const defaultGoals = [
+      { id: 'g_term', title: 'Academic Year Target (90%+)', target: '90%+', timeframe: 'Finals', category: 'Academic', status: 'In Progress', note: 'Milestone target to work toward, not a prediction' },
+      { id: 'g_equations', title: 'Master Converting Word Problems to Equations', target: 'Daily practice drills', timeframe: 'Ongoing', category: 'Maths / JEE', status: 'Active', note: 'Practice isolating variables and relationships first' },
+      { id: 'g_ship', title: 'Build & Ship Real Usable Software', target: 'Practical projects with real utility', timeframe: '2026-2027', category: 'Building', status: 'Active', note: 'Focus on shipping & iteration' }
+    ];
+    return safeJsonParse(STORAGE_KEYS.GOALS, defaultGoals);
+  },
+
+  addGoal(goal) {
+    const list = this.getGoals();
+    const id = 'g_' + Date.now().toString(36);
+    const newGoal = { ...goal, id, status: 'In Progress', createdAt: new Date().toISOString() };
+    list.push(newGoal);
+    localStorage.setItem(STORAGE_KEYS.GOALS, JSON.stringify(list));
+    window.dispatchEvent(new Event('journal_data_update'));
+    return newGoal;
+  },
+
+  deleteGoal(id) {
+    let list = this.getGoals();
+    list = list.filter(g => g.id !== id);
+    localStorage.setItem(STORAGE_KEYS.GOALS, JSON.stringify(list));
+    window.dispatchEvent(new Event('journal_data_update'));
+  },
+
+  // ── WEEKLY REVIEWS (5-MINUTE PROTOCOL) ───────────────────────────
+  getWeeklyReviews() {
+    return safeJsonParse(STORAGE_KEYS.WEEKLY_REVIEWS, []);
+  },
+
+  saveWeeklyReview(review) {
+    const list = this.getWeeklyReviews();
+    const id = review.id || 'wr_' + Date.now().toString(36);
+    const newReview = { ...review, id, date: review.date || getTodayKey() };
+    const existingIndex = list.findIndex(r => r.id === id);
+    if (existingIndex >= 0) {
+      list[existingIndex] = newReview;
+    } else {
+      list.unshift(newReview);
+    }
+    localStorage.setItem(STORAGE_KEYS.WEEKLY_REVIEWS, JSON.stringify(list));
+    window.dispatchEvent(new Event('journal_data_update'));
+    return newReview;
+  },
+
+  deleteWeeklyReview(id) {
+    let list = this.getWeeklyReviews();
+    list = list.filter(r => r.id !== id);
+    localStorage.setItem(STORAGE_KEYS.WEEKLY_REVIEWS, JSON.stringify(list));
+    window.dispatchEvent(new Event('journal_data_update'));
+  },
+
+  // ── SMALL WINS & SHIPPED VAULT ────────────────────────────────────
+  getWins() {
+    return safeJsonParse(STORAGE_KEYS.WINS, []);
+  },
+
+  addWin(win) {
+    const list = this.getWins();
+    const id = 'win_' + Date.now().toString(36);
+    const newWin = { ...win, id, date: win.date || getTodayKey() };
+    list.unshift(newWin);
+    localStorage.setItem(STORAGE_KEYS.WINS, JSON.stringify(list));
+    window.dispatchEvent(new Event('journal_data_update'));
+    return newWin;
+  },
+
+  deleteWin(id) {
+    let list = this.getWins();
+    list = list.filter(w => w.id !== id);
+    localStorage.setItem(STORAGE_KEYS.WINS, JSON.stringify(list));
+    window.dispatchEvent(new Event('journal_data_update'));
+  },
+
+  // ── MISTAKE NOTEBOOK (TAGGED BY ERROR TYPE) ───────────────────────
+  getMistakes() {
+    return safeJsonParse(STORAGE_KEYS.MISTAKES, []);
+  },
+
+  addMistake(mistake) {
+    const list = this.getMistakes();
+    const id = 'mist_' + Date.now().toString(36);
+    const newMistake = { ...mistake, id, date: mistake.date || getTodayKey(), reviewed: false };
+    list.unshift(newMistake);
+    localStorage.setItem(STORAGE_KEYS.MISTAKES, JSON.stringify(list));
+    window.dispatchEvent(new Event('journal_data_update'));
+    return newMistake;
+  },
+
+  toggleMistakeReviewed(id) {
+    const list = this.getMistakes();
+    const item = list.find(m => m.id === id);
+    if (item) {
+      item.reviewed = !item.reviewed;
+      localStorage.setItem(STORAGE_KEYS.MISTAKES, JSON.stringify(list));
+      window.dispatchEvent(new Event('journal_data_update'));
+    }
+  },
+
+  deleteMistake(id) {
+    let list = this.getMistakes();
+    list = list.filter(m => m.id !== id);
+    localStorage.setItem(STORAGE_KEYS.MISTAKES, JSON.stringify(list));
+    window.dispatchEvent(new Event('journal_data_update'));
+  },
+
   // ── BACKUP & DATA PORTABILITY (EXPORT / IMPORT JSON) ──────────────
   exportAllData() {
     const exportData = {
       app: 'Journal',
-      version: '1.0.0',
+      version: '1.2.0',
       exportedAt: new Date().toISOString(),
       accentColor: this.getAccentColor(),
+      theme: this.getTheme(),
       habits: this.getHabits(),
       habitLogs: safeJsonParse(STORAGE_KEYS.HABIT_LOGS, {}),
       routineLogs: safeJsonParse(STORAGE_KEYS.ROUTINE_LOGS, {}),
       routineTypeOverrides: safeJsonParse(STORAGE_KEYS.ROUTINE_TYPE_OVERRIDE, {}),
       priorities: safeJsonParse(STORAGE_KEYS.PRIORITIES, {}),
-      reflections: safeJsonParse(STORAGE_KEYS.REFLECTIONS, {})
+      reflections: safeJsonParse(STORAGE_KEYS.REFLECTIONS, {}),
+      marks: this.getMarks(),
+      goals: this.getGoals(),
+      weeklyReviews: this.getWeeklyReviews(),
+      wins: this.getWins(),
+      mistakes: this.getMistakes()
     };
 
     const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
@@ -440,16 +582,21 @@ export const journalStorage = {
       }
 
       if (data.accentColor) localStorage.setItem(STORAGE_KEYS.ACCENT_COLOR, data.accentColor);
+      if (data.theme) localStorage.setItem(STORAGE_KEYS.THEME, data.theme);
       if (data.habits) localStorage.setItem(STORAGE_KEYS.HABITS, JSON.stringify(data.habits));
       if (data.habitLogs) localStorage.setItem(STORAGE_KEYS.HABIT_LOGS, JSON.stringify(data.habitLogs));
       if (data.routineLogs) localStorage.setItem(STORAGE_KEYS.ROUTINE_LOGS, JSON.stringify(data.routineLogs));
       if (data.routineTypeOverrides) localStorage.setItem(STORAGE_KEYS.ROUTINE_TYPE_OVERRIDE, JSON.stringify(data.routineTypeOverrides));
       if (data.priorities) localStorage.setItem(STORAGE_KEYS.PRIORITIES, JSON.stringify(data.priorities));
       if (data.reflections) localStorage.setItem(STORAGE_KEYS.REFLECTIONS, JSON.stringify(data.reflections));
+      if (data.marks) localStorage.setItem(STORAGE_KEYS.MARKS, JSON.stringify(data.marks));
+      if (data.goals) localStorage.setItem(STORAGE_KEYS.GOALS, JSON.stringify(data.goals));
+      if (data.weeklyReviews) localStorage.setItem(STORAGE_KEYS.WEEKLY_REVIEWS, JSON.stringify(data.weeklyReviews));
+      if (data.wins) localStorage.setItem(STORAGE_KEYS.WINS, JSON.stringify(data.wins));
+      if (data.mistakes) localStorage.setItem(STORAGE_KEYS.MISTAKES, JSON.stringify(data.mistakes));
 
-      if (data.accentColor) {
-        this.applyAccentColor(data.accentColor);
-      }
+      if (data.accentColor) this.applyAccentColor(data.accentColor);
+      if (data.theme) this.applyTheme(data.theme);
 
       window.dispatchEvent(new Event('journal_data_update'));
       return { success: true };

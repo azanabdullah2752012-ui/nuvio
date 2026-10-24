@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { 
-  Calendar, Clock, Flame, Sliders, 
-  Sun, Moon, Shield, RefreshCw, X 
+  Calendar, Clock, Flame, Target, Sparkles, 
+  Award, BookOpen, Sliders, Moon, Sun, Shield, RefreshCw, X 
 } from 'lucide-react';
 import { journalStorage, getTodayKey } from '../../services/journalStorage';
 
-const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
+const Sidebar = ({ isOpen, onClose }) => {
   const [theme, setTheme] = useState(journalStorage.getTheme());
   const [accentColor, setAccentColor] = useState(journalStorage.getAccentColor());
   const [routineType, setRoutineType] = useState(journalStorage.getRoutineType());
@@ -43,11 +43,17 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
     setRoutineType(next);
   };
 
-  const navLinks = [
+  const dailyLinks = [
     { to: '/', label: 'Today', icon: Calendar },
-    { to: '/routine', label: 'Routine Schedule', icon: Clock },
-    { to: '/habits', label: 'Habit Tracker', icon: Flame },
-    { to: '/settings', label: 'Settings & Backup', icon: Sliders }
+    { to: '/routine', label: 'Routine Timeline', icon: Clock },
+    { to: '/habits', label: 'Habit Tracker', icon: Flame }
+  ];
+
+  const reflectionLinks = [
+    { to: '/goals', label: 'Goals & Marks', icon: Target },
+    { to: '/review', label: 'Weekly Review', icon: Sparkles },
+    { to: '/wins', label: 'Small Wins Vault', icon: Award },
+    { to: '/mistakes', label: 'Mistake Notebook', icon: BookOpen }
   ];
 
   return (
@@ -62,12 +68,12 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
 
       {/* Sidebar Container */}
       <aside 
-        className={`fixed lg:sticky top-0 left-0 z-40 h-screen w-64 flex flex-col justify-between p-5 border-r border-[var(--border-subtle)] bg-[var(--bg-surface)] transition-transform duration-200 ease-out lg:translate-x-0 ${
+        className={`fixed lg:sticky top-0 left-0 z-40 h-screen w-64 flex flex-col justify-between p-5 border-r border-[var(--border-subtle)] bg-[var(--bg-surface)] transition-transform duration-200 ease-out lg:translate-x-0 overflow-y-auto ${
           isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full lg:translate-x-0'
         }`}
       >
         {/* Top: Identity & Navigation */}
-        <div className="space-y-6">
+        <div className="space-y-5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div 
@@ -95,7 +101,7 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
           {/* Routine Mode Switcher */}
           <div className="p-3 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] flex items-center justify-between">
             <div>
-              <span className="text-[11px] uppercase tracking-wider text-[var(--text-muted)] font-medium block">
+              <span className="text-[10px] uppercase tracking-wider text-[var(--text-muted)] font-medium block">
                 Schedule Mode
               </span>
               <span className="text-xs font-semibold capitalize text-[var(--text-primary)]">
@@ -111,9 +117,12 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
             </button>
           </div>
 
-          {/* Navigation Links to Dedicated Pages */}
-          <nav className="space-y-1">
-            {navLinks.map((item) => {
+          {/* Group 1: Daily Flow */}
+          <div className="space-y-1">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)] px-3 block mb-1">
+              Daily Flow
+            </span>
+            {dailyLinks.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.to || (item.to !== '/' && location.pathname.startsWith(item.to));
 
@@ -122,53 +131,107 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
                   key={item.to}
                   to={item.to}
                   onClick={onClose}
-                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                  className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-colors ${
                     isActive
                       ? 'bg-[var(--bg-surface-elevated)] text-[var(--text-primary)] font-semibold shadow-sm'
                       : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface-hover)]'
                   }`}
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2.5">
                     <Icon 
-                      className="w-4 h-4" 
+                      className="w-4 h-4 shrink-0" 
                       style={isActive ? { color: accentColor } : {}}
                     />
                     <span>{item.label}</span>
                   </div>
                   {isActive && (
                     <div 
-                      className="w-1.5 h-1.5 rounded-full" 
+                      className="w-1.5 h-1.5 rounded-full shrink-0" 
                       style={{ backgroundColor: accentColor }}
                     />
                   )}
                 </NavLink>
               );
             })}
-          </nav>
+          </div>
+
+          {/* Group 2: Mastery & Reflection */}
+          <div className="space-y-1">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)] px-3 block mb-1">
+              Mastery & Review
+            </span>
+            {reflectionLinks.map((item) => {
+              const Icon = item.icon;
+              const isActive = location.pathname.startsWith(item.to);
+
+              return (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  onClick={onClose}
+                  className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-colors ${
+                    isActive
+                      ? 'bg-[var(--bg-surface-elevated)] text-[var(--text-primary)] font-semibold shadow-sm'
+                      : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface-hover)]'
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <Icon 
+                      className="w-4 h-4 shrink-0" 
+                      style={isActive ? { color: accentColor } : {}}
+                    />
+                    <span>{item.label}</span>
+                  </div>
+                  {isActive && (
+                    <div 
+                      className="w-1.5 h-1.5 rounded-full shrink-0" 
+                      style={{ backgroundColor: accentColor }}
+                    />
+                  )}
+                </NavLink>
+              );
+            })}
+          </div>
         </div>
 
-        {/* Bottom: Theme Toggle & Privacy Tag */}
-        <div className="pt-4 border-t border-[var(--border-subtle)] space-y-2">
+        {/* Bottom: Settings & Theme Toggle */}
+        <div className="pt-4 border-t border-[var(--border-subtle)] space-y-1.5 shrink-0">
+          {/* Settings NavLink */}
+          <NavLink
+            to="/settings"
+            onClick={onClose}
+            className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-colors ${
+              location.pathname === '/settings'
+                ? 'bg-[var(--bg-surface-elevated)] text-[var(--text-primary)] font-semibold'
+                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface-hover)]'
+            }`}
+          >
+            <div className="flex items-center gap-2.5">
+              <Sliders className="w-4 h-4 text-[var(--text-secondary)] shrink-0" />
+              <span>Settings & Privacy</span>
+            </div>
+          </NavLink>
+
           {/* Theme Toggle Button */}
           <button
             onClick={toggleTheme}
-            className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface-hover)] transition-colors"
+            className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface-hover)] transition-colors"
           >
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2.5">
               {theme === 'dark' ? (
-                <Moon className="w-4 h-4 text-sky-400" />
+                <Moon className="w-4 h-4 text-sky-400 shrink-0" />
               ) : (
-                <Sun className="w-4 h-4 text-amber-500" />
+                <Sun className="w-4 h-4 text-amber-500 shrink-0" />
               )}
               <span className="capitalize">{theme === 'dark' ? 'Dark Theme' : 'Light Theme'}</span>
             </div>
-            <span className="text-[11px] text-[var(--text-muted)] font-mono">Toggle</span>
+            <span className="text-[10px] text-[var(--text-muted)] font-mono">Toggle</span>
           </button>
 
-          {/* Private Local Storage Badge */}
-          <div className="px-3.5 py-2 text-[11px] text-[var(--text-muted)] flex items-center gap-2">
-            <Shield className="w-3.5 h-3.5 text-emerald-500" />
-            <span>100% Local & Private</span>
+          {/* Privacy Badge */}
+          <div className="px-3 py-1.5 text-[10px] text-[var(--text-muted)] flex items-center gap-2">
+            <Shield className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+            <span>100% Local Browser Storage</span>
           </div>
         </div>
       </aside>

@@ -4,10 +4,14 @@ import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 // Layout
 import Layout from './components/layout/Layout';
 
-// Separate Dedicated Pages
+// Dedicated Pages
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const RoutinePage = lazy(() => import('./pages/RoutinePage'));
 const HabitsPage = lazy(() => import('./pages/HabitsPage'));
+const GoalsPage = lazy(() => import('./pages/GoalsPage'));
+const WeeklyReviewPage = lazy(() => import('./pages/WeeklyReviewPage'));
+const WinsPage = lazy(() => import('./pages/WinsPage'));
+const MistakesPage = lazy(() => import('./pages/MistakesPage'));
 const SettingsPage = lazy(() => import('./pages/SettingsPage'));
 
 // Clean Loading State
@@ -26,17 +30,29 @@ function App() {
       <Suspense fallback={<AppLoader />}>
         <Routes>
           <Route element={<Layout />}>
-            {/* Today Command Deck */}
+            {/* 1. Today Overview */}
             <Route path="/" element={<Dashboard />} />
             <Route path="/today" element={<Dashboard />} />
 
-            {/* Dedicated Routine Timeline Page */}
+            {/* 2. Routine Schedule */}
             <Route path="/routine" element={<RoutinePage />} />
 
-            {/* Dedicated Habit Tracker Page */}
+            {/* 3. Habit Tracker */}
             <Route path="/habits" element={<HabitsPage />} />
 
-            {/* Dedicated Settings & Backup Page */}
+            {/* 4. Goals & Exam Marks */}
+            <Route path="/goals" element={<GoalsPage />} />
+
+            {/* 5. Weekly Review (5-Min Protocol) */}
+            <Route path="/review" element={<WeeklyReviewPage />} />
+
+            {/* 6. Small Wins & Shipped Vault */}
+            <Route path="/wins" element={<WinsPage />} />
+
+            {/* 7. Mistake Notebook */}
+            <Route path="/mistakes" element={<MistakesPage />} />
+
+            {/* 8. Settings & Privacy */}
             <Route path="/settings" element={<SettingsPage />} />
           </Route>
 
