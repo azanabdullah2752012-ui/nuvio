@@ -6,6 +6,7 @@
 
 const STORAGE_KEYS = {
   ACCENT_COLOR: 'journal_accent_color',
+  THEME: 'journal_theme',
   ROUTINE_CUSTOM: 'journal_routine_custom',
   ROUTINE_LOGS: 'journal_routine_logs',
   PRIORITIES: 'journal_daily_priorities',
@@ -105,6 +106,29 @@ export const journalStorage = {
     root.style.setProperty('--accent-border', `${hex}66`); // ~40% opacity
   },
 
+  getTheme() {
+    return localStorage.getItem(STORAGE_KEYS.THEME) || 'dark';
+  },
+
+  setTheme(theme) {
+    localStorage.setItem(STORAGE_KEYS.THEME, theme);
+    this.applyTheme(theme);
+    window.dispatchEvent(new CustomEvent('journal_theme_change', { detail: { theme } }));
+  },
+
+  applyTheme(theme) {
+    const root = document.documentElement;
+    if (theme === 'light') {
+      root.classList.remove('dark');
+      root.classList.add('light');
+      root.setAttribute('data-theme', 'light');
+    } else {
+      root.classList.remove('light');
+      root.classList.add('dark');
+      root.setAttribute('data-theme', 'dark');
+    }
+  },
+
   // ── ROUTINE TYPE & TEMPLATES ──────────────────────────────────────
   getRoutineType(dateKey = getTodayKey()) {
     const overrides = safeJsonParse(STORAGE_KEYS.ROUTINE_TYPE_OVERRIDE, {});
@@ -141,6 +165,58 @@ export const journalStorage = {
     localStorage.setItem(STORAGE_KEYS.ROUTINE_LOGS, JSON.stringify(logs));
     window.dispatchEvent(new Event('journal_data_update'));
     return logs[dateKey][itemId];
+  },
+
+  getNextRoutineInfo(dateKey = getTodayKey()) {
+    const routineType = this.getRoutineType(dateKey);
+    const template = this.getRoutineTemplate(routineType);
+    const logs = this.getRoutineLog(dateKey);
+
+    const now = new Date();
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+    // Helper to parse "HH:MM" or "HH:MM - HH:MM" into start and end minutes
+    const parseTimeRange = (timeStr) => {
+      const parts = timeStr.split('-').map(s => s.trim());
+      const parseTime = (t) => {
+        const [h, m] = t.split(':').map(Number);
+        return h * 60 + (m || 0);
+      };
+      const startMin = parseTime(parts[0]);
+      const endMin = parts.length > 1 ? parseTime(parts[1]) : startMin + 30;
+      return { startMin, endMin };
+    };
+
+    let activeBlock = null;
+    let nextBlock = null;
+
+    for (let i = 0; i < template.length; i++) {
+      const item = template[i];
+      const { startMin, endMin } = parseTimeRange(item.time);
+      const isCompleted = !!logs[item.id];
+
+      if (currentMinutes >= startMin && currentMinutes < endMin) {
+        activeBlock = { ...item, isCompleted, startMin, endMin };
+        nextBlock = template[i + 1] ? { ...template[i + 1], ...parseTimeRange(template[i + 1].time) } : null;
+        break;
+      } else if (currentMinutes < startMin) {
+        if (!nextBlock) {
+          nextBlock = { ...item, isCompleted, startMin, endMin };
+        }
+      }
+    }
+
+    const lastItem = template[template.length - 1];
+    const { endMin: lastEndMin } = parseTimeRange(lastItem.time);
+    const isDayComplete = currentMinutes >= lastEndMin;
+
+    return {
+      routineType,
+      activeBlock,
+      nextBlock,
+      isDayComplete,
+      currentTimeFormatted: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    };
   },
 
   // ── 3 PRIORITIES OF THE DAY ───────────────────────────────────────

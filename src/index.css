@@ -2,99 +2,149 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ==========================================================================
+   JOURNAL DESIGN TOKENS (CALM, MINIMAL, PREMIUM)
+   Single location for colors, themes, radii, and transitions.
+   ========================================================================== */
+
 :root {
-  /* Linear / Raycast Precision Tokens */
-  --bg-abyss: #08090a;
-  --bg-surface-1: #0e1013;
-  --bg-surface-2: #14171d;
-  --bg-surface-3: #1a1e26;
+  /* Default: Dark Theme (Soft, warm dark — not harsh pitch black) */
+  --bg-app: #0e1117;
+  --bg-surface: #161b22;
+  --bg-surface-elevated: #1c2128;
+  --bg-surface-hover: #21262d;
+  
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-medium: rgba(255, 255, 255, 0.14);
+  --border-focus: rgba(2, 72, 153, 0.6);
 
-  --border-hairline: rgba(255, 255, 255, 0.08);
-  --border-hover: rgba(255, 255, 255, 0.16);
-
-  --text-primary: #f7f8f8;
+  --text-primary: #f0f6fc;
   --text-secondary: #9da7b3;
-  --text-muted: #5e6673;
+  --text-muted: #6e7681;
 
-  /* Kaiser's Selected Accent: Deep Sapphire Blue #024899 */
+  /* Accent Color (Default: Kaiser's Sapphire Blue #024899) */
   --accent-primary: #024899;
+  --accent-light: #1d6ed8;
   --accent-glow: rgba(2, 72, 153, 0.25);
   --accent-subtle: rgba(2, 72, 153, 0.12);
   --accent-border: rgba(2, 72, 153, 0.4);
+
+  /* Muted Category Dots (used as tiny dots, never boxed chips) */
+  --cat-faith: #f59e0b;
+  --cat-academics: #0284c7;
+  --cat-health: #10b981;
+  --cat-growth: #8b5cf6;
+  --cat-rest: #f43f5e;
+  --cat-family: #ea580c;
+  --cat-routine: #64748b;
+
+  /* Geometry & Motion */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --transition-smooth: 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Light Theme Overrides */
+[data-theme="light"], .light {
+  --bg-app: #f6f8fa;
+  --bg-surface: #ffffff;
+  --bg-surface-elevated: #f0f2f5;
+  --bg-surface-hover: #e8ecf1;
+
+  --border-subtle: rgba(0, 0, 0, 0.08);
+  --border-medium: rgba(0, 0, 0, 0.14);
+  --border-focus: rgba(2, 72, 153, 0.5);
+
+  --text-primary: #1f2328;
+  --text-secondary: #57606a;
+  --text-muted: #8c959f;
+
+  --accent-glow: rgba(2, 72, 153, 0.15);
+  --accent-subtle: rgba(2, 72, 153, 0.08);
+  --accent-border: rgba(2, 72, 153, 0.3);
 }
 
 @layer base {
   * {
-    border-color: var(--border-hairline);
+    border-color: var(--border-subtle);
   }
 
   body {
-    background-color: var(--bg-abyss);
+    background-color: var(--bg-app);
     color: var(--text-primary);
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    font-size: 14px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 15px;
     line-height: 1.5;
     letter-spacing: -0.011em;
     overflow-x: hidden;
+    transition: background-color var(--transition-smooth), color var(--transition-smooth);
   }
 
   h1, h2, h3, h4 {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-weight: 600;
     letter-spacing: -0.025em;
     color: var(--text-primary);
   }
-
-  code, pre, .font-mono {
-    font-family: 'JetBrains Mono', monospace;
-    letter-spacing: -0.02em;
-  }
 }
 
-/* Tool-Grade Surface Utility Classes */
+/* ── COMPONENT UTILITIES ─────────────────────────────────────────── */
+
 .journal-card {
-  background: var(--bg-surface-1);
-  border: 1px solid var(--border-hairline);
-  border-radius: 14px;
-  transition: border-color 0.15s ease, background-color 0.15s ease;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  transition: border-color var(--transition-smooth), background-color var(--transition-smooth);
 }
 
 .journal-card:hover {
-  border-color: var(--border-hover);
+  border-color: var(--border-medium);
 }
 
-.journal-card-raised {
-  background: var(--bg-surface-2);
-  border: 1px solid var(--border-hairline);
-  border-radius: 12px;
+.journal-card-elevated {
+  background-color: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-smooth);
 }
 
 .journal-input {
-  background: var(--bg-surface-2);
-  border: 1px solid var(--border-hairline);
+  background-color: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
   color: var(--text-primary);
-  border-radius: 10px;
-  font-family: 'Inter', sans-serif;
+  border-radius: var(--radius-md);
+  transition: border-color var(--transition-smooth), box-shadow var(--transition-smooth);
 }
 
 .journal-input:focus {
   outline: none;
-  border-color: var(--accent-border);
-  box-shadow: 0 0 12px var(--accent-glow);
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px var(--accent-subtle);
 }
 
-/* Custom Scrollbar for Sleek Look */
+/* Category Dot Utility */
+.cat-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 9999px;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* Sleek Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--bg-abyss);
+  background: var(--bg-app);
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--border-medium);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.22);
+  background: var(--text-muted);
 }

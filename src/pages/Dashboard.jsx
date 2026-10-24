@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Calendar, ChevronLeft, ChevronRight, RotateCcw, 
-  CheckCircle2, Flame, Sparkles, Coffee 
-} from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
 import { journalStorage, getTodayKey } from '../services/journalStorage';
+import TodayHero from '../components/journal/TodayHero';
 import TodayPriorities from '../components/journal/TodayPriorities';
 import TodayRoutine from '../components/journal/TodayRoutine';
 import HabitTracker from '../components/journal/HabitTracker';
@@ -24,10 +22,10 @@ const Dashboard = () => {
       setAccentColor(journalStorage.getAccentColor());
     };
     window.addEventListener('journal_data_update', handleUpdate);
-    window.addEventListener('journal_theme_change', (e) => setAccentColor(e.detail));
+    window.addEventListener('journal_theme_change', (e) => setAccentColor(journalStorage.getAccentColor()));
     return () => {
       window.removeEventListener('journal_data_update', handleUpdate);
-      window.removeEventListener('journal_theme_change', (e) => setAccentColor(e.detail));
+      window.removeEventListener('journal_theme_change', (e) => setAccentColor(journalStorage.getAccentColor()));
     };
   }, []);
 
@@ -44,117 +42,65 @@ const Dashboard = () => {
     setDateKey(getTodayKey(now));
   };
 
-  // Date formatted strings
-  const formattedDate = currentDate.toLocaleDateString('en-US', {
-    weekday: 'long',
-    month: 'long',
-    day: 'numeric'
-  });
-
-  // Calculate quick summary metrics for today
-  const routineType = journalStorage.getRoutineType(dateKey);
-  const routineTemplate = journalStorage.getRoutineTemplate(routineType);
-  const routineLogs = journalStorage.getRoutineLog(dateKey);
-  const completedRoutine = routineTemplate.filter(r => routineLogs[r.id]).length;
-
-  const priorities = journalStorage.getPriorities(dateKey);
-  const completedPriorities = priorities.filter(p => p.completed && p.text.trim().length > 0).length;
-
-  const habits = journalStorage.getHabits();
-  const habitLog = journalStorage.getHabitLog(dateKey);
-  const completedHabits = habitLog.isRestDay 
-    ? habits.length 
-    : habits.filter(h => habitLog?.completed?.[h.id]).length;
-
   return (
-    <div className="space-y-6 text-left max-w-6xl mx-auto pb-12">
+    <div className="space-y-8 text-left pb-16">
       
-      {/* ── TOP DATE BAR & SUMMARY TELEMETRY ───────────────────────── */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-[#0e1013] border border-white/[0.08]">
-        {/* Date Selector */}
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => changeDate(-1)}
-              className="p-1.5 rounded-lg border border-white/[0.08] bg-[#14171d] hover:bg-[#1a1e26] text-zinc-400 hover:text-white transition-colors"
-              title="Previous Day"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => changeDate(1)}
-              className="p-1.5 rounded-lg border border-white/[0.08] bg-[#14171d] hover:bg-[#1a1e26] text-zinc-400 hover:text-white transition-colors"
-              title="Next Day"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
+      {/* ── TOP NAV / DATE CONTROLS ─────────────────────────────────── */}
+      <div id="today" className="flex items-center justify-between pb-2 border-b border-[var(--border-subtle)]">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => changeDate(-1)}
+            className="p-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface)] hover:bg-[var(--bg-surface-hover)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+            title="Previous Day"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
 
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-base sm:text-lg font-semibold text-white tracking-tight">
-                {formattedDate}
-              </h1>
-              {isToday && (
-                <span 
-                  className="px-2 py-0.5 rounded-full text-[10px] font-mono font-medium text-white shadow-sm"
-                  style={{ backgroundColor: accentColor }}
-                >
-                  Today
-                </span>
-              )}
-            </div>
-            <p className="text-xs text-zinc-400 font-mono">
-              Grade 9 • {routineType.toUpperCase()} SCHEDULE
-            </p>
-          </div>
+          <button
+            onClick={() => changeDate(1)}
+            className="p-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface)] hover:bg-[var(--bg-surface-hover)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+            title="Next Day"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
 
           {!isToday && (
             <button
               onClick={jumpToToday}
-              className="ml-auto md:ml-2 text-xs font-mono text-zinc-400 hover:text-white px-2 py-1 rounded border border-white/[0.08] bg-[#14171d]"
+              className="text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] px-2.5 py-1 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface)] hover:bg-[var(--bg-surface-hover)] transition-colors"
             >
               Back to Today
             </button>
           )}
         </div>
 
-        {/* Quick Progress Metrics */}
-        <div className="flex items-center gap-4 sm:gap-6 border-t md:border-t-0 pt-3 md:pt-0 border-white/[0.06] text-xs font-mono">
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: accentColor }} />
-            <span className="text-zinc-400">Routine:</span>
-            <span className="text-zinc-200 font-semibold">{completedRoutine}/{routineTemplate.length}</span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-emerald-400" />
-            <span className="text-zinc-400">Priorities:</span>
-            <span className="text-zinc-200 font-semibold">{completedPriorities}/3</span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Flame className="w-3.5 h-3.5 text-amber-400" />
-            <span className="text-zinc-400">Habits:</span>
-            <span className="text-zinc-200 font-semibold">
-              {habitLog.isRestDay ? 'Rest ☕' : `${completedHabits}/${habits.length}`}
-            </span>
-          </div>
+        <div className="text-xs font-mono text-[var(--text-muted)] flex items-center gap-1.5">
+          <Calendar className="w-3.5 h-3.5" />
+          <span>{dateKey}</span>
         </div>
       </div>
 
-      {/* ── 2-COLUMN BALANCED LAYOUT ───────────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      {/* ── STAGE (B): TODAY HERO & STAT CARDS ─────────────────────── */}
+      <TodayHero dateKey={dateKey} accentColor={accentColor} />
+
+      {/* ── 2-COLUMN BALANCED WORKSPACE ────────────────────────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-7 items-start">
         
-        {/* Left Column (7 cols): Today's 3 Priorities & Daily Routine */}
-        <div className="lg:col-span-7 space-y-6">
-          <TodayPriorities dateKey={dateKey} accentColor={accentColor} />
-          <TodayRoutine dateKey={dateKey} accentColor={accentColor} />
+        {/* Left Column (7 cols): Priorities & Routine */}
+        <div className="lg:col-span-7 space-y-7">
+          <div id="priorities">
+            <TodayPriorities dateKey={dateKey} accentColor={accentColor} />
+          </div>
+          <div id="routine">
+            <TodayRoutine dateKey={dateKey} accentColor={accentColor} />
+          </div>
         </div>
 
-        {/* Right Column (5 cols): Habit Tracker & Daily Reflection */}
-        <div className="lg:col-span-5 space-y-6">
-          <HabitTracker dateKey={dateKey} accentColor={accentColor} />
+        {/* Right Column (5 cols): Habits & Reflection */}
+        <div className="lg:col-span-5 space-y-7">
+          <div id="habits">
+            <HabitTracker dateKey={dateKey} accentColor={accentColor} />
+          </div>
           <DailyReflection dateKey={dateKey} accentColor={accentColor} />
         </div>
 
