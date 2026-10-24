@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   Rocket, BookOpen, Dumbbell, Star, 
   Plus, Check, Play, Pause, RotateCcw,
@@ -18,6 +18,19 @@ const Dashboard = () => {
   // Quick Command Bar Input
   const [commandInput, setCommandInput] = useState('');
   const [commandCategory, setCommandCategory] = useState('Build');
+  const commandInputRef = useRef(null);
+
+  // Global ⌘K / Ctrl+K listener
+  useEffect(() => {
+    const handleGlobalKey = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        commandInputRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', handleGlobalKey);
+    return () => window.removeEventListener('keydown', handleGlobalKey);
+  }, []);
 
   // Mini Timer State
   const [timerMins, setTimerMins] = useState(45);
@@ -137,13 +150,17 @@ const Dashboard = () => {
           <Terminal className="w-4 h-4 text-emerald-400" />
         </div>
         <input
+          ref={commandInputRef}
           type="text"
           value={commandInput}
           onChange={(e) => setCommandInput(e.target.value)}
           placeholder="⌘ Quick Command // Log today's mission, problem set, or build target (Press Enter)..."
-          className="w-full h-12 pl-11 pr-28 bg-[#0e1013] border border-white/[0.08] hover:border-white/[0.16] focus:border-emerald-500/50 rounded-2xl text-xs sm:text-sm text-zinc-200 placeholder:text-zinc-600 focus:outline-none transition-all shadow-[0_4px_20px_rgba(0,0,0,0.5)] font-mono"
+          className="w-full h-12 pl-11 pr-36 bg-[#0e1013] border border-white/[0.08] hover:border-white/[0.16] focus:border-emerald-500/50 rounded-2xl text-xs sm:text-sm text-zinc-200 placeholder:text-zinc-600 focus:outline-none transition-all shadow-[0_4px_20px_rgba(0,0,0,0.5)] font-mono"
         />
         <div className="absolute inset-y-0 right-3 flex items-center gap-1.5">
+          <kbd className="hidden sm:inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono text-zinc-500 bg-white/[0.04] border border-white/[0.08] rounded">
+            ⌘K
+          </kbd>
           <select
             value={commandCategory}
             onChange={(e) => setCommandCategory(e.target.value)}
